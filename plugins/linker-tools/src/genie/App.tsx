@@ -85,6 +85,7 @@ import { CopyReply } from './components/CopyReply';
 import { ContactCard, ContactSent } from './components/ContactCard';
 import { GenieCards } from './components/GenieCard';
 import { HelperFooter } from './components/HelperFooter';
+import { GenieTitle } from './components/GenieTitle';
 import { Reply } from './components/Reply';
 import { Transcript } from './components/Transcript';
 import { ActionView } from './components/ActionView';
@@ -2326,17 +2327,19 @@ export function App( { config }: { config: GenieConfig } ) {
 				<span>
 					{ __( 'Net prices & history sync:', 'linker-tools' ) }
 				</span>{ ' ' }
-				<a href={ config.accountUrl }>
-					{ __( 'Sign in', 'linker-tools' ) }
-				</a>
-				{ config.registerUrl ? (
-					<>
-						{ ' · ' }
-						<a href={ config.registerUrl }>
-							{ __( 'Register', 'linker-tools' ) }
-						</a>
-					</>
-				) : null }
+				<span className="linker-genie-guest-actions">
+					<a href={ config.accountUrl }>
+						{ __( 'Sign in', 'linker-tools' ) }
+					</a>
+					{ config.registerUrl ? (
+						<>
+							{ ' · ' }
+							<a href={ config.registerUrl }>
+								{ __( 'Register', 'linker-tools' ) }
+							</a>
+						</>
+					) : null }
+				</span>
 			</p>
 		) : null;
 	// The inquiry confirmation card's turn (#250): the action the model or the
@@ -2519,13 +2522,7 @@ export function App( { config }: { config: GenieConfig } ) {
 							</button>
 						) : null }
 						<p className="linker-genie-app__title">
-							<span
-								aria-hidden="true"
-								className="linker-genie-mark"
-							>
-								G
-							</span>
-							{ appName() }
+							<GenieTitle />
 						</p>
 					</div>
 					{ expanded ? (

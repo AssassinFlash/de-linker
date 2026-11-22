@@ -142,18 +142,7 @@ export function startHero(
 			if ( expanded ) {
 				prompt!.placeholder = __( 'Ask a follow-up…', 'linker-tools' );
 				mount();
-				requestAnimationFrame( () => {
-					if ( ! expandedNow ) {
-						return;
-					}
-					const clipped =
-						dialog!.getBoundingClientRect().bottom +
-						8 -
-						win.innerHeight;
-					if ( clipped > 0 ) {
-						win.scrollBy( { top: clipped, behavior: 'instant' } );
-					}
-				} );
+				requestAnimationFrame( fitHeroToViewport );
 			} else {
 				prompt!.placeholder = originalPlaceholder;
 				unmount();
@@ -289,6 +278,7 @@ export function startHero(
 			dialog!.dataset.genieView = view;
 		} else {
 			delete dialog!.dataset.genieView;
+			requestAnimationFrame( fitHeroToViewport );
 		}
 		if ( view === 'expanded' && ! nativeModal ) {
 			nativeModal = doc.createElement( 'dialog' );
@@ -561,6 +551,13 @@ export function startHero(
 		prompt!.focus();
 	}
 
+	function fitHeroToViewport(): void {
+		if ( expandedNow && ! dialog!.dataset.genieView ) {
+			const top = dialog!.getBoundingClientRect().top + win.scrollY;
+			dialog!.style.setProperty( '--linker-hero-dialog-top', top + 'px' );
+		}
+	}
+
 	function isOutOfSight(): boolean {
 		const rect = hero.getBoundingClientRect();
 		// jsdom has no layout: height 0 is not "scrolled past the hero".
@@ -610,6 +607,7 @@ export function startHero(
 	picker.addEventListener( 'change', onPickerChange );
 	win.addEventListener( 'scroll', onScroll, { passive: true } );
 	win.addEventListener( 'resize', onScroll );
+	win.addEventListener( 'resize', fitHeroToViewport );
 	win.addEventListener( 'linker-genie-state', onDockState );
 	win.addEventListener( 'linker-genie-hero-leave', close );
 	capsules.forEach( ( { capsule, listener } ) =>
@@ -634,6 +632,8 @@ export function startHero(
 		picker.removeEventListener( 'change', onPickerChange );
 		win.removeEventListener( 'scroll', onScroll );
 		win.removeEventListener( 'resize', onScroll );
+		win.removeEventListener( 'resize', fitHeroToViewport );
+		dialog.style.removeProperty( '--linker-hero-dialog-top' );
 		win.removeEventListener( 'linker-genie-state', onDockState );
 		win.removeEventListener( 'linker-genie-hero-leave', close );
 		capsules.forEach( ( { capsule, listener } ) =>

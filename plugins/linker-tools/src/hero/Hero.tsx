@@ -50,6 +50,7 @@ import { BlockView } from '../genie/components/BlockView';
 import { Compare } from '../genie/components/Compare';
 import { ContactCard, ContactSent } from '../genie/components/ContactCard';
 import { GenieCards } from '../genie/components/GenieCard';
+import { GenieTitle } from '../genie/components/GenieTitle';
 import { InquiryCard, InquirySent } from '../genie/components/InquiryCard';
 import { MissingFiles } from '../genie/components/MissingFiles';
 import { OwnedRecovery } from '../genie/components/OwnedRecovery';
@@ -1094,10 +1095,7 @@ export function HeroConversation( {
 		<div className="linker-genie-hero__surface" lang={ locale }>
 			<header className="linker-genie-hero__bar">
 				<p className="linker-genie-hero__title">
-					<span aria-hidden="true" className="linker-genie-mark">
-						G
-					</span>{ ' ' }
-					{ __( "Genie – Linker's AI assistant", 'linker-tools' ) }
+					<GenieTitle />
 				</p>
 				<div className="linker-genie-hero__actions">
 					{ footer && ! wide

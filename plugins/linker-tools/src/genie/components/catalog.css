@@ -50,7 +50,8 @@
 	max-inline-size: 114px;
 	background: var(--sf-soft, #f5f7f6);
 	font-weight: 550;
-	hyphens: auto;
+	hyphens: none;
+	word-break: normal;
 }
 .genie-comparison thead a {
 	display: grid;
@@ -127,4 +128,21 @@
 }
 .genie-comparison__add:enabled:hover {
 	border-color: var(--sf-primary, #0c7f73);
+}
+
+.genie-comparison__notes {
+	margin-block-start: 0.375rem;
+}
+.genie-comparison__notes summary {
+	width: fit-content;
+	color: var(--sf-primary);
+	cursor: pointer;
+	font-weight: 600;
+}
+.genie-comparison__notes ul {
+	margin-block-start: 0.625rem;
+	line-height: 1.55;
+}
+.genie-comparison__notes a {
+	text-underline-offset: 0.15em;
 }

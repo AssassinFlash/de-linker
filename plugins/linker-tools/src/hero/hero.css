@@ -299,8 +299,8 @@
 	display: flex;
 	flex-direction: column;
 	width: min(1080px, 94vw);
-	height: min(760px, calc(100dvh - 129px));
-	max-height: min(760px, calc(100dvh - 129px));
+	height: min(760px, calc(100dvh - var(--linker-hero-dialog-top, 0px) - 8px));
+	max-height: none;
 	min-height: 0;
 	max-width: none;
 }

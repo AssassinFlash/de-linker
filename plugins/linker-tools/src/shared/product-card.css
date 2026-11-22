@@ -7,7 +7,7 @@
 
 .linker-card__media {
 	aspect-ratio: 1;
-	background: var(--proto-neutral-50, #f7f8f8);
+	background: var(--proto-color-surface);
 	border-radius: var(--proto-radius-md, 8px);
 	display: grid;
 	grid-template: minmax(0, 1fr) / minmax(0, 1fr);
@@ -25,7 +25,7 @@
 	min-width: 0;
 	display: flex;
 	flex-direction: column;
-	gap: var(--proto-space-2, 0.5rem);
+	gap: var(--proto-space-1, 0.25rem);
 }
 
 .linker-card__role {
@@ -46,7 +46,7 @@
 
 .linker-card__title a {
 	color: inherit;
-	text-decoration: underline;
+	text-decoration: none;
 	text-decoration-thickness: 1px;
 	text-underline-offset: 2px;
 }
@@ -166,4 +166,8 @@
 		grid-template-columns: 4.5rem minmax(0, 1fr);
 		gap: var(--proto-space-3, 0.75rem);
 	}
+}
+
+.linker-card__title a:is(:hover, :focus-visible) {
+	text-decoration: underline;
 }

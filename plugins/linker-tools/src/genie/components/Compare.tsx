@@ -1,17 +1,23 @@
 /** The same published selection facts and product identities as the catalog comparison. */
 import { useEffect, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { ReactNode } from 'react';
 import type { CardState } from '../../shared/ProductCard';
 import type { Locale } from '../../configurator/types';
 import { brandSeries } from '../shared/brandSeries';
 import './catalog.css';
 
+interface PairingDocument {
+	title: string;
+	url: string;
+	page?: number;
+}
 interface Pairing {
 	model: string;
 	verdict: string;
 	conditions: string[];
 	accessories: string[];
+	documents?: PairingDocument[];
 }
 interface Column {
 	product_id: number;
@@ -311,17 +317,45 @@ function storageList( items: Pairing[] ) {
 	}
 	const models = items.map( ( item ) => item.model );
 	const conditions = new Map< string, Set< string > >();
+	const accessories = new Map< string, Set< string > >();
+	const sources = new Map<
+		string,
+		{ label: string; models: Set< string > }
+	>();
 	for ( const item of items ) {
-		const notes = [ ...item.conditions ];
 		if ( item.verdict === 'released_with_accessory' ) {
 			const parts = item.accessories.join( ', ' );
-			const required = __( 'Accessory required', 'linker-tools' );
-			notes.unshift( parts ? required + ' · ' + parts : required );
+			const label =
+				__( 'Accessory required', 'linker-tools' ) +
+				( parts ? ' · ' + parts : '' );
+			const applicable = accessories.get( label ) ?? new Set< string >();
+			applicable.add( item.model );
+			accessories.set( label, applicable );
 		}
-		for ( const note of notes ) {
+		for ( const note of item.conditions ) {
 			const applicable = conditions.get( note ) ?? new Set< string >();
 			applicable.add( item.model );
 			conditions.set( note, applicable );
+		}
+		for ( const doc of item.documents ?? [] ) {
+			const url = doc.page
+				? doc.url.split( '#' )[ 0 ] + '#page=' + doc.page
+				: doc.url;
+			const label = doc.page
+				? doc.title +
+					' · ' +
+					sprintf(
+						/* translators: %d is the source page inside a manufacturer PDF. */
+						__( 'page %d', 'linker-tools' ),
+						doc.page
+					)
+				: doc.title;
+			const source = sources.get( url ) ?? {
+				label,
+				models: new Set< string >(),
+			};
+			source.models.add( item.model );
+			sources.set( url, source );
 		}
 	}
 	const names = [
@@ -350,25 +384,50 @@ function storageList( items: Pairing[] ) {
 				part
 			)
 		);
+	const scope = ( applicable: Set< string > ) =>
+		applicable.size < models.length && (
+			<strong>
+				{ keepModelsTogether( [ ...applicable ].join( ', ' ) ) }{ ' ' }
+				·{ ' ' }
+			</strong>
+		);
 	return (
 		<>
 			<span>{ keepModelsTogether( models.join( ', ' ) ) }</span>
-			{ conditions.size > 0 && (
-				<ul>
-					{ Array.from( conditions, ( [ note, applicable ] ) => (
-						<li key={ note }>
-							{ applicable.size < models.length && (
-								<strong>
-									{ keepModelsTogether(
-										[ ...applicable ].join( ', ' )
-									) }{ ' ' }
-									·{ ' ' }
-								</strong>
-							) }
-							{ keepModelsTogether( note ) }
-						</li>
-					) ) }
-				</ul>
+			{ Array.from( accessories, ( [ label, applicable ] ) => (
+				<div key={ label }>
+					{ scope( applicable ) }
+					{ keepModelsTogether( label ) }
+				</div>
+			) ) }
+			{ ( conditions.size > 0 || sources.size > 0 ) && (
+				<details className="genie-comparison__notes">
+					<summary>{ __( 'Notes', 'linker-tools' ) }</summary>
+					<ul>
+						{ Array.from( conditions, ( [ note, applicable ] ) => (
+							<li key={ note }>
+								{ scope( applicable ) }
+								{ keepModelsTogether( note ) }
+							</li>
+						) ) }
+					</ul>
+					{ sources.size > 0 && (
+						<ul>
+							{ Array.from( sources, ( [ url, source ] ) => (
+								<li key={ url }>
+									{ scope( source.models ) }
+									<a
+										href={ url }
+										target="_blank"
+										rel="noreferrer"
+									>
+										{ source.label }
+									</a>
+								</li>
+							) ) }
+						</ul>
+					) }
+				</details>
 			) }
 		</>
 	);

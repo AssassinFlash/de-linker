@@ -525,7 +525,7 @@ msgstr "Ein Bestätigungslink an %s ist unterwegs."
 msgid "A wrong product was judged the better answer."
 msgstr "Ein falsches Produkt wurde als bessere Antwort bewertet."
 
-#: includes/Genie/Preview.php
+#: includes/Genie/Preview.php build/genie.js build/hero.js
 msgid "AI assistant"
 msgstr "KI-Assistent"
 
@@ -3027,7 +3027,7 @@ msgstr "nicht überprüfbar"
 msgid "outline cannot be used"
 msgstr "Umriss nicht verwendbar"
 
-#: src/configurator/solution/Documents.tsx:39 build/configurator.js
+#: src/configurator/solution/Documents.tsx:39 build/configurator.js build/genie.js build/hero.js
 msgid "page %d"
 msgstr "Seite %d"
 
@@ -17647,3 +17647,7 @@ msgstr "✓ Im Lösungsentwurf"
 #: build/genie.js build/hero.js
 msgid "+ Add to draft"
 msgstr "+ Zum Lösungsentwurf hinzufügen"
+
+#: build/genie.js build/hero.js
+msgid "Notes"
+msgstr "Hinweise"

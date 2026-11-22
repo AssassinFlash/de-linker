@@ -20,6 +20,10 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 				model: 'Battery A',
 				verdict: 'released_with_accessory',
 				accessories: [ 'Control unit' ],
+				documents: [
+					{ title: 'Installation guide', url: '/guide.pdf', page: 7 },
+					{ title: 'Battery manual', url: '/battery.pdf', page: 3 },
+				],
 				conditions: [
 					'Install the controller.',
 					'Keep the matching cable.',
@@ -30,6 +34,9 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 				verdict: 'released_with_accessory',
 				accessories: [ 'Control unit' ],
 				conditions: [ 'Install the controller.' ],
+				documents: [
+					{ title: 'Installation guide', url: '/guide.pdf', page: 7 },
+				],
 			},
 		],
 	};
@@ -91,6 +98,22 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 	expect( batteries.getByText( 'Control unit' ) ).toHaveClass(
 		'genie-comparison__identifier'
 	);
+	const summary = batteries.getByText( 'Notes', { selector: 'summary' } );
+	const notes = summary.closest( 'details' )!;
+	expect( notes ).not.toHaveAttribute( 'open' );
+	expect(
+		batteries.getByText( 'Control unit' ).closest( 'details' )
+	).toBeNull();
+	fireEvent.click( summary );
+	expect( notes ).toHaveAttribute( 'open' );
+	expect(
+		within( notes ).getByRole( 'link', { name: /Installation guide.*7/ } )
+	).toHaveAttribute( 'href', '/guide.pdf#page=7' );
+	const manual = within( notes ).getByRole( 'link', {
+		name: /Battery manual.*3/,
+	} );
+	expect( manual ).toHaveAttribute( 'href', '/battery.pdf#page=3' );
+	expect( manual.closest( 'li' ) ).toHaveTextContent( 'Battery A' );
 	expect(
 		batteries.getAllByText( 'Install the controller.', { exact: false } )
 	).toHaveLength( 1 );
