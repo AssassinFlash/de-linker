@@ -305,6 +305,7 @@ export async function restoreArtifacts(
 			if ( block.type === 'compare' ) {
 				return {
 					...block,
+					draft_proofs: {},
 					product_ids: block.product_ids.filter( ( id ) =>
 						allowed.has( id )
 					),

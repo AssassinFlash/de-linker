@@ -136,7 +136,8 @@ export function HeroConversation( {
 	requestPicker,
 	requestVoice,
 	context,
-	openingQuestion = '', onExpand,
+	openingQuestion = '',
+	onExpand,
 }: HeroConversationProps ) {
 	const [ opening, setOpening ] = useState( openingQuestion );
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
@@ -197,7 +198,8 @@ export function HeroConversation( {
 		detachFailure,
 		unsaved,
 		deferredFailure,
-		clearDeferred, dismissDeferred,
+		clearDeferred,
+		dismissDeferred,
 		deferFailure,
 		exchangeFailure,
 		returnToEditing,
@@ -330,7 +332,11 @@ export function HeroConversation( {
 					setRecoveryBlocked( false );
 					return;
 				}
-				if ( checked.record?.conversationId && stored.conversationId && checked.record.conversationId !== stored.conversationId ) {
+				if (
+					checked.record?.conversationId &&
+					stored.conversationId &&
+					checked.record.conversationId !== stored.conversationId
+				) {
 					return;
 				}
 				const reconciled = reconcile( checked.record, stored.messages );
@@ -789,7 +795,7 @@ export function HeroConversation( {
 			}
 			draftContext.checkpoint();
 			commitFailure( { type: 'answered' } );
-				clearDeferred();
+			clearDeferred();
 			setThread( result.messages );
 			setTurn( result.answer );
 			setContacts( result.contacts ?? [] );
@@ -982,7 +988,15 @@ export function HeroConversation( {
 					{ __( "Genie – Linker's AI assistant", 'linker-tools' ) }
 				</p>
 				<div className="linker-genie-hero__actions">
-					{ onExpand ? <button type="button" className="linker-genie-hero__continue" onClick={ onExpand }>{ __( 'Expand full view', 'linker-tools' ) }</button> : null }
+					{ onExpand ? (
+						<button
+							type="button"
+							className="linker-genie-hero__continue"
+							onClick={ onExpand }
+						>
+							{ __( 'Expand full view', 'linker-tools' ) }
+						</button>
+					) : null }
 					<button
 						type="button"
 						className="linker-genie-hero__continue"
@@ -1015,7 +1029,11 @@ export function HeroConversation( {
 			</p>
 			{ opening ? (
 				<Transcript followKey={ 1 }>
-					<ol className="linker-genie-app__thread"><li className="linker-genie-app__message linker-genie-app__message--user">{ opening }</li></ol>
+					<ol className="linker-genie-app__thread">
+						<li className="linker-genie-app__message linker-genie-app__message--user">
+							{ opening }
+						</li>
+					</ol>
 					<TurnProgress />
 				</Transcript>
 			) : thread.length > 0 && draftContext.phase === 'ready' ? (
@@ -1164,8 +1182,15 @@ export function HeroConversation( {
 					{ hasCompare ? (
 						<Compare
 							products={ compareIds }
-							store={ store }
+							restUrl={ config.restUrl }
+							nonce={ config.restNonce }
 							locale={ locale }
+							proofs={ cardProofs }
+							quantities={ cardQuantities }
+							statusFor={ statusFor }
+							onAdd={ ( id, quantity ) =>
+								addCardToDraft( id, cardProofs[ id ], quantity )
+							}
 						/>
 					) : null }
 					{ 'waiting' !== phase && contactBlock ? (

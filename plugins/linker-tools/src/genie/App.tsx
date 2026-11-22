@@ -456,7 +456,8 @@ export function App( { config }: { config: GenieConfig } ) {
 		detachFailure,
 		unsaved,
 		deferredFailure,
-		clearDeferred, dismissDeferred,
+		clearDeferred,
+		dismissDeferred,
 		deferFailure,
 		exchangeFailure,
 		returnToEditing,
@@ -659,7 +660,11 @@ export function App( { config }: { config: GenieConfig } ) {
 	// A reload, or the hero handing the thread over, shows a failed turn
 	// again: the error, and for a 502 the question back in the field.
 	const applyRecord = useCallback(
-		async ( messages: TurnMessage[], conversationId?: number, resetField = false ) => {
+		async (
+			messages: TurnMessage[],
+			conversationId?: number,
+			resetField = false
+		) => {
 			// A send that is already in flight owns the record. The mount's
 			// read can resolve after that send started; reconciling it here
 			// would show a failure for a turn that has not failed.
@@ -691,7 +696,11 @@ export function App( { config }: { config: GenieConfig } ) {
 			}
 			const record = checked.record;
 			resolveEntryRecovery.current();
-			if ( record?.conversationId && conversationId && record.conversationId !== conversationId ) {
+			if (
+				record?.conversationId &&
+				conversationId &&
+				record.conversationId !== conversationId
+			) {
 				return;
 			}
 			if (
@@ -1170,7 +1179,10 @@ export function App( { config }: { config: GenieConfig } ) {
 			setOpen( true );
 			setDockHistory( false );
 			setPhase( 'waiting' );
-			setThread( [ ...currentThread.current, { role: 'user', content: question } ] );
+			setThread( [
+				...currentThread.current,
+				{ role: 'user', content: question },
+			] );
 			let lease = draftContext.capture();
 			if ( ! lease ) {
 				lease = await draftContext.ready();
@@ -1246,7 +1258,10 @@ export function App( { config }: { config: GenieConfig } ) {
 				if ( stored.messages.length > 0 ) {
 					before = stored.messages;
 					currentThread.current = stored.messages;
-					setThread( [ ...before, { role: 'user', content: question } ] );
+					setThread( [
+						...before,
+						{ role: 'user', content: question },
+					] );
 					setTurn( stored.turn );
 					turnAt.current = stored.turn
 						? stored.messages.length - 1
@@ -1502,7 +1517,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 				draftContext.checkpoint();
 				commitFailure( { type: 'answered' } );
-					clearDeferred();
+				clearDeferred();
 				requestWitness.current = null;
 				const assistant = assistantMessage( answer );
 				currentThread.current = next.concat( assistant );
@@ -1616,7 +1631,10 @@ export function App( { config }: { config: GenieConfig } ) {
 					setTurn( stored.turn );
 				}
 			}
-			await applyRecord( stored.messages, 'conversationId' in stored ? stored.conversationId : undefined );
+			await applyRecord(
+				stored.messages,
+				'conversationId' in stored ? stored.conversationId : undefined
+			);
 			restored = true;
 		} )
 			.then( () => {
@@ -2200,13 +2218,25 @@ export function App( { config }: { config: GenieConfig } ) {
 		setDockHistory( false );
 		setRailOpen( window.innerWidth >= OVERLAY_WIDTH );
 	};
-	const guestLinks = ! config.signedIn && config.accountUrl ? (
-		<p className="linker-genie-guest-links">
-			<span>{ __( 'Net prices & history sync:', 'linker-tools' ) }</span>{ ' ' }
-			<a href={ config.accountUrl }>{ __( 'Sign in', 'linker-tools' ) }</a>
-			{ config.registerUrl ? <>{ ' · ' }<a href={ config.registerUrl }>{ __( 'Register', 'linker-tools' ) }</a></> : null }
-		</p>
-	) : null;
+	const guestLinks =
+		! config.signedIn && config.accountUrl ? (
+			<p className="linker-genie-guest-links">
+				<span>
+					{ __( 'Net prices & history sync:', 'linker-tools' ) }
+				</span>{ ' ' }
+				<a href={ config.accountUrl }>
+					{ __( 'Sign in', 'linker-tools' ) }
+				</a>
+				{ config.registerUrl ? (
+					<>
+						{ ' · ' }
+						<a href={ config.registerUrl }>
+							{ __( 'Register', 'linker-tools' ) }
+						</a>
+					</>
+				) : null }
+			</p>
+		) : null;
 	// The inquiry confirmation card's turn (#250): the action the model or the
 	// service asked for, and the inquiry it may already have sent.
 	const offersInquiry = Boolean(
@@ -2335,8 +2365,25 @@ export function App( { config }: { config: GenieConfig } ) {
 					</div>
 					{ expanded ? (
 						<div className="linker-genie-app__bar-actions">
-							{ phase !== 'waiting' && config.workspaceUrl ? <a href={ config.workspaceUrl }>{ __( 'Open full page', 'linker-tools' ) } ↗</a> : null }
-							<button type="button" className="linker-genie-app__icon" onClick={ () => { setExpanded( false ); setRailOpen( false ); } } aria-label={ __( 'Return to side dock', 'linker-tools' ) }><CloseIcon /></button>
+							{ phase !== 'waiting' && config.workspaceUrl ? (
+								<a href={ config.workspaceUrl }>
+									{ __( 'Open full page', 'linker-tools' ) } ↗
+								</a>
+							) : null }
+							<button
+								type="button"
+								className="linker-genie-app__icon"
+								onClick={ () => {
+									setExpanded( false );
+									setRailOpen( false );
+								} }
+								aria-label={ __(
+									'Return to side dock',
+									'linker-tools'
+								) }
+							>
+								<CloseIcon />
+							</button>
 						</div>
 					) : null }
 					{ ! workspace ? (
@@ -2364,8 +2411,15 @@ export function App( { config }: { config: GenieConfig } ) {
 									>
 										<PlusIcon />
 									</button>
-									<button type="button" className="linker-genie-app__icon" onClick={ expand }
-										aria-label={ __( 'Expand full view', 'linker-tools' ) }>
+									<button
+										type="button"
+										className="linker-genie-app__icon"
+										onClick={ expand }
+										aria-label={ __(
+											'Expand full view',
+											'linker-tools'
+										) }
+									>
 										<ExpandIcon />
 									</button>
 									<button
@@ -2456,7 +2510,9 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * the only change; the rule that paints this line
 						 * names the class, so nothing moves.
 						 */ }
-						{ workspace && phase !== 'waiting' && thread.length === 0 ? (
+						{ workspace &&
+						phase !== 'waiting' &&
+						thread.length === 0 ? (
 							<h2 className="linker-genie-app__welcome-title">
 								{ __(
 									'Where should we begin?',
@@ -2491,7 +2547,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * the page's own example questions.
 						 */ }
 						{ ! workspace &&
-						! historyView && phase !== 'waiting' &&
+						! historyView &&
+						phase !== 'waiting' &&
 						thread.length === 0 ? (
 							<div className="linker-genie-app__welcome">
 								<p className="linker-genie-app__welcome-greeting">
@@ -2535,8 +2592,11 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * its history view stand in its place instead.
 						 */ }
 						{ ! historyView &&
-						( workspace || phase === 'waiting' || thread.length > 0 ) &&
-						( draftContext.phase === 'ready' || phase === 'waiting' ) ? (
+						( workspace ||
+							phase === 'waiting' ||
+							thread.length > 0 ) &&
+						( draftContext.phase === 'ready' ||
+							phase === 'waiting' ) ? (
 							<Transcript
 								followKey={
 									phase === 'waiting'
@@ -2804,8 +2864,19 @@ export function App( { config }: { config: GenieConfig } ) {
 								) ? (
 									<Compare
 										products={ compareIds }
-										store={ store }
+										restUrl={ config.restUrl }
+										nonce={ config.restNonce }
 										locale={ config.locale }
+										proofs={ cardProofs }
+										quantities={ cardQuantities }
+										statusFor={ cardStatusFor }
+										onAdd={ ( id, quantity ) =>
+											addCardToDraft(
+												id,
+												cardProofs[ id ],
+												quantity
+											)
+										}
 									/>
 								) : null }
 								{ canEmail ? (
@@ -3361,7 +3432,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * composer in the prototype's welcome; the dock carries
 						 * them in its own welcome above. */ }
 						{ workspace &&
-						phase !== 'waiting' && thread.length === 0 &&
+						phase !== 'waiting' &&
+						thread.length === 0 &&
 						config.prompts.length > 0 ? (
 							<div className="linker-genie-app__prompts">
 								{ config.prompts.map( ( prompt ) => (
@@ -3473,7 +3545,7 @@ function HistoryRail( {
 					onDelete={ onDelete }
 				/>
 			</div>
-		{ guestLinks }
+			{ guestLinks }
 		</aside>
 	);
 }

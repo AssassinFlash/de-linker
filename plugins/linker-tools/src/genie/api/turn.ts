@@ -66,6 +66,8 @@ export interface CardsBlock {
 
 /** A comparison of two to four products. */
 export interface CompareBlock {
+	draft_proofs?: Record< string, string >;
+	quantities?: Record< string, number >;
 	type: 'compare';
 	product_ids: number[];
 }

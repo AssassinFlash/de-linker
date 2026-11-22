@@ -58,7 +58,10 @@ export function quantitiesOf( blocks: Block[] ): Record< string, number > {
 		}
 	}
 	for ( const block of blocks ) {
-		if ( block.type === 'cards' && block.quantities ) {
+		if (
+			( block.type === 'cards' || block.type === 'compare' ) &&
+			block.quantities
+		) {
 			for ( const id of block.product_ids ) {
 				// WordPress omits a count from the live map when it cannot sign it.
 				quantities[ id ] = block.quantities[ id ] ?? 0;
@@ -76,7 +79,10 @@ export function proofsOf( blocks: Block[] ): Record< string, string > {
 	return Object.assign(
 		{},
 		...blocks
-			.filter( ( block ): block is CardsBlock => block.type === 'cards' )
+			.filter(
+				( block ): block is CardsBlock | CompareBlock =>
+					block.type === 'cards' || block.type === 'compare'
+			)
 			.map( ( block ) => block.draft_proofs ?? {} )
 	);
 }
