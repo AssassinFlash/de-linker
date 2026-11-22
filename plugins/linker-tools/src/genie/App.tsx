@@ -2415,8 +2415,21 @@ export function App( { config }: { config: GenieConfig } ) {
 					{ expanded ? (
 						<div className="linker-genie-app__bar-actions">
 							{ phase !== 'waiting' && config.workspaceUrl ? (
-								<a href={ config.workspaceUrl }>
-									{ __( 'Open full page', 'linker-tools' ) } ↗
+								<a
+									className="linker-genie-workspace-link"
+									href={ config.workspaceUrl }
+									aria-label={ __(
+										'Open full page',
+										'linker-tools'
+									) }
+								>
+									<span>
+										{ __(
+											'Open full page',
+											'linker-tools'
+										) }
+									</span>{ ' ' }
+									↗
 								</a>
 							) : null }
 							<button
@@ -2431,7 +2444,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									'linker-tools'
 								) }
 							>
-								<CloseIcon />
+								<ExpandIcon inward />
 							</button>
 						</div>
 					) : null }

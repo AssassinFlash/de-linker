@@ -130,11 +130,15 @@ export function BackIcon( { size = 20 }: IconProps ) {
 }
 
 /**
- * The dock header's "open the full page" mark: an arrow leaving its box.
+ * The arrows on the in-page expansion control.
  * @param root0
  * @param root0.size
+ * @param root0.inward Whether the wide view is returning to the dock.
  */
-export function ExpandIcon( { size = 20 }: IconProps ) {
+export function ExpandIcon( {
+	size = 20,
+	inward = false,
+}: IconProps & { inward?: boolean } ) {
 	return (
 		<svg
 			viewBox="0 0 24 24"
@@ -147,7 +151,13 @@ export function ExpandIcon( { size = 20 }: IconProps ) {
 			strokeLinejoin="round"
 			aria-hidden="true"
 		>
-			<path d="M14 5h5v5M19 5l-7 7M10 19H5v-5M5 19l7-7" />
+			<path
+				d={
+					inward
+						? 'M20 4l-7 7m0-5v5h5M4 20l7-7m-5 0h5v5'
+						: 'M14 5h5v5M19 5l-7 7M10 19H5v-5M5 19l7-7'
+				}
+			/>
 		</svg>
 	);
 }

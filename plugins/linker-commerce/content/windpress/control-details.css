@@ -561,13 +561,12 @@
 	outline-offset: 2px;
 }
 
-/* The dock already switches to a phone sheet at 860px. Reuse the hero's
-   stacked phone header so larger touch targets do not truncate its title. */
+/* The dock keeps a separate row for its four actions on narrow screens. */
 @media (max-width: 860px) {
-	.linker-genie-panel .linker-genie-app .linker-genie-app__bar {
+	.linker-genie-panel .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__bar {
 		flex-wrap: wrap;
 	}
-	.linker-genie-panel .linker-genie-app .linker-genie-app__bar-lead {
+	.linker-genie-panel .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__bar-lead {
 		flex: 1 1 100%;
 		overflow: visible;
 	}
@@ -575,7 +574,7 @@
 		white-space: normal;
 		overflow: visible;
 	}
-	.linker-genie-panel .linker-genie-app .linker-genie-app__bar-actions {
+	.linker-genie-panel .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__bar-actions {
 		margin-inline-start: auto;
 		gap: 4px;
 	}

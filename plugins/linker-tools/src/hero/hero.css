@@ -237,20 +237,6 @@
 		aspect-ratio: 1;
 	}
 
-	.linker-genie-hero__bar {
-		flex-wrap: wrap;
-		gap: 2px;
-	}
-
-	.linker-genie-hero__title {
-		width: 100%;
-	}
-
-	.linker-genie-hero__actions {
-		width: 100%;
-		justify-content: space-between;
-	}
-
 	.linker-genie-hero__continue {
 		padding-left: 0;
 	}

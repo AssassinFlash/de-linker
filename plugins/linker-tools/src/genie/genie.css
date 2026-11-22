@@ -2388,3 +2388,15 @@ body:has(.linker-genie-hero--open)
 #linker-genie-mount:popover-open::backdrop {
 	background: rgb(10 30 29 / 45%);
 }
+
+@media (max-width: 767px) {
+	.linker-genie-workspace-link {
+		display: inline-grid;
+		place-items: center;
+		min-width: 44px;
+		min-height: 44px;
+	}
+	.linker-genie-workspace-link span {
+		display: none;
+	}
+}
