@@ -1075,7 +1075,6 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
-		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [
@@ -1670,7 +1669,6 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
-		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [ ...server, { role: 'user', content: 'EV chargers' } ],
@@ -3263,7 +3261,6 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 	expect( sendTurn ).toHaveBeenLastCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
-		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [

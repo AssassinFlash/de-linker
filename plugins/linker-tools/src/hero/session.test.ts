@@ -231,6 +231,6 @@ test( 'all hero restore boundaries carry current presentation authority', async 
 		] );
 	}
 	expect( send ).toHaveBeenLastCalledWith(
-		expect.objectContaining( { restUrl: CONFIG.restUrl, locale: 'de' } )
+		expect.objectContaining( { turnUrl: CONFIG.turnUrl, locale: 'de' } )
 	);
 } );
