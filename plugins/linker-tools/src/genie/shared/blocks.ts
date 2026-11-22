@@ -15,27 +15,39 @@ import type { Block, CardPrice, CardsBlock, CompareBlock } from '../api/turn';
  * @param blocks The turn's blocks.
  */
 export function pricesOf( blocks: Block[] ): CardPrice[] {
+	const lines = new Map< number, CardPrice >();
 	for ( const block of blocks ) {
-		if ( 'cards' === block.type ) {
-			return block.prices ?? [];
+		if ( block.type === 'cards' ) {
+			for ( const price of block.prices ?? [] ) {
+				lines.set( price.product_id, price );
+			}
 		}
 	}
-	return [];
+	return [ ...lines.values() ];
 }
 
 /**
- * The product ids of the turn's card or comparison block.
- *
- * @param blocks The turn's blocks.
- * @param kind   Which block.
+ * All products in this turn, preserving the order in which the answer showed them.
+ * @param blocks
  */
-export function idsOf( blocks: Block[], kind: 'cards' | 'compare' ): number[] {
-	for ( const block of blocks ) {
-		if ( block.type === kind ) {
-			return ( block as CardsBlock | CompareBlock ).product_ids;
-		}
-	}
-	return [];
+export function cardIdsOf( blocks: Block[] ): number[] {
+	return [
+		...new Set(
+			blocks.flatMap( ( block ) =>
+				block.type === 'cards' ? block.product_ids : []
+			)
+		),
+	];
+}
+
+/**
+ * Each comparison is bounded by the set the answer asked to compare.
+ * @param blocks
+ */
+export function comparisonsOf( blocks: Block[] ): CompareBlock[] {
+	return blocks.filter(
+		( block ): block is CompareBlock => block.type === 'compare'
+	);
 }
 
 /**

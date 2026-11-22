@@ -16,6 +16,7 @@ import {
 	createPortal,
 	useCallback,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -57,7 +58,8 @@ import { Transcript } from '../genie/components/Transcript';
 import { TurnProgress } from '../genie/components/TurnProgress';
 import type { GenieConfig } from '../genie/config';
 import {
-	idsOf,
+	cardIdsOf,
+	comparisonsOf,
 	pricesOf,
 	proofsOf,
 	quantitiesOf,
@@ -989,12 +991,15 @@ export function HeroConversation( {
 	] );
 
 	const blocks: Block[] = turn?.blocks ?? [];
-	const cardIds = idsOf( blocks, 'cards' );
-	const compareIds = idsOf( blocks, 'compare' );
+	const cardIds = useMemo(
+		() => cardIdsOf( turn?.blocks ?? [] ),
+		[ turn?.blocks ]
+	);
+	const comparisons = comparisonsOf( blocks );
 	const cardPrices = pricesOf( blocks );
 	const cardProofs = proofsOf( blocks );
 	const cardQuantities = quantitiesOf( blocks );
-	const hasCompare = blocks.some( ( block ) => 'compare' === block.type );
+
 	const hasCards = blocks.some( ( block ) => 'cards' === block.type );
 	const offersInquiry = blocks.some(
 		( block ) => 'action' === block.type && 'send_inquiry' === block.name
@@ -1237,9 +1242,10 @@ export function HeroConversation( {
 							/>
 						</div>
 					) : null }
-					{ hasCompare ? (
+					{ comparisons.map( ( comparison, index ) => (
 						<Compare
-							products={ compareIds }
+							key={ index }
+							products={ comparison.product_ids }
 							restUrl={ config.restUrl }
 							nonce={ config.restNonce }
 							locale={ locale }
@@ -1250,7 +1256,7 @@ export function HeroConversation( {
 								addCardToDraft( id, cardProofs[ id ], quantity )
 							}
 						/>
-					) : null }
+					) ) }
 					{ 'waiting' !== phase && contactBlock ? (
 						<ContactCard
 							key={ `${ turn?.meta?.turn_id ?? 0 }-contact` }

@@ -7,7 +7,13 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -16,7 +22,13 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { storeClient } from '../configurator/api/store';
 import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
-import { idsOf, pricesOf, proofsOf, quantitiesOf } from './shared/blocks';
+import {
+	cardIdsOf,
+	comparisonsOf,
+	pricesOf,
+	proofsOf,
+	quantitiesOf,
+} from './shared/blocks';
 import { useCardActions } from './shared/cardActions';
 import { buildQuestion, typeModelPrompt } from './shared/conversation';
 import {
@@ -600,7 +612,10 @@ export function App( { config }: { config: GenieConfig } ) {
 		[ draftContext ]
 	);
 
-	const store = storeClient( config.restUrl, undefined, config.restNonce );
+	const store = useMemo(
+		() => storeClient( config.restUrl, undefined, config.restNonce ),
+		[ config.restUrl, config.restNonce ]
+	);
 	const {
 		statusFor: cardStatusFor,
 		addToDraft: addCardToDraft,
@@ -2013,11 +2028,14 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	useEffect( () => () => stopDictation( false ), [ stopDictation ] );
 
-	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
+	const cardIds = useMemo(
+		() => cardIdsOf( turn?.blocks ?? [] ),
+		[ turn?.blocks ]
+	);
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
 	const cardProofs = proofsOf( turn?.blocks ?? [] );
 	const cardQuantities = quantitiesOf( turn?.blocks ?? [] );
-	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
+	const comparisons = comparisonsOf( turn?.blocks ?? [] );
 
 	// A failed initial owner lookup also interrupted the first history load.
 	const recoverWorkspace = async () => {
@@ -2891,11 +2909,10 @@ export function App( { config }: { config: GenieConfig } ) {
 										/>
 									</div>
 								) : null }
-								{ turn?.blocks.some(
-									( block ) => 'compare' === block.type
-								) ? (
+								{ comparisons.map( ( comparison, index ) => (
 									<Compare
-										products={ compareIds }
+										key={ index }
+										products={ comparison.product_ids }
 										restUrl={ config.restUrl }
 										nonce={ config.restNonce }
 										locale={ config.locale }
@@ -2910,7 +2927,7 @@ export function App( { config }: { config: GenieConfig } ) {
 											)
 										}
 									/>
-								) : null }
+								) ) }
 								{ canEmail ? (
 									<EmailConversation
 										phase={ mail }

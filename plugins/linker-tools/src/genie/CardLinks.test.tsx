@@ -19,9 +19,6 @@ import type { Locale } from '../configurator/types';
 import type { CardPrice } from './api/turn';
 import { GenieCards } from './components/GenieCard';
 
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'H2-10K-T3' ),
-} ) );
 
 const LINKS = {
 	en: 'https://de-linker.test/product/saj-h2-10k-t3/',

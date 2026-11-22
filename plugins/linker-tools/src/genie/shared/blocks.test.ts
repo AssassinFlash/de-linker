@@ -13,7 +13,7 @@ import { expect, test } from 'vitest';
  * Internal dependencies
  */
 import type { Block } from '../api/turn';
-import { idsOf, pricesOf, proofsOf, quantitiesOf } from './blocks';
+import { cardIdsOf, comparisonsOf, pricesOf, proofsOf, quantitiesOf } from './blocks';
 
 const BLOCKS: Block[] = [
 	{ type: 'text', text: 'These fit.', refs: [] },
@@ -26,11 +26,11 @@ const BLOCKS: Block[] = [
 ];
 
 test( 'the cards block names the products the grid shows', () => {
-	expect( idsOf( BLOCKS, 'cards' ) ).toEqual( [ 4107, 2092 ] );
+	expect( cardIdsOf( BLOCKS ) ).toEqual( [ 4107, 2092 ] );
 } );
 
 test( 'the compare block names the products the table compares', () => {
-	expect( idsOf( BLOCKS, 'compare' ) ).toEqual( [ 4107, 2092 ] );
+	expect( comparisonsOf( BLOCKS ) ).toEqual( [ BLOCKS[ 2 ] ] );
 } );
 
 test( 'the price lines come with the cards block', () => {
@@ -40,7 +40,7 @@ test( 'the price lines come with the cards block', () => {
 } );
 
 test( 'no block means no ids and no prices', () => {
-	expect( idsOf( [ BLOCKS[ 0 ] ], 'cards' ) ).toEqual( [] );
+	expect( cardIdsOf( [ BLOCKS[ 0 ] ] ) ).toEqual( [] );
 	expect( pricesOf( [ BLOCKS[ 0 ] ] ) ).toEqual( [] );
 } );
 

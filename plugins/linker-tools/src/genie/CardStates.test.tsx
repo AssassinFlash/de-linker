@@ -34,9 +34,6 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendVote: vi.fn( async () => true ),
 	};
 } );
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'GW10K-ETA' ),
-} ) );
 vi.mock( './api/solution', async ( importOriginal ) => ( {
 	...( await importOriginal< typeof import( './api/solution' ) >() ),
 	saveGenieSolution: vi.fn(),
@@ -217,4 +214,41 @@ test( 'a failed save shows the retry sentence inside the card', async () => {
 	);
 	await within( card ).findByText( 'Not saved. Try again.' );
 	expect( card.getAttribute( 'data-state' ) ).toBe( 'retry' );
+} );
+
+test( 'two recommendation blocks load both brands in one request that survives editing the next question', async () => {
+	const products = vi.fn( async ( ids: number[] ) =>
+		ids.map( ( id ) => ( {
+			id,
+			name: 'Equipment ' + id,
+			permalink: '/product/' + id,
+			images: [],
+			is_in_stock: true,
+		} ) )
+	);
+	storeFactory = () => ( { ...storeDouble(), products } );
+	vi.mocked( sendTurn ).mockResolvedValue( {
+		meta: null,
+		blocks: [
+			{
+				type: 'cards',
+				product_ids: [ 3556 ],
+				prices: [ { product_id: 3556, text: 'First price line' } ],
+			},
+			{
+				type: 'cards',
+				product_ids: [ 3556, 4107 ],
+				prices: [ { product_id: 4107, text: 'Second price line' } ],
+			},
+		],
+	} );
+	await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const input = await screen.findByLabelText( 'Ask Genie' );
+	fireEvent.change( input, { target: { value: 'compare both brands' } } );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	await screen.findByRole( 'link', { name: 'Equipment 4107' } );
+	expect( screen.getByText( 'Second price line' ) ).toBeVisible();
+	fireEvent.change( input, { target: { value: 'follow up' } } );
+	expect( products ).toHaveBeenCalledExactlyOnceWith( [ 3556, 4107 ], 'en' );
 } );

@@ -209,15 +209,12 @@ async function publicationManifest(
  * @param context               Current page REST root and locale.
  * @param nonce                 Current page REST nonce.
  * @param fetcher               Fetch for tests.
- * @param options               Refresh stored prices; live turns retain their service-filled prices.
- * @param options.refreshPrices Whether to replace historical prices with current authority.
  */
 export async function restoreArtifacts(
 	turn: Turn,
 	context: ArtifactContext,
 	nonce: string,
-	fetcher: typeof fetch,
-	options: { refreshPrices: boolean } = { refreshPrices: true }
+	fetcher: typeof fetch
 ): Promise< Turn > {
 	const ids = new Set< number >();
 	for ( const block of turn.blocks ) {
@@ -287,19 +284,15 @@ export async function restoreArtifacts(
 			if ( block.type === 'cards' ) {
 				return {
 					...block,
-					...( options.refreshPrices ? { draft_proofs: {} } : {} ),
+					draft_proofs: {},
 					product_ids: block.product_ids.filter( ( id ) =>
 						allowed.has( id )
 					),
-					prices: options.refreshPrices
-						? block.product_ids.flatMap( ( id ) =>
-								allowed.has( id ) && prices.has( id )
-									? [ prices.get( id )! ]
-									: []
-							)
-						: block.prices?.filter( ( price ) =>
-								allowed.has( price.product_id )
-							),
+					prices: block.product_ids.flatMap( ( id ) =>
+						allowed.has( id ) && prices.has( id )
+							? [ prices.get( id )! ]
+							: []
+					),
 				};
 			}
 			if ( block.type === 'compare' ) {
@@ -311,11 +304,7 @@ export async function restoreArtifacts(
 					),
 				};
 			}
-			if (
-				block.type === 'parts' &&
-				options.refreshPrices &&
-				block.add
-			) {
+			if ( block.type === 'parts' && block.add ) {
 				return { ...block, add: { ...block.add, proof: undefined } };
 			}
 			if ( block.type === 'document' ) {

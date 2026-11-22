@@ -37,9 +37,6 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendVote: vi.fn( async () => true ),
 	};
 } );
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'H2-10K-T3' ),
-} ) );
 vi.mock( '../configurator/api/store', () => ( {
 	storeClient: () =>
 		( {

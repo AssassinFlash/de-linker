@@ -62,9 +62,6 @@ vi.mock( './api/contact', () => ( {
 	} ) ),
 	sendContact: vi.fn(),
 } ) );
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'GW10K-ETA' ),
-} ) );
 vi.mock( './api/inquiry', () => ( {
 	readInquiry: vi.fn( async () => ( {
 		conversation: 5,

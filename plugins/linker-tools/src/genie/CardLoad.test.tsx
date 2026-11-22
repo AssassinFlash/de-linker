@@ -15,9 +15,6 @@ import type { storeClient } from '../configurator/api/store';
 import type { Locale } from '../configurator/types';
 import { GenieCards } from './components/GenieCard';
 
-vi.mock( './api/product', () => ( {
-	productModel: vi.fn( async () => 'H2-10K-T3' ),
-} ) );
 
 const PRODUCT = {
 	id: 4107,
