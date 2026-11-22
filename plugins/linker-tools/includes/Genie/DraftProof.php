@@ -28,23 +28,22 @@ class DraftProof {
 	/**
 	 * Sign live artifacts only; the unsigned stream remains the stored history.
 	 *
-	 * @param string              $stream Server-normalized SSE.
-	 * @param array<string,mixed> $dependencies Complete turn dependencies.
+	 * @param string                   $stream Server-normalized SSE.
+	 * @param array<string,mixed>      $dependencies Complete turn dependencies.
+	 * @param array<string,mixed>|null $manifest Final source read supplied by the proxy.
+	 * @param string                   $locale Turn language.
 	 */
-	public function stream( string $stream, array $dependencies ): string|WP_Error {
-		$products = $dependencies['products'] ?? array();
-		if ( ! is_array( $products ) || array() === $products ) {
-			return $stream;
-		}
+	public function stream( string $stream, array $dependencies, ?array $manifest = null, string $locale = 'en' ): string|WP_Error {
 		try {
-			$manifest = is_callable( $this->manifest ) ? ( $this->manifest )() : Publication::manifest();
+			$manifest ??= is_callable( $this->manifest ) ? ( $this->manifest )() : Publication::manifest();
 		} catch ( \RuntimeException $error ) {
 			return self::unavailable();
 		}
-		$owner = $this->owner();
-		if ( $owner instanceof WP_Error || true !== Publication::validate_manifest( $dependencies, $manifest )['valid'] ) {
-			return $stream;
+		if ( true !== Publication::validate_manifest( $dependencies, $manifest )['valid'] ) {
+			return PublicationGuard::refused();
 		}
+		$owner      = null;
+		$shown      = array();
 		$events     = explode( "\n\n", $stream );
 		$blocks     = array();
 		$quantities = array();
@@ -58,6 +57,15 @@ class DraftProof {
 				continue;
 			}
 			$blocks[ $index ] = $block;
+			if ( in_array( $block['type'] ?? '', array( 'compare', 'cards' ), true ) ) {
+				$shown = array_merge( $shown, $block['product_ids'] ?? array() );
+			}
+			if ( 'document' === ( $block['type'] ?? '' ) ) {
+				$document_owner = LiveDocuments::owner( $block );
+				if ( null !== $document_owner ) {
+					$shown[] = $document_owner;
+				}
+			}
 			if ( 'action' === ( $block['type'] ?? '' ) && 'add_to_draft' === ( $block['name'] ?? '' ) ) {
 				$args = $block['args'] ?? array();
 				$id   = $args['product_id'] ?? null;
@@ -68,40 +76,57 @@ class DraftProof {
 				}
 			}
 		}
-		foreach ( $blocks as $index => $block ) {
-			if ( 'cards' === ( $block['type'] ?? '' ) ) {
-				$requested             = (array) ( $block['quantities'] ?? array() );
-				$block['draft_proofs'] = array();
-				$block['quantities']   = array();
-				foreach ( (array) ( $block['product_ids'] ?? array() ) as $id ) {
-					if ( is_int( $id ) ) {
-						$count = $requested[ $id ] ?? $quantities[ $id ] ?? 1;
-						if ( isset( $quantities[ $id ] ) && $count !== $quantities[ $id ] ) {
-							continue;
-						}
-						$token = $this->mint(
-							array(
+		$switched = in_array( 'document', array_column( $blocks, 'type' ), true ) && switch_to_locale( 'de' === $locale ? 'de_DE_formal' : 'en_US' );
+		try {
+			foreach ( $blocks as $index => $block ) {
+				if ( 'document' === ( $block['type'] ?? '' ) ) {
+					$block = LiveDocuments::present( $block, $manifest, $shown, $locale );
+				} elseif ( in_array( $block['type'] ?? '', array( 'cards', 'compare' ), true ) ) {
+					$owner ??= $this->owner();
+					if ( $owner instanceof WP_Error ) {
+						continue;
+					}
+					$requested             = (array) ( $block['quantities'] ?? array() );
+					$block['draft_proofs'] = array();
+					$block['quantities']   = array();
+					foreach ( (array) ( $block['product_ids'] ?? array() ) as $id ) {
+						if ( is_int( $id ) ) {
+							$count = $requested[ $id ] ?? $quantities[ $id ] ?? 1;
+							if ( isset( $quantities[ $id ] ) && $count !== $quantities[ $id ] ) {
+								continue;
+							}
+							$token = $this->mint(
 								array(
-									'product_id' => $id,
-									'quantity'   => $count,
+									array(
+										'product_id' => $id,
+										'quantity'   => $count,
+									),
 								),
-							),
-							$dependencies,
-							$manifest,
-							$owner
-						);
-						if ( '' !== $token ) {
-							$block['draft_proofs'][ (string) $id ] = $token;
-							$block['quantities'][ (string) $id ]   = $count;
+								$dependencies,
+								$manifest,
+								$owner
+							);
+							if ( '' !== $token ) {
+								$block['draft_proofs'][ (string) $id ] = $token;
+								$block['quantities'][ (string) $id ]   = $count;
+							}
 						}
 					}
+				} elseif ( 'parts' === ( $block['type'] ?? '' ) && is_array( $block['add']['items'] ?? null ) ) {
+					$owner ??= $this->owner();
+					if ( $owner instanceof WP_Error ) {
+						continue;
+					}
+					$block['add']['proof'] = $this->mint( $block['add']['items'], $dependencies, $manifest, $owner );
+				} else {
+					continue;
 				}
-			} elseif ( 'parts' === ( $block['type'] ?? '' ) && is_array( $block['add']['items'] ?? null ) ) {
-				$block['add']['proof'] = $this->mint( $block['add']['items'], $dependencies, $manifest, $owner );
-			} else {
-				continue;
+				$events[ $index ] = "event: block\ndata: " . (string) wp_json_encode( $block );
 			}
-			$events[ $index ] = "event: block\ndata: " . (string) wp_json_encode( $block );
+		} finally {
+			if ( $switched ) {
+				restore_previous_locale();
+			}
 		}
 		return implode( "\n\n", $events );
 	}

@@ -594,13 +594,9 @@ class Proxy {
 		// Action tokens are issued only for this live checked answer; history stays unsigned.
 		// The answer is already stored: these refusals are not a turn that
 		// stored nothing, so they keep the reply's own status.
-		$action_stream = ( new DraftProof() )->stream( $split['stream'], $publication );
+		$action_stream = $this->publication->release( $split['stream'], $publication, $locale );
 		if ( $action_stream instanceof WP_Error ) {
 			return $action_stream;
-		}
-		$permitted = $this->publication->validate( $publication );
-		if ( is_wp_error( $permitted ) ) {
-			return $permitted;
 		}
 		$reply = new WP_REST_Response(
 			array(

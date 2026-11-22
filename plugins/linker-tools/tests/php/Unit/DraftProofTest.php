@@ -140,6 +140,72 @@ final class DraftProofTest extends TestCase {
 		}
 	}
 
+	/** A compare column keeps its own product and action quantity after validation. */
+	public function test_compare_columns_receive_product_bound_action_proofs(): void {
+		$proof  = $this->proof();
+		$stream = $proof->stream( "event: block\ndata: {\"type\":\"compare\",\"product_ids\":[5,6]}\n\nevent: block\ndata: {\"type\":\"action\",\"name\":\"add_to_draft\",\"args\":{\"product_id\":6,\"quantity\":3}}\n\n", $this->dependencies() );
+		$this->assertIsString( $stream );
+		if ( 1 !== preg_match( '/^data: (.+)$/m', $stream, $data ) ) {
+			$this->fail( 'The comparison must contain a block.' );
+		}
+		$block = json_decode( $data[1], true );
+		$this->assertSame(
+			array(
+				5 => 1,
+				6 => 3,
+			),
+			$block['quantities'] ?? array()
+		);
+		$result = $proof->verify( $block['draft_proofs'][6] );
+		$this->assertIsArray( $result );
+		$this->assertSame( 3, $result['selected']['lines'][0]['quantity'] );
+	}
+
+	/** Shared English PDFs keep the cited model, manufacturer's title and cited pages. */
+	public function test_live_document_labels_use_the_checked_owner_instead_of_the_first_product(): void {
+		$this->manifest['documents'][0] += array(
+			'url'      => 'https://de-linker.test/manual.pdf',
+			'aliases'  => array(),
+			'type'     => 'manual',
+			'lang'     => 'en',
+			'title'    => 'Original installation manual',
+			'title_de' => 'Montagehandbuch',
+		);
+		WP_Mock::userFunction( 'switch_to_locale', array( 'return' => false ) );
+		$base   = array(
+			'type'              => 'document',
+			'ref'               => 'p6.document.1',
+			'url'               => 'https://de-linker.test/manual.pdf#page=8',
+			'label'             => 'Original title · pp. 8, 12',
+			'document_id'       => 'd1',
+			'document_revision' => 'bytes-1',
+		);
+		$rows   = array(
+			$base,
+			array_merge( $base, array( 'ref' => 'compat.document.1' ) ),
+			array_merge(
+				$base,
+				array(
+					'ref'                 => 'compat.document.1',
+					'evidence_product_id' => 5,
+				)
+			),
+			array_merge( $base, array( 'document_revision' => 'old-bytes' ) ),
+			array_merge( $base, array( 'url' => 'https://de-linker.test/unassociated.pdf' ) ),
+		);
+		$input  = implode( "\n\n", array_map( static fn( array $row ): string => 'event: block' . "\ndata: " . wp_json_encode( $row ), $rows ) );
+		$stream = $this->proof()->stream( $input, $this->dependencies(), $this->manifest, 'de' );
+		$this->assertIsString( $stream );
+		preg_match_all( '/^data: (.+)$/m', $stream, $matches );
+		$blocks = array_map( static fn( string $row ): array => json_decode( $row, true ), $matches[1] );
+		$this->assertSame( "B · Manual (EN) · S.\u{00a0}8, 12", $blocks[0]['label'] );
+		$this->assertSame( 'Original installation manual', $blocks[0]['sourceTitle'] );
+		$this->assertNull( $blocks[1]['url'] );
+		$this->assertSame( "A · Manual (EN) · S.\u{00a0}8, 12", $blocks[2]['label'] );
+		$this->assertNull( $blocks[3]['url'] );
+		$this->assertNull( $blocks[4]['url'] );
+	}
+
 	/** A conflicting customer count leaves the other product card usable. */
 	public function test_unresolved_card_quantity_cannot_be_saved_as_one(): void {
 		$stream = $this->proof()->stream( "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[5,6],\"quantities\":{\"5\":0}}\n\n", $this->dependencies() );

@@ -84,6 +84,22 @@ class PublicationGuard {
 	}
 
 	/**
+	 * Validate and present against the same fresh authority after the conversation commit.
+	 *
+	 * @param string              $stream Normalized server stream without private readings.
+	 * @param array<string,mixed> $dependencies Original full dependency set.
+	 * @param string              $locale Turn language.
+	 */
+	public function release( string $stream, array $dependencies, string $locale ): string|WP_Error {
+		try {
+			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::manifest();
+		} catch ( \RuntimeException $error ) {
+			return self::refused( 503 );
+		}
+		return ( new DraftProof() )->stream( $stream, $dependencies, $manifest, $locale );
+	}
+
+	/**
 	 * Keep permission as server-only receipt metadata.
 	 *
 	 * @param WP_REST_Response    $reply Response being stored.

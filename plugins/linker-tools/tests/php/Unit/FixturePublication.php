@@ -38,6 +38,17 @@ final class FixturePublication extends PublicationGuard {
 	}
 
 	/**
+	 * Return the stream under this fixture's unchanged permission.
+	 *
+	 * @param string              $stream Answer.
+	 * @param array<string,mixed> $dependencies Expected permission.
+	 * @param string              $locale Turn language.
+	 */
+	public function release( string $stream, array $dependencies, string $locale ): string {
+		return $stream;
+	}
+
+	/**
 	 * Transport tests have no receipt storage.
 	 *
 	 * @param WP_REST_Response    $reply Response.
