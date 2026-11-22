@@ -88,6 +88,9 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 	const tables = await screen.findAllByRole( 'table' );
 	expect( tables ).toHaveLength( 2 );
 	const batteries = within( tables[ 0 ] );
+	expect( batteries.getByText( 'Control unit' ) ).toHaveClass(
+		'genie-comparison__identifier'
+	);
 	expect(
 		batteries.getAllByText( 'Install the controller.', { exact: false } )
 	).toHaveLength( 1 );

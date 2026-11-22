@@ -324,19 +324,48 @@ function storageList( items: Pairing[] ) {
 			conditions.set( note, applicable );
 		}
 	}
+	const names = [
+		...new Set( [
+			...models,
+			...items.flatMap( ( item ) => item.accessories ),
+		] ),
+	]
+		.filter( Boolean )
+		.sort( ( a, b ) => b.length - a.length );
+	const pattern = new RegExp(
+		'(' +
+			names
+				.map( ( name ) => name.replace( /[^a-z0-9 ]/gi, '\\$&' ) )
+				.join( '|' ) +
+			')',
+		'g'
+	);
+	const keepModelsTogether = ( text: string ) =>
+		text.split( pattern ).map( ( part, i ) =>
+			i % 2 ? (
+				<span key={ i } className="genie-comparison__identifier">
+					{ part }
+				</span>
+			) : (
+				part
+			)
+		);
 	return (
 		<>
-			<span>{ models.join( ', ' ) }</span>
+			<span>{ keepModelsTogether( models.join( ', ' ) ) }</span>
 			{ conditions.size > 0 && (
 				<ul>
 					{ Array.from( conditions, ( [ note, applicable ] ) => (
 						<li key={ note }>
 							{ applicable.size < models.length && (
 								<strong>
-									{ [ ...applicable ].join( ', ' ) } ·{ ' ' }
+									{ keepModelsTogether(
+										[ ...applicable ].join( ', ' )
+									) }{ ' ' }
+									·{ ' ' }
 								</strong>
 							) }
-							{ note }
+							{ keepModelsTogether( note ) }
 						</li>
 					) ) }
 				</ul>
