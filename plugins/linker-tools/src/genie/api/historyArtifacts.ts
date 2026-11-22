@@ -281,27 +281,19 @@ export async function restoreArtifacts(
 	return {
 		...turn,
 		blocks: turn.blocks.map( ( block ) => {
-			if ( block.type === 'cards' ) {
+			if ( block.type === 'cards' || block.type === 'compare' ) {
+				const visible = block.product_ids.filter( ( id ) =>
+					allowed.has( id )
+				);
+				if ( block.type === 'compare' && visible.length !== 1 ) {
+					return { ...block, draft_proofs: {}, product_ids: visible };
+				}
 				return {
 					...block,
+					type: 'cards',
 					draft_proofs: {},
-					product_ids: block.product_ids.filter( ( id ) =>
-						allowed.has( id )
-					),
-					prices: block.product_ids.flatMap( ( id ) =>
-						allowed.has( id ) && prices.has( id )
-							? [ prices.get( id )! ]
-							: []
-					),
-				};
-			}
-			if ( block.type === 'compare' ) {
-				return {
-					...block,
-					draft_proofs: {},
-					product_ids: block.product_ids.filter( ( id ) =>
-						allowed.has( id )
-					),
+					product_ids: visible,
+					prices: visible.flatMap( ( id ) => prices.get( id ) ?? [] ),
 				};
 			}
 			if ( block.type === 'parts' && block.add ) {

@@ -75,7 +75,26 @@ function valueText(
 	return value;
 }
 
-export function Compare( {
+function unavailableComparison() {
+	return (
+		<p>
+			{ __(
+				'These products are no longer available for comparison.',
+				'linker-tools'
+			) }
+		</p>
+	);
+}
+
+export function Compare( props: Props ) {
+	return props.products.length < 2 ? (
+		unavailableComparison()
+	) : (
+		<PublishedComparison { ...props } />
+	);
+}
+
+function PublishedComparison( {
 	products,
 	restUrl,
 	nonce,
@@ -147,14 +166,7 @@ export function Compare( {
 		);
 	}
 	if ( ! result.data.products.length ) {
-		return (
-			<p>
-				{ __(
-					'These products are no longer available for comparison.',
-					'linker-tools'
-				) }
-			</p>
-		);
+		return unavailableComparison();
 	}
 	const { products: columns, rows } = result.data;
 	const groups = [

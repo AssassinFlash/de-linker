@@ -59,7 +59,7 @@ final class Comparison {
 	/**
 	 * Battery-side dimensions, in display order.
 	 */
-	private const BATTERY_FIELDS = array( 'usable_kwh', 'nominal_kwh', 'kwh_range' );
+	private const BATTERY_FIELDS = array( 'application', 'usable_kwh', 'nominal_kwh', 'kwh_range' );
 
 	/**
 	 * Device classes that show the inverter-side rows.
@@ -269,7 +269,7 @@ final class Comparison {
 			$fields = array( 'device_class', 'application' );
 		}
 
-		return $fields;
+		return array_values( array_unique( $fields ) );
 	}
 
 	/**

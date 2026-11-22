@@ -100,3 +100,27 @@ test( 'a verified comparison shows real specs by equipment class and adds the si
 		expect.objectContaining( { headers: { 'X-WP-Nonce': 'test' } } ),
 	] );
 } );
+
+test( 'a withdrawn comparison needs no retry and sends no incomplete product request', () => {
+	const fetcher = vi.fn();
+	vi.stubGlobal( 'fetch', fetcher );
+	render(
+		<Compare
+			products={ [] }
+			locale="en"
+			restUrl="/wp-json/"
+			nonce="n"
+			proofs={ {} }
+			quantities={ {} }
+			statusFor={ () => ( { state: 'idle', text: '' } ) }
+			onAdd={ vi.fn() }
+		/>
+	);
+	expect(
+		screen.getByText(
+			'These products are no longer available for comparison.'
+		)
+	).toBeVisible();
+	expect( screen.queryByRole( 'button', { name: 'Try again' } ) ).toBeNull();
+	expect( fetcher ).not.toHaveBeenCalled();
+} );

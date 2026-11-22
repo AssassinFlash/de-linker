@@ -224,6 +224,15 @@ final class ComparisonTest extends TestCase {
 		$this->assertSame( 'Bemessungsleistung AC (kW)', $german['rows'][2]['label'] );
 	}
 
+	/** A storage comparison includes the intended application beside its energy figures. */
+	public function test_battery_selection_shows_application_in_the_requested_language(): void {
+		$comparison = $this->comparison()->of( array( 1832 ), 'de' );
+		$fields     = array_column( $comparison['rows'], 'field' );
+
+		$this->assertSame( array( 'application', 'usable_kwh', 'nominal_kwh', 'kwh_range' ), $fields );
+		$this->assertSame( 'Anwendung', $comparison['rows'][0]['label'] );
+	}
+
 	/**
 	 * The technical rows are the union of the selected products' own tables:
 	 * a non-conflicting label stays readable, with values under their products.
