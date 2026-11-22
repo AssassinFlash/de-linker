@@ -21,7 +21,6 @@ import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f
 import type { storeClient } from '../configurator/api/store';
 import { GenieCards } from './components/GenieCard';
 
-
 afterEach( () => {
 	resetLocaleData( {}, 'linker-tools' );
 } );

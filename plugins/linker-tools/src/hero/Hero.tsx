@@ -1248,6 +1248,7 @@ export function HeroConversation( {
 						<div className="linker-genie-hero__cards">
 							<GenieCards
 								products={ cardIds }
+								proofs={ cardProofs }
 								quantities={ cardQuantities }
 								store={ store }
 								locale={ locale }

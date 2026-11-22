@@ -47,6 +47,7 @@ interface GenieCardsProps extends CardActions {
 	locale: Locale;
 	prices?: CardPrice[];
 	quantities?: Record< string, number >;
+	proofs?: Record< string, string >;
 	statusFor: ( id: number ) => { state: CardState; text: string };
 }
 
@@ -56,6 +57,7 @@ export function GenieCards( {
 	locale,
 	prices,
 	quantities,
+	proofs,
 	statusFor,
 	onAdd,
 	onSave,
@@ -130,6 +132,7 @@ export function GenieCards( {
 						key={ id }
 						product={ product }
 						quantity={ quantities?.[ id ] }
+						hasProof={ Boolean( proofs?.[ id ] ) }
 						status={ statusFor( id ) }
 						price={ prices?.find( ( p ) => p.product_id === id ) }
 						onAdd={ onAdd }
@@ -144,6 +147,7 @@ export function GenieCards( {
 function GenieCard( {
 	product,
 	quantity,
+	hasProof,
 	status,
 	price,
 	onAdd,
@@ -151,6 +155,7 @@ function GenieCard( {
 }: CardActions & {
 	product: StoreProduct;
 	quantity?: number;
+	hasProof: boolean;
 	status: { state: CardState; text: string };
 	price?: CardPrice;
 } ) {
@@ -202,26 +207,33 @@ function GenieCard( {
 			] }
 			status={ status }
 			actions={
-				quantity !== 0 && [
-					<button
-						key="draft"
-						type="button"
-						className="linker-genie-app__card-action linker-genie-app__card-action--primary"
-						disabled={ 'pending' === status.state }
-						onClick={ () => onAdd( productId, quantity ?? 1 ) }
-					>
-						{ __( 'Add to solution draft', 'linker-tools' ) }
-					</button>,
-					<button
-						key="save"
-						type="button"
-						className="linker-genie-app__card-action"
-						disabled={ 'pending' === status.state }
-						onClick={ () => onSave( productId, product.name ) }
-					>
-						{ __( 'Save solution', 'linker-tools' ) }
-					</button>,
-				]
+				hasProof && quantity && quantity > 0
+					? [
+							<button
+								key="draft"
+								type="button"
+								className="linker-genie-app__card-action linker-genie-app__card-action--primary"
+								disabled={ 'pending' === status.state }
+								onClick={ () => onAdd( productId, quantity ) }
+							>
+								{ __(
+									'Add to solution draft',
+									'linker-tools'
+								) }
+							</button>,
+							<button
+								key="save"
+								type="button"
+								className="linker-genie-app__card-action"
+								disabled={ 'pending' === status.state }
+								onClick={ () =>
+									onSave( productId, product.name )
+								}
+							>
+								{ __( 'Save solution', 'linker-tools' ) }
+							</button>,
+						]
+					: undefined
 			}
 		/>
 	);

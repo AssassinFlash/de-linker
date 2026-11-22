@@ -3001,6 +3001,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									<div className="linker-genie-app__cards">
 										<GenieCards
 											products={ cardIds }
+											proofs={ cardProofs }
 											quantities={ cardQuantities }
 											store={ store }
 											locale={ config.locale }

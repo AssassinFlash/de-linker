@@ -205,10 +205,10 @@ async function publicationManifest(
  * Reuse current get-product authority, never translating or trusting a saved
  * price sentence. Failed/missing authority removes that snapshot's price.
  *
- * @param turn                  Parsed turn, left untouched.
- * @param context               Current page REST root and locale.
- * @param nonce                 Current page REST nonce.
- * @param fetcher               Fetch for tests.
+ * @param turn    Parsed turn, left untouched.
+ * @param context Current page REST root and locale.
+ * @param nonce   Current page REST nonce.
+ * @param fetcher Fetch for tests.
  */
 export async function restoreArtifacts(
 	turn: Turn,

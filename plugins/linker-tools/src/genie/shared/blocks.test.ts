@@ -13,7 +13,13 @@ import { expect, test } from 'vitest';
  * Internal dependencies
  */
 import type { Block } from '../api/turn';
-import { cardIdsOf, comparisonsOf, pricesOf, proofsOf, quantitiesOf } from './blocks';
+import {
+	cardIdsOf,
+	comparisonsOf,
+	pricesOf,
+	proofsOf,
+	quantitiesOf,
+} from './blocks';
 
 const BLOCKS: Block[] = [
 	{ type: 'text', text: 'These fit.', refs: [] },

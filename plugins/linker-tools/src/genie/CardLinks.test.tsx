@@ -19,7 +19,6 @@ import type { Locale } from '../configurator/types';
 import type { CardPrice } from './api/turn';
 import { GenieCards } from './components/GenieCard';
 
-
 const LINKS = {
 	en: 'https://de-linker.test/product/saj-h2-10k-t3/',
 	de: 'https://de-linker.test/de/produkt/saj-h2-10k-t3/',

@@ -15,7 +15,6 @@ import type { storeClient } from '../configurator/api/store';
 import type { Locale } from '../configurator/types';
 import { GenieCards } from './components/GenieCard';
 
-
 const PRODUCT = {
 	id: 4107,
 	name: 'SAJ H2-10K-T3',

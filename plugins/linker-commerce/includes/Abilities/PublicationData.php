@@ -22,10 +22,18 @@ final class PublicationData {
 	 */
 	private $read;
 
-	/** @var array<string,mixed>|null Authority behind this projection's manufacturer pairings. */
+	/**
+	 * Authority behind the current manufacturer pairings.
+	 *
+	 * @var array<string,mixed>|null
+	 */
 	private ?array $pair_manifest = null;
 
-	/** @var list<array<string,mixed>> Current joined manufacturer's declarations. */
+	/**
+	 * Manufacturer declarations joined to this snapshot.
+	 *
+	 * @var list<array<string,mixed>>
+	 */
 	private array $pairs = array();
 
 	/**

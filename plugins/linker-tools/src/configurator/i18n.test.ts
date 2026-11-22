@@ -148,7 +148,7 @@ test( 'the genie translation file holds only texts the code uses', () => {
 test( 'genie German keeps the naming and the formal address', () => {
 	const text = JSON.stringify( genieMessages );
 	expect( text ).not.toMatch( /\b(du|dein|deine|dich|dir)\b/i );
-	expect( genieMessages[ "Genie - Linker's AI assistant" ] ).toEqual( [
+	expect( genieMessages[ "Genie – Linker's AI assistant" ] ).toEqual( [
 		'Genie – der KI-Assistent von Linker',
 	] );
 } );

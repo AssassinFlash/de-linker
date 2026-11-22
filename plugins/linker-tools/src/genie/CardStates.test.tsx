@@ -89,7 +89,10 @@ function config(): GenieConfig {
 	};
 }
 
-async function openCardTurn( quantities?: Record< string, number > ) {
+async function openCardTurn(
+	quantities: Record< string, number > = { 3556: 1 },
+	proof = quantities[ 3556 ] ? 'signed-two' : ''
+) {
 	vi.mocked( sendTurn ).mockResolvedValue( {
 		meta: {
 			grounded: true,
@@ -102,14 +105,8 @@ async function openCardTurn( quantities?: Record< string, number > ) {
 			{
 				type: 'cards',
 				product_ids: [ 3556 ],
-				...( quantities
-					? {
-							quantities,
-							draft_proofs: quantities[ 3556 ]
-								? { 3556: 'signed-two' }
-								: {},
-						}
-					: {} ),
+				quantities,
+				draft_proofs: proof ? { 3556: proof } : {},
 			},
 		],
 	} );
@@ -251,4 +248,18 @@ test( 'two recommendation blocks load both brands in one request that survives e
 	expect( screen.getByText( 'Second price line' ) ).toBeVisible();
 	fireEvent.change( input, { target: { value: 'follow up' } } );
 	expect( products ).toHaveBeenCalledExactlyOnceWith( [ 3556, 4107 ], 'en' );
+} );
+
+test( 'historical product cards keep their quantity and details after the write proof is gone', async () => {
+	storeFactory = () => storeDouble();
+	await openCardTurn( { 3556: 2 }, '' );
+	const card = within( screen.getByRole( 'article' ) );
+	expect( card.getByText( '× 2' ) ).toBeVisible();
+	expect( card.getByRole( 'link', { name: PRODUCT.name } ) ).toBeVisible();
+	expect(
+		card.queryByRole( 'button', { name: 'Add to solution draft' } )
+	).toBeNull();
+	expect(
+		card.queryByRole( 'button', { name: 'Save solution' } )
+	).toBeNull();
 } );
