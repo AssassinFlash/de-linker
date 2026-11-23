@@ -62,6 +62,7 @@ function currentProject(): string | null {
 function entryRoute(url: URL): string {
 	if (url.hash) return url.hash.slice(1);
 	if (url.searchParams.has("project")) return "";
+	if (url.searchParams.get("projects") === "1") return "projects";
 	if (publicProjectView(url.searchParams)) return "sc-project";
 	const standaloneRetrofit =
 		url.searchParams.get("scope") === "storage_addition" &&
@@ -230,8 +231,13 @@ export function Workspace({
 				window.history.back();
 				return;
 			}
-			if (id) url.searchParams.set("project", id);
-			else url.searchParams.delete("project");
+			if (id) {
+				url.searchParams.set("project", id);
+				url.searchParams.delete("projects");
+			} else {
+				url.searchParams.delete("project");
+				url.searchParams.set("projects", "1");
+			}
 			url.searchParams.delete("run");
 			url.searchParams.delete("retry_revision");
 			url.searchParams.delete("linker_inquiry_retry");
@@ -241,7 +247,7 @@ export function Workspace({
 			url.searchParams.delete("brief");
 			for (const key of ENTRY_QUERY_KEYS) url.searchParams.delete(key);
 			url.hash = destination;
-			setRoute(destination);
+			setRoute(id ? destination : "projects");
 			if (
 				id &&
 				from === "sc-preliminary-options" &&
