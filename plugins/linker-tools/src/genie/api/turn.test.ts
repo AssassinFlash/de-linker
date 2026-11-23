@@ -19,6 +19,7 @@ import {
 	isUnfinishedStream,
 	parseStream,
 	readThread,
+	resumeTurn,
 	sendTurn,
 	sendVote,
 	TURN_TIMEOUT_MS,
@@ -761,39 +762,29 @@ test( 'a complete answer near its connection deadline uses the verified stream w
 	}
 } );
 
-test( 'a started turn polls the same job at 600ms and releases only the verified stream', async () => {
+test( 'a started turn backs off while reading the same job and releases only the verified stream', async () => {
 	vi.useFakeTimers();
 	try {
 		const id = 'aa21e940-4d9c-4426-844b-6527cedd68de';
-		const fetcher = vi
-			.fn()
-			.mockResolvedValueOnce(
-				Response.json(
-					{
-						status: 'running',
-						job_id: id,
-						conversation_id: 18,
-						stage: 'understanding',
-					},
-					{ status: 202 }
-				)
-			)
-			.mockResolvedValueOnce(
-				Response.json( {
-					status: 'running',
-					job_id: id,
-					conversation_id: 18,
-					stage: 'searching_documents',
-				} )
-			)
-			.mockResolvedValueOnce(
-				Response.json( {
-					status: 'completed',
-					job_id: id,
-					conversation_id: 18,
-					stream: 'event: block\ndata: {"type":"text","text":"Checked","refs":[]}\n\nevent: done\ndata: {}\n\n',
-				} )
-			);
+		const job = { job_id: id, conversation_id: 18 };
+		const responses = [
+			{ ...job, status: 'running', stage: 'understanding' },
+			...Array( 6 ).fill( {
+				...job,
+				status: 'running',
+				stage: 'searching_documents',
+			} ),
+			{
+				...job,
+				status: 'completed',
+				stream: 'event: block\ndata: {"type":"text","text":"Checked","refs":[]}\n\nevent: done\ndata: {}\n\n',
+			},
+		];
+		const fetcher = vi.fn< typeof fetch >( async ( url ) =>
+			Response.json( responses.shift(), {
+				status: url === '/turn/start' ? 202 : 200,
+			} )
+		);
 		const onStage = vi.fn();
 		const answer = sendTurn( {
 			turnUrl: '/turn',
@@ -804,16 +795,18 @@ test( 'a started turn polls the same job at 600ms and releases only the verified
 			fetcher,
 			onStage,
 		} );
-		await vi.advanceTimersByTimeAsync( 599 );
-		expect( fetcher.mock.calls.map( ( c ) => c[ 0 ] ) ).toEqual( [
+		await vi.advanceTimersByTimeAsync( 0 );
+		expect( fetcher.mock.calls.map( ( call ) => call[ 0 ] ) ).toEqual( [
 			'/turn/start',
 		] );
-		await vi.advanceTimersByTimeAsync( 600 );
-		expect( fetcher.mock.calls.map( ( c ) => c[ 0 ] ) ).toEqual( [
-			'/turn/start',
-			'/turn/' + id,
-		] );
-		await vi.advanceTimersByTimeAsync( 1 );
+		for ( const [ i, delay ] of [
+			600, 600, 900, 900, 900, 1200, 1200,
+		].entries() ) {
+			await vi.advanceTimersByTimeAsync( delay - 1 );
+			expect( fetcher ).toHaveBeenCalledTimes( i + 1 );
+			await vi.advanceTimersByTimeAsync( 1 );
+			expect( fetcher.mock.calls[ i + 1 ][ 0 ] ).toBe( '/turn/' + id );
+		}
 		expect( ( await answer ).blocks[ 0 ] ).toMatchObject( {
 			text: 'Checked',
 		} );
@@ -830,3 +823,48 @@ test( 'a started turn polls the same job at 600ms and releases only the verified
 		vi.useRealTimers();
 	}
 } );
+
+test.each( [ 'deadline', 'cancellation' ] )(
+	'a resumed job stops polling at its original %s during backoff',
+	async ( reason ) => {
+		vi.useFakeTimers();
+		try {
+			vi.setSystemTime( TURN_TIMEOUT_MS - 2000 );
+			const job = {
+				job_id: 'aa21e940-4d9c-4426-844b-6527cedd68de',
+				conversation_id: 18,
+				stage: 'understanding' as const,
+				started_at: 0,
+				user_message: 'Question',
+			};
+			const fetcher = vi.fn( async () =>
+				Response.json( { ...job, status: 'running' } )
+			);
+			const owner = new AbortController();
+			const answer = resumeTurn(
+				{ turnUrl: '/turn', nonce: 'n', fetcher },
+				job,
+				owner.signal
+			);
+			const stopped = answer.catch( ( error: unknown ) => error );
+			await vi.advanceTimersByTimeAsync( 1500 );
+			expect( fetcher ).toHaveBeenCalledTimes( 2 );
+			expect( fetcher ).toHaveBeenLastCalledWith(
+				'/turn/' + job.job_id,
+				expect.objectContaining( { cache: 'no-store' } )
+			);
+			if ( reason === 'cancellation' ) {
+				owner.abort();
+			} else {
+				await vi.advanceTimersByTimeAsync( 500 );
+			}
+			await expect( stopped ).resolves.toMatchObject( {
+				name: 'AbortError',
+			} );
+			await vi.advanceTimersByTimeAsync( 1200 );
+			expect( fetcher ).toHaveBeenCalledTimes( 2 );
+		} finally {
+			vi.useRealTimers();
+		}
+	}
+);
