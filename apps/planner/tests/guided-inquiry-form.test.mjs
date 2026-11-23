@@ -10,6 +10,8 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 	t.after(() => fixture.dispose(root));
 	const { ReviewInquiry } =
 		await import("../src/components/configurator/ReviewInquiry.tsx");
+	const { ReportContent } =
+		await import("../src/components/configurator/ReviewProposal.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const brief = emptyBrief();
 	const project = {
@@ -59,6 +61,7 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 					{
 						product_id: 42,
 						label: "Selected inverter",
+						sku: "INV-42",
 						quantity: 4,
 						project_id: project.id,
 					},
@@ -84,6 +87,32 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 				React.createElement(ReviewInquiry, {
 					project,
 					reportRunId,
+					equipmentDetails: React.createElement(ReportContent, {
+						section: {
+							id: "bom",
+							title: "Bill of materials",
+							rows: [],
+							paragraphs: [],
+							table: {
+								columns: ["Quantity", "Product", "Reference", "Supply scope"],
+								rows: [
+									["4 pc", "Selected inverter", "INV-42", "Selected equipment"],
+									[
+										"1 pc",
+										"Installed inverter",
+										"INV-42",
+										"Retained equipment",
+									],
+									[
+										"—",
+										"Selected battery",
+										"BAT-55",
+										"Confirm the required quantity in your inquiry",
+									],
+								],
+							},
+						},
+					}),
 					direction: "storage_addition",
 					client,
 					scope: "owned",
@@ -108,6 +137,16 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 			},
 		],
 	]);
+	const details = fixture.element.querySelector(
+		'ul[aria-label="Bill of materials"]',
+	);
+	assert.ok(details);
+	assert.equal(details.querySelector("table"), null);
+	assert.doesNotMatch(details.textContent, /Selected inverter/);
+	assert.match(details.textContent, /Installed inverter/);
+	assert.match(details.textContent, /1 pc/);
+	assert.match(details.textContent, /Selected battery/);
+	assert.match(details.textContent, /Confirm the required quantity/);
 	const cable = fixture.element.querySelector(
 		'a[href="https://fixture.invalid/product/cable/"]',
 	);

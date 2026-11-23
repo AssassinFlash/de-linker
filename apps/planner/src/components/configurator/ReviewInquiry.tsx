@@ -1,5 +1,6 @@
 import { ProductCard } from "../shared/ProductCard.tsx";
 import {
+	createContext,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
@@ -26,6 +27,10 @@ import { __, sprintf } from "../../i18n.ts";
 import { ProjectFacts } from "./ProjectFacts.tsx";
 import { existingSystem } from "./ProjectEquipment.tsx";
 import { retrofitOptions, systemNames } from "./PreliminaryOptions.tsx";
+
+export const InquiryProductSkus = createContext<ReadonlySet<string> | null>(
+	null,
+);
 
 type CustomerField = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 type CustomerDraft = Map<string, string | boolean>;
@@ -610,7 +615,19 @@ export function ReviewInquiry({
 							</ul>
 						</>
 					)}
-					{!checkingInquiry && equipmentDetails}
+					{!checkingInquiry && equipmentDetails && (
+						<InquiryProductSkus.Provider
+							value={
+								new Set(
+									lines?.flatMap((line) =>
+										line.sku && line.projectId === projectId ? [line.sku] : [],
+									),
+								)
+							}
+						>
+							{equipmentDetails}
+						</InquiryProductSkus.Provider>
+					)}
 					{!checkingInquiry && changes.length > 0 && (
 						<table className="sc-data-table">
 							<thead>

@@ -1,5 +1,6 @@
 import {
 	useCallback,
+	useContext,
 	useEffect,
 	useId,
 	useRef,
@@ -27,6 +28,7 @@ import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { __, sprintf } from "../../i18n.ts";
 import { EvidenceCard } from "../shared/EvidenceCard.tsx";
 import { useReportLogo } from "./ReportLogo.tsx";
+import { InquiryProductSkus } from "./ReviewInquiry.tsx";
 import { InquiryExportBar } from "./InquiryExportBar.tsx";
 import { readReportFile } from "../../data/readReportFile.ts";
 import { Icon } from "../Icon.tsx";
@@ -38,6 +40,44 @@ function isReportItemSection(section: ReportSection) {
 }
 
 export function ReportContent({ section }: { section: ReportSection }) {
+	const displayed = useContext(InquiryProductSkus);
+	const table = section.table;
+	if (displayed && isReportItemSection(section) && table) {
+		const rows = table.rows.filter(
+			([, , sku, supply]) =>
+				!(
+					sku &&
+					displayed.has(sku) &&
+					supply === __("Selected equipment", "linker-tools")
+				),
+		);
+		if (!rows.length) return null;
+		return (
+			<ul className="sc-inquiry-products" aria-label={section.title}>
+				{rows.map(([quantity, product, sku, supply], index) => (
+					<li key={index}>
+						<div className="linker-inquiry-line">
+							<div className="linker-inquiry-identity">
+								<strong>{product}</strong>
+								{sku && (
+									<small className="linker-inquiry-sku" title={sku}>
+										{sku}
+									</small>
+								)}
+							</div>
+							<div className="linker-inquiry-identity">
+								<span>
+									{table.columns[0]} · {quantity}
+								</span>
+								<small>{supply}</small>
+							</div>
+						</div>
+					</li>
+				))}
+			</ul>
+		);
+	}
+
 	return (
 		<>
 			{section.paragraphs.map((text, index) => (
