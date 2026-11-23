@@ -1500,7 +1500,10 @@ test("a saved battery without an inverter requests a project report without a sy
 	);
 });
 test("an energy report without equipment evidence does not cover a saved manual inverter", async (t) => {
-	const old = structuredClone(nativePreparation.direct_beam.report_run);
+	const original = nativePreparation.direct_beam.report_run;
+	const old = JSON.parse(
+		JSON.stringify(original).replaceAll(original.project_id, "c15e".repeat(8)),
+	);
 	old.result.source_runs[0].kind = "plant_shared_dc_energy_replay_v1";
 	const app = await equipmentApp(t, {
 		projectId: old.project_id,

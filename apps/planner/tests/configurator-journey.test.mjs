@@ -1250,13 +1250,12 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 		cache.clear();
 		wrongProject = true;
 		window.history.replaceState(null, "", deepLink);
-		await render("en");
+		await render("de");
 		await until(() => button("Refresh calculation status", history()));
 		assert.equal(button("Download PDF"), undefined);
 		assert.equal(button("Ask Genie", history()), undefined);
 		await act(async () => button("Close", history()).click());
-		await act(async () => button("Earlier calculations").click());
-		await until(() => button("Download PDF"));
+		await until(() => button("Download PDF")?.matches(":enabled"));
 
 		await act(async () => root.render(null));
 		cache.clear();

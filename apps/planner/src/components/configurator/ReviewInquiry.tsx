@@ -5,6 +5,7 @@ import {
 	useLayoutEffect,
 	useRef,
 	useState,
+	type ReactNode,
 } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError, type Project } from "../../data/protocol.ts";
@@ -142,6 +143,7 @@ export function ReviewInquiry({
 	project,
 	reportRunId,
 	changeRequestedQuantity,
+	equipmentDetails,
 	direction,
 	client,
 	scope,
@@ -156,6 +158,7 @@ export function ReviewInquiry({
 }: {
 	project: Project;
 	reportRunId?: string;
+	equipmentDetails?: ReactNode;
 	changeRequestedQuantity?: (
 		productId: number,
 		current: number,
@@ -542,7 +545,8 @@ export function ReviewInquiry({
 						)}
 						{facts.length > 0 && <ProjectFacts facts={facts} />}
 					</details>
-					{!checkingInquiry &&
+					{!equipmentDetails &&
+						!checkingInquiry &&
 						canSubmit &&
 						review &&
 						!lines?.length &&
@@ -606,6 +610,7 @@ export function ReviewInquiry({
 							</ul>
 						</>
 					)}
+					{!checkingInquiry && equipmentDetails}
 					{!checkingInquiry && changes.length > 0 && (
 						<table className="sc-data-table">
 							<thead>

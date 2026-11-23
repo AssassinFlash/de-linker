@@ -37,7 +37,7 @@ function isReportItemSection(section: ReportSection) {
 	return ["bom", "site-materials", "pv-components"].includes(section.id);
 }
 
-function ReportContent({ section }: { section: ReportSection }) {
+export function ReportContent({ section }: { section: ReportSection }) {
 	return (
 		<>
 			{section.paragraphs.map((text, index) => (

@@ -105,7 +105,11 @@ import {
 	type SystemComparison,
 } from "./SystemOptions.tsx";
 import { SolarInstallation } from "./SolarInstallation.tsx";
-import { reportCanTransfer, ReviewProposal } from "./ReviewProposal.tsx";
+import {
+	reportCanTransfer,
+	ReportContent,
+	ReviewProposal,
+} from "./ReviewProposal.tsx";
 import { useReportLogo } from "./ReportLogo.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
 import { ProjectHeading } from "./ProjectHeading.tsx";
@@ -1498,6 +1502,10 @@ export default function ProjectWorkbench({
 		reportRun?.state === "failed" ||
 		reportRun?.state === "cancelled",
 	);
+	const reportSections = reportReady ? reportFromRun(reportRun).sections : [];
+	const selectedProducts = reportSections.find(
+		(section) => section.id === "customer-selected-equipment",
+	);
 	const inlineReview = (
 		<ReviewInquiry
 			project={draft.baseline}
@@ -1508,6 +1516,22 @@ export default function ProjectWorkbench({
 			active
 			ready={admitted}
 			submitReady={(reportReady || noteOnly) && !blocked}
+			equipmentDetails={
+				selectedProducts && (
+					<details open className="sc-review-details">
+						<summary>{selectedProducts.title}</summary>
+						<ReportContent section={selectedProducts} />
+						{reportSections
+							.filter(
+								(section) =>
+									section.id === "bom" || section.id === "site-materials",
+							)
+							.map((section) => (
+								<ReportContent key={section.id} section={section} />
+							))}
+					</details>
+				)
+			}
 			changeSelection={() => navigate("system")}
 			enterDetails={() => {
 				if (mayLeave()) {
