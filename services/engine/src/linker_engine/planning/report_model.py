@@ -30,6 +30,7 @@ from .project_materials import (
     material_quantity,
     material_reference,
     material_scope,
+    panel_description,
     project_materials,
 )
 from .pv_operating_report import operating_sections
@@ -946,7 +947,7 @@ def build_report(source: Object) -> Report:
                 rows=[
                     [
                         number(component["quantity"], locale),
-                        str(component["model"]),
+                        panel_description(component, locale),
                         number(component["stc_power_w"], locale, "W"),
                     ]
                     for component in components
@@ -1177,7 +1178,7 @@ def build_report(source: Object) -> Report:
                         rows=[
                             [
                                 number(component["quantity"], locale),
-                                str(component["model"]),
+                                panel_description(component, locale),
                                 number(component["stc_power_w"], locale, "W"),
                             ]
                             for component in components

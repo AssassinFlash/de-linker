@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import io
 import math
+import re
 from decimal import Decimal
 from typing import Any, cast
 
@@ -310,6 +311,11 @@ def project_materials(source: Object) -> Object:
                     "handling": "pv_reference",
                     "product_id": None,
                     "model": part["model"],
+                    **{
+                        key: part[key]
+                        for key in ("stc_power_w", "length_m", "width_m")
+                        if key in part
+                    },
                     "quantity": part["quantity"],
                     "unit": "piece",
                     "basis": "saved_layout",
@@ -555,14 +561,35 @@ def project_materials(source: Object) -> Object:
     }
 
 
-def material_name(line: Object, locale: str) -> str:
-    if line["handling"] == "pv_declared":
-        power = line.get("stc_power_w")
-        return (
-            f"{power:g} Wp"
-            if isinstance(power, (float, int))
-            else text("panel_unspecified", locale)
+def panel_description(panel: Object, locale: str) -> str:
+    """Describe project parameters independently of the supply list."""
+    power = panel.get("stc_power_w")
+    length, width = panel.get("length_m"), panel.get("width_m")
+    dimensions = ""
+    if isinstance(length, (int, float)) and isinstance(width, (int, float)):
+        dimensions = (
+            f" · {number(length * 1000, locale)} × {number(width * 1000, locale)} mm"
         )
+    if not isinstance(power, (int, float)):
+        # Earlier materials stored these parameters in panel_label's display string.
+        historical = re.fullmatch(
+            r"(?:PV )?([0-9]+(?:\.[0-9]+)?) Wp(?: · ([0-9]+(?:\.[0-9]+)?) × ([0-9]+(?:\.[0-9]+)?) mm)?",
+            str(panel.get("model") or ""),
+        )
+        if not historical:
+            return text("panel_reference_only", locale)
+        power = float(historical[1])
+        if historical[2] and historical[3]:
+            dimensions = f" · {number(float(historical[2]), locale)} × {number(float(historical[3]), locale)} mm"
+    return (
+        text("panel_reference_power", locale).format(power=number(power, locale))
+        + dimensions
+    )
+
+
+def material_name(line: Object, locale: str) -> str:
+    if line["handling"] in {"pv_declared", "pv_reference"}:
+        return panel_description(line, locale)
     if line["handling"] == "pending_battery_selection":
         return text("pending_battery", locale)
     if line["handling"] == "existing_system_declared":

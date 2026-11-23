@@ -1942,7 +1942,14 @@ TEXT = {
         "Vom Kunden angegebene Moduldaten",
     ),
     "panel_parameters": ("Panel parameters", "Moduldaten"),
-    "panel_unspecified": ("Solar panels", "PV-Module"),
+    "panel_reference_power": (
+        "Generic {power} W PV module (reference only — not supplied by Linker)",
+        "Generisches {power}-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)",
+    ),
+    "panel_reference_only": (
+        "Generic PV module (reference only — not supplied by Linker)",
+        "Generisches PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)",
+    ),
     "equipment_list": ("Equipment from Linker", "Geräte von Linker"),
     "site_material_list": (
         "Site and installation materials",

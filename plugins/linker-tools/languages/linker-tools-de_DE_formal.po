@@ -14283,11 +14283,6 @@ msgstr "Dieses Profil verbindet die geometrische Verschattung direkter und diffu
 msgid "Download PV string intervals (CSV)"
 msgstr "PV-Strangzeitreihe herunterladen (CSV)"
 
-#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
-#: build/planner/assets/planner.js:1
-msgid "The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row."
-msgstr "Die PV-Strang-CSV enthält je Strang und Zeitintervall eine Zeile. Die Listen der Modulbedingungen folgen der Reihenfolge der Modul-IDs in dieser Zeile."
-
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/energy/EnergyError.tsx
 msgid "The export status of a source used in this report is Unknown or Prohibited. Check Source properties in Roof design. If your rights allow export, save the permission and generate new results for the affected parts of the report."
@@ -14437,14 +14432,6 @@ msgstr "Reihenfolge der Auswahl prüfen (%d Module)"
 #: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:184 build/planner/assets/planner.js
 msgid "The selected sequence is used when you add modules. The roof layout stays unchanged."
 msgstr "Die ausgewählte Reihenfolge wird beim Hinzufügen der Module verwendet. Die Dachbelegung bleibt unverändert."
-
-#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:195 build/planner/assets/planner.js
-msgid "Order by rows"
-msgstr "Nach Reihen anordnen"
-
-#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:203 build/planner/assets/planner.js
-msgid "Order by columns"
-msgstr "Nach Spalten anordnen"
 
 #: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:211 build/planner/assets/planner.js
 msgid "Reverse order"
@@ -17651,3 +17638,255 @@ msgstr "+ Zum Lösungsentwurf hinzufügen"
 #: build/genie.js build/hero.js
 msgid "Notes"
 msgstr "Hinweise"
+
+#: ../../apps/planner/src/components/FileDropzone.tsx build/planner/assets/planner.js
+msgid "Drop a file here"
+msgstr "Datei hier ablegen"
+
+#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
+#, javascript-format
+msgid "Decrease quantity for %s"
+msgstr "Menge für %s verringern"
+
+#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
+#, javascript-format
+msgid "Increase quantity for %s"
+msgstr "Menge für %s erhöhen"
+
+#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
+msgid "Adjust equipment quantities"
+msgstr "Gerätemengen anpassen"
+
+#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
+msgid "The quantity could not be updated. Please try again."
+msgstr "Die Menge konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Annual yield"
+msgstr "Jahresertrag"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Annual yield uses the project’s calculated solar profile."
+msgstr "Der Jahresertrag stammt aus dem berechneten Erzeugungsprofil Ihres Projekts."
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx build/planner/assets/planner.js
+msgid "Arrange by columns"
+msgstr "Nach Spalten anordnen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx build/planner/assets/planner.js
+msgid "Arrange by rows"
+msgstr "Nach Zeilen anordnen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Calculate annual yield from the roof layout and site in the energy step."
+msgstr "Im Bereich Energie können Sie den Jahresertrag anhand von Dachlayout und Standort berechnen."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Draw polygon"
+msgstr "Polygon"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Drawing tools"
+msgstr "Zeichenwerkzeuge"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Edge clearance"
+msgstr "Randabstand"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+#, javascript-format
+msgid "Generic %s W PV module (reference only — not supplied by Linker)"
+msgstr "Generisches %s-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)"
+
+#: ../../apps/planner/src/components/design/RoofInspector.tsx build/planner/assets/planner.js
+msgid "Geometry"
+msgstr "Geometrie"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Height"
+msgstr "Höhe"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Keep clear of modules"
+msgstr "Für Module gesperrt"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Keep-out"
+msgstr "Sperrfläche"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "MWh/yr"
+msgstr "MWh/J"
+
+#: ../../apps/planner/src/components/design/MapViewport.tsx build/planner/assets/planner.js
+msgid "Map tiles stay off until you allow the provider to load them."
+msgstr "Die Karte des Anbieters wird erst mit Ihrer Zustimmung geladen."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Mark the corners of the area to leave clear, then finish the outline."
+msgstr "Markieren Sie die Eckpunkte der Sperrfläche und schließen Sie den Umriss ab."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Measure"
+msgstr "Messen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "PV capacity"
+msgstr "PV-Leistung"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "PV modules are design references and are not supplied by Linker."
+msgstr "PV-Module dienen als Planungsreferenz und gehören nicht zum Lieferumfang von Linker."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Raised obstacle"
+msgstr "Dachaufbau"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Roof area"
+msgstr "Dachfläche"
+
+#: ../../apps/planner/src/components/design/RoofInspector.tsx build/planner/assets/planner.js
+msgid "Roof inspector"
+msgstr "Dacheinstellungen"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Roof studio"
+msgstr "Dachstudio"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Roof summary"
+msgstr "Dachübersicht"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Select plane"
+msgstr "Auswahl"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Set clearance"
+msgstr "Abstand festlegen"
+
+#: ../../apps/planner/src/components/design/RoofInspector.tsx build/planner/assets/planner.js
+msgid "Summary"
+msgstr "Übersicht"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Tap two points on the roof plan to measure the distance."
+msgstr "Wählen Sie zwei Punkte im Dachplan, um den Abstand zu messen."
+
+#: ../../apps/planner/src/components/design/MapViewport.tsx build/planner/assets/planner.js
+msgid "The external map is on."
+msgstr "Die externe Karte ist aktiv."
+
+#: ../../apps/planner/src/components/installation/InstallationMaterials.tsx ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "pcs"
+msgstr "Stk."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+#, javascript-format
+msgid "Allow %s to load the map using your IP address and the area shown."
+msgstr "Mit Ihrer Zustimmung lädt %s die Karte und erhält Ihre IP-Adresse sowie den angezeigten Kartenausschnitt."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Allow aerial map"
+msgstr "Luftbild erlauben"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js
+msgid "Calculated for the supplied period"
+msgstr "Berechnet für den angegebenen Zeitraum"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Commercial & large-scale"
+msgstr "Gewerbe & Großanlagen"
+
+#: ../../apps/planner/src/components/configurator/ProjectHeading.tsx build/planner/assets/planner.js
+msgid "Configure a matched PV & storage system"
+msgstr "Passendes PV- und Speichersystem konfigurieren"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Draw the roof to check how many panels fit."
+msgstr "Zeichnen Sie die Dachfläche, um die mögliche Modulanzahl zu prüfen."
+
+#: ../../apps/planner/src/components/configurator/ProjectNavigation.tsx build/planner/assets/planner.js
+msgid "Energy profile & CSV"
+msgstr "Lastprofil & CSV"
+
+#: ../../apps/planner/src/components/configurator/ProjectHeading.tsx ../../apps/planner/src/components/configurator/ProjectNavigation.tsx build/planner/assets/planner.js
+msgid "Fine-tune (optional)"
+msgstr "Verfeinern (optional)"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Known PV size"
+msgstr "Bekannte PV-Leistung"
+
+#: ../../apps/planner/src/components/configurator/ProjectNavigation.tsx build/planner/assets/planner.js
+msgid "Matched equipment"
+msgstr "Passende Geräte"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "New PV + storage"
+msgstr "Neue PV + Speicher"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Open roof studio"
+msgstr "Dachstudio öffnen"
+
+#: ../../apps/planner/src/components/configurator/ProjectHeading.tsx build/planner/assets/planner.js
+msgid "Project & direction"
+msgstr "Projekt & Richtung"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Project details (optional)"
+msgstr "Projektdaten (optional)"
+
+#: ../../apps/planner/src/components/configurator/ProjectHeading.tsx build/planner/assets/planner.js
+msgid "Review & send"
+msgstr "Prüfen & anfragen"
+
+#: ../../apps/planner/src/components/configurator/ProjectNavigation.tsx build/planner/assets/planner.js
+msgid "Roof & PV"
+msgstr "Dach & PV"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js
+msgid "Self-use"
+msgstr "Eigenanteil"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Storage retrofit"
+msgstr "Speicher nachrüsten"
+
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx build/planner/assets/planner.js
+msgid "The PV string CSV has one row per string and time interval. Module conditions follow the module ID sequence in each row."
+msgstr "Die CSV-Datei enthält eine Zeile pro PV-Strang und Zeitintervall. Die Modulbedingungen folgen in jeder Zeile der Reihenfolge der Modul-IDs."
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "What are you planning?"
+msgstr "Was planen Sie?"
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Plan panels, an inverter and a battery for a new site."
+msgstr "Planen Sie Module, Wechselrichter und Speicher für eine neue Anlage."
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Start with the solar capacity in kWp."
+msgstr "Beginnen Sie mit der PV-Leistung in kWp."
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Add a battery to the panels already on site."
+msgstr "Ergänzen Sie Ihre bestehende PV-Anlage um einen Speicher."
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js
+msgid "Compare equipment for a business or multi-system site."
+msgstr "Vergleichen Sie Geräte für Gewerbestandorte oder mehrere Systeme."
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Enter map coordinates"
+msgstr "Kartenkoordinaten eingeben"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "Find this address with Google Maps"
+msgstr "Diese Adresse mit Google Maps suchen"
+
+#: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
+msgid "The address could not be located. Enter the coordinates to position the map."
+msgstr "Die Adresse wurde nicht gefunden. Geben Sie die Koordinaten ein, um die Karte auszurichten."

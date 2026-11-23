@@ -119,6 +119,28 @@
   .sc-configurator .sc-readings-table :is(th, td) { padding: var(--proto-space-2) var(--proto-space-3); text-align: start; }
   .sc-configurator .sc-readings-table thead { background: var(--proto-neutral-100); }
   .sc-configurator .sc-readings-table tr + tr { border-block-start: 1px solid var(--proto-color-line); }
+  .sc-configurator .sc-demand-profile > .lk-dropzone { margin-block: var(--proto-space-4); }
+  .sc-configurator .sc-profile-review {
+    min-width: 0;
+    margin: var(--proto-space-4) 0;
+    padding: var(--proto-space-4);
+    border: 1px solid var(--proto-color-line);
+    border-radius: var(--proto-radius-lg);
+    background: var(--proto-neutral-0);
+  }
+  .sc-configurator .sc-profile-review figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--proto-space-2);
+    font-weight: 650;
+    color: var(--proto-ink-deep);
+  }
+  .sc-configurator .sc-profile-review figcaption small { color: var(--proto-teal-700); }
+  .sc-configurator .sc-profile-review svg { display: block; width: 100%; color: var(--proto-ink-muted-deep); }
+  .sc-configurator .sc-curve-grid { fill: none; stroke: var(--proto-color-line); stroke-dasharray: 4 5; }
+  .sc-configurator .sc-curve-series { stroke: var(--proto-teal-700); }
+  .sc-configurator .sc-profile-review svg text { fill: var(--proto-ink-muted-deep); font-variant-numeric: tabular-nums; }
   @media (max-width: 600px) {
     .sc-configurator .sc-solar .sc-solar-methods { grid-template-columns: minmax(0, 1fr); }
     .sc-configurator .sc-solar-methods .sc-option-card { padding: var(--proto-space-4); }

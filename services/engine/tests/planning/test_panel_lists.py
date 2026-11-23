@@ -52,11 +52,17 @@ def test_project_panels_are_outside_the_offer_in_both_downloads(locale: str) -> 
     grouped = {s.id: s.table.rows for s in separated.sections if s.table}
     assert grouped["bom"][0][1] == "Inverter"
     assert len(grouped["bom"]) == 1
-    assert grouped["pv-components"] == [["4", "430 Wp"]]
+    expected = (
+        "Generic 430 W PV module (reference only — not supplied by Linker)"
+        if locale == "en"
+        else "Generisches 430-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)"
+    )
+    assert grouped["pv-components"] == [["4", expected]]
     export = list(
         csv.reader(
             io.StringIO(materials_csv(materials, "a" * 64, locale).decode("utf-8-sig"))
         )
     )
+    assert expected in export[2]
     assert export[1][-1] == material_list(sale, locale)
     assert export[2][-1] == material_list(panel, locale) != export[1][-1]

@@ -39,6 +39,17 @@ export function ProfileCurve({
 		new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(peak) +
 		" kW";
 	const axisX = 18 + peakLabel.length * 14;
+	const time = new Intl.DateTimeFormat(locale, {
+		hour: "2-digit",
+		minute: "2-digit",
+		hourCycle: "h23",
+		timeZone: "UTC",
+	});
+	const basis =
+		preview.source.basis === "published_load_profile" &&
+		typeof preview.source.profile === "string"
+			? `BDEW/VDEW · ${preview.source.profile}`
+			: null;
 	// Drawing coordinates are a display layout, not calculation time resolution.
 	const x = (instant: string) =>
 			axisX + ((Date.parse(instant) - start) / (end - start)) * (624 - axisX),
@@ -50,7 +61,10 @@ export function ProfileCurve({
 	}
 	return (
 		<figure className="sc-profile-review">
-			<figcaption>{title}</figcaption>
+			<figcaption>
+				{title}
+				{basis && <small>{basis}</small>}
+			</figcaption>
 			<svg
 				width="100%"
 				height="200"
@@ -60,12 +74,28 @@ export function ProfileCurve({
 			>
 				<title>{title}</title>
 				<path
+					className="sc-curve-grid"
+					d={`M${axisX} 24 H624 M${axisX} 94 H624`}
+				/>
+				<text x={axisX} y="190" textAnchor="start">
+					{time.format(start)}
+				</text>
+				<text x="624" y="190" textAnchor="end">
+					{time.format(end)} UTC
+				</text>
+				<path
 					d={`M${axisX} 16 V164 H624`}
 					fill="none"
 					stroke="currentColor"
 					strokeWidth="1"
 				/>
-				<path d={path} fill="none" stroke="currentColor" strokeWidth="2" />
+				<path
+					className="sc-curve-series"
+					d={path}
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+				/>
 				<text x={axisX - 8} textAnchor="end" y="28" fill="currentColor">
 					{peakLabel}
 				</text>
