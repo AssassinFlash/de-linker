@@ -1431,8 +1431,11 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 @media (min-width: 1080px) {
 	.linker-auth-unit:has(.linker-auth-register) { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
 }
-.linker-auth-register .linker-auth-fields > :is(#billing_email_field, #billing_country_field, #billing_company_field, #billing_website_field, #billing_vat_id_field) { grid-column: auto; }
+.linker-auth-register .linker-auth-fields > :is(#billing_country_field, #billing_company_field, #linker_company_website_field, #billing_vat_id_field) { grid-column: auto; }
 .linker-auth-register .select2-container .select2-selection--single { height: var(--proto-form-control-height); }
 .linker-auth-register .select2-container .select2-selection--single .select2-selection__rendered { padding-right: 42px; line-height: 45px; }
 .linker-auth-register .select2-container .select2-selection--single .select2-selection__arrow { right: 14px; height: 45px; }
 .linker-auth-register .form-row .optional { float: inline-end; white-space: nowrap; }
+@media (max-width: 600px) {
+	.linker-auth-register .linker-auth-fields { grid-template-columns: minmax(0, 1fr); }
+}

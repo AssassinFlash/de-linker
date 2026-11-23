@@ -86,6 +86,14 @@ final class Fields {
 				'autocomplete' => 'organization',
 				'class'        => array( 'form-row-wide' ),
 			),
+			'billing_country'    => array(
+				'type'         => 'linker_country',
+				'label'        => $address['billing_country']['label'] ?? __( 'Country / Region', 'linker-commerce' ),
+				'required'     => true,
+				'autocomplete' => 'country',
+				'options'      => CountryOptions::all(),
+				'class'        => array( 'form-row-wide' ),
+			),
 			CustomerRole::META   => array(
 				// RoleField renders the options, each native input nested inside
 				// its own label (#351); WooCommerce's own radio markup keeps the
@@ -96,14 +104,6 @@ final class Fields {
 				'required' => true,
 				'options'  => CustomerRole::options(),
 				'class'    => array( 'form-row-wide' ),
-			),
-			'billing_country'    => array(
-				'type'         => 'linker_country',
-				'label'        => $address['billing_country']['label'] ?? __( 'Country / Region', 'linker-commerce' ),
-				'required'     => true,
-				'autocomplete' => 'country',
-				'options'      => CountryOptions::all(),
-				'class'        => array( 'form-row-wide' ),
 			),
 			Website::META        => array(
 				'type'              => 'text',
