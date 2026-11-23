@@ -1086,12 +1086,16 @@ export function HeroConversation( {
 		/>
 	);
 
-	const [ wide, setWide ] = useState( false );
+	const [ view, setView ] = useState< string >();
+	const wide = view === 'expanded';
+	const side = view === 'side';
 	useEffect( () => {
 		const read = () =>
-			setWide(
-				!! closeRef.current?.closest( '[data-genie-view="expanded"]' )
+			setView(
+				closeRef.current?.closest< HTMLElement >( '[data-genie-view]' )
+					?.dataset.genieView
 			);
+		read();
 		window.addEventListener( 'linker-genie-hero-view', read );
 		return () =>
 			window.removeEventListener( 'linker-genie-hero-view', read );
@@ -1125,11 +1129,18 @@ export function HeroConversation( {
 				<button
 					type="button"
 					className="linker-genie-hero__continue"
+					title={
+						side
+							? __( 'Expand full view', 'linker-tools' )
+							: undefined
+					}
 					onClick={ onExpand }
 					aria-label={
 						wide
 							? __( 'Return to side dock', 'linker-tools' )
-							: undefined
+							: side
+								? __( 'Expand full view', 'linker-tools' )
+								: undefined
 					}
 				>
 					{ wide ? (
@@ -1139,12 +1150,14 @@ export function HeroConversation( {
 								{ __( 'Return to side dock', 'linker-tools' ) }
 							</span>
 						</>
+					) : side ? (
+						<ExpandIcon />
 					) : (
 						__( 'Expand full view', 'linker-tools' )
 					) }
 				</button>
 			) : null }
-			{ ! wide ? (
+			{ ! view ? (
 				<button
 					type="button"
 					className="linker-genie-hero__continue"
@@ -1163,7 +1176,7 @@ export function HeroConversation( {
 					<GenieTitle />
 				</p>
 				<div className="linker-genie-hero__actions">
-					{ footer && ! wide
+					{ footer && ! view
 						? createPortal( viewActions, footer )
 						: viewActions }
 					<button
