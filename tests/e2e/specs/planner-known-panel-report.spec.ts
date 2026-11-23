@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { instance } from '../lib/instance';
+import { launchHomepageConfigurator } from '../lib/home-configurator';
+import { resumePlannerProject } from '../lib/resume-planner-project';
 
 const labels = {
 	en: {
@@ -88,13 +90,7 @@ for (const lang of ['en', 'de'] as const)
 				await page.goto(url + t.home);
 				const consent = button(page, t.consent);
 				if (await consent.isVisible()) await consent.click();
-				await page
-					.locator('[data-linker-planner-entry="home-hero"] a')
-					.click();
-				await button(workspace, t.enter).click();
-				const project = workspace.getByRole('form', {
-					name: t.project,
-				});
+				const project = await launchHomepageConfigurator(page, lang);
 				await project
 					.getByLabel(t.title)
 					.fill('Berlin panel declaration');
@@ -109,7 +105,14 @@ for (const lang of ['en', 'de'] as const)
 				await project
 					.locator('select[name=project_purpose]')
 					.selectOption('self');
-				await button(project, t.solar).click();
+				await button(project, t.compare).click();
+				await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
+				await resumePlannerProject(
+					page,
+					lang,
+					'Berlin panel declaration',
+					'roof'
+				);
 				if (count !== null)
 					await workspace
 						.locator('input[name=known_panel_count]')

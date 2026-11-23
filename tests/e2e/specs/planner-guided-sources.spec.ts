@@ -181,12 +181,7 @@ async function prepareSavedRoof(
 	});
 	await button(project, text.compare).click();
 	await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
-	const nav = await resumePlannerProject(page, lang, title);
-	await nav
-		.getByRole('button', {
-			name: lang === 'en' ? /Solar$/ : /Photovoltaik$|Solar$/,
-		})
-		.click();
+	await resumePlannerProject(page, lang, title, 'roof');
 	await button(workspace, text.roofChoice).click();
 	for (const [field, value] of Object.entries({
 		panel_length_mm: '1800',

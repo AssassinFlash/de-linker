@@ -628,12 +628,7 @@ async function keepEarlierProjectInDraft(
 		.selectOption('backup');
 	await exactButton(project, text.compare).click();
 	await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
-	const navigation = await resumePlannerProject(page, locale, title);
-	await navigation
-		.getByRole('button', {
-			name: locale === 'en' ? /Energy use$/ : /Strombedarf$/,
-		})
-		.click();
+	await resumePlannerProject(page, locale, title, 'energy');
 	await workspace.getByLabel(text.phase).selectOption('3');
 	await workspace.getByLabel(text.load).fill('3');
 	await workspace.getByLabel(text.duration).fill('2');

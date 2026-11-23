@@ -746,3 +746,9 @@
 @layer components {
   .sc-configurator .sc-scene small { color: var(--proto-ink-muted-deep); font-weight: 400; line-height: 1.45; }
 }
+
+@media (max-width: 700px) {
+  body:has([data-linker-planner]) .linker-genie:has(> .linker-genie-open[aria-expanded="false"]) > .linker-genie-peek {
+    display: none;
+  }
+}

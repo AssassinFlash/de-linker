@@ -90,16 +90,7 @@ for (const locale of ['en', 'de'] as const) {
 					})
 					.click();
 				await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
-				const navigation = await resumePlannerProject(
-					page,
-					locale,
-					title
-				);
-				await navigation
-					.getByRole('button', {
-						name: locale === 'de' ? /Strombedarf$/ : /Energy use$/,
-					})
-					.click();
+				await resumePlannerProject(page, locale, title, 'energy');
 				await workspace
 					.getByLabel(name('Grid connection'))
 					.selectOption('3');
