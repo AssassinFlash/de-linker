@@ -17896,3 +17896,7 @@ msgstr "Die Adresse wurde nicht gefunden. Geben Sie die Koordinaten ein, um die 
 #: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
 msgid "Adjust the quantities you want to request. The system design stays the same."
 msgstr "Passen Sie die Mengen für Ihre Anfrage an. Die Auslegung der Anlage bleibt unverändert."
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js
+msgid "Choose a project direction to download a report."
+msgstr "Wählen Sie eine Projektrichtung, um einen Bericht herunterzuladen."
