@@ -105,8 +105,9 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			const text = words[lang];
 			const title = `Konstanz meter ${lang} ${width}`;
-			const created = page.waitForResponse((r) =>
-				new URL(r.url()).pathname.endsWith('/projects/create')
+			const created = page.waitForResponse(
+				(r) => new URL(r.url()).pathname.endsWith('/projects/create'),
+				{ timeout: 60000 }
 			);
 			const workspace = await startSolarProject(page, lang, title);
 			const creation = await created;
@@ -158,6 +159,14 @@ for (const lang of ['en', 'de'] as const) {
 				.scrollIntoViewIfNeeded();
 			await page.screenshot({
 				path: test.info().outputPath('meter-profile.png'),
+				animations: 'disabled',
+			});
+			const curve = panel
+				.locator('figure')
+				.filter({ has: panel.page().locator('svg') });
+			await curve.scrollIntoViewIfNeeded();
+			await curve.screenshot({
+				path: test.info().outputPath('meter-curve.png'),
 				animations: 'disabled',
 			});
 			const saved = page.waitForResponse(

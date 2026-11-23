@@ -988,6 +988,7 @@ msgstr "Bisheriger ungesendeter Entwurf"
 
 #: build/genie.js build/hero.js src/configurator/stock.ts:34 build/configurator.js
 #: src/genie/components/GenieCard.tsx
+#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
 msgid "Currently unavailable"
 msgstr "Derzeit nicht verfügbar"
 
@@ -1383,6 +1384,7 @@ msgstr "In unserem Sortiment: %s. Ist das Ihr Gerät?"
 #: build/genie.js:1 src/configurator/stock.ts:31 build/hero.js
 #: src/genie/components/Compare.tsx:55 src/genie/components/GenieCard.tsx:86
 #: build/configurator.js
+#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
 msgid "In stock"
 msgstr "Auf Lager"
 
