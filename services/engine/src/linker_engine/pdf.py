@@ -178,6 +178,14 @@ def brand_image() -> Image | None:
     return Image(io.BytesIO(raw), width=width * scale, height=height * scale)
 
 
+class _ReportRows(Table):
+    def split(self, width: float, height: float, /) -> list[Flowable]:
+        # Move complete rows to the next page. Only a row that cannot fit an
+        # empty frame needs to continue on a second page.
+        self.splitInRow = int(self._frame._atTop)  # type: ignore[attr-defined]
+        return super().split(width, height)
+
+
 def _section(
     section: ReportSection, styles: dict[str, ParagraphStyle], width: float
 ) -> list[Flowable]:
@@ -197,7 +205,7 @@ def _section(
         ]
         # Private project entries can span a page. Keep normal rows intact,
         # allowing an oversized row's paragraphs to continue without truncation.
-        table = Table(rows, colWidths=[width * 0.42, width * 0.58], splitInRow=1)
+        table = _ReportRows(rows, colWidths=[width * 0.42, width * 0.58])
         table.setStyle(
             TableStyle(
                 [
@@ -229,13 +237,10 @@ def _section(
             if len(header) == 3
             else [1 / max(1, len(header))] * len(header)
         )
-        table = Table(
+        table = _ReportRows(
             [header, *body],
             colWidths=[width * share for share in shares],
             repeatRows=1,
-            # Accepted project names and notes may exceed one page's height.
-            # Preserve their text just as the detail-row table above does.
-            splitInRow=1,
         )
         table.setStyle(
             TableStyle(
