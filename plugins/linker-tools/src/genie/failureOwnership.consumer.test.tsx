@@ -1891,6 +1891,13 @@ for ( const first of [ 'homepage', 'dock' ] as const ) {
 			} )
 		);
 		await screen.findByText( filename );
+		await waitFor( () =>
+			expect(
+				panel.container.querySelector(
+					'.linker-genie-app__attachment-state'
+				)
+			).toBeNull()
+		);
 		await act( async () =>
 			window.dispatchEvent( new Event( 'pagehide' ) )
 		);
