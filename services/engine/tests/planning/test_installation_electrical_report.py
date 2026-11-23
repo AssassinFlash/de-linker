@@ -3,6 +3,7 @@
 import csv
 import io
 import json
+from copy import deepcopy
 from typing import Literal, cast
 
 import pytest
@@ -10,7 +11,10 @@ from pypdf import PdfReader
 
 from linker_engine.models import Report, ReportSection
 from linker_engine.pdf import render
-from linker_engine.planning.assistant_context import _report_source_projection
+from linker_engine.planning.assistant_context import (
+    _installation_report_projection,
+    _report_source_projection,
+)
 from linker_engine.planning.canonical import Object
 from linker_engine.planning.grid_connection import country_assessment
 from linker_engine.planning.grid_connection_report import grid_connection_sections
@@ -48,6 +52,45 @@ def test_electrical_report_localizes_and_retains_declared_basis(locale: str) -> 
     assert ("Berechnet" if locale == "de" else "Calculated") in summary_text
     assert "resistance_upper_bound" not in summary_text
     assert "within_declared_limit" not in rendered
+
+
+def test_new_and_saved_reports_keep_distinct_circuit_conditions() -> None:
+    inputs, basis = circuit_fixture()
+    circuits = inputs["installation"]["circuits"]
+    first = circuits[0]
+    first["operating_conditions"][0]["id"] = "dc-steady"
+    second = deepcopy(first)
+    second.update(id="circuit-dc", name="DC feeder")
+    second["operating_conditions"][0].update(id="steady", name="Daytime")
+    circuits.append(second)
+    source: Object = {
+        "project_id": "fixture",
+        "revision": 1,
+        "input_sha256": "1" * 64,
+        "installation": route_takeoff(inputs, basis),
+    }
+    sections = installation_sections(source, "en")
+    details = [s for s in sections if s.id.startswith("installation-electrical-")]
+    assert [s.title for s in details] == [
+        "Declared connection / Declared design condition",
+        "DC feeder / Daytime",
+    ]
+    assert len({s.id for s in details}) == 2
+
+    stored = [s.model_dump(mode="json") for s in details]
+    historical_id = "installation-electrical-circuit-dc-steady"
+    for row in stored:
+        row["id"] = historical_id
+    projected = json_object(
+        _installation_report_projection(
+            cast(Object, {"sections": stored}), source, "en"
+        )
+    )
+    assert [s["title"] for s in projected["sections"]] == [
+        "Circuit 1 / Condition 1",
+        "Circuit 2 / Condition 1",
+    ]
+    assert [s["id"] for s in stored] == [historical_id, historical_id]
 
 
 def test_missing_cable_source_is_actionable_in_german_report() -> None:
