@@ -2,10 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { __ } from "../../i18n.ts";
 import { FileDropzone } from "../FileDropzone.tsx";
 
-export function useReportLogo(blocked: boolean) {
-	const [logo, setLogo] = useState<{ name: string; data: string } | null>(null),
+export function useReportLogo(blocked: boolean, issuedLogo?: string | null) {
+	const [selection, setLogo] = useState<{
+			name?: string;
+			data: string;
+		} | null>(),
 		[logoError, setLogoError] = useState(false),
 		[reading, setReading] = useState(false);
+	const logo =
+		selection === undefined && issuedLogo
+			? { data: issuedLogo, name: undefined }
+			: selection;
 	const reader = useRef<FileReader | null>(null);
 	const logoInput = useRef<HTMLInputElement>(null);
 	const resetLogo = () => {
@@ -31,7 +38,7 @@ export function useReportLogo(blocked: boolean) {
 					action={__("Choose logo", "linker-tools")}
 					accept="image/png,image/jpeg"
 					disabled={blocked}
-					{...(logo && { filename: logo.name })}
+					{...(logo?.name && { filename: logo.name })}
 					onFile={(file) => {
 						resetLogo();
 						if (

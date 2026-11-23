@@ -535,6 +535,7 @@ export function ReviewProposal({
 	const earlierReport = earlierRun?.result ? reportFromRun(earlierRun) : null;
 	const { logo, logoField, logoPending } = useReportLogo(
 		blocked || operations.busy,
+		runLogo,
 	);
 	const waiting = Boolean(
 		run && ["queued", "running", "retry_wait"].includes(run.state),

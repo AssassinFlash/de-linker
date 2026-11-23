@@ -657,16 +657,14 @@ test("generating with the chosen logo then downloading PDF and CSV creates only 
 	);
 	await until(() => button("Remove logo"));
 	await act(async () => button("Generate project report").click());
-	await act(async () =>
-		root.render(
-			React.createElement(ReviewProposal, {
-				...value,
-				inquiry: React.createElement("form"),
-				runLogo: created[0],
-				prepareExport: async (logo) => generate(logo),
-			}),
-		),
-	);
+	const review = () =>
+		React.createElement(ReviewProposal, {
+			...value,
+			inquiry: React.createElement("form"),
+			runLogo: created[0],
+			prepareExport: async (logo) => generate(logo),
+		});
+	await act(async () => root.render(review()));
 	await act(async () => button("Download PDF").click());
 	await act(async () => button("Download bill of materials (CSV)").click());
 	assert.deepEqual(created, ["data:image/png;base64,bWFyaw=="]);
@@ -674,4 +672,22 @@ test("generating with the chosen logo then downloading PDF and CSV creates only 
 		value.run.result.prepared_asset.id,
 		value.run.result.prepared_attachments.bill_of_materials_csv.id,
 	]);
+	await act(async () =>
+		root.render(React.createElement("section", null, "Fine-tune")),
+	);
+	await act(async () => root.render(review()));
+	await act(async () => button("Download PDF").click());
+	await act(async () => button("Download bill of materials (CSV)").click());
+	assert.deepEqual(created, ["data:image/png;base64,bWFyaw=="]);
+	assert.deepEqual(downloads.slice(2), [
+		value.run.result.prepared_asset.id,
+		value.run.result.prepared_attachments.bill_of_materials_csv.id,
+	]);
+	assert.equal(
+		document.querySelector(".sc-report-logo img")?.getAttribute("src"),
+		created[0],
+	);
+	await act(async () => button("Remove logo").click());
+	await act(async () => button("Download PDF").click());
+	assert.deepEqual(created, ["data:image/png;base64,bWFyaw==", null]);
 });
