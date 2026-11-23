@@ -3,6 +3,19 @@
 from __future__ import annotations
 
 TEXT = {
+    "customer_selected_equipment": ("Your equipment selection", "Ihre Geräteauswahl"),
+    "customer_selected_equipment_scope": (
+        "You selected the equipment listed below. System compatibility still needs to be checked. Include any outstanding quantities in your inquiry message.",
+        "Sie haben die unten aufgeführten Geräte ausgewählt. Die Systemkompatibilität muss noch geprüft werden. Geben Sie offene Mengen in Ihrer Anfrage an.",
+    ),
+    "material_customer_equipment_pending": (
+        "Confirm the required quantity in your inquiry",
+        "Benötigte Menge in der Anfrage angeben",
+    ),
+    "material_customer_equipment_retained": (
+        "Existing equipment retained on site",
+        "Vorhandenes Gerät bleibt in der Anlage",
+    ),
     "planned_system": ("Planned system", "Geplantes System"),
     "scope_new_pv_storage": ("Solar and storage", "Photovoltaik und Speicher"),
     "scope_storage_addition": ("Storage for existing PV", "PV-Speicher nachrüsten"),

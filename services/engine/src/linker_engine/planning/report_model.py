@@ -430,6 +430,14 @@ def build_report(source: Object) -> Report:
             )
         )
 
+    if source.get("customer_equipment"):
+        sections.append(
+            ReportSection(
+                id="customer-selected-equipment",
+                title=text("customer_selected_equipment", locale),
+                paragraphs=[text("customer_selected_equipment_scope", locale)],
+            )
+        )
     assessment = source.get("equipment")
     if isinstance(assessment, dict):
         selected = {
