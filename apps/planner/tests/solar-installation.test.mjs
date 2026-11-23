@@ -1320,6 +1320,7 @@ test("roof studio presents the current layout, editable geometry, modules and su
 
 test("measure the plan without changing the roof, then save and reopen an exclusion", async (t) => {
 	const geometry = structuredClone(flat);
+	const editing = [];
 	const app = await mount(
 		t,
 		{ brief: emptyBrief(), geometry },
@@ -1327,7 +1328,7 @@ test("measure the plan without changing the roof, then save and reopen an exclus
 		null,
 		"en",
 		{},
-		{ initialPlan: true },
+		{ initialPlan: true, onEditing: (value) => editing.push(value) },
 	);
 	const svg = document.querySelector('svg[aria-label="Editable roof plan"]');
 	svg.getScreenCTM = () => ({ inverse: () => ({}) });
@@ -1356,6 +1357,7 @@ test("measure the plan without changing the roof, then save and reopen an exclus
 		/5\s*m/,
 	);
 	assert.deepEqual(app.inputs.geometry, geometry);
+	assert.equal(editing.at(-1), false);
 	await click("Keep-out");
 	for (const [x, y] of [
 		[1, 1],

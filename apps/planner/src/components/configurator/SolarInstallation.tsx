@@ -313,7 +313,8 @@ export function SolarInstallation({
 		map && imagery.isSuccess && !imagery.data.imagery && !viewingImagery;
 	const mapToolUnavailable = (value: typeof tool) =>
 		map && value !== "select" && (viewOnly || (noAerial && value === "roof"));
-	const usingTool = tool !== "select" && !mapToolUnavailable(tool);
+	const usingTool =
+		tool !== "select" && tool !== "measure" && !mapToolUnavailable(tool);
 	const lookedUpLatitude = imagery.data?.latitude;
 	const lookedUpLongitude = imagery.data?.longitude;
 	const siteCentre =
