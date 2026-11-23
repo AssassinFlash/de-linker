@@ -101,6 +101,7 @@ import {
 } from "./SystemOptions.tsx";
 import { SolarInstallation } from "./SolarInstallation.tsx";
 import { reportCanTransfer, ReviewProposal } from "./ReviewProposal.tsx";
+import { useReportLogo } from "./ReportLogo.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
 import { ProjectHeading } from "./ProjectHeading.tsx";
 import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
@@ -342,11 +343,14 @@ export default function ProjectWorkbench({
 		runId: string;
 		data: string | null;
 	} | null>(null);
+	const [noteOnlyRevision, setNoteOnlyRevision] = useState<number | null>(null);
 	const [preparingReport, setPreparingReport] = useState(false);
 	const [replacedSearch, setReplacedSearch] = useState<string | null>(null);
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
-	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
+	const [submittedReport, setSubmittedReport] = useState<PlanningRun | null>(
+		null,
+	);
 	const [savedEnergy, setSavedEnergy] = useState<"run" | "comparison" | null>(
 		() => {
 			if (step !== "energy" || params.get("project") !== project.id)
@@ -357,7 +361,7 @@ export default function ProjectWorkbench({
 	);
 	const [viewedReport, setViewedReport] = useState(() => {
 		const params = new URL(location.href).searchParams;
-		return step === "review" && params.get("project") === project.id
+		return !guided && step === "review" && params.get("project") === project.id
 			? params.get("run")
 			: null;
 	});
@@ -487,12 +491,12 @@ export default function ProjectWorkbench({
 			? requestedReport
 			: null;
 	const reportId =
-		submittedReport ??
+		(submittedReport?.revision === draft?.baseline.revision
+			? submittedReport?.id
+			: null) ??
 		guidedReportId ??
-		(guided
-			? reportRuns.find((item) => item.revision === draft?.baseline.revision)
-			: reportRuns[0]
-		)?.id ??
+		reportRuns.find((item) => item.revision === draft?.baseline.revision)?.id ??
+		(viewedReport ? reportRuns[0]?.id : null) ??
 		null;
 	const report = useProjectResult(
 		client,
@@ -674,7 +678,7 @@ export default function ProjectWorkbench({
 		if (task === SEARCH_TASK) {
 			setReplacedSearch(null);
 			setSubmittedSearch(run.id);
-		} else if (task === REPORT_TASK) setSubmittedReport(run.id);
+		} else if (task === REPORT_TASK) setSubmittedReport(run);
 		else setSubmittedDc({ id: run.id, task });
 		void history.refetch();
 	}
@@ -696,6 +700,7 @@ export default function ProjectWorkbench({
 	);
 	const independentlyBlocked = projectWritesBlocked || Boolean(draft?.pending);
 	const blocked = independentlyBlocked || unconfirmedOperation;
+	const branding = useReportLogo(!admitted, reportLogo.current?.data);
 	const requestedRoofSave = useRef<JsonObject | null>(null);
 	const attemptedRoofSave = useRef<JsonObject | null>(null);
 	useEffect(() => {
@@ -874,7 +879,8 @@ export default function ProjectWorkbench({
 			url.searchParams.delete("compare");
 			setSavedEnergy(null);
 		}
-		if (guided && previous === "#sc-review" && next !== "review") {
+		if (previous === "#sc-review" && next !== "review") {
+			setViewedReport(null);
 			url.searchParams.delete("run");
 			url.searchParams.delete("retry_revision");
 			url.searchParams.delete("linker_inquiry_retry");
@@ -1088,7 +1094,8 @@ export default function ProjectWorkbench({
 	}
 	async function generate(logo: string | null, showResult = true) {
 		if (
-			blocked ||
+			projectWritesBlocked ||
+			unconfirmedOperation ||
 			modelsUnavailable ||
 			reportPreparation.current ||
 			!latest.current
@@ -1155,6 +1162,16 @@ export default function ProjectWorkbench({
 					throw new ApiError(422, "report_wiring_check_failed");
 				sources.equipment_run_id = run.id;
 			}
+			if (
+				!readObject(saved.inputs.brief ?? {}).system_scope &&
+				!saved.inputs.equipment_candidate &&
+				!sources.energy_run_id &&
+				!sources.pv_run_id &&
+				!sources.equipment_run_id
+			) {
+				setNoteOnlyRevision(saved.revision);
+				return;
+			}
 			const reply = await operations.start("runs/report", {
 				expected_revision: saved.revision,
 				options: {
@@ -1169,10 +1186,7 @@ export default function ProjectWorkbench({
 					runId: reply.run.id,
 					data: logo,
 				};
-				if (showResult) {
-					accepted(reply.run);
-					navigate("review");
-				}
+				if (showResult) accepted(reply.run);
 				return reply.run;
 			}
 		} catch (cause) {
@@ -1197,35 +1211,59 @@ export default function ProjectWorkbench({
 		searchRun.manifest.input_sha256 === draft.baseline.input_sha256 &&
 		!isDirty(draft),
 	);
-	const prepareGuidedReport = useEffectEvent(() => {
-		void generate(null);
+	const prepareReviewReport = useEffectEvent(() => {
+		void generate(branding.logo?.data ?? null);
 	});
-	const guidedReportAttempt = useRef<number | null>(null);
+	const reviewAttempt = useRef<number | null>(null);
+	const reviewRevision = draft
+		? draft.baseline.revision + Number(isDirty(draft))
+		: null;
+
 	useEffect(() => {
 		if (
-			!guided ||
 			step !== "review" ||
+			viewedReport !== null ||
 			!draft ||
-			blocked ||
+			reviewRevision === null ||
+			projectWritesBlocked ||
+			unconfirmedOperation ||
 			modelsUnavailable ||
+			controller.failed ||
 			!history.isSuccess ||
-			reportId !== null ||
-			(!choice && !canKeepInstalled) ||
-			guidedReportAttempt.current === draft.baseline.revision
+			(reportId !== null &&
+				!isDirty(draft) &&
+				(!reportRun || reportRun.revision === draft.baseline.revision)) ||
+			reviewAttempt.current === reviewRevision
 		)
 			return;
-		guidedReportAttempt.current = draft.baseline.revision;
-		prepareGuidedReport();
+		const lastPage = olderHistory.data?.pages.at(-1) ?? history.data;
+		if (
+			!isDirty(draft) &&
+			lastPage?.next &&
+			lastPage.items.some((item) => item.revision >= reviewRevision)
+		) {
+			if (!olderHistory.isFetching && !olderHistory.isError)
+				void olderHistory.fetchNextPage();
+			return;
+		}
+		reviewAttempt.current = reviewRevision;
+		prepareReviewReport();
 	}, [
-		guided,
 		step,
-		draft,
-		blocked,
+		viewedReport,
+		reviewRevision,
+		olderHistory.data,
+		olderHistory.isFetching,
+		olderHistory.isError,
+		history.data,
+		projectWritesBlocked,
+		unconfirmedOperation,
 		modelsUnavailable,
+		controller.failed,
 		history.isSuccess,
 		reportId,
-		choice,
-		canKeepInstalled,
+		reportRun,
+		draft,
 	]);
 	if (!draft)
 		return <p role="status">{__("Opening the project…", "linker-tools")}</p>;
@@ -1318,9 +1356,6 @@ export default function ProjectWorkbench({
 				: step;
 	const guidedReview = guided && activeStep === "review";
 	const guidedView = guidedReview || (guided && activeStep === "system");
-	const guidedReportFailed =
-		guidedReview &&
-		(reportRun?.state === "failed" || reportRun?.state === "cancelled");
 	const guidedChoiceNeedsSave =
 		guided && activeStep === "system" && choice && draft.pending;
 	const outdatedOption =
@@ -1346,43 +1381,46 @@ export default function ProjectWorkbench({
 			readPlanningOperation(record.path, record.body).report_run_id !==
 				activeTransferRunId,
 	);
-	const inlineReview =
-		currentReport &&
-		reportRun?.state === "succeeded" &&
-		reportCanTransfer(reportRun) &&
-		brief.system_scope ? (
-			<ReviewInquiry
-				project={draft.baseline}
-				direction={brief.system_scope}
-				client={client}
-				scope={session.query_scope}
-				locale={config.locale}
-				active
-				ready={!blocked}
-				changeSelection={() => navigate("system")}
-				enterDetails={() => {
-					if (mayLeave()) {
-						setEditingEquipment(true);
-						showStep("project");
-					}
-				}}
-				recheck={recheck}
-				reportRunId={reportRun.id}
-				changeRequestedQuantity={async (productId, current, next) => {
-					if (
-						!edit((inputs) =>
-							changeInquiryQuantity(inputs, productId, current, next),
-						)
+	const noteOnly =
+		noteOnlyRevision === draft.baseline.revision && !isDirty(draft);
+	const reportReady = currentReport && reportRun?.state === "succeeded";
+	const reviewFailed = Boolean(
+		olderHistory.isError ||
+		failure ||
+		controller.failed ||
+		reportRun?.state === "failed" ||
+		reportRun?.state === "cancelled",
+	);
+	const inlineReview = (
+		<ReviewInquiry
+			project={draft.baseline}
+			direction={brief.system_scope}
+			client={client}
+			scope={session.query_scope}
+			locale={config.locale}
+			active
+			ready={admitted}
+			submitReady={(reportReady || noteOnly) && !blocked}
+			changeSelection={() => navigate("system")}
+			enterDetails={() => {
+				if (mayLeave()) {
+					setEditingEquipment(true);
+					showStep("project");
+				}
+			}}
+			recheck={recheck}
+			{...(activeTransferRunId && { reportRunId: activeTransferRunId })}
+			changeRequestedQuantity={async (productId, current, next) => {
+				if (
+					!edit((inputs) =>
+						changeInquiryQuantity(inputs, productId, current, next),
 					)
-						throw new ApiError(409, "equipment_selection_changed");
-					await generate(
-						reportLogo.current?.project === project.id
-							? reportLogo.current.data
-							: null,
-					);
-				}}
-			/>
-		) : null;
+				)
+					throw new ApiError(409, "equipment_selection_changed");
+				await generate(branding.logo?.data ?? null);
+			}}
+		/>
+	);
 	return (
 		<div
 			className={
@@ -1498,11 +1536,6 @@ export default function ProjectWorkbench({
 									)}
 					</p>
 				)}
-			{preparingReport && activeStep === "review" && !guidedReview && (
-				<p className="sc-card" role="status">
-					{__("Preparing planning report…", "linker-tools")}
-				</p>
-			)}
 			{Boolean(failure) && (
 				<div className="sc-card" role="alert">
 					<p>
@@ -1608,7 +1641,7 @@ export default function ProjectWorkbench({
 						onClick={() =>
 							void operations.retry(record).then((reply) => {
 								if (reply?.path === "runs/check-equipment") {
-									guidedReportAttempt.current = null;
+									reviewAttempt.current = null;
 									void history.refetch();
 									navigate("review");
 								} else if (
@@ -2025,49 +2058,27 @@ export default function ProjectWorkbench({
 							)}
 						</>
 					)}
-					{guidedReview && !inlineReview && (
-						<section className="sc-card">
-							{Boolean(failure) ||
-							(reportRun && !runPending(reportRun.state)) ||
-							(!choice && !canKeepInstalled && history.isSuccess) ? (
-								<>
-									<p>
-										{__(
-											"The inquiry form could not be loaded.",
-											"linker-tools",
-										)}
-									</p>
-									{(Boolean(failure) || guidedReportFailed) &&
-										(choice || canKeepInstalled) &&
-										!blocked && (
-											<button
-												className="sc-button sc-primary"
-												onClick={() =>
-													report.isError
-														? void report.refetch()
-														: void generate(null)
-												}
-											>
-												{__("Try again", "linker-tools")}
-											</button>
-										)}
-									<button
-										className="sc-button"
-										onClick={() => navigate("system")}
-									>
-										{__("Change selection", "linker-tools")}
-									</button>
-								</>
-							) : (
-								<p role="status">
-									{__("Preparing your inquiry…", "linker-tools")}
-								</p>
-							)}
-						</section>
-					)}
-					{activeStep === "review" && (!guidedReview || inlineReview) && (
+					{activeStep === "review" && (
 						<ReviewProposal
 							inquiry={inlineReview}
+							recoverTransfer={operations.records.some(
+								(record) =>
+									record.path === "draft/apply" &&
+									readPlanningOperation(record.path, record.body)
+										.report_run_id === activeTransferRunId,
+							)}
+							branding={branding}
+							preparationFailed={reviewFailed}
+							noteOnly={noteOnly}
+							retryBlocked={projectWritesBlocked || unconfirmedOperation}
+							retryPreparation={() => {
+								if (history.isError) void history.refetch();
+								else if (olderHistory.isError)
+									void olderHistory.fetchNextPage();
+								else if (report.isError) void report.refetch();
+								else if (failedRead) void failedRead.refetch();
+								else void generate(branding.logo?.data ?? null);
+							}}
 							project={draft.baseline}
 							inputs={inputs}
 							run={reportRun}

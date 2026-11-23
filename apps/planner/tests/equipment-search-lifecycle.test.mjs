@@ -346,6 +346,14 @@ async function equipmentApp(
 			assert.equal(scope, admittedScope);
 			reads.push({ path, body, scope });
 			if (path === readGate?.path) await readGate.wait();
+			if (path === "inquiry/form")
+				return {
+					schema_version: 1,
+					inquiry_lines: [],
+					inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php">
+						<input type="hidden" name="linker_preliminary_project" value="${projectId}:${body.revision}">
+						<input name="email" type="email"><button type="submit">Send inquiry</button></form>`,
+				};
 			if (path === "products/current") return catalog();
 			if (path === "assets/read" && body.asset_id === selectedPv?.id)
 				return structuredClone(selectedPv);
@@ -933,10 +941,6 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Review the proposal").click());
 	assert.equal(location.hash, "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
-	await untilRun(() =>
-		app.button("Generate project report")?.matches(":enabled"),
-	);
-	await act(async () => app.button("Generate project report").click());
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
 	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
 	await app.step("Roof & PV");
@@ -995,10 +999,6 @@ for (const purpose of [
 			app.button("Review the proposal")?.matches(":enabled"),
 		);
 		await act(async () => app.button("Review the proposal").click());
-		await untilRun(() =>
-			app.button("Generate project report")?.matches(":enabled"),
-		);
-		await act(async () => app.button("Generate project report").click());
 		await untilRun(() =>
 			app.requests.some(({ path }) => path === "runs/report"),
 		);
@@ -1390,6 +1390,59 @@ test("a comparison dispatches once, polls in the background, and renders partial
 	}
 });
 
+test("a roof project without a direction or a completed calculation can send its owned inquiry", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const app = await equipmentApp(t, {
+		projectId: "4".repeat(32),
+		hash: "#sc-review",
+		inputs: { brief: emptyBrief() },
+	});
+	await until(() => app.button("Send inquiry")?.matches(":enabled"));
+	assert.equal(app.button("Download PDF").disabled, true);
+	assert.ok(
+		document
+			.querySelector(".sc-export-strip")
+			.textContent.includes("Choose a project direction"),
+	);
+	assert.equal(
+		document.querySelector("[name=linker_preliminary_project]").value,
+		app.project.id + ":1",
+	);
+	assert.deepEqual(app.requests, []);
+});
+test("full project review takes contact details while the current report is preparing and reuses that run on return", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "e".repeat(32),
+		hash: "#sc-project",
+		inputs: {},
+	});
+	await app.step("Review & send");
+	await until(() => document.querySelector(".linker-inquiry-form"));
+	assert.equal(app.button("Generate project report"), undefined);
+	assert.equal(app.button("Send inquiry").disabled, true);
+	assert.equal(app.button("Download PDF").disabled, true);
+	await enter(
+		document.querySelector("input[name=email]"),
+		"installer@example.test",
+	);
+	assert.doesNotMatch(
+		document.querySelector("aside.sc-inquiry-overview").textContent,
+		/No products selected/,
+	);
+	await until(() => app.requests.some(({ path }) => path === "runs/report"));
+	await app.step("Project & direction");
+	await app.step("Review & send");
+	await until(
+		() =>
+			document.querySelector("input[name=email]")?.value ===
+			"installer@example.test",
+	);
+	assert.equal(
+		app.requests.filter(({ path }) => path === "runs/report").length,
+		1,
+	);
+});
+
 test("one guided configuration choice saves it and prepares its report", async (t) => {
 	const app = await equipmentApp(t, {
 		projectId: "b".repeat(32),
@@ -1518,10 +1571,6 @@ for (const [multi, selection] of [
 		await untilRun(() => app.button("Selected"));
 		assert.equal(app.requests.length, 1);
 		await act(async () => app.button("Review the proposal").click());
-		await untilRun(() =>
-			app.button("Generate project report")?.matches(":enabled"),
-		);
-		await act(async () => app.button("Generate project report").click());
 		await untilRun(() =>
 			app.requests.some(({ path }) => path === "runs/report"),
 		);
@@ -1853,10 +1902,6 @@ test("a saved change to model preferences refuses a new current report from the 
 			},
 		},
 	});
-	await untilRun(() =>
-		app.button("Generate project report")?.matches(":enabled"),
-	);
-	await act(async () => app.button("Generate project report").click());
 	await untilRun(() =>
 		document.body.textContent.includes("Compare systems again"),
 	);

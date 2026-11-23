@@ -493,7 +493,6 @@ test("an installer calculates the declared ports, adopts the frozen result, and 
 		),
 	);
 	await ui.click("Review & send");
-	await ui.click("Generate project report");
 	await until(() => reports.length === 1);
 	assert.equal(reports[0].energy_run_id, fixture.run.id);
 	await ui.render(saved, true);
@@ -503,7 +502,6 @@ test("an installer calculates the declared ports, adopts the frozen result, and 
 	await ui.click("Saved calculations");
 	assert.equal(ui.button("Use this calculation in the report"), undefined);
 	await ui.click("Review & send");
-	await ui.click("Generate project report");
 	await until(() =>
 		ui.dom.element.textContent.includes(
 			"A selected result does not match the saved project inputs.",

@@ -343,6 +343,18 @@ export function Workspace({
 		enabled: selected !== null && !session.claim_pending,
 		staleTime: Infinity,
 	});
+	const selectedInputs = project.data?.inputs;
+	const reviewEquipment = Boolean(
+		route === "sc-preliminary-review" &&
+		inquiryRevision === null &&
+		selectedInputs &&
+		(selectedInputs.equipment_candidate ||
+			selectedInputs.equipment_selection ||
+			selectedInputs.equipment_plant),
+	);
+	useEffect(() => {
+		if (reviewEquipment) select(selected, "sc-review");
+	}, [reviewEquipment, select, selected]);
 	const startPreliminary = Boolean(
 		selected &&
 		project.data &&
@@ -538,6 +550,7 @@ export function Workspace({
 		selected &&
 		!session.claim_pending &&
 		project.data &&
+		!reviewEquipment &&
 		(preliminaryRoute(route) || startPreliminary)
 	)
 		return (
@@ -565,6 +578,8 @@ export function Workspace({
 				recheck={recheck}
 			/>
 		);
+	if (reviewEquipment)
+		return <p role="status">{__("Opening the project…", "linker-tools")}</p>;
 	if (selected)
 		return !session.claim_pending && project.data ? (
 			<Suspense

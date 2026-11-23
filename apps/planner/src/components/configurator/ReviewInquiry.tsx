@@ -1,5 +1,11 @@
 import { ProductCard } from "../shared/ProductCard.tsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError, type Project } from "../../data/protocol.ts";
 import { InquiryBomLine } from "./InquiryBomLine.tsx";
@@ -142,6 +148,7 @@ export function ReviewInquiry({
 	locale,
 	active,
 	ready = true,
+	submitReady = true,
 	changeSelection,
 	enterDetails,
 	recheck,
@@ -154,12 +161,13 @@ export function ReviewInquiry({
 		current: number,
 		next: number,
 	) => Promise<void>;
-	direction: NonNullable<Brief["system_scope"]>;
+	direction: Brief["system_scope"];
 	client: PlannerClient;
 	scope: string;
 	locale: string;
 	active: boolean;
 	ready?: boolean;
+	submitReady?: boolean;
 	changeSelection: () => void;
 	enterDetails?: (() => void) | undefined;
 	recheck: () => void;
@@ -187,6 +195,15 @@ export function ReviewInquiry({
 	}, []);
 	const projectId = project.id;
 	const revision = project.revision;
+	const loadedBinding = useRef<{
+		revision: number;
+		reportRunId: string | undefined;
+	} | null>(null);
+	const canSubmit =
+		submitReady &&
+		Boolean(review) &&
+		loadedBinding.current?.revision === revision &&
+		loadedBinding.current?.reportRunId === reportRunId;
 	const retained = useRef<CustomerDraft>(new Map());
 	const posting = useRef(false);
 	const volatile = useRef<{
@@ -279,6 +296,32 @@ export function ReviewInquiry({
 	useEffect(() => {
 		if (active) heading.current?.focus({ preventScroll: true });
 	}, [active]);
+	// Keep the editable native form in place until its replacement is authorized.
+	useEffect(() => {
+		const node = host.current;
+		return () => {
+			const form = node?.querySelector("form");
+			if (form) {
+				try {
+					save(form);
+				} catch {
+					/* In-memory edits remain in the current page. */
+				}
+				node?.replaceChildren();
+			}
+		};
+	}, [save, ready]);
+	useLayoutEffect(() => {
+		const send = host.current?.querySelector<HTMLButtonElement>(
+			'button[type="submit"]',
+		);
+		if (!send || canSubmit) return;
+		const previouslyDisabled = send.disabled;
+		send.disabled = true;
+		return () => {
+			send.disabled = previouslyDisabled;
+		};
+	}, [review, canSubmit]);
 	useEffect(() => {
 		const node = host.current;
 		if (!node || !ready) return;
@@ -370,8 +413,12 @@ export function ReviewInquiry({
 				setOutcomeUnconfirmed(unavailable);
 				setCheckingInquiry(Boolean(replay) || serverReplay);
 				inquiryPending?.(Boolean(replay) || serverReplay);
+				loadedBinding.current = { revision, reportRunId };
 				setReview(response);
-				if (unavailable) return;
+				if (unavailable) {
+					node.replaceChildren();
+					return;
+				}
 				if (replay && payload) {
 					expiry = window.setTimeout(
 						() => setAttempt((value) => value + 1),
@@ -383,11 +430,22 @@ export function ReviewInquiry({
 					if (send)
 						send.textContent = __("Check inquiry status", "linker-tools");
 				} else {
-					retained.current =
-						takeNavigationDraft(scope, projectId) ?? retained.current;
+					const previous = node.querySelector("form");
+					retained.current = previous
+						? readCustomerFields(previous, retained.current)
+						: (takeNavigationDraft(scope, projectId) ?? retained.current);
 					restoreCustomerFields(form, retained.current);
 				}
+				const focused = document.activeElement;
+				const focusName =
+					focused && node.contains(focused)
+						? focused.getAttribute("name")
+						: null;
 				node.replaceChildren(template.content);
+				if (focusName)
+					customerFields(form)
+						.find((field) => field.name === focusName)
+						?.focus({ preventScroll: true });
 				form.dispatchEvent(
 					new Event("linker:inquiry-form-mounted", { bubbles: true }),
 				);
@@ -407,16 +465,6 @@ export function ReviewInquiry({
 			window.removeEventListener("pagehide", abort);
 			window.clearTimeout(expiry);
 			abort();
-			const form = node.querySelector("form");
-			if (form) {
-				retained.current = readCustomerFields(form, retained.current);
-				try {
-					save(form);
-				} catch {
-					// A download can continue in the same mounted form without browser storage.
-				}
-			}
-			node.replaceChildren();
 		};
 	}, [
 		client,
@@ -465,12 +513,14 @@ export function ReviewInquiry({
 			<div className="linker-inquiry linker-inquiry-columns">
 				<aside className="linker-inquiry-draft sc-inquiry-overview">
 					<h3>{__("Inquiry summary", "linker-tools")}</h3>
-					<p>
-						{sprintf(
-							__("Planned system: %s", "linker-tools"),
-							systemNames()[direction],
-						)}
-					</p>
+					{direction && (
+						<p>
+							{sprintf(
+								__("Planned system: %s", "linker-tools"),
+								systemNames()[direction],
+							)}
+						</p>
+					)}
 					{direction === "storage_addition" && inverter && (
 						<p className="sc-review-choice">
 							{inverter.keep_inverter
@@ -492,14 +542,18 @@ export function ReviewInquiry({
 						)}
 						{facts.length > 0 && <ProjectFacts facts={facts} />}
 					</details>
-					{!checkingInquiry && review && !lines?.length && !changes.length && (
-						<p className="sc-empty-supply">
-							{__(
-								"No products selected. We can discuss equipment after you send your inquiry.",
-								"linker-tools",
-							)}
-						</p>
-					)}
+					{!checkingInquiry &&
+						canSubmit &&
+						review &&
+						!lines?.length &&
+						!changes.length && (
+							<p className="sc-empty-supply">
+								{__(
+									"No products selected. We can discuss equipment after you send your inquiry.",
+									"linker-tools",
+								)}
+							</p>
+						)}
 					{!checkingInquiry && Boolean(lines?.length) && (
 						<>
 							{changeRequestedQuantity && (
@@ -597,6 +651,12 @@ export function ReviewInquiry({
 					<div
 						ref={host}
 						inert={cartBusy || undefined}
+						onSubmitCapture={(event) => {
+							if (!canSubmit || !client.isCurrentScope(scope)) {
+								event.preventDefault();
+								event.stopPropagation();
+							}
+						}}
 						onSubmit={(event) => {
 							if (cartBusy || !review || !client.isCurrentScope(scope))
 								event.preventDefault();

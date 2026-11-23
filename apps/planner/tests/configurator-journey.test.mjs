@@ -1265,6 +1265,7 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 		await render("en");
 		await until(() => dom.element.querySelector('[name="location_label"]'));
 		await enter(dom.element.querySelector('[name="location_label"]'), "Berlin");
+		await until(() => button("Save snapshot")?.matches(":enabled"));
 		await act(async () => button("Save snapshot").click());
 		await until(() => requests.some(([path]) => path === "projects/revise"));
 		const step = [...dom.element.querySelectorAll(".sc-nav button")].find(
@@ -2011,12 +2012,6 @@ for (const scenario of [
 				assert.equal(savedInputs.equipment_candidate, undefined);
 				return;
 			}
-			const generate = () =>
-				[...dom.element.querySelectorAll("button")].find(
-					(button) => button.textContent === "Generate project report",
-				);
-			await until(() => generate() && !generate().disabled);
-			await act(async () => generate().click());
 			if (scenario === "missing wiring evidence") {
 				await until(() =>
 					dom.element.textContent.includes(
