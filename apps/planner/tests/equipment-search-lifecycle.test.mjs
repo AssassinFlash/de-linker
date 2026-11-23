@@ -226,6 +226,8 @@ async function equipmentApp(
 	{
 		projectId,
 		projectRevision = 1,
+		locale = "en-US",
+		reports = [],
 		inputs,
 		hash,
 		guided = false,
@@ -359,10 +361,14 @@ async function equipmentApp(
 				return structuredClone(selectedPv);
 			if (path === "projects/runs")
 				return {
-					items: serverRun ? [runPageItem(serverRun)] : [],
+					items: [...reports, ...(serverRun ? [serverRun] : [])].map(
+						runPageItem,
+					),
 					next: null,
 				};
 			if (path === "runs/read") {
+				const historic = reports.find((run) => run.id === body.run_id);
+				if (historic) return structuredClone(historic);
 				assert.equal(
 					body.run_id,
 					(body.run_id === reportRun?.id ? reportRun : serverRun)?.id,
@@ -499,7 +505,7 @@ async function equipmentApp(
 	const config = {
 		baseUrl: location.origin + "/api/",
 		nonceUrl: location.origin + "/nonce",
-		locale: "en-US",
+		locale,
 		countries: { NO: "Norway" },
 	};
 	const root = createRoot(fixture.element);
@@ -1389,6 +1395,56 @@ test("a comparison dispatches once, polls in the background, and renders partial
 		await act(async () => focusManager.setFocused(undefined));
 	}
 });
+
+for (const hasGermanReport of [false, true]) {
+	test(`German review ${hasGermanReport ? "reuses its saved report behind a newer English report" : "prepares its own report after an English calculation"}`, async (t) => {
+		const english = structuredClone(nativePreparation.direct_beam.report_run);
+		const german = JSON.parse(
+			JSON.stringify(nativePreparation.geometric_pv.report_run).replaceAll(
+				nativePreparation.geometric_pv.report_run.project_id,
+				english.project_id,
+			),
+		);
+		german.revision =
+			german.result.revision =
+			german.manifest.revision =
+				english.revision;
+		const app = await equipmentApp(t, {
+			projectId: english.project_id,
+			projectRevision: english.revision,
+			locale: "de-DE",
+			reports: hasGermanReport ? [english, german] : [english],
+			hash: "#sc-review",
+			inputs: {},
+		});
+		if (hasGermanReport) {
+			await until(() => app.button("Download PDF")?.matches(":enabled"));
+			assert.equal(
+				app.requests.filter(({ path }) => path === "runs/report").length,
+				0,
+			);
+			assert.ok(
+				app.reads.some(
+					({ path, body }) => path === "runs/read" && body.run_id === german.id,
+				),
+			);
+		} else {
+			await until(() =>
+				app.requests.some(
+					({ path, body }) =>
+						path === "runs/report" && body.options.locale === "de",
+				),
+			);
+			assert.equal(app.button("Download PDF").disabled, true);
+		}
+		assert.ok(
+			!app.reads.some(
+				({ path, body }) =>
+					path === "inquiry/form" && body.report_run_id === english.id,
+			),
+		);
+	});
+}
 
 test("a roof project without a direction or a completed calculation can send its owned inquiry", async (t) => {
 	const { emptyBrief } = await import("../src/domain/brief.ts");

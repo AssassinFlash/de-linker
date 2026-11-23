@@ -67,6 +67,7 @@ import {
 import {
 	authoredCalculationInputs,
 	authoredDiscoveryInputs,
+	hasSelectedEquipment,
 	needsComparisonModels,
 	restoreComparisonModels,
 	sameEquipmentDemand,
@@ -122,6 +123,7 @@ import {
 } from "../../domain/pvgisReference.ts";
 import { moduleSummary } from "../../domain/panelPoses.ts";
 import { activePvGeometry, checkPvWeather } from "../../domain/solarSetup.ts";
+import { guidedInquiryRetry } from "../../data/inquiryRecovery.ts";
 import { __, sprintf } from "../../i18n.ts";
 
 import {
@@ -490,12 +492,57 @@ export default function ProjectWorkbench({
 		/^[a-f0-9]{32}$/.test(requestedReport)
 			? requestedReport
 			: null;
-	const reportId =
-		(submittedReport?.revision === draft?.baseline.revision
+	const reportLocale = config.locale.startsWith("de") ? "de" : "en";
+	const retryReport = guidedInquiryRetry(new URL(location.href))
+		? guidedReportId
+		: null;
+	function matchesReview(id: string) {
+		const cached = cache.getQueryData<PlanningRun>([
+			session.query_scope,
+			"configurator-result",
+			project.id,
+			REPORT_TASK,
+			id,
+		]);
+		if (cached?.result) {
+			if (readObject(cached.result.report).locale !== reportLocale)
+				return false;
+			const saved = draft?.baseline.inputs;
+			if (saved && !saved.equipment_candidate && hasSelectedEquipment(saved)) {
+				const sources = cached.result.source_runs;
+				return (
+					Array.isArray(sources) &&
+					sources.some(
+						(source) =>
+							readObject(source).kind ===
+								RUN_OPERATIONS["runs/check-equipment"] ||
+							readObject(source).kind === SEARCH_TASK,
+					)
+				);
+			}
+			return true;
+		}
+		const issued = operations.records.find(
+			(record) => record.path === "runs/report" && record.resultId === id,
+		);
+		return (
+			!issued ||
+			readObject(readPlanningOperation(issued.path, issued.body).options)
+				.locale === reportLocale
+		);
+	}
+	const candidateIds = [
+		submittedReport?.revision === draft?.baseline.revision
 			? submittedReport?.id
-			: null) ??
-		guidedReportId ??
-		reportRuns.find((item) => item.revision === draft?.baseline.revision)?.id ??
+			: null,
+		guidedReportId,
+		...reportRuns
+			.filter((item) => item.revision === draft?.baseline.revision)
+			.map((item) => item.id),
+	];
+	const reportId =
+		retryReport ??
+		candidateIds.find((id) => id && matchesReview(id)) ??
 		(viewedReport ? reportRuns[0]?.id : null) ??
 		null;
 	const report = useProjectResult(
@@ -1121,7 +1168,10 @@ export default function ProjectWorkbench({
 			if (!current()) return;
 			if (sharedDcReportRun(saved.inputs) && !sources.energy_run_id)
 				throw new ApiError(409, "report_inputs_changed");
-			if (hasReportWiring(saved.inputs) && !sources.equipment_run_id) {
+			const wiring = hasReportWiring(saved.inputs);
+			const manualEquipment =
+				!saved.inputs.equipment_candidate && hasSelectedEquipment(saved.inputs);
+			if ((wiring || manualEquipment) && !sources.equipment_run_id) {
 				const readCheck = async (id: string) =>
 					readRun(
 						await client.query(
@@ -1157,9 +1207,14 @@ export default function ProjectWorkbench({
 					run.manifest.input_sha256 !== saved.input_sha256 ||
 					run.state !== "succeeded" ||
 					!run.result ||
-					readObject(run.result.assessment).pv_electrical == null
+					(wiring && readObject(run.result.assessment).pv_electrical == null)
 				)
-					throw new ApiError(422, "report_wiring_check_failed");
+					throw new ApiError(
+						422,
+						wiring
+							? "report_wiring_check_failed"
+							: "equipment_selection_changed",
+					);
 				sources.equipment_run_id = run.id;
 			}
 			if (
@@ -1214,7 +1269,7 @@ export default function ProjectWorkbench({
 	const prepareReviewReport = useEffectEvent(() => {
 		void generate(branding.logo?.data ?? null);
 	});
-	const reviewAttempt = useRef<number | null>(null);
+	const reviewAttempt = useRef<string | null>(null);
 	const reviewRevision = draft
 		? draft.baseline.revision + Number(isDirty(draft))
 		: null;
@@ -1233,7 +1288,7 @@ export default function ProjectWorkbench({
 			(reportId !== null &&
 				!isDirty(draft) &&
 				(!reportRun || reportRun.revision === draft.baseline.revision)) ||
-			reviewAttempt.current === reviewRevision
+			reviewAttempt.current === reportLocale + ":" + reviewRevision
 		)
 			return;
 		const lastPage = olderHistory.data?.pages.at(-1) ?? history.data;
@@ -1246,12 +1301,13 @@ export default function ProjectWorkbench({
 				void olderHistory.fetchNextPage();
 			return;
 		}
-		reviewAttempt.current = reviewRevision;
+		reviewAttempt.current = reportLocale + ":" + reviewRevision;
 		prepareReviewReport();
 	}, [
 		step,
 		viewedReport,
 		reviewRevision,
+		reportLocale,
 		olderHistory.data,
 		olderHistory.isFetching,
 		olderHistory.isError,
@@ -1368,6 +1424,9 @@ export default function ProjectWorkbench({
 	const currentReport = Boolean(
 		reportRun &&
 		reportRun.revision === draft.baseline.revision &&
+		(!reportRun.result ||
+			retryReport === reportRun.id ||
+			readObject(reportRun.result.report).locale === reportLocale) &&
 		!isDirty(draft),
 	);
 	const activeTransferRunId =

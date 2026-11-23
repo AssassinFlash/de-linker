@@ -7,6 +7,26 @@ import { hasPlant, readPlantDraft } from "./equipmentPlant.ts";
 const isObject = (value: unknown): value is JsonObject =>
 	value !== null && typeof value === "object" && !Array.isArray(value);
 
+/** Product choices can be saved before their first equipment check. */
+export function hasSelectedEquipment(inputs: JsonObject): boolean {
+	const plant = hasPlant(inputs) ? readPlantDraft(inputs) : null;
+	return Boolean(
+		inputs.equipment_candidate ||
+		plant?.parallel_groups.some(
+			(group) => group.controller_product_id !== null,
+		) ||
+		(plant?.units.map((unit) => unit.inputs) ?? [inputs]).some((unit) => {
+			const setup = equipmentDraft(unit);
+			return (
+				setup.inverter_product_id != null ||
+				setup.battery_product_id != null ||
+				(Array.isArray(setup.accessory_product_ids) &&
+					setup.accessory_product_ids.length > 0)
+			);
+		}),
+	);
+}
+
 function withoutBatteryBinding(value: JsonObject): JsonObject {
 	const { battery_binding: _derived, ...authored } = value;
 	return authored;
