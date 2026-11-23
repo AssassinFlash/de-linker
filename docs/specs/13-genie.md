@@ -63,6 +63,10 @@
 只读 ability 匿名可调，但 `linker/inquiry-status` 与 `linker/read-solution` 需登录（访客 401）；带客户令牌时按该客户回答（价格与私有方案，见「价格跟账号走」）。写动作（加入 Lösungsentwurf、加入方案）不是 ability，由浏览器执行。文档检索 `linker/search-knowledge` 不是 WordPress ability：它是服务自己的工具（见 B 与规格 10「唯一检索源」，#257）。
 
 ### B. 服务（`services/genie`，FastAPI + Pydantic AI）
+
+客户端通过 WordPress 的 `/wp-json/linker-ai/v1/genie/turn/start` 提交，收到 202 和任务号后，每隔 600 ms 查询同一任务。首页、侧栏、放大视图及工作台从当前会话恢复未答回合。界面的阶段由实际附件解析、问题理解、商品校核、文档检索、生成与核验事件驱动。回合只在对应工作发生时报告其阶段。
+
+VPS 的私有 `POST /assistant/turn/start` 和 `GET /assistant/turn/{job_id}` 与短路径别名共用跨进程 SQLite 和并发槽位。同步回归入口继续使用同一套执行逻辑。WordPress 校验访客或账号的会话归属，在完成时复核发布权限、记录本轮并签发草稿凭据。运行中的响应只含任务状态。旧对话仍可读，新记录的早期对比表按商品 ID 和当前可见性恢复。
 - `POST /turn`（SSE 流）：`{conversation_id, messages[], locale, page_context:{type: home|product|category|solution|blog|faq|draft|account|other, url?, title?, product_id?, post_id?, category_id?, solution_id?, draft_ids?, draft_lines?:[{product_id, quantity}]}, user:{logged_in, partner, context?}, attachments?:[{name, type, data}], readings?:[…]}`（`partner` 与 `context` 见「价格跟账号走」）（页面上下文见下文"页面感知"；`attachments` 与 `readings` 见"附件与铭牌"；`type` 另收 `text/csv` 与 `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`，reading 的 `kind` 另收 `list`，见"零件清单 → 产品"）。SSE 事件：`meta`、本轮每个附件一条 `attachment` 与一条 `reading`、每块一条 `block`、`done`。
 - Ability 调用的瞬态失败重试：5xx 与连接层异常（httpx `TransportError`）退避重试（3 次尝试、指数退避 0.25 s/0.5 s），仍失败抛 `AbilityError` 进既有兜底——失败写入轮次 meta（`fallback`/`failures`），不静默、不从服务层 500 逃逸（`abilities.py::AbilityClient._get`）。WordPress 侧的对象缓存（Redis）抖动是这一失败的主要历史来源：实例的 drop-in 现以 `WP_REDIS_GRACEFUL` 运行（规格 5、17），读失败降级为请求内缓存而非杀请求。
 - 工具参数的 pydantic 校验失败（#366）：`agent.py` 的 `retries={"tools": TOOL_RETRIES}`（pydantic-ai `AgentRetries.tools`；用尽后 `UnexpectedModelBehavior`，原文 `exceeded max retries count of N`）。`TOOL_RETRIES = 2`，连同第一次共 3 次，与上面的 ability 尝试次数相同。次数是校准：dossier 2026-10-19 §1.15 没有竞品公开的次数，可复刻的是「重试，持续失败则降级声明」。用尽后回答是 `template.DEGRADED`，不出商品卡。products 路由在 qualified 为空时不从 `facts.product_ids` 出卡：搜索成功则一句追问；搜索没跑、且本轮不是下面的致命失败时，与无可引用时相同（handoff-team 跑过用它的句子，否则 `DEGRADED`）。输出重试仍是 1，`cycle.run` 已经再问一次。

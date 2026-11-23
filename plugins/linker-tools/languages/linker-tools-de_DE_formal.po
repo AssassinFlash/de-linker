@@ -17900,3 +17900,27 @@ msgstr "Passen Sie die Mengen für Ihre Anfrage an. Die Auslegung der Anlage ble
 #: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js
 msgid "Choose a project direction to download a report."
 msgstr "Wählen Sie eine Projektrichtung, um einen Bericht herunterzuladen."
+
+#: build/genie.js build/hero.js
+msgid "Reading your file…"
+msgstr "Ihre Datei wird gelesen…"
+
+#: build/genie.js build/hero.js
+msgid "Understanding your question…"
+msgstr "Ihre Frage wird eingeordnet…"
+
+#: build/genie.js build/hero.js
+msgid "Checking products and compatibility…"
+msgstr "Produkte und Kompatibilität werden geprüft…"
+
+#: build/genie.js build/hero.js
+msgid "Searching manufacturer manuals…"
+msgstr "Herstellerunterlagen werden durchsucht…"
+
+#: build/genie.js build/hero.js
+msgid "Preparing your answer…"
+msgstr "Antwort wird erstellt…"
+
+#: build/genie.js build/hero.js
+msgid "Verifying figures and sources…"
+msgstr "Angaben und Quellen werden geprüft…"
