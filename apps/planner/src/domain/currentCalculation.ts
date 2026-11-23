@@ -7,7 +7,7 @@ import { hasPlant, readPlantDraft } from "./equipmentPlant.ts";
 const isObject = (value: unknown): value is JsonObject =>
 	value !== null && typeof value === "object" && !Array.isArray(value);
 
-/** The equipment check requires an inverter and operating mode in every system. */
+/** Plant-level requirements supply the operating mode for all its inverters. */
 export function projectEquipmentScope(
 	inputs: JsonObject,
 ): "none" | "products" | "system" {
@@ -30,7 +30,8 @@ export function projectEquipmentScope(
 	if (!selected) return "none";
 	return systems.every(
 		(setup) =>
-			setup.inverter_product_id != null && setup.operating_mode != null,
+			setup.inverter_product_id != null &&
+			(plant ? plant.requirements : setup).operating_mode != null,
 	)
 		? "system"
 		: "products";
