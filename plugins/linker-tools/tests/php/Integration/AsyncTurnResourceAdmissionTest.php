@@ -85,7 +85,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 		$starts = 0;
 		$reads  = 0;
 		$stream = "event: reading\ndata: {\"id\":\"att1\",\"text\":\"private extraction\"}\n\nevent: block\ndata: {\"type\":\"text\",\"text\":\"Look at the AC output.\",\"refs\":[]}\n\nevent: done\ndata: {}\n\n";
-		$fetch  = function ( string $url, array $body, array $headers ) use ( $job, &$scope, &$starts, &$reads, $stream, $outcome ) {
+		$fetch  = function ( string $url, array $body, array $headers ) use ( $job, &$scope, &$starts, &$reads, $stream, $outcome, &$id ) {
 			if ( str_ends_with( $url, '/start' ) ) {
 				++$starts;
 				$scope = $headers['X-Linker-Resource-Subject'];
@@ -101,6 +101,9 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$this->assertStringEndsWith( $job, $url );
 			$this->assertSame( $scope, $headers['X-Linker-Resource-Subject'] );
 			++$reads;
+			if ( 'owner-deleted' === $outcome && 2 === $reads ) {
+				$this->assertTrue( ( new Conversations() )->delete( $id ) );
+			}
 			return (string) wp_json_encode(
 				1 === $reads ? array(
 					'status' => 'running',
@@ -202,6 +205,12 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				}
 			}
 			$final = $proxy->poll( $poll );
+			if ( 'owner-deleted' === $outcome ) {
+				$this->assertInstanceOf( WP_Error::class, $final );
+				$this->assertSame( 404, $final->get_error_data()['status'] );
+				$this->assertSame( '', ( new \Linker\Tools\Genie\Thread() )->read( $id )['stream'] );
+				return;
+			}
 			if ( ! $recover && ! in_array( $outcome, array( 'completed', 'approval-withdrawn' ), true ) ) {
 				$this->assertInstanceOf( WP_Error::class, $final );
 				$this->assertSame( 'revoked' === $outcome ? 409 : 503, $final->get_error_data()['status'] );
@@ -263,6 +272,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 	 */
 	public static function async_outcomes(): array {
 		return array(
+			'deleted while the final response is in flight' => array( 'owner-deleted' ),
 			'completed then restricted'       => array( 'approval-withdrawn' ),
 			'resume committed after deadline' => array( 'receipt-poll' ),
 			'cron recovers unsigned receipt'  => array( 'receipt-cron' ),

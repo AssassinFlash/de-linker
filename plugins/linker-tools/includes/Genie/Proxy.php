@@ -830,6 +830,13 @@ class Proxy {
 			PendingTurns::fail( $turn );
 			return self::unrecorded( $error );
 		}
+		// A different tab can delete this conversation while the service GET is in flight.
+		wp_cache_delete( $id, 'posts' );
+		wp_cache_delete( $id, 'post_meta' );
+		wp_cache_delete( $turn['receipt'], 'post_meta' );
+		if ( ! $this->conversations->may_use( $id ) || PendingTurns::conversation( $turn['receipt'], $turn['job_id'] ) !== $id ) {
+			return self::unknown_job();
+		}
 		if ( $turn['partner'] && ! PublicationGuard::sees_prices() ) {
 			PendingTurns::fail( $turn );
 			return self::unrecorded( PublicationGuard::refused() );
