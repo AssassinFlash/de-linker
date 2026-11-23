@@ -115,9 +115,9 @@ const labels = {
 		],
 		choose: 'Select',
 		compare: 'Compare system options',
-		project: 'Your project',
+		project: 'Configure a matched PV & storage system',
 		newProject: 'New project',
-		steps: ['Compare options', 'Review and send'],
+		steps: ['1Project & direction', '3Review & send'],
 		send: 'Send inquiry',
 		message: 'Please discuss this preliminary solution with me.',
 	},
@@ -130,9 +130,9 @@ const labels = {
 		],
 		choose: 'Auswählen',
 		compare: 'Anlagenvarianten vergleichen',
-		project: 'Ihr Projekt',
+		project: 'Passendes PV- und Speichersystem konfigurieren',
 		newProject: 'Neues Projekt',
-		steps: ['Varianten vergleichen', 'Prüfen und senden'],
+		steps: ['1Projekt & Richtung', '3Prüfen & anfragen'],
 		send: 'Anfrage senden',
 		message: 'Bitte besprechen Sie diesen ersten Lösungsvorschlag mit mir.',
 	},
@@ -485,28 +485,15 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			await page.goto(instance().url + path);
 			await page.locator('[data-cky-tag="reject-button"]').click();
-			const intake = page.locator('form.sc-comparison-intake');
-			const compare = intake.getByRole('button', {
-				name: lang === 'de' ? 'Systeme vergleichen' : 'Compare systems',
-				exact: true,
-			});
-			await expect(compare).toBeEnabled();
-			if (width === 1440) {
-				await expect(compare).toBeInViewport({ ratio: 1 });
-				await expect(
-					page.locator('.sc-project-summary')
-				).toBeInViewport();
-			}
+			const scenarios = page.locator('.sc-scene-grid button');
+			await expect(scenarios).toHaveCount(4);
+			const retrofit = scenarios.filter({ hasText: lang === 'de' ? 'Speicher nachrüsten' : 'Storage retrofit' });
+			await expect(retrofit).toBeEnabled();
+			if (width === 1440) await expect(retrofit).toBeInViewport({ ratio: 1 });
 			await screenshot(page, `bare-entry-${lang}-${width}`);
-			await intake
-				.locator('select[name="system_scope"]')
-				.selectOption('storage_addition');
-			await compare.click();
+			await retrofit.click();
 			const rows = page.locator('.sc-direction-comparison tbody tr');
 			await expect(rows).toHaveCount(2);
-			const id = new URL(page.url()).searchParams.get('project');
-			expect(id).toMatch(/^[a-f0-9]{32}$/);
-			bareProject = { id: id!, path };
 			const keep =
 				lang === 'de'
 					? 'Vorhandenen Wechselrichter beibehalten'
@@ -533,6 +520,9 @@ for (const lang of ['en', 'de'] as const) {
 				.click();
 			const form = page.locator('form.linker-inquiry-form');
 			await expect(form).toBeVisible();
+			const id = new URL(page.url()).searchParams.get('project');
+			expect(id).toMatch(/^[a-f0-9]{32}$/);
+			bareProject = { id: id!, path };
 			const binding = await form
 				.locator('[name="linker_preliminary_project"]')
 				.inputValue();

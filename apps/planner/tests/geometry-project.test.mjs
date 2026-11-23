@@ -113,10 +113,10 @@ test("opening a saved project honors the requested workspace and sends storage-o
 		runtime: { limits: { max_page_size: 20 }, models: {} },
 	};
 	for (const [systemScope, hash, label] of [
-		["new_pv_storage", "", "Project"],
-		["new_pv_storage", "#sc-solar", "Solar"],
-		["new_pv_storage", "#sc-energy", "Energy use"],
-		["storage_only", "#sc-solar", "Energy use"],
+		["new_pv_storage", "", "Project & direction"],
+		["new_pv_storage", "#sc-solar", "Roof & PV"],
+		["new_pv_storage", "#sc-energy", "Energy profile & CSV"],
+		["storage_only", "#sc-solar", "Energy profile & CSV"],
 	]) {
 		const project = {
 			...knownPv.project,
@@ -142,9 +142,10 @@ test("opening a saved project honors the requested workspace and sends storage-o
 			),
 		);
 		await until(() =>
-			document
-				.querySelector('nav [aria-current="step"]')
-				?.textContent.endsWith(label),
+			(
+				document.querySelector('.sc-refinement-tabs [aria-current="page"]') ??
+				document.querySelector('nav [aria-current="step"]')
+			)?.textContent.endsWith(label),
 		);
 		assert.equal(location.hash, hash);
 	}

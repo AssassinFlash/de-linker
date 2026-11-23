@@ -382,9 +382,9 @@
   }
 }
 
-/* System configurator presentation from the approved November 17 prototype. */
+/* Configurator workspace and inquiry flow. */
 @layer components {
-  .sc-configurator { width: 100%; min-width: 0; max-width: 1376px; margin-inline: auto; padding: 12px 32px 60px; color: var(--proto-ink-deep); background: var(--proto-paper-journal); font-family: var(--proto-font-sans); font-size: 15px; line-height: 1.55; }
+  .sc-configurator { width: 100%; min-width: 0; max-width: var(--proto-form-max-width); margin-inline: auto; padding: 24px clamp(16px, 2.5vw, 32px) 60px; color: var(--proto-ink-deep); background: var(--proto-paper-journal); font-family: var(--proto-font-sans); font-size: 15px; line-height: 1.55; }
   .sc-configurator.sc-intake { --proto-neutral-500: var(--proto-ink-muted-deep); background: var(--proto-paper-journal); }
   .sc-intake .sc-entry-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-block: 8px 20px; color: var(--proto-ink-muted-deep); font-size: 14px; }
   .sc-intake .sc-entry-toolbar .sc-button { background: transparent; border-color: transparent; }
@@ -394,17 +394,6 @@
   .sc-intake .sc-project-summary .sc-eyebrow { margin-bottom: 8px; color: var(--proto-ink-muted-deep); font-size: 11px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
   .sc-intake .sc-project-summary h3 { font-weight: 700; }
   .sc-intake .sc-project-summary dd { font-weight: 650; }
-  @media (min-width: 1024px) {
-    .sc-configurator .sc-comparison-intake > .sc-footer {
-      position: sticky;
-      bottom: 0;
-      z-index: 1;
-      margin-block-start: var(--proto-space-4);
-      padding: var(--proto-space-3) var(--proto-space-4);
-      border-top: 1px solid var(--proto-color-line);
-      background: var(--proto-paper-journal);
-    }
-  }
   .sc-intake .sc-saved-projects { margin-block-start: 36px; }
   .sc-intake .sc-direction-action .sc-button { border-color: var(--proto-input-line); color: var(--proto-teal-800); }
   .sc-intake .sc-direction-action .sc-button:hover { background: var(--proto-teal-50); }
@@ -427,14 +416,16 @@
   .sc-configurator .sc-project-heading p { margin-top: 5px; color: var(--proto-neutral-500); font-size: 14px; }
   .sc-configurator .sc-project-heading .sc-eyebrow { margin: 0 0 6px; color: var(--proto-neutral-600); font-size: 11px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
   .sc-configurator .sc-project-heading [role="status"] { flex-basis: 100%; }
-  .sc-configurator .sc-nav { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 12px; margin-bottom: 28px; border-bottom: 1px solid var(--proto-color-line); }
-  .sc-configurator .sc-nav button { display: inline-flex; align-items: center; justify-content: center; min-width: 0; padding: 8px 16px; border: 0; border-radius: var(--proto-radius-md); color: var(--proto-neutral-500); background: transparent; font-size: 14px; font-weight: 600; }
-  .sc-configurator .sc-nav button:not([aria-current="step"]):hover:enabled { color: var(--proto-ink-deep); background: var(--proto-teal-50); }
-  .sc-configurator .sc-nav button[aria-current="step"] { color: var(--proto-neutral-0); background: var(--proto-ink-deep); }
-  .sc-configurator .sc-step-number { margin-right: 8px; font-size: 12px; opacity: .7; }
-  .sc-configurator .sc-inquiry-stages { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .sc-configurator .sc-inquiry-stages li { display: flex; align-items: center; min-height: 40px; padding: 8px 14px; border-radius: var(--proto-radius-md); color: var(--proto-neutral-600); font-size: 14px; font-weight: 600; }
-  .sc-configurator .sc-inquiry-stages [aria-current="step"] { color: var(--proto-neutral-0); background: var(--proto-ink-deep); }
+  .sc-configurator .sc-nav { margin-block: 20px 28px; }
+  .sc-configurator .sc-inquiry-stages { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; list-style: none; padding: 6px; margin: 0; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-50); }
+  .sc-configurator .sc-inquiry-stages li { min-width: 0; }
+  .sc-configurator .sc-inquiry-stages :is(button,.sc-step-label) { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; padding: 8px 14px; border-radius: var(--proto-radius-md); color: var(--proto-ink-muted-deep); background: transparent; font-size: 14px; font-weight: 650; text-align: start; }
+  .sc-configurator .sc-inquiry-stages [aria-current="step"] > :is(button,.sc-step-label) { border-color: var(--proto-teal-200); background: var(--proto-neutral-0); color: var(--proto-teal-800); }
+  .sc-configurator .sc-step-number { display: inline-grid; flex: none; place-items: center; width: 25px; height: 25px; border: 1px solid var(--proto-color-line); border-radius: 50%; font-size: 12px; }
+  .sc-configurator [aria-current="step"] .sc-step-number { background: var(--proto-accent); color: white; border-color: transparent; }
+  .sc-configurator .sc-refinement-tabs { display: flex; flex-wrap: nowrap; max-width: 100%; overflow-x: auto; scrollbar-width: thin; gap: 6px; padding: 4px 0 8px; margin-bottom: 22px; }
+  .sc-configurator .sc-refinement-tabs button { flex: none; white-space: nowrap; padding: 9px 14px; border: none; background: transparent; color: var(--proto-ink-muted-deep); border-radius: var(--proto-radius-md); }
+  .sc-configurator .sc-refinement-tabs button[aria-current="page"], .sc-configurator .sc-refinement-tabs button:hover { background: var(--proto-teal-50); color: var(--proto-teal-800); }
   .sc-configurator .sc-layout.sc-preliminary-layout--comparison { grid-template-columns: minmax(0, 1fr); }
   .sc-configurator .sc-direction-comparison { overflow-wrap: break-word; }
   .sc-configurator .sc-direction-comparison table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--proto-size-sm); }
@@ -457,7 +448,7 @@
   .sc-configurator .sc-preliminary-layout .sc-sidebar p { margin-block-start: 12px; color: var(--proto-neutral-600); }
   .sc-configurator .sc-direction-comparison h2:focus, .sc-configurator .sc-draft-transfer h2:focus { outline: none; }
   .sc-configurator .sc-direction-comparison .sc-button { color: var(--proto-teal-800); font-size: var(--proto-size-sm); }
-  .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "form summary"; grid-template-columns: minmax(0, 3fr) minmax(16rem, 2fr); gap: var(--proto-space-6); }
+  .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "form summary"; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--proto-space-6); }
   .sc-configurator .sc-draft-transfer .linker-inquiry-draft { grid-area: summary; position: static; display: grid; gap: 12px; justify-items: start; }
   .sc-configurator .sc-draft-transfer .sc-inquiry-fields { grid-area: form; min-width: 0; }
   .sc-preliminary-review .sc-review-choice { font-weight: var(--proto-weight-semibold); }
@@ -489,7 +480,6 @@
   .sc-configurator .sc-fields .sc-field > span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; }
   .sc-configurator .sc-fields .sc-field :is(input, select, textarea) { min-height: 46px; padding: 11px; border: 1px solid var(--proto-input-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); box-shadow: none; }
   .sc-configurator :is(input, select, textarea) { width: 100%; min-width: 0; min-height: 46px; padding: 11px; border: 1px solid var(--proto-input-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); }
-  .sc-configurator select { appearance: auto; }
   .sc-configurator textarea { min-height: 90px; resize: vertical; }
   .sc-configurator :is(input[type="checkbox"], input[type="radio"]) { width: 20px; height: 20px; min-height: 20px; accent-color: var(--proto-accent); }
   .sc-configurator input[type="file"] { max-width: 100%; padding: 8px; }
@@ -614,9 +604,8 @@
     .sc-configurator .sc-project-heading { gap: 6px; margin-bottom: 12px; }
     .sc-configurator .sc-project-heading .sc-actions .sc-button { padding-inline: 4px; border-color: transparent; background: transparent; color: var(--proto-teal-800); font-size: 13px; }
     .sc-configurator .sc-project-heading .sc-actions { gap: 16px; }
-    .sc-configurator .sc-nav { gap: 5px; margin-bottom: 20px; }
-    .sc-configurator .sc-inquiry-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--proto-space-1); width: 100%; }
-    .sc-configurator .sc-inquiry-stages li { justify-content: center; min-width: 0; min-height: 36px; padding: var(--proto-space-2) var(--proto-space-1); font-size: 13px; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
+    .sc-configurator .sc-inquiry-stages { grid-template-columns: 1fr; gap: 2px; }
+    .sc-configurator .sc-inquiry-stages :is(button,.sc-step-label) { min-height: 38px; }
     .sc-configurator .sc-direction-comparison thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .sc-configurator .sc-direction-comparison :is(table, tbody) { display: block; }
     .sc-configurator .sc-direction-comparison tbody tr { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-3); padding-block-end: var(--proto-space-5); }
@@ -626,23 +615,14 @@
     .sc-configurator .sc-direction-name { gap: var(--proto-space-2); }
     .sc-configurator .sc-direction-symbol { width: 2rem; height: 2rem; }
     .sc-configurator .sc-direction-details > span { display: block; font-weight: var(--proto-weight-semibold); }
-    .sc-configurator .sc-nav button { flex: 1 0 auto; padding: 7px 10px; font-size: 12px; }
-    .sc-configurator .sc-step-number { display: none; }
+
     .sc-configurator .sc-layout { gap: 0; }
     .sc-configurator .sc-card { padding: 20px; }
     .sc-configurator .sc-section-head { flex-wrap: wrap; }
     .sc-configurator .sc-fields, .sc-configurator .sc-comparison, .sc-configurator .sc-report-actions { grid-template-columns: minmax(0, 1fr); }
     .sc-configurator .sc-draft-transfer .sc-inquiry-overview { padding: var(--proto-space-4); }
     .sc-configurator .sc-review-actions { column-gap: var(--proto-space-4); row-gap: 0; }
-    .sc-configurator .sc-review-actions .sc-button {
-      padding-inline: 0;
-      border: 0;
-      background: transparent;
-      color: var(--proto-teal-800);
-      text-decoration: underline;
-      text-underline-offset: .2em;
-    }
-    .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "summary" "form"; grid-template-columns: minmax(0, 1fr); }
+    .sc-configurator .sc-draft-transfer .linker-inquiry-columns { grid-template-areas: "form" "summary"; grid-template-columns: minmax(0, 1fr); }
     .sc-configurator :is(input, select, textarea) { font-size: 16px; }
     .sc-configurator .sc-option { flex-basis: 100%; padding: 16px; }
     .sc-configurator .sc-footer { align-items: stretch; }
@@ -676,7 +656,7 @@
   .sc-configurator .sc-review .sc-actions { margin-top: 16px; }
   .sc-configurator .sc-main nav:not(.sc-nav) { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-block: 16px 24px; }
   .sc-configurator .sc-draft-transfer .sc-scenario-block > p { margin-block: 12px; }
-  .sc-configurator .sc-draft-transfer .sc-button { min-height: 44px; padding: 9px 15px; border-radius: var(--proto-radius-md); font: inherit; font-weight: 600; background: var(--proto-accent); color: var(--proto-neutral-0); border-color: var(--proto-accent); white-space: normal; }
+  .sc-configurator .sc-draft-transfer .sc-button.sc-primary { min-height: 44px; padding: 9px 15px; border-radius: var(--proto-radius-md); font: inherit; font-weight: 600; background: var(--proto-accent); color: var(--proto-neutral-0); border-color: var(--proto-accent); white-space: normal; }
   .sc-configurator .sc-draft-transfer .sc-secondary { background: var(--proto-neutral-0); color: var(--proto-ink-deep); border-color: var(--proto-color-line); }
   .sc-configurator .sc-draft-transfer .sc-table-scroll { max-width: 100%; overflow-x: auto; }
   @media (prefers-reduced-motion: reduce) {
@@ -717,4 +697,49 @@
     .sc-configurator .sc-solar .sc-next button { width: 100%; }
   }
   .sc-configurator .sc-solar svg.sc-roof-preview { min-height: 0; max-height: 180px; margin-block: 16px; }
+}
+
+@layer components {
+  .sc-configurator .sc-direction-entry { display: grid; gap: var(--proto-space-6); }
+  .sc-configurator .sc-scene-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--proto-space-3); }
+  .sc-configurator :is(.sc-direction-start,.sc-direction-fields) { min-width: 0; margin: 0; }
+  .sc-configurator :is(.sc-direction-start,.sc-direction-fields) > legend { padding: 0 6px; font-size: 18px; font-weight: 650; }
+  .sc-configurator .sc-scene { display: grid; align-content: start; gap: 12px; min-width: 0; padding: 18px; text-align: start; font-weight: 650; border-radius: var(--proto-radius-lg); border: 1px solid var(--proto-color-line); background: white; }
+  .sc-configurator .sc-scene svg { color: var(--proto-teal-700); }
+  .sc-configurator .sc-scene:hover, .sc-configurator .sc-scene[aria-pressed="true"] { background: var(--proto-teal-50); border-color: var(--proto-teal-600); }
+  .sc-configurator .sc-roof-callout { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px; margin-block: 24px 12px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-50); }
+  .sc-configurator .sc-roof-callout p { color: var(--proto-ink-muted-deep); margin: 4px 0 0; }
+  .sc-configurator .sc-roof-callout :is(button,a) { flex: none; }
+  .sc-configurator .sc-direction-comparison table { display: block; }
+  .sc-configurator .sc-direction-comparison thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .sc-configurator .sc-direction-comparison tbody { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin-top: 20px; }
+  .sc-configurator .sc-direction-comparison tbody tr { display: grid; grid-row: span 4; grid-template-rows: subgrid; min-width: 0; padding: 20px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); }
+  .sc-configurator .sc-direction-comparison tbody :is(th,td) { width: auto; padding: 0; text-align: start; }
+  .sc-configurator .sc-direction-details > span { display: block; font-weight: 650; }
+  .sc-configurator .sc-review-actions { margin-top: 12px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  @media (max-width: 700px) {
+    .sc-configurator .sc-scene-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .sc-configurator .sc-scene { padding: 14px; }
+    .sc-configurator .sc-roof-callout { align-items: start; flex-direction: column; }
+    .sc-configurator .sc-direction-comparison tbody { grid-template-columns: minmax(0,1fr); }
+    .sc-configurator .sc-direction-comparison tbody tr + tr { padding: 20px; }
+  }
+}
+@layer components {
+  .sc-configurator .sc-comparison > .sc-package { display: grid; grid-row: span 3; grid-template-rows: subgrid; }
+  .sc-configurator .sc-option-products { align-self: start; }
+  .sc-configurator .sc-option-body { display: flex; flex-direction: column; align-items: start; gap: 12px; }
+  .sc-configurator .sc-option-body > button { margin-top: auto; width: 100%; }
+  .sc-configurator .sc-option-figures { min-width: 0; align-self: start; display: grid; gap: 8px; background: var(--proto-neutral-50); border-radius: var(--proto-radius-md); }
+  .sc-configurator .sc-option-figures:empty { display: none; }
+  .sc-configurator .sc-option-metrics { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px; margin: 0; }
+  .sc-configurator .sc-option-metrics dt, .sc-configurator .sc-option-metrics dd { white-space: nowrap; margin: 0; }
+  .sc-configurator .sc-option-metrics dt { color: var(--proto-ink-muted-deep); font-size: 12px; }
+  .sc-configurator .sc-option-metrics dd { font-weight: 650; }
+}
+@layer components {
+  .sc-configurator .sc-context-summary { margin-block-start: var(--proto-space-6); }
+  .sc-configurator .sc-context-summary dl { display: flex; flex-wrap: wrap; gap: 16px 32px; }
+  .sc-configurator .sc-option-products .linker-product-card__copy { min-width: 0; }
+  .sc-configurator .sc-option-products .linker-product-card__copy strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }

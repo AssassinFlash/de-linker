@@ -1,5 +1,6 @@
 import { __ } from "../../i18n.ts";
 
+import { InquiryStages } from "./ProjectHeading.tsx";
 import { comparisonPair } from "../../data/energyComparison.ts";
 
 const chapters = ["project", "solar", "energy", "system", "review"] as const;
@@ -36,38 +37,49 @@ export function ProjectNavigation({
 	current,
 	storageOnly,
 	open,
+	comparing = false,
 }: {
 	current: ProjectChapter;
 	storageOnly: boolean;
 	open: (chapter: ProjectChapter) => void;
+	comparing?: boolean;
 }) {
-	const labels = {
-		project: __("Project", "linker-tools"),
-		solar: __("Solar", "linker-tools"),
-		energy: __("Energy use", "linker-tools"),
-		system: __("System", "linker-tools"),
-		review: __("Report & inquiry", "linker-tools"),
-	};
+	const currentStage =
+		current === "review" ? 3 : current === "project" || comparing ? 1 : 2;
+	const refinements = [
+		{ chapter: "solar", label: __("Roof & PV", "linker-tools") },
+		{ chapter: "energy", label: __("Energy profile & CSV", "linker-tools") },
+		{ chapter: "system", label: __("Matched equipment", "linker-tools") },
+	] as const;
 	return (
-		<nav
-			className="sc-nav sc-project-navigation"
-			aria-label={__("Project navigation", "linker-tools")}
-		>
-			{chapters
-				.filter((chapter) => chapter !== "solar" || !storageOnly)
-				.map((chapter, i) => (
-					<button
-						type="button"
-						key={chapter}
-						aria-current={current === chapter ? "step" : undefined}
-						onClick={() => open(chapter)}
-					>
-						<span aria-hidden="true" className="sc-step-number">
-							{i + 1}
-						</span>
-						{labels[chapter]}
-					</button>
-				))}
-		</nav>
+		<>
+			<InquiryStages
+				current={currentStage}
+				open={(stage) => {
+					if (stage === 1) open("project");
+					else if (stage === 2) open(storageOnly ? "energy" : "solar");
+					else open("review");
+				}}
+			/>
+			{currentStage === 2 && (
+				<nav
+					className="sc-refinement-tabs"
+					aria-label={__("Fine-tune (optional)", "linker-tools")}
+				>
+					{refinements
+						.filter(({ chapter }) => chapter !== "solar" || !storageOnly)
+						.map(({ chapter, label }) => (
+							<button
+								type="button"
+								key={chapter}
+								aria-current={current === chapter ? "page" : undefined}
+								onClick={() => open(chapter)}
+							>
+								{label}
+							</button>
+						))}
+				</nav>
+			)}
+		</>
 	);
 }

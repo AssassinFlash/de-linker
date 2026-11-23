@@ -26,6 +26,7 @@ import type { usePlanningOperations } from "../../data/usePlanningOperations.ts"
 import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { __, sprintf } from "../../i18n.ts";
 import { EvidenceCard } from "../shared/EvidenceCard.tsx";
+import { FileDropzone } from "../FileDropzone.tsx";
 import { Icon } from "../Icon.tsx";
 import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
@@ -504,6 +505,7 @@ export function reportCanTransfer(
 }
 
 export function ReviewProposal({
+	inquiry,
 	project,
 	inputs,
 	run,
@@ -519,6 +521,7 @@ export function ReviewProposal({
 	askGenie,
 	recheck,
 }: {
+	inquiry?: ReactNode;
 	project: Project;
 	inputs: JsonObject;
 	run: PlanningRun | null;
@@ -570,54 +573,41 @@ export function ReviewProposal({
 		logoError;
 	const logoField = (
 		<div className="sc-report-logo">
-			<label className="sc-field">
-				<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
-				<span className="sc-file-picker">
-					<span className="sc-file-button" aria-hidden="true">
-						{__("Choose logo", "linker-tools")}
-					</span>
-					<span className="sc-file-name" aria-hidden="true">
-						{logo?.name ?? __("No file chosen", "linker-tools")}
-					</span>
-					<input
-						ref={logoInput}
-						aria-label={__("Your logo on the PDF (optional)", "linker-tools")}
-						type="file"
-						accept="image/png,image/jpeg"
-						disabled={blocked || operations.busy}
-						onChange={(event) => {
-							resetLogo();
-							const file = event.currentTarget.files?.[0];
-							if (!file) return;
-							if (
-								file.size > 500000 ||
-								!["image/png", "image/jpeg"].includes(file.type)
-							) {
-								setLogoError(true);
-								return;
+			<div>
+				<FileDropzone
+					inputRef={logoInput}
+					label={__("Your logo on the PDF (optional)", "linker-tools")}
+					action={__("Choose logo", "linker-tools")}
+					accept="image/png,image/jpeg"
+					disabled={blocked || operations.busy}
+					{...(logo && { filename: logo.name })}
+					onFile={(file) => {
+						resetLogo();
+						if (
+							file.size > 500000 ||
+							!["image/png", "image/jpeg"].includes(file.type)
+						) {
+							setLogoError(true);
+							return;
+						}
+						const next = new FileReader();
+						reader.current = next;
+						setReading(true);
+						next.onload = () => {
+							if (reader.current === next && typeof next.result === "string") {
+								setLogo({ name: file.name, data: next.result });
+								setReading(false);
 							}
-							const next = new FileReader();
-							reader.current = next;
-							setReading(true);
-							next.onload = () => {
-								if (
-									reader.current === next &&
-									typeof next.result === "string"
-								) {
-									setLogo({ name: file.name, data: next.result });
-									setReading(false);
-								}
-							};
-							next.onerror = () => {
-								if (reader.current === next) {
-									setLogoError(true);
-									setReading(false);
-								}
-							};
-							next.readAsDataURL(file);
-						}}
-					/>
-				</span>
+						};
+						next.onerror = () => {
+							if (reader.current === next) {
+								setLogoError(true);
+								setReading(false);
+							}
+						};
+						next.readAsDataURL(file);
+					}}
+				/>
 				<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
 				{logoError && (
 					<small role="alert">
@@ -627,7 +617,7 @@ export function ReviewProposal({
 						)}
 					</small>
 				)}
-			</label>
+			</div>
 			{(logo || logoError || reading) && (
 				<div className="sc-actions">
 					{logo && (
@@ -850,6 +840,59 @@ export function ReviewProposal({
 					</>
 				)}
 			</section>
+		);
+	if (inquiry && report && run && !selected)
+		return (
+			<article
+				className="sc-review sc-report-workspace"
+				aria-label={project.title}
+			>
+				<ReportDownloads
+					run={run}
+					report={report}
+					client={client}
+					scope={scope}
+					recheck={recheck}
+					askGenie={() => askGenie(run)}
+				>
+					{({ actions, materials, error }) => (
+						<section
+							className="sc-card sc-export-strip"
+							aria-label={__("Project report", "linker-tools")}
+						>
+							<div>
+								{logoField}
+								{(logo || reportLanguageDiffers(report.locale, locale)) && (
+									<button
+										type="button"
+										className="sc-button btn-secondary"
+										disabled={disabled}
+										onClick={() => generate(logo?.data ?? null)}
+									>
+										{__("Update project report", "linker-tools")}
+									</button>
+								)}
+							</div>
+							<div className="sc-actions">
+								{actions}
+								{materials}
+								{error}
+							</div>
+						</section>
+					)}
+				</ReportDownloads>
+				{inquiry}
+				<details className="sc-card sc-review-details">
+					<summary>{__("Project report", "linker-tools")}</summary>
+					{report.sections.map((section) => (
+						<section key={section.id}>
+							<h3>{section.title}</h3>
+							<ReportContent section={section} />
+						</section>
+					))}
+				</details>
+				{historyPanel}
+			</article>
 		);
 	return (
 		<article

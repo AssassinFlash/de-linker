@@ -656,7 +656,8 @@ export function Workspace({
 
 	const bareComparison = canCompareDirections && !route;
 	const firstVisitComparison =
-		canCompareDirections && route === "sc-preliminary-options";
+		canCompareDirections &&
+		(route === "sc-preliminary-options" || (bareComparison && !entryHints));
 	const directEntry =
 		!projectIndex &&
 		savedSource === null &&
@@ -737,6 +738,11 @@ export function Workspace({
 					</div>
 				</header>
 			)}
+			{!firstVisitComparison &&
+				!projectIndex &&
+				(directEntry || savedSource || briefSource || entryHints?.roof) && (
+					<InquiryStages current={entryHints?.roof ? 2 : 1} />
+				)}
 			<div className={firstVisitComparison ? undefined : "sc-main"}>
 				<div>
 					{projectIndex ? null : savedSource !== null ? (
@@ -787,6 +793,7 @@ export function Workspace({
 							key={creatingProject.current ?? entryKey}
 							compareOnLoad={firstVisitComparison}
 							directComparison={
+								firstVisitComparison ||
 								bareComparison ||
 								entryHints?.equipment === true ||
 								route === "sc-project"

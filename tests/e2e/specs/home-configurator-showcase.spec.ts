@@ -56,7 +56,7 @@ async function reviewFromEntry(
 				})
 				.click();
 			actions.push('Start a new comparison');
-		} else if (['', '?view=equipment', '?view=project'].includes(query)) {
+		} else if (['?view=equipment', '?view=project'].includes(query)) {
 			if (query === '?view=equipment')
 				await expect(
 					workspace.locator('details.sc-project-equipment')

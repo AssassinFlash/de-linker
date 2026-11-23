@@ -492,7 +492,7 @@ test("an installer calculates the declared ports, adopts the frozen result, and 
 			"No differences are shown because the comparison conditions differ or are incomplete.",
 		),
 	);
-	await ui.click("Report & inquiry");
+	await ui.click("Review & send");
 	await ui.click("Generate project report");
 	await until(() => reports.length === 1);
 	assert.equal(reports[0].energy_run_id, fixture.run.id);
@@ -502,7 +502,7 @@ test("an installer calculates the declared ports, adopts the frozen result, and 
 	await enter(ui.input("PV conversion group"), "dc-b");
 	await ui.click("Saved calculations");
 	assert.equal(ui.button("Use this calculation in the report"), undefined);
-	await ui.click("Report & inquiry");
+	await ui.click("Review & send");
 	await ui.click("Generate project report");
 	await until(() =>
 		ui.dom.element.textContent.includes(

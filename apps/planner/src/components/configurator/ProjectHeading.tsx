@@ -24,7 +24,10 @@ export function ProjectHeading({
 						? __("Your project", "linker-tools")
 						: __("Solution Configurator", "linker-tools")}
 				</p>
-				<h1>{title || __("Your project", "linker-tools")}</h1>
+				<h1>
+					{title ||
+						__("Configure a matched PV & storage system", "linker-tools")}
+				</h1>
 				{location && <p>{location}</p>}
 			</div>
 			{actions}
@@ -33,29 +36,49 @@ export function ProjectHeading({
 }
 
 export function InquiryStages({
-	reviewing = false,
-	guided = false,
+	current = 1,
+	open,
 }: {
-	reviewing?: boolean;
-	guided?: boolean;
+	current?: 1 | 2 | 3;
+	open?: (step: 1 | 2 | 3) => void;
 }) {
+	const stages = [
+		__("Project & direction", "linker-tools"),
+		__("Fine-tune (optional)", "linker-tools"),
+		__("Review & send", "linker-tools"),
+	];
 	return (
 		<nav
-			className="sc-nav"
+			className="sc-nav sc-project-navigation"
 			aria-label={__("Project navigation", "linker-tools")}
 		>
 			<ol className="sc-inquiry-stages">
-				<li aria-current={!guided && !reviewing ? "step" : undefined}>
-					{guided
-						? __("Compare systems", "linker-tools")
-						: __("Compare options", "linker-tools")}
-				</li>
-				<li aria-current={guided && !reviewing ? "step" : undefined}>
-					{__("Choose an option", "linker-tools")}
-				</li>
-				<li aria-current={reviewing ? "step" : undefined}>
-					{__("Review and send", "linker-tools")}
-				</li>
+				{stages.map((title, index) => {
+					const step = (index + 1) as 1 | 2 | 3;
+					const content = (
+						<>
+							<span className="sc-step-number" aria-hidden="true">
+								{step}
+							</span>
+							{title}
+						</>
+					);
+					return (
+						<li key={step} aria-current={step === current ? "step" : undefined}>
+							{open ? (
+								<button
+									type="button"
+									aria-current={step === current ? "step" : undefined}
+									onClick={() => open(step)}
+								>
+									{content}
+								</button>
+							) : (
+								<span className="sc-step-label">{content}</span>
+							)}
+						</li>
+					);
+				})}
 			</ol>
 		</nav>
 	);

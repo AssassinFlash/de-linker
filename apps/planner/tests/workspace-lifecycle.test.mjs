@@ -43,9 +43,17 @@ const button = (label, area = document) =>
 			node.textContent.trim() === label,
 	);
 const nav = (label) =>
-	[...document.querySelectorAll(".sc-nav button")].find(
-		(node) => node.textContent.trim().replace(/^\d+/, "") === label,
-	);
+	[
+		...document.querySelectorAll(".sc-nav button, .sc-refinement-tabs button"),
+	].find((node) => node.textContent.trim().replace(/^\d+/, "") === label);
+async function visit(label) {
+	if (
+		!nav(label) &&
+		["Roof & PV", "Energy profile & CSV", "Matched equipment"].includes(label)
+	)
+		await act(async () => nav("Fine-tune (optional)").click());
+	await act(async () => nav(label).click());
+}
 const choose = (select, value) =>
 	act(async () => {
 		select.value = value;
@@ -53,6 +61,13 @@ const choose = (select, value) =>
 	});
 
 async function startProjectCreation(title) {
+	await until(
+		() =>
+			button("Enter project details") ||
+			document.querySelector('input[name="project_title"]'),
+	);
+	if (button("Enter project details"))
+		await act(async () => button("Enter project details").click());
 	const name = 'input[name="project_title"]';
 	await until(() => document.querySelector(name));
 	await enter(document.querySelector(name), title);
@@ -233,7 +248,7 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 
 test("same identity rechecks retain delayed edits and invalid raw numeric text", async (t) => {
 	const app = await workspaceFixture(t, "delayed");
-	await act(async () => nav("Energy use").click());
+	await visit("Energy profile & CSV");
 	await enter(app.annual(), "19");
 	await until(() => app.commits.length === 1);
 	const reads = app.reads();
@@ -284,7 +299,7 @@ for (const hash of [
 				location.pathname + location.search + hash,
 			);
 		});
-		assert.equal(nav("Solar").getAttribute("aria-current"), "step");
+		assert.equal(nav("Roof & PV").getAttribute("aria-current"), "page");
 		assert.equal(button("Aerial map").getAttribute("aria-pressed"), "true");
 		await until(() => button("Coordinate references"));
 		assert.match(
@@ -299,24 +314,24 @@ test("a storage-only project reaches Energy use, System and Review without a roo
 		document.querySelector("select[name=system_scope]"),
 		"storage_only",
 	);
-	assert.equal(nav("Solar"), undefined);
+	assert.equal(nav("Roof & PV"), undefined);
 	await act(async () => button("Continue with storage").click());
 	assert.equal(location.hash, "#sc-energy");
-	await act(async () => nav("System").click());
+	await visit("Matched equipment");
 	assert.equal(location.hash, "#sc-system");
-	await act(async () => nav("Report & inquiry").click());
+	await visit("Review & send");
 	assert.equal(location.hash, "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
 });
 
 test("step changes retain the energy input and undo history and protect unfinished edits", async (t) => {
 	const app = await workspaceFixture(t, "available");
-	await act(async () => nav("Energy use").click());
+	await visit("Energy profile & CSV");
 	const annual = app.annual();
 	await enter(annual, "25");
-	await act(async () => nav("Solar").click());
+	await visit("Roof & PV");
 	assert.ok(annual.closest("[hidden]"));
-	await act(async () => nav("Energy use").click());
+	await visit("Energy profile & CSV");
 	assert.equal(app.annual(), annual);
 	assert.equal(annual.value, "25");
 	await act(async () =>
@@ -324,7 +339,7 @@ test("step changes retain the energy input and undo history and protect unfinish
 	);
 	assert.equal(annual.value, "10");
 	await enter(annual, "1,");
-	await act(async () => nav("Project").click());
+	await visit("Project & direction");
 	assert.equal(location.hash, "#sc-energy");
 	assert.equal(annual.value, "1,");
 	assert.ok(
@@ -335,17 +350,17 @@ test("step changes retain the energy input and undo history and protect unfinish
 			new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
 		),
 	);
-	await act(async () => nav("Solar").click());
+	await visit("Roof & PV");
 	await act(async () => button("Place modules on the roof").click());
 	await act(async () => button("Open roof layout").click());
 	await act(async () => button("Draw polygon").click());
-	await act(async () => nav("Project").click());
+	await visit("Project & direction");
 	assert.equal(location.hash, "#sc-solar");
 	assert.ok(
 		document.body.textContent.includes("Finish or cancel roof editing"),
 	);
 	await act(async () => button("Select plane").click());
-	await act(async () => nav("Project").click());
+	await visit("Project & direction");
 	assert.equal(location.hash, "#sc-project");
 });
 
@@ -808,10 +823,10 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 					currentScope === newSession.query_scope &&
 					!document.querySelector(".sc-configurator").parentElement.hidden,
 			);
-			assert.equal(location.search, "");
+			assert.equal(location.search, "?compare=preliminary");
 			await act(async () => gate.resolve());
 			assert.equal(currentScope, newSession.query_scope);
-			assert.equal(location.search, "");
+			assert.equal(location.search, "?compare=preliminary");
 			assert.equal(
 				cache.getQueryData([oldSession.query_scope, "project", oldAck.id]),
 				undefined,
@@ -1013,7 +1028,7 @@ test("native confirmation fences pending creation, revision and navigation befor
 				JSON.stringify(events),
 			);
 			assert.ok(!events.includes("old_scope_cache_write"));
-			assert.equal(location.search, expectedSearch);
+			assert.equal(location.search, expectedSearch || "?compare=preliminary");
 			assert.equal(
 				cache.getQueryData([oldSession.query_scope, "project", oldAck.id]),
 				undefined,

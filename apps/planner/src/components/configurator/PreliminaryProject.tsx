@@ -118,7 +118,7 @@ export function PreliminaryProject({
 					showOptions ? "sc-preliminary-options" : "sc-preliminary-review"
 				}
 			/>
-			<InquiryStages reviewing={!showOptions} />
+			<InquiryStages current={showOptions ? 1 : 3} />
 			{showOptions && (
 				<div className="sc-main">
 					<PreliminaryOptions

@@ -296,7 +296,7 @@ export function PlanningReportResult({
 					{seriesCsv && (
 						<p>
 							{__(
-								"The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
+								"The PV string CSV has one row per string and time interval. Module conditions follow the module ID sequence in each row.",
 								"linker-tools",
 							)}
 						</p>

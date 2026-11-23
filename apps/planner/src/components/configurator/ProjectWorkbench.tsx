@@ -101,7 +101,7 @@ import {
 import { SolarInstallation } from "./SolarInstallation.tsx";
 import { reportCanTransfer, ReviewProposal } from "./ReviewProposal.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
-import { InquiryStages, ProjectHeading } from "./ProjectHeading.tsx";
+import { ProjectHeading } from "./ProjectHeading.tsx";
 import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
 import {
 	PvStringSetup,
@@ -113,7 +113,11 @@ import { RunBasis } from "../energy/RunBasis.tsx";
 import { isEnergyTask } from "../../data/readEnergyResult.ts";
 import { comparisonPair } from "../../data/energyComparison.ts";
 import { energyErrorText } from "../energy/EnergyError.tsx";
-import { referenceDraft, KNOWN_PV_MODEL } from "../../domain/pvgisReference.ts";
+import {
+	referenceDraft,
+	KNOWN_PV_MODEL,
+	PVGIS_REFERENCE_TASK,
+} from "../../domain/pvgisReference.ts";
 import { moduleSummary } from "../../domain/panelPoses.ts";
 import { activePvGeometry, checkPvWeather } from "../../domain/solarSetup.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -217,6 +221,7 @@ export default function ProjectWorkbench({
 	const params = new URL(location.href).searchParams;
 	const guided =
 		params.get("guided") === "inquiry" && params.get("project") === project.id;
+	const [editingEquipment, setEditingEquipment] = useState(false);
 	const [step, setStep] = useState<Step>(initialStep);
 	const [systemRequest, setSystemRequest] = useState<
 		"existing" | "navigation" | null
@@ -435,6 +440,26 @@ export default function ProjectWorkbench({
 		SEARCH_TASK,
 		searchId,
 	);
+	const annualRoof = useProjectResult(
+		client,
+		session,
+		project.id,
+		PVGIS_REFERENCE_TASK,
+		step === "solar" && draft && !isDirty(draft)
+			? (latestRuns?.find(
+					(item) =>
+						item.task_kind === PVGIS_REFERENCE_TASK &&
+						item.is_current &&
+						item.state === "succeeded",
+				)?.id ?? null)
+			: null,
+	).data;
+	const roofGeneration =
+		annualRoof?.result &&
+		annualRoof.revision === draft?.baseline.revision &&
+		annualRoof.manifest.input_sha256 === draft?.baseline.input_sha256
+			? readObject(annualRoof.result.profile_summary)
+			: null;
 	const systemRead = searchId ? search : history;
 	const adoptedSearch = useProjectResult(
 		client,
@@ -757,6 +782,7 @@ export default function ProjectWorkbench({
 		if (mayLeave() && (await controller.flush())) close();
 	}
 	function openChapter(next: Step) {
+		setEditingEquipment(false);
 		const current = latest.current;
 		if (!current || !mayLeave()) return;
 		if (next === "system" && !coordinatesValid) {
@@ -1306,6 +1332,30 @@ export default function ProjectWorkbench({
 			readPlanningOperation(record.path, record.body).report_run_id !==
 				activeTransferRunId,
 	);
+	const inlineReview =
+		currentReport &&
+		reportRun?.state === "succeeded" &&
+		reportCanTransfer(reportRun) &&
+		brief.system_scope ? (
+			<ReviewInquiry
+				project={draft.baseline}
+				direction={brief.system_scope}
+				client={client}
+				scope={session.query_scope}
+				locale={config.locale}
+				active
+				ready={!blocked}
+				changeSelection={() => navigate("system")}
+				enterDetails={() => {
+					if (mayLeave()) {
+						setEditingEquipment(true);
+						showStep("project");
+					}
+				}}
+				recheck={recheck}
+				reportRunId={reportRun.id}
+			/>
+		) : null;
 	return (
 		<div
 			className={
@@ -1394,15 +1444,12 @@ export default function ProjectWorkbench({
 					)
 				}
 			/>
-			{guidedView ? (
-				<InquiryStages guided reviewing={guidedReview} />
-			) : (
-				<ProjectNavigation
-					current={activeStep}
-					storageOnly={brief.system_scope === "storage_only"}
-					open={openChapter}
-				/>
-			)}
+			<ProjectNavigation
+				current={activeStep}
+				storageOnly={brief.system_scope === "storage_only"}
+				comparing={guided && activeStep === "system"}
+				open={openChapter}
+			/>
 			{navigationRefused &&
 				navigationBlocked &&
 				(!missingModules || invalidInput || roofEditing || importOpen) && (
@@ -1559,7 +1606,7 @@ export default function ProjectWorkbench({
 					</button>
 				</div>
 			))}
-			<div className={activeStep === "review" ? undefined : "sc-layout"}>
+			<div className={activeStep === "project" ? "sc-layout" : undefined}>
 				<main
 					id={"sc-" + activeStep}
 					ref={main}
@@ -1568,8 +1615,10 @@ export default function ProjectWorkbench({
 				>
 					{activeStep === "project" && (
 						<ProjectDetails
+							equipmentFirst={editingEquipment}
 							existingEquipment={
 								<ProjectEquipment
+									initiallyOpen={editingEquipment}
 									inputs={
 										comparisonInputs
 											? restoreComparisonModels(inputs, comparisonInputs)
@@ -1596,6 +1645,13 @@ export default function ProjectWorkbench({
 						<div hidden={activeStep !== "solar"}>
 							<SolarInstallation
 								active={activeStep === "solar"}
+								annualGenerationKwh={
+									roofGeneration?.model_role ===
+										"official_calendar_year_roof_ac_reference" &&
+									typeof roofGeneration.energy_kwh === "number"
+										? roofGeneration.energy_kwh
+										: null
+								}
 								onCoordinateValidity={setCoordinatesValid}
 								inputs={inputs}
 								config={config}
@@ -1941,65 +1997,49 @@ export default function ProjectWorkbench({
 							)}
 						</>
 					)}
-					{guidedReview &&
-						(currentReport &&
-						reportRun?.state === "succeeded" &&
-						reportCanTransfer(reportRun) &&
-						brief.system_scope ? (
-							<ReviewInquiry
-								project={draft.baseline}
-								direction={brief.system_scope}
-								client={client}
-								scope={session.query_scope}
-								locale={config.locale}
-								active
-								ready={!blocked}
-								changeSelection={() => navigate("system")}
-								recheck={recheck}
-								reportRunId={reportRun.id}
-							/>
-						) : (
-							<section className="sc-card">
-								{Boolean(failure) ||
-								(reportRun && !runPending(reportRun.state)) ||
-								(!choice && !canKeepInstalled && history.isSuccess) ? (
-									<>
-										<p>
-											{__(
-												"The inquiry form could not be loaded.",
-												"linker-tools",
-											)}
-										</p>
-										{(Boolean(failure) || guidedReportFailed) &&
-											(choice || canKeepInstalled) &&
-											!blocked && (
-												<button
-													className="sc-button sc-primary"
-													onClick={() =>
-														report.isError
-															? void report.refetch()
-															: void generate(null)
-													}
-												>
-													{__("Try again", "linker-tools")}
-												</button>
-											)}
-										<button
-											className="sc-button"
-											onClick={() => navigate("system")}
-										>
-											{__("Change selection", "linker-tools")}
-										</button>
-									</>
-								) : (
-									<p role="status">
-										{__("Preparing your inquiry…", "linker-tools")}
+					{guidedReview && !inlineReview && (
+						<section className="sc-card">
+							{Boolean(failure) ||
+							(reportRun && !runPending(reportRun.state)) ||
+							(!choice && !canKeepInstalled && history.isSuccess) ? (
+								<>
+									<p>
+										{__(
+											"The inquiry form could not be loaded.",
+											"linker-tools",
+										)}
 									</p>
-								)}
-							</section>
-						))}
-					{activeStep === "review" && !guidedReview && (
+									{(Boolean(failure) || guidedReportFailed) &&
+										(choice || canKeepInstalled) &&
+										!blocked && (
+											<button
+												className="sc-button sc-primary"
+												onClick={() =>
+													report.isError
+														? void report.refetch()
+														: void generate(null)
+												}
+											>
+												{__("Try again", "linker-tools")}
+											</button>
+										)}
+									<button
+										className="sc-button"
+										onClick={() => navigate("system")}
+									>
+										{__("Change selection", "linker-tools")}
+									</button>
+								</>
+							) : (
+								<p role="status">
+									{__("Preparing your inquiry…", "linker-tools")}
+								</p>
+							)}
+						</section>
+					)}
+					{activeStep === "review" && (!guidedReview || inlineReview) && (
 						<ReviewProposal
+							inquiry={inlineReview}
 							project={draft.baseline}
 							inputs={inputs}
 							run={reportRun}
@@ -2044,8 +2084,12 @@ export default function ProjectWorkbench({
 						/>
 					)}
 				</main>
-				{activeStep !== "review" && (
-					<aside className="sc-sidebar">
+				{activeStep !== "review" && activeStep !== "solar" && (
+					<aside
+						className={
+							activeStep === "project" ? "sc-sidebar" : "sc-context-summary"
+						}
+					>
 						<section className="sc-card">
 							<p className="sc-muted">
 								{__("Current configuration", "linker-tools")}

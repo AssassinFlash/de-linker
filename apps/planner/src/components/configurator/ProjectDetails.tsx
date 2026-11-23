@@ -363,7 +363,7 @@ export function ProjectDetails({
 							</option>
 						</select>
 					</label>
-					<label className="sc-field sc-field-wide">
+					<label className="sc-field">
 						<span>{__("Main purpose", "linker-tools")}</span>
 						<select
 							name="project_purpose"

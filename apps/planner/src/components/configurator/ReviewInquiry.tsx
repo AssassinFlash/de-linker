@@ -2,6 +2,7 @@ import { ProductCard } from "../shared/ProductCard.tsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError, type Project } from "../../data/protocol.ts";
+import { InquiryBomLine } from "./InquiryBomLine.tsx";
 import { readInquiryForm } from "../../data/draftTransfer.ts";
 import {
 	pendingInquiry,
@@ -159,6 +160,7 @@ export function ReviewInquiry({
 	inquiryPending?: (pending: boolean) => void;
 }) {
 	const [failed, setFailed] = useState(false);
+	const [cartBusy, setCartBusy] = useState(false);
 	const [review, setReview] = useState<ReturnType<
 		typeof readInquiryForm
 	> | null>(null);
@@ -412,6 +414,18 @@ export function ReviewInquiry({
 		ready,
 		reportRunId,
 	]);
+	const editConfiguration = enterDetails
+		? () => {
+				if (posting.current || !client.isCurrentScope(scope)) return;
+				try {
+					save();
+				} catch {
+					setNavigationFailed(true);
+					return;
+				}
+				enterDetails();
+			}
+		: undefined;
 	const facts = review?.facts ?? [];
 	const inverter = existingSystem(project.inputs);
 	const retrofit =
@@ -455,9 +469,7 @@ export function ReviewInquiry({
 					<details
 						ref={summaryDetails}
 						className="sc-review-details"
-						hidden={
-							!retrofit && !facts.length && !lines?.length && !changes.length
-						}
+						hidden={!retrofit && !facts.length}
 					>
 						<summary>{__("Project details", "linker-tools")}</summary>
 						{retrofit && (
@@ -467,40 +479,6 @@ export function ReviewInquiry({
 							</div>
 						)}
 						{facts.length > 0 && <ProjectFacts facts={facts} />}
-
-						{!checkingInquiry && Boolean(lines?.length) && (
-							<ul className="sc-inquiry-products">
-								{lines?.map((line, index) => (
-									<li key={index}>
-										<ProductCard {...line} quantity={`× ${line.quantity}`} />
-									</li>
-								))}
-							</ul>
-						)}
-						{!checkingInquiry && changes.length > 0 && (
-							<table className="sc-data-table">
-								<thead>
-									<tr>
-										<th scope="col">{__("Product", "linker-tools")}</th>
-										<th scope="col">
-											{__("Current quantity", "linker-tools")}
-										</th>
-										<th scope="col">{__("New quantity", "linker-tools")}</th>
-									</tr>
-								</thead>
-								<tbody>
-									{changes.map((line) => (
-										<tr key={line.productId}>
-											<th scope="row">
-												<ProductCard {...line} />
-											</th>
-											<td>{line.before}</td>
-											<td>{line.after}</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						)}
 					</details>
 					{!checkingInquiry && review && !lines?.length && !changes.length && (
 						<p className="sc-empty-supply">
@@ -509,6 +487,56 @@ export function ReviewInquiry({
 								"linker-tools",
 							)}
 						</p>
+					)}
+					{!checkingInquiry && Boolean(lines?.length) && (
+						<ul className="sc-inquiry-products">
+							{lines?.map((line, index) => (
+								<li
+									key={
+										line.cartKey ??
+										`${line.projectId ?? "cart"}-${line.productId}-${index}`
+									}
+								>
+									<InquiryBomLine
+										line={line}
+										edit={review?.draftEdit ?? null}
+										pending={cartBusy || checkingInquiry}
+										onBusy={setCartBusy}
+										onUpdated={() => {
+											setReview(null);
+											setAttempt((value) => value + 1);
+										}}
+										onEditConfiguration={
+											reportRunId && line.projectId === projectId
+												? editConfiguration
+												: undefined
+										}
+									/>
+								</li>
+							))}
+						</ul>
+					)}
+					{!checkingInquiry && changes.length > 0 && (
+						<table className="sc-data-table">
+							<thead>
+								<tr>
+									<th scope="col">{__("Product", "linker-tools")}</th>
+									<th scope="col">{__("Current quantity", "linker-tools")}</th>
+									<th scope="col">{__("New quantity", "linker-tools")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{changes.map((line) => (
+									<tr key={line.productId}>
+										<th scope="row">
+											<ProductCard {...line} />
+										</th>
+										<td>{line.before}</td>
+										<td>{line.after}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
 					)}
 					{!checkingInquiry &&
 						review?.conflicts.map((conflict) => (
@@ -525,45 +553,6 @@ export function ReviewInquiry({
 								)}
 							</p>
 						))}
-					<div className="sc-review-actions">
-						<button
-							className="sc-button"
-							type="button"
-							disabled={checkingInquiry}
-							onClick={() => {
-								if (reportRunId) {
-									try {
-										save();
-									} catch {
-										setNavigationFailed(true);
-										return;
-									}
-								}
-								changeSelection();
-							}}
-						>
-							{__("Change selection", "linker-tools")}
-						</button>
-						{enterDetails && (
-							<button
-								className="sc-button"
-								type="button"
-								disabled={checkingInquiry}
-								onClick={() => {
-									if (posting.current || !client.isCurrentScope(scope)) return;
-									try {
-										save();
-									} catch {
-										setNavigationFailed(true);
-										return;
-									}
-									enterDetails();
-								}}
-							>
-								{__("Enter project details", "linker-tools")}
-							</button>
-						)}
-					</div>
 				</aside>
 				<div className="sc-inquiry-fields">
 					{!review && !failed && (
@@ -571,8 +560,10 @@ export function ReviewInquiry({
 					)}
 					<div
 						ref={host}
+						inert={cartBusy || undefined}
 						onSubmit={(event) => {
-							if (!client.isCurrentScope(scope)) event.preventDefault();
+							if (cartBusy || !review || !client.isCurrentScope(scope))
+								event.preventDefault();
 							if (
 								event.defaultPrevented ||
 								!(event.target instanceof window.HTMLFormElement)
@@ -628,6 +619,36 @@ export function ReviewInquiry({
 							</button>
 						</div>
 					)}
+					<div className="sc-review-actions">
+						<button
+							className="sc-button btn-secondary"
+							type="button"
+							disabled={checkingInquiry}
+							onClick={() => {
+								if (reportRunId) {
+									try {
+										save();
+									} catch {
+										setNavigationFailed(true);
+										return;
+									}
+								}
+								changeSelection();
+							}}
+						>
+							{__("Change selection", "linker-tools")}
+						</button>
+						{enterDetails && (
+							<button
+								className="sc-button btn-ghost"
+								type="button"
+								disabled={checkingInquiry}
+								onClick={editConfiguration}
+							>
+								{__("Enter project details", "linker-tools")}
+							</button>
+						)}
+					</div>
 				</div>
 			</div>
 			{navigationFailed && (
