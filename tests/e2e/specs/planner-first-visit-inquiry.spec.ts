@@ -156,6 +156,12 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			await page.goto(url + (lang === 'de' ? '/de/' : '/'));
 			await page
+				.getByRole('button', {
+					name: lang === 'de' ? 'Alle ablehnen' : 'Reject all',
+					exact: true,
+				})
+				.click();
+			await page
 				.locator('[data-linker-planner-entry="home-hero"] a')
 				.click();
 			const comparison = page.getByRole('table', { name: words.compare });
@@ -210,6 +216,11 @@ for (const lang of ['en', 'de'] as const) {
 			const binding = await form
 				.locator('[name="linker_preliminary_project"]')
 				.inputValue();
+			const projectUrl = new URL(page.url());
+			bareProject = {
+				path: projectUrl.pathname,
+				id: projectUrl.searchParams.get('project')!,
+			};
 			const direction = await page
 				.locator('.sc-draft-transfer p')
 				.filter({ hasText: chosen })
@@ -292,6 +303,21 @@ for (const lang of ['en', 'de'] as const) {
 			);
 			expect(delivered).toHaveLength(1);
 			expect(delivered[0]!.subject).toContain(result.number);
+			await test.info().attach('inquiry-readback', {
+				body: JSON.stringify({
+					lang,
+					width,
+					number: result.number,
+					status: result.status,
+					locale: result.locale,
+					project: binding,
+					direction,
+					items: result.items,
+					receipts: delivered.length,
+					subject: delivered[0]!.subject,
+				}),
+				contentType: 'application/json',
+			});
 			expect(delivered[0]!.html).not.toContain('E2E First Guest');
 			if (message) expect(delivered[0]!.html).not.toContain(message);
 			expect(
@@ -487,9 +513,13 @@ for (const lang of ['en', 'de'] as const) {
 			await page.locator('[data-cky-tag="reject-button"]').click();
 			const scenarios = page.locator('.sc-scene-grid button');
 			await expect(scenarios).toHaveCount(4);
-			const retrofit = scenarios.filter({ hasText: lang === 'de' ? 'Speicher nachrüsten' : 'Storage retrofit' });
+			const retrofit = scenarios.filter({
+				hasText:
+					lang === 'de' ? 'Speicher nachrüsten' : 'Storage retrofit',
+			});
 			await expect(retrofit).toBeEnabled();
-			if (width === 1440) await expect(retrofit).toBeInViewport({ ratio: 1 });
+			if (width === 1440)
+				await expect(retrofit).toBeInViewport({ ratio: 1 });
 			await screenshot(page, `bare-entry-${lang}-${width}`);
 			await retrofit.click();
 			const rows = page.locator('.sc-direction-comparison tbody tr');

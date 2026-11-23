@@ -215,6 +215,24 @@ interface ReviewLine {
 	quantity: number;
 }
 
+async function draftLines(draft: Locator): Promise<ReviewLine[]> {
+	return draft.locator('.linker-inquiry-line').evaluateAll((rows) =>
+		rows.map((row) => {
+			const label = row.querySelector(
+				'.linker-inquiry-identity strong'
+			)?.textContent;
+			const controls = row.querySelector('.linker-inquiry-line-controls');
+			const text = controls?.querySelector(
+				'.linker-inquiry-stepper span, :scope > span:last-child'
+			)?.textContent;
+			const match = text?.match(/^(?:× )?(\d+)$/);
+			if (!label || !match)
+				throw new Error('Expected a product name and its quantity');
+			return { label, quantity: Number(match[1]) };
+		})
+	);
+}
+
 const lineOrder = (a: ReviewLine, b: ReviewLine) =>
 	a.label.localeCompare(b.label) || a.quantity - b.quantity;
 
@@ -437,23 +455,7 @@ for (const scenario of scenarios) {
 							await expect(
 								page.locator('form.linker-inquiry-form')
 							).toBeVisible();
-							const lines: ReviewLine[] = (
-								await draft
-									.getByRole('listitem')
-									.allTextContents()
-							).map((line) => {
-								const displayed = /^(.+) × (\d+)$/.exec(
-									line.trim()
-								);
-								if (!displayed)
-									throw new Error(
-										'Expected a visible product and its quantity'
-									);
-								return {
-									label: displayed[1]!,
-									quantity: Number(displayed[2]),
-								};
-							});
+							const lines = await draftLines(draft);
 							if (scenario.retainedInverter)
 								expect(lines).toEqual([]);
 							else expect(lines.length).toBeGreaterThan(0);
@@ -745,16 +747,10 @@ for (const [locale, width] of [
 					const shown = page
 						.locator('.linker-inquiry-draft')
 						.filter({ visible: true });
-					const rows = shown.getByRole('listitem');
-					await expect(rows.first()).toBeVisible();
-					const lines = (await rows.allTextContents()).map((row) => {
-						const match = /^(.+) × (\d+)$/.exec(row.trim());
-						expect(match).not.toBeNull();
-						return {
-							label: match![1]!,
-							quantity: Number(match![2]),
-						};
-					});
+					await expect(
+						shown.locator('.linker-inquiry-line').first()
+					).toBeVisible();
+					const lines = await draftLines(shown);
 					expect(new Set(lines.map(({ label }) => label)).size).toBe(
 						lines.length
 					);

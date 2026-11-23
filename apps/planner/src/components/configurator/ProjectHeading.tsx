@@ -68,7 +68,6 @@ export function InquiryStages({
 							{open ? (
 								<button
 									type="button"
-									aria-current={step === current ? "step" : undefined}
 									onClick={() => open(step)}
 								>
 									{content}

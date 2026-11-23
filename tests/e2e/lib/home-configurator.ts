@@ -16,6 +16,15 @@ export async function launchHomepageConfigurator(
 			exact: true,
 		})
 		.click();
+	await page
+		.getByRole('button', {
+			name:
+				language === 'en'
+					? 'Enter project details'
+					: 'Projektdaten eingeben',
+			exact: true,
+		})
+		.click();
 	return page.locator('[data-linker-planner]').getByRole('form', {
 		name:
 			language === 'en'

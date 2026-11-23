@@ -362,7 +362,7 @@ export function SystemOptions({
 		new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(value);
 	const capacity = (item: EquipmentCandidate) =>
 		typeof item.usable_energy_kwh === "number"
-			? `${format(item.usable_energy_kwh)} kWh`
+			? `${format(item.usable_energy_kwh)} kWh`
 			: __("Usable capacity to confirm", "linker-tools");
 	const devices = (selection: EquipmentSelection, catalog = products) => {
 		const inverter = productName(catalog.get(selection.inverter_product_id));
