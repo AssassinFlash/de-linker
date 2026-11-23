@@ -6,6 +6,7 @@
 /**
  * External dependencies
  */
+import { randomUUID } from 'node:crypto';
 import { expect, test, type Page, type Route } from '@playwright/test';
 
 const CUT =
@@ -34,8 +35,7 @@ interface TurnBody {
 /**
  * Stands in for the proxy. `cut` stores the question and an unfinished
  * stream. `down` stores nothing. `ok` stores a finished answer. `hang`
- * accepts the POST and never answers, until `releaseHangs` or the page
- * closes.
+ * accepts the job but holds the poll until `releaseHangs` or the page closes.
  *
  * @param page The Playwright page.
  */
@@ -48,6 +48,14 @@ function installProxy( page: Page ): {
 	const mode: { current: Mode } = { current: 'cut' };
 	const posts = { n: 0 };
 	const bodies: TurnBody[] = [];
+	let pending: {
+		job_id: string;
+		conversation_id: number;
+		stage: string;
+		operation_id: string;
+		started_at: number;
+		user_message: string;
+	} | null = null;
 	const releaseHangs: Array< () => void > = [];
 	const thread: {
 		messages: { role: string; content: string }[];
@@ -92,16 +100,48 @@ function installProxy( page: Page ): {
 						conversation_id: 7,
 						messages: thread.messages,
 						stream: thread.stream,
+						...( pending ? { pending_job: pending } : {} ),
 						contacts: [],
 						inquiries: [],
 					} ),
 				} );
 				return;
 			}
-			if ( 'POST' === request.method() && path.endsWith( '/turn' ) ) {
+			if (
+				'POST' === request.method() &&
+				path.endsWith( '/turn/start' )
+			) {
 				posts.n += 1;
 				const body = ( request.postDataJSON() ?? {} ) as TurnBody;
 				bodies.push( body );
+				pending = {
+					job_id: randomUUID(),
+					conversation_id: 7,
+					stage: body.attachments?.length
+						? 'reading_attachments'
+						: 'understanding',
+					operation_id: request.headers()[ 'x-linker-operation' ],
+					started_at: Date.now() / 1000,
+					user_message: body.messages?.at( -1 )?.content ?? '',
+				};
+				await route.fulfill( {
+					status: 202,
+					json: {
+						job_id: pending.job_id,
+						conversation_id: 7,
+						status: 'running',
+						stage: pending.stage,
+						started_at: pending.started_at,
+					},
+				} );
+				return;
+			}
+			if (
+				'GET' === request.method() &&
+				pending &&
+				path.endsWith( '/turn/' + pending.job_id )
+			) {
+				const job = pending;
 				if ( 'hang' === mode.current ) {
 					await new Promise< void >( ( resolve ) => {
 						releaseHangs.push( resolve );
@@ -110,6 +150,7 @@ function installProxy( page: Page ): {
 					await route.abort().catch( () => undefined );
 					return;
 				}
+				pending = null;
 				if ( 'down' === mode.current ) {
 					await route.fulfill( {
 						status: 502,
@@ -122,6 +163,7 @@ function installProxy( page: Page ): {
 					return;
 				}
 				const stream = 'cut' === mode.current ? CUT : DONE;
+				const body = bodies[ bodies.length - 1 ];
 				thread.messages = ( body.messages ?? [] ).map(
 					( message ) => ( {
 						role: message.role,
@@ -132,7 +174,12 @@ function installProxy( page: Page ): {
 				await route.fulfill( {
 					status: 200,
 					contentType: 'application/json',
-					body: JSON.stringify( { conversation_id: 7, stream } ),
+					body: JSON.stringify( {
+						job_id: job.job_id,
+						conversation_id: 7,
+						status: 'completed',
+						stream,
+					} ),
 				} );
 				return;
 			}
@@ -148,6 +195,7 @@ function installProxy( page: Page ): {
 		posts,
 		bodies,
 		releaseHangs: () => {
+			pending = null;
 			releaseHangs.splice( 0 ).forEach( ( release ) => release() );
 		},
 	};
@@ -236,73 +284,101 @@ test( 'a 502 puts the question back and a reload still offers retry', async ( {
 	expect( proxy.posts.n ).toBe( 2 );
 } );
 
-test( 'a full session store drops the file, says so, and retries without it', async ( {
-	page,
-} ) => {
-	await page.addInitScript( () => {
-		const original = Storage.prototype.setItem;
-		Storage.prototype.setItem = function ( key, value ) {
-			if (
-				key.startsWith( 'linker-genie-turn-failure:v2:' ) &&
-				String( value ).includes( '"data":' ) &&
-				// The old fault targeted a failed turn, rather than its accepted editor.
-				! Object.values(
-					JSON.parse( String( value ) ).records as Record<
-						string,
-						{ record: { editing?: boolean } }
-					>
-				).some( ( entry ) => entry.record.editing )
-			) {
-				throw new DOMException(
-					'The quota has been exceeded.',
-					'QuotaExceededError'
-				);
-			}
-			return original.call( this, key, value );
-		};
-	} );
-	const proxy = installProxy( page );
-	proxy.mode.current = 'down';
-	await page.goto( STORY );
-	await page.getByRole( 'button', { name: 'Open' } ).click();
-	const question = 'Check this datasheet';
-	await page.getByLabel( 'Ask Genie' ).fill( question );
-	await page.locator( 'input[type="file"]' ).setInputFiles( {
-		name: 'nameplate.pdf',
-		mimeType: 'application/pdf',
-		buffer: Buffer.from( '%PDF-1.7' ),
-	} );
-	await expect( page.getByText( 'nameplate.pdf' ) ).toBeVisible();
-	await page.getByRole( 'button', { name: 'Send' } ).click();
+for ( const fileStore of [ 'available', 'unavailable' ] as const ) {
+	test(
+		'reloading with full session storage and ' +
+			fileStore +
+			' browser file storage',
+		async ( { page } ) => {
+			await page.addInitScript( ( available ) => {
+				if ( ! available ) {
+					Object.defineProperty( window, 'indexedDB', {
+						value: undefined,
+					} );
+				}
+				const original = Storage.prototype.setItem;
+				Storage.prototype.setItem = function ( key, value ) {
+					if (
+						key.startsWith( 'linker-genie-turn-failure:v2:' ) &&
+						String( value ).includes( '"data":' ) &&
+						// The old fault targeted a failed turn, rather than its accepted editor.
+						! Object.values(
+							JSON.parse( String( value ) ).records as Record<
+								string,
+								{ record: { editing?: boolean } }
+							>
+						).some( ( entry ) => entry.record.editing )
+					) {
+						throw new DOMException(
+							'The quota has been exceeded.',
+							'QuotaExceededError'
+						);
+					}
+					return original.call( this, key, value );
+				};
+			}, fileStore === 'available' );
+			const proxy = installProxy( page );
+			proxy.mode.current = 'down';
+			await page.goto( STORY );
+			await page.getByRole( 'button', { name: 'Open' } ).click();
+			const question = 'Check this datasheet';
+			await page.getByLabel( 'Ask Genie' ).fill( question );
+			await page.locator( 'input[type="file"]' ).setInputFiles( {
+				name: 'nameplate.pdf',
+				mimeType: 'application/pdf',
+				buffer: Buffer.from( '%PDF-1.7' ),
+			} );
+			await expect( page.getByText( 'nameplate.pdf' ) ).toBeVisible();
+			await page.getByRole( 'button', { name: 'Send' } ).click();
 
-	const alert = page.getByRole( 'alert' );
-	await expect( alert ).toHaveText(
-		'Genie did not answer. Please try again. Attach nameplate.pdf again. It could not be kept for another try.'
+			const alert = page.getByRole( 'alert' );
+			await expect( alert ).toHaveText(
+				fileStore === 'available'
+					? 'Genie did not answer. Please try again.'
+					: 'Genie did not answer. Please try again. Attach nameplate.pdf again. It could not be kept for another try.'
+			);
+			await expect( page.getByLabel( 'Ask Genie' ) ).toHaveValue(
+				question
+			);
+			await expect(
+				page.getByRole( 'button', {
+					name: 'Remove attachment nameplate.pdf',
+				} )
+			).toHaveCount( fileStore === 'available' ? 1 : 0 );
+
+			await page.reload();
+			await expect(
+				page.getByRole( 'button', { name: 'Restore unsent draft' } )
+			).toHaveCount( 0 );
+			await expect( alert ).toHaveText(
+				fileStore === 'available'
+					? 'Genie did not answer. Please try again.'
+					: 'Genie did not answer. Please try again. Attach nameplate.pdf again. It could not be kept for another try.'
+			);
+			await expect( page.getByLabel( 'Ask Genie' ) ).toHaveValue(
+				question
+			);
+
+			proxy.mode.current = 'ok';
+			await page.getByRole( 'button', { name: 'Try again' } ).click();
+			await expect(
+				page.getByText( 'A hybrid inverter covers that.' )
+			).toBeVisible();
+			expect( proxy.posts.n ).toBe( 2 );
+			expect( proxy.bodies[ 0 ].attachments ).toHaveLength( 1 );
+			expect( proxy.bodies[ 1 ].attachments ).toEqual(
+				fileStore === 'available'
+					? proxy.bodies[ 0 ].attachments
+					: undefined
+			);
+			expect( proxy.bodies[ 1 ].messages ).toEqual(
+				fileStore === 'available'
+					? proxy.bodies[ 0 ].messages
+					: [ { role: 'user', content: question } ]
+			);
+		}
 	);
-	await expect( page.getByLabel( 'Ask Genie' ) ).toHaveValue( question );
-	await expect(
-		page.getByRole( 'button', { name: 'Remove attachment nameplate.pdf' } )
-	).toHaveCount( 0 );
-
-	await page.reload();
-	await expect(
-		page.getByRole( 'button', { name: 'Restore unsent draft' } )
-	).toHaveCount( 0 );
-	await expect( alert ).toHaveText(
-		'Genie did not answer. Please try again. Attach nameplate.pdf again. It could not be kept for another try.'
-	);
-	await expect( page.getByLabel( 'Ask Genie' ) ).toHaveValue( question );
-
-	proxy.mode.current = 'ok';
-	await page.getByRole( 'button', { name: 'Try again' } ).click();
-	await expect(
-		page.getByText( 'A hybrid inverter covers that.' )
-	).toBeVisible();
-	expect( proxy.posts.n ).toBe( 2 );
-	expect( proxy.bodies[ 0 ].attachments ).toHaveLength( 1 );
-	expect( proxy.bodies[ 1 ].attachments ).toBeUndefined();
-	expect( proxy.bodies[ 1 ].messages?.[ 0 ]?.content ).toBe( question );
-} );
+}
 
 test( 'a hung connection becomes the upstream failure and can be retried', async ( {
 	page,
