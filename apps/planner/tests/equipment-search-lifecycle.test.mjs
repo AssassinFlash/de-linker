@@ -1028,14 +1028,6 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 	await click("Continue with solar");
 	await click("Place modules on the roof");
 	await click("Open roof layout");
-	const module =
-		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
-	await untilRun(() =>
-		app
-			.fieldSelect("Panel dimensions for this layout")
-			?.querySelector(`option[value="${module.id}"]`),
-	);
-	await app.updateSelect("Panel dimensions for this layout", module.id);
 	for (const [label, value] of [
 		["Width", "8"],
 		["Depth", "5"],
@@ -1049,6 +1041,16 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 		await enter(app.fieldInput(label), value);
 	await act(async () => document.querySelector(".sc-check input").click());
 	await click("Add rectangular roof");
+	await click("Modules");
+	const module =
+		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
+	await untilRun(() =>
+		app
+			.fieldSelect("Panel dimensions for this layout")
+			?.querySelector(`option[value="${module.id}"]`),
+	);
+	await app.updateSelect("Panel dimensions for this layout", module.id);
+
 	for (const [label, value] of [
 		["Rows", "1"],
 		["Columns", "2"],

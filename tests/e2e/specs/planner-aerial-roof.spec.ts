@@ -286,7 +286,7 @@ for (const lang of ['en', 'de'] as const) {
 				await reopened
 					.getByRole('button', {
 						name:
-							lang === 'en' ? 'Draw roof' : 'Dachfläche zeichnen',
+							lang === 'en' ? 'Draw polygon' : 'Polygon',
 						exact: true,
 					})
 					.click();

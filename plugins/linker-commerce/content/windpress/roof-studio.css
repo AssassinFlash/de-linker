@@ -1,0 +1,77 @@
+@layer components {
+  .sc-configurator .sc-solar .sc-roof-studio {
+    background: transparent; border: 0; box-shadow: none; padding: 0;
+  }
+  .sc-roof-studio .sc-roof-layout {
+    display: grid; grid-template-columns: minmax(0, 1fr) 368px;
+    align-items: start; gap: var(--proto-space-5); min-width: 0;
+  }
+  .sc-studio-canvas, .sc-roof-inspector {
+    min-width: 0; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg);
+    background: var(--proto-neutral-0); overflow: clip;
+  }
+  .sc-studio-tools {
+    display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--proto-space-2);
+    padding: var(--proto-space-4); border-block-end: 1px solid var(--proto-color-line);
+  }
+  .sc-configurator .sc-studio-tools button {
+    min-width: 0; min-height: 44px; padding: 4px 6px; white-space: nowrap; font-size: 13px;
+    font-weight: 600; color: var(--proto-ink-deep); background: white; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-sm);
+  }
+  .sc-configurator .sc-studio-tools button[aria-pressed=true] {
+    border-color: var(--proto-ink-deep); background: var(--proto-ink-deep); color: white;
+  }
+  .sc-configurator .sc-studio-tools button:disabled { opacity: .55; }
+  .sc-studio-canvas .sc-roof-tools { padding: var(--proto-space-3) var(--proto-space-4) 0; }
+  .sc-configurator .sc-solar .sc-studio-canvas .sc-roof-board {
+    display: block; width: 100%; height: clamp(320px, 45vw, 490px); max-height: none;
+    border-inline: 0; border-radius: 0; border-block: 1px solid var(--proto-color-line);
+    background-color: var(--proto-neutral-50);
+    background-image: linear-gradient(var(--proto-neutral-200) 1px, transparent 1px), linear-gradient(90deg,var(--proto-neutral-200) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .sc-studio-canvas .sc-studio-draft polyline, .sc-studio-canvas .sc-studio-draft circle {
+    stroke: var(--proto-teal-700); stroke-width: 2; vector-effect: non-scaling-stroke;
+  }
+  .sc-studio-canvas .sc-studio-draft polyline { fill: none; stroke-dasharray: 5 3; }
+  .sc-studio-canvas .sc-studio-draft circle { fill: white; }
+  .sc-studio-canvas .sc-keepout-shape { fill: var(--proto-neutral-300); stroke: var(--proto-teal-800); stroke-dasharray: 4 3; stroke-width: 2; }
+  .sc-studio-canvas > :is(.sc-hint, .sc-studio-measurement, [role=alert], button) { margin: var(--proto-space-3) var(--proto-space-4); }
+  .sc-configurator .sc-roof-metrics {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: var(--proto-space-4);
+    gap: var(--proto-space-2); background: var(--proto-neutral-50); border-top: 1px solid var(--proto-color-line);
+  }
+  .sc-roof-metrics dt, .sc-roof-metrics dd { margin: 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .sc-roof-metrics dt { color: var(--proto-neutral-600); font-size: 12px; }
+  .sc-roof-metrics dd { color: var(--proto-ink-deep); font-size: 16px; font-weight: 700; }
+  .sc-inspector-tabs { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); background: var(--proto-neutral-50); }
+  .sc-configurator .sc-inspector-tabs button {
+    white-space: nowrap; color: var(--proto-neutral-600); min-height: 48px; font-size: 13px; font-weight: 600;
+    background: transparent; border-radius: 0; border: 0; border-bottom: 2px solid var(--proto-color-line);
+  }
+  .sc-configurator .sc-inspector-tabs button[aria-selected=true] { background: white; border-bottom-color: var(--proto-accent); color: var(--proto-teal-800); }
+  .sc-configurator .sc-roof-inspector .sc-roof-props { display: grid; gap: var(--proto-space-4); padding: var(--proto-space-4); min-width: 0; }
+  .sc-configurator .sc-roof-inspector [hidden] { display: none; }
+  .sc-configurator .sc-roof-studio .sc-selected-roof-properties, .sc-configurator .sc-roof-inspector .sc-fields {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(145px,100%), 1fr)); gap: var(--proto-space-4) var(--proto-space-3); align-items: end;
+  }
+  .sc-configurator .sc-roof-inspector .sc-field { min-width: 0; }
+  .sc-configurator .sc-roof-inspector .sc-selected-roof-properties .sc-field > span { white-space: nowrap; }
+  .sc-configurator .sc-roof-inspector .sc-edge-rule { border: 0; padding: 0; display: grid; gap: var(--proto-space-2); text-align: start; }
+  .sc-edge-rule strong { display: flex; align-items: center; min-height: 48px; border-radius: var(--proto-radius-sm); border: 1px solid var(--proto-color-line); padding-inline: var(--proto-space-3); }
+  .sc-roof-face-summary { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--proto-space-2); }
+  .sc-roof-face-summary span { white-space: nowrap; }
+  .sc-map-consent { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--proto-space-3); padding: var(--proto-space-3) var(--proto-space-4); background: var(--proto-teal-50); }
+  .sc-map-consent span { flex: 1 1 14rem; color: var(--proto-ink-deep); font-size: 13px; }
+  .sc-studio-canvas .sc-map-host { height: clamp(300px, 45vw, 490px); }
+  @media (max-width: 900px) {
+    .sc-roof-studio .sc-roof-layout { grid-template-columns: minmax(0,1fr); }
+  }
+  @media (max-width: 580px) {
+    .sc-configurator .sc-studio-tools { gap: 4px; padding: 8px; }
+    .sc-configurator .sc-studio-tools button { font-size: 12px; padding-inline: 2px; }
+    .sc-configurator .sc-roof-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .sc-studio-canvas .sc-roof-tools { padding-inline: 8px; }
+    .sc-configurator .sc-roof-inspector .sc-roof-props { padding-inline: 12px; }
+  }
+}

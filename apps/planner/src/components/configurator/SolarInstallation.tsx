@@ -1,3 +1,5 @@
+import { LayoutRulesForm } from "../design/LayoutRulesForm.tsx";
+import { RoofInspector, type RoofTab } from "../design/RoofInspector.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { imagerySourceKey, readPlaceImagery } from "../../domain/place.ts";
 import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
@@ -28,6 +30,7 @@ import {
 } from "../../domain/geometryCommands.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
 import {
+	ringArea,
 	manualSource,
 	rectangularRoof,
 	roofPlane,
@@ -71,7 +74,7 @@ import {
 import { canAnchorFirstMapRoof } from "../../domain/mapDrawingBase.ts";
 import type { MapInteraction } from "../../data/mapInteraction.ts";
 import { revealActionResult } from "../revealActionResult.ts";
-import { __ } from "../../i18n.ts";
+import { __, sprintf } from "../../i18n.ts";
 
 export interface SolarInstallationProps {
 	inputs: JsonObject;
@@ -84,6 +87,7 @@ export interface SolarInstallationProps {
 	wiring?: ReactNode;
 	initialMap?: boolean;
 	initialPlan?: boolean;
+	annualGenerationKwh?: number | null;
 	takeImageryConsent?: (source: PlaceImagery) => boolean;
 	onEditing?: (editing: boolean) => void;
 	onLayoutChange?: () => void;
@@ -165,6 +169,7 @@ export function SolarInstallation({
 	wiring,
 	initialMap = false,
 	initialPlan = false,
+	annualGenerationKwh = null,
 	active = true,
 	onCoordinateValidity,
 	takeImageryConsent,
@@ -193,6 +198,7 @@ export function SolarInstallation({
 			: "known",
 	);
 	const [layoutOpen, setLayoutOpen] = useState(initialMap || initialPlan);
+	const [inspector, setInspector] = useState<RoofTab>("geometry");
 	const choicesId = useId();
 	const layoutHeading = useRef<HTMLHeadingElement>(null);
 	const openLayout = useRef<HTMLButtonElement>(null);
@@ -216,9 +222,9 @@ export function SolarInstallation({
 	const [selected, select] = useState<string | null>(
 		geometry.roofs[0]?.id ?? null,
 	);
-	const [tool, setTool] = useState<"select" | "roof" | "obstacle" | "modules">(
-		initialMap && !geometry.roofs.length ? "roof" : "select",
-	);
+	const [tool, setTool] = useState<
+		"select" | "roof" | "keepout" | "measure" | "obstacle" | "modules"
+	>(initialMap && !geometry.roofs.length ? "roof" : "select");
 	const [error, setError] = useState("");
 	const [roofPropertyInvalid, setRoofPropertyInvalid] = useState(false);
 	const roofPropertiesPanel = useRef<HTMLDivElement>(null);
@@ -296,6 +302,7 @@ export function SolarInstallation({
 			: null);
 	const firstMapRoof = siteCentre !== null && canAnchorFirstMapRoof(geometry);
 	const [calibrationOpen, setCalibrationOpen] = useState(false);
+	const [editingRules, setEditingRules] = useState(false);
 	const [importOpen, setImportOpen] = useState(false);
 	const reportImportActivity = geometryImport?.onActivity;
 	const geometryImportActivity = useCallback(
@@ -307,12 +314,14 @@ export function SolarInstallation({
 	);
 	useEffect(() => {
 		onEditing?.(
-			editingLayout && (calibrationOpen || usingTool || roofPropertyInvalid),
+			editingLayout &&
+				(calibrationOpen || editingRules || usingTool || roofPropertyInvalid),
 		);
 		return () => onEditing?.(false);
 	}, [
 		calibrationOpen,
 		editingLayout,
+		editingRules,
 		roofPropertyInvalid,
 		usingTool,
 		onEditing,
@@ -321,6 +330,7 @@ export function SolarInstallation({
 	const moduleRows = useRef<HTMLInputElement>(null);
 	const measuredWidth = useRef<HTMLInputElement>(null);
 	const [vertices, setVertices] = useState<readonly Vec2[]>([]);
+	const [ruler, setRuler] = useState<readonly Vec2[]>([]);
 	const [readyAerial, setReadyAerial] = useState<PlaceImagery | null>(null);
 	const tracedAerial = useRef<PlaceImagery | null>(null);
 	const canConfirmAerial =
@@ -349,10 +359,16 @@ export function SolarInstallation({
 		geometry.roofs.find(
 			(r) =>
 				geometry.arrays.some((a) => a.id === selected && a.roof_id === r.id) ||
-				geometry.obstacles.some((o) => o.id === selected && o.roof_id === r.id),
+				geometry.obstacles.some(
+					(o) => o.id === selected && o.roof_id === r.id,
+				) ||
+				geometry.keepouts.some((o) => o.id === selected && o.roof_id === r.id),
 		) ??
 		geometry.roofs[0];
 	const selectedProperties = roof ? roofProperties(roof) : null;
+	const edgeClearance = geometry.layout_rules.find(
+		(rule) => rule.roof_id === roof?.id,
+	)?.edge_clearance_m;
 	useEffect(() => {
 		if (
 			roofPropertyInvalid &&
@@ -371,8 +387,44 @@ export function SolarInstallation({
 		selectedSource?.kind === "user_measurement" &&
 		selectedSource.reference_sha256 === null &&
 		selectedSource.permissions.derive === "permitted";
+	function selectObject(value: string) {
+		select(value);
+		setInspector(
+			geometry.arrays.some((a) => a.id === value) ? "modules" : "geometry",
+		);
+	}
 	const poses = panelPoses(geometry);
 	const summary = moduleSummary(geometry);
+	const area = geometry.roofs.reduce(
+		(sum, face) =>
+			sum +
+			ringArea(face.boundary_uv) -
+			face.holes_uv.reduce((holes, ring) => holes + ringArea(ring), 0),
+		0,
+	);
+	const format = (value: number) =>
+		new Intl.NumberFormat(config.locale, { maximumFractionDigits: 2 }).format(
+			value,
+		);
+	const metrics = [
+		[
+			__("Roof area", "linker-tools"),
+			geometry.roofs.length ? format(area) + " m²" : "—",
+		],
+		[
+			__("Modules", "linker-tools"),
+			format(summary.count) + " " + __("pcs", "linker-tools"),
+		],
+		[__("PV capacity", "linker-tools"), format(summary.stc_kwp) + " kWp"],
+		[
+			__("Annual yield", "linker-tools"),
+			annualGenerationKwh === null
+				? "—"
+				: format(annualGenerationKwh / 1000) +
+					" " +
+					__("MWh/yr", "linker-tools"),
+		],
+	];
 	const numeric = (key: keyof typeof fields) => {
 		const value = fields[key].trim() ? Number(fields[key]) : NaN;
 		if (!Number.isFinite(value))
@@ -724,9 +776,10 @@ export function SolarInstallation({
 	}
 	function addRoof(
 		points?: readonly Vec2[],
-		aerial = points ? tracedAerial.current : null,
+		aerial = map && points ? tracedAerial.current : null,
 	) {
 		if (
+			map &&
 			points &&
 			(!aerial ||
 				!readyAerial ||
@@ -757,7 +810,7 @@ export function SolarInstallation({
 				: declared;
 			const frame = geometry.coordinate_system;
 			const coordinateEdit =
-				points && firstMapRoof
+				aerial && points && firstMapRoof
 					? {
 							type: "set_coordinate_system" as const,
 							before: frame,
@@ -788,34 +841,46 @@ export function SolarInstallation({
 				before: geometry,
 				edits: sourceEdits,
 			});
-			const command: GeometryCommand = points
-				? newMapShapeCommand(
-						withSource,
-						{
-							kind: "roof",
-							identity,
-							pitch_deg: numeric("pitch"),
-							bearing_deg: numeric("azimuth"),
-							height_reference_position: points[0]!,
-							reference_height_m: numeric("height"),
-						},
-						mapPolygon(points),
-					)
-				: {
-						type: "put_roof",
-						before: null,
-						value: rectangularRoof(identity, {
-							width: numeric("width"),
-							slopeLength: numeric("depth"),
-							pitch: numeric("pitch"),
-							bearing: numeric("azimuth"),
-							origin: [
-								numeric("originU"),
-								numeric("originV"),
-								numeric("height"),
-							],
-						}),
-					};
+			const command: GeometryCommand =
+				aerial && points
+					? newMapShapeCommand(
+							withSource,
+							{
+								kind: "roof",
+								identity,
+								pitch_deg: numeric("pitch"),
+								bearing_deg: numeric("azimuth"),
+								height_reference_position: points[0]!,
+								reference_height_m: numeric("height"),
+							},
+							mapPolygon(points),
+						)
+					: {
+							type: "put_roof",
+							before: null,
+							value: points
+								? {
+										...identity,
+										...roofPlane(numeric("pitch"), numeric("azimuth"), [
+											numeric("originU"),
+											numeric("originV"),
+											numeric("height"),
+										]),
+										boundary_uv: points,
+										holes_uv: [],
+									}
+								: rectangularRoof(identity, {
+										width: numeric("width"),
+										slopeLength: numeric("depth"),
+										pitch: numeric("pitch"),
+										bearing: numeric("azimuth"),
+										origin: [
+											numeric("originU"),
+											numeric("originV"),
+											numeric("height"),
+										],
+									}),
+						};
 			const edits = command.type === "group" ? command.edits : [command];
 			if (
 				commit({
@@ -827,6 +892,7 @@ export function SolarInstallation({
 				select(identity.id);
 				setVertices([]);
 				setTool(points ? "modules" : "select");
+				if (points) setInspector("modules");
 			}
 		} catch (cause) {
 			setError(
@@ -834,6 +900,35 @@ export function SolarInstallation({
 					? cause.message
 					: __("Check the roof inputs.", "linker-tools"),
 			);
+		}
+	}
+	function addKeepout() {
+		if (!roof || vertices.length < 3) return;
+		const value = {
+			id: id(),
+			roof_id: roof.id,
+			name: __("Keep-out", "linker-tools"),
+			reason: __("Keep clear of modules", "linker-tools"),
+			source_id: roof.source_id,
+		};
+		try {
+			const command: GeometryCommand = map
+				? newMapShapeCommand(
+						geometry,
+						{ kind: "keepout", value },
+						mapPolygon(vertices),
+					)
+				: {
+						type: "put_keepout",
+						before: null,
+						value: { ...value, footprint_uv: vertices },
+					};
+			if (commit(command)) {
+				select(value.id);
+				startTool("select");
+			}
+		} catch {
+			setError(__("Check the drawn outline.", "linker-tools"));
 		}
 	}
 	function addObstacle(points?: readonly Vec2[]) {
@@ -964,7 +1059,7 @@ export function SolarInstallation({
 	const mapDrawing: MapInteraction | null =
 		map &&
 		((tool === "roof" && (firstMapRoof || mapReferenced)) ||
-			(tool === "obstacle" && roof && mapReferenced))
+			((tool === "obstacle" || tool === "keepout") && roof && mapReferenced))
 			? {
 					key: drawingKey,
 					phase: "collecting",
@@ -1023,11 +1118,19 @@ export function SolarInstallation({
 			: null;
 	function startTool(value: typeof tool) {
 		tracedAerial.current = null;
+		setRuler([]);
 		setTool(value);
+		if (value !== "select")
+			setInspector(value === "modules" ? "modules" : "geometry");
 		setVertices([]);
 		setDrawingKey(crypto.randomUUID());
 		setError("");
-		if ((value === "roof" || value === "obstacle") && mapReferenced)
+		if (value === "measure") setView("plan");
+		else if (
+			(value === "roof" || value === "obstacle") &&
+			mapReferenced &&
+			view !== "plan"
+		)
 			setView("map");
 		else if (view === "scene" && value !== "select") setView("plan");
 	}
@@ -1297,7 +1400,7 @@ export function SolarInstallation({
 	);
 	return (
 		<section className="sc-solar">
-			<header className="sc-section-head">
+			<header className="sc-section-head" hidden={editingLayout}>
 				<h1>{__("Define the solar installation", "linker-tools")}</h1>
 				<p>
 					{__(
@@ -1306,7 +1409,7 @@ export function SolarInstallation({
 					)}
 				</p>
 			</header>
-			<fieldset disabled={blocked || calibrationOpen}>
+			<fieldset disabled={blocked || calibrationOpen} hidden={editingLayout}>
 				<div className="sc-option-row sc-solar-methods">
 					{(
 						[
@@ -1526,7 +1629,7 @@ export function SolarInstallation({
 							)}
 						</>
 					)}
-					{mode === "roof" && !placingOnMap && (
+					{mode === "roof" && !editingLayout && (
 						<div className="sc-layout-panels">{moduleChoice}</div>
 					)}
 					<div className="sc-solar-total">
@@ -1546,16 +1649,16 @@ export function SolarInstallation({
 			</fieldset>
 			{editingLayout && (
 				<section
-					className="sc-card sc-roof-editor"
+					className="sc-card sc-roof-editor sc-roof-studio"
 					aria-labelledby={`${choicesId}-roof-editor`}
 				>
 					<header className="sc-section-head sc-solar-layout-header">
 						<h2 ref={layoutHeading} id={`${choicesId}-roof-editor`}>
-							{__("Roof and module layout", "linker-tools")}
+							{__("Roof studio", "linker-tools")}
 						</h2>
 						<button
 							type="button"
-							className="sc-button sc-primary"
+							className="sc-button btn-secondary"
 							disabled={
 								calibrationOpen ||
 								importOpen ||
@@ -1599,49 +1702,47 @@ export function SolarInstallation({
 							</button>
 						</div>
 					)}
-					<ImageCalibrationWorkspace
-						geometry={geometry}
-						roofId={null}
-						locale={config.locale}
-						disabled={blocked || importOpen || vertices.length > 0}
-						onActivity={setCalibrationOpen}
-						commit={(command) => {
-							if (!commit({ calibration: command })) return false;
-							setView("plan");
-							startTool("select");
-							select(command.edits[1].value.id);
-							return true;
-						}}
-					/>
 					<fieldset
 						className="sc-roof-editor-fields"
 						disabled={blocked || calibrationOpen}
 					>
 						<div className="sc-roof-layout">
-							<div>
-								<div className="sc-roof-tools">
-									{(["select", "roof", "modules", "obstacle"] as const).map(
-										(value) => (
-											<button
-												type="button"
-												key={value}
-												disabled={mapToolUnavailable(value)}
-												aria-pressed={
-													tool === value && !mapToolUnavailable(value)
-												}
-												onClick={() => startTool(value)}
-											>
-												{
-													{
-														select: __("Select / move", "linker-tools"),
-														roof: __("Draw roof", "linker-tools"),
-														modules: __("Place modules", "linker-tools"),
-														obstacle: __("Obstacle", "linker-tools"),
-													}[value]
-												}
-											</button>
-										),
-									)}
+							<div className="sc-studio-canvas">
+								<div
+									className="sc-studio-tools"
+									role="group"
+									aria-label={__("Drawing tools", "linker-tools")}
+								>
+									{(
+										[
+											["select", __("Select plane", "linker-tools")],
+											["roof", __("Draw polygon", "linker-tools")],
+											["keepout", __("Keep-out", "linker-tools")],
+											["measure", __("Measure", "linker-tools")],
+										] as const
+									).map(([value, label]) => (
+										<button
+											type="button"
+											key={value}
+											aria-pressed={
+												tool === value && !mapToolUnavailable(value)
+											}
+											disabled={
+												((value === "measure" || value === "keepout") &&
+													!roof) ||
+												(value !== "measure" && mapToolUnavailable(value))
+											}
+											onClick={() => startTool(value)}
+										>
+											{label}
+										</button>
+									))}
+								</div>
+								<div
+									className="sc-roof-tools"
+									role="group"
+									aria-label={__("Plan view controls", "linker-tools")}
+								>
 									<button
 										type="button"
 										disabled={!undo.length}
@@ -1649,12 +1750,6 @@ export function SolarInstallation({
 									>
 										{__("Undo", "linker-tools")}
 									</button>
-								</div>
-								<div
-									className="sc-roof-tools"
-									role="group"
-									aria-label={__("Plan view controls", "linker-tools")}
-								>
 									{(
 										[
 											["plan", __("Plan view", "linker-tools")],
@@ -1671,7 +1766,8 @@ export function SolarInstallation({
 											}
 											onClick={() => {
 												setView(value);
-												if (value === "scene") setTool("select");
+												if (value === "scene" || tool === "measure")
+													startTool("select");
 											}}
 										>
 											{label}
@@ -1694,23 +1790,6 @@ export function SolarInstallation({
 										</button>
 									</div>
 								)}
-								{tracingRoof && (
-									<>
-										<p className="sc-hint">
-											{__(
-												"Enter your roof measurements, then trace around the roof in one drag. You can also tap each corner and finish the outline.",
-												"linker-tools",
-											)}
-										</p>
-										{roofDimensions}
-									</>
-								)}
-								{placingOnMap && (
-									<>
-										{moduleChoice}
-										{moduleLayout}
-									</>
-								)}
 								{map ? (
 									<LazyMapViewport
 										mapModuleUrl={config.mapModuleUrl ?? null}
@@ -1722,7 +1801,7 @@ export function SolarInstallation({
 										document={geometry}
 										poses={poses}
 										selected={selected}
-										select={select}
+										select={selectObject}
 										disabled={blocked}
 										openReferences={() =>
 											setError(
@@ -1752,7 +1831,7 @@ export function SolarInstallation({
 										document={geometry}
 										poses={poses}
 										selected={selected}
-										select={select}
+										select={selectObject}
 										commit={commit}
 										disabled={blocked}
 									/>
@@ -1767,13 +1846,27 @@ export function SolarInstallation({
 											drag.current = null;
 										}}
 										onClick={(e) => {
-											if (blocked || tool !== "modules" || !roof) return;
+											if (
+												blocked ||
+												!["roof", "keepout", "measure", "modules"].includes(
+													tool,
+												)
+											)
+												return;
 											const point = planPoint(
 												e.currentTarget,
 												e.clientX,
 												e.clientY,
 											);
-											if (point) placeModules(point);
+											if (!point) return;
+											if (tool === "modules") {
+												if (roof) placeModules(point);
+											} else if (tool === "measure")
+												setRuler((points) =>
+													points.length === 1 ? [...points, point] : [point],
+												);
+											else if (vertices.length < policy.max_vertices)
+												setVertices((points) => [...points, point]);
 										}}
 									>
 										{roof && (
@@ -1781,7 +1874,9 @@ export function SolarInstallation({
 												className="sc-roof-shape"
 												fillRule="evenodd"
 												d={roofPath}
-												onClick={() => select(roof.id)}
+												onClick={() => {
+													if (tool === "select") selectObject(roof.id);
+												}}
 											/>
 										)}
 										{geometry.obstacles
@@ -1795,8 +1890,9 @@ export function SolarInstallation({
 														.join(" ")}
 													className="sc-obstacle-shape"
 													onClick={(e) => {
+														if (tool !== "select") return;
 														e.stopPropagation();
-														select(o.id);
+														selectObject(o.id);
 													}}
 												/>
 											))}
@@ -1814,11 +1910,46 @@ export function SolarInstallation({
 													className="sc-panel-shape"
 													data-selected={selected === p.array_id || undefined}
 													onClick={(e) => {
+														if (tool !== "select") return;
 														e.stopPropagation();
-														select(p.array_id);
+														selectObject(p.array_id);
 													}}
 												/>
 											))}
+										{geometry.keepouts
+											.filter((zone) => zone.roof_id === roof?.id)
+											.map((zone) => (
+												<polygon
+													key={zone.id}
+													className="sc-keepout-shape"
+													data-selected={selected === zone.id || undefined}
+													points={zone.footprint_uv
+														.map((p) => p.join(","))
+														.join(" ")}
+													onClick={() => {
+														if (tool === "select") selectObject(zone.id);
+													}}
+												/>
+											))}
+										{(tool === "measure" || vertices.length > 0) && (
+											<g className="sc-studio-draft" pointerEvents="none">
+												<polyline
+													points={(tool === "measure" ? ruler : vertices)
+														.map((p) => p.join(","))
+														.join(" ")}
+												/>
+												{(tool === "measure" ? ruler : vertices).map(
+													([u, v], index) => (
+														<circle
+															key={index}
+															cx={u}
+															cy={v}
+															r={Math.max(width, depth) * 0.009}
+														/>
+													),
+												)}
+											</g>
+										)}
 										{tool === "select" &&
 											roof?.boundary_uv.map(([u, v], index) => (
 												<circle
@@ -1834,20 +1965,47 @@ export function SolarInstallation({
 											))}
 									</svg>
 								)}
-								{interaction && vertices.length >= 3 && (
-									<button
-										type="button"
-										disabled={interaction.requiresAerial && !canConfirmAerial}
-										onClick={() =>
-											tool === "roof"
-												? addRoof(vertices)
-												: addObstacle(vertices)
-										}
-									>
-										{__("Finish outline", "linker-tools")}
-									</button>
+								{(interaction ||
+									(!map && (tool === "roof" || tool === "keepout"))) &&
+									vertices.length >= 3 && (
+										<button
+											type="button"
+											disabled={
+												!!interaction?.requiresAerial && !canConfirmAerial
+											}
+											onClick={() => {
+												if (tool === "keepout") addKeepout();
+												else if (tool === "roof") addRoof(vertices);
+												else addObstacle(vertices);
+											}}
+										>
+											{__("Finish outline", "linker-tools")}
+										</button>
+									)}
+								{tool === "measure" && (
+									<p className="sc-studio-measurement" role="status">
+										{ruler.length === 2
+											? format(
+													Math.hypot(
+														ruler[1]![0] - ruler[0]![0],
+														ruler[1]![1] - ruler[0]![1],
+													),
+												) + " m"
+											: __(
+													"Tap two points on the roof plan to measure the distance.",
+													"linker-tools",
+												)}
+									</p>
 								)}
-								{!noAerial && (
+								{tool === "keepout" && (
+									<p className="sc-hint">
+										{__(
+											"Mark the corners of the area to leave clear, then finish the outline.",
+											"linker-tools",
+										)}
+									</p>
+								)}
+								{!noAerial && tool !== "measure" && tool !== "keepout" && (
 									<p className="sc-hint">
 										{map && viewOnly
 											? __(
@@ -1875,212 +2033,375 @@ export function SolarInstallation({
 															)}
 									</p>
 								)}
+								<dl className="sc-roof-metrics">
+									{metrics.map(([label, value]) => (
+										<div key={label}>
+											<dt>{label}</dt>
+											<dd>{value}</dd>
+										</div>
+									))}
+								</dl>
 							</div>
-							<aside className="sc-roof-props">
-								<label className="sc-field">
-									<span>{__("Selected roof", "linker-tools")}</span>
-									<select
-										value={roof?.id ?? ""}
-										disabled={roofPropertyInvalid}
-										onChange={(e) => select(e.currentTarget.value)}
-									>
-										<option value="">
-											{__("Choose a roof", "linker-tools")}
-										</option>
-										{geometry.roofs.map((r) => (
-											<option key={r.id} value={r.id}>
-												{r.name}
-											</option>
-										))}
-									</select>
-								</label>
-								{roof && selectedProperties && (
-									<div
-										className="sc-selected-roof-properties"
-										ref={roofPropertiesPanel}
-									>
-										{(
-											[
-												[
-													"pitch",
-													__("Selected roof pitch", "linker-tools"),
-													"°",
-												],
-												[
-													"azimuth",
-													__("Selected roof azimuth", "linker-tools"),
-													"°",
-												],
-												[
-													"height",
-													__("Selected roof height", "linker-tools"),
-													"m",
-												],
-											] as const
-										).map(([key, label, unit]) => (
-											<label
-												className="sc-field"
-												key={`${roof.id}:${key}:${selectedProperties[key]}`}
-											>
-												<span>
-													{label} ({unit})
-												</span>
-												<input
-													type="number"
-													step="any"
-													defaultValue={
-														Math.round(selectedProperties[key] * 100) / 100
-													}
-													readOnly={!editablePlane}
-													onBlur={(event) =>
-														applyRoofProperty(key, event.currentTarget)
-													}
-													onKeyDown={(event) => {
-														if (event.key === "Escape") {
-															event.stopPropagation();
-															event.currentTarget.value = String(
-																selectedProperties[key],
-															);
-															clearRoofPropertyError(event.currentTarget);
-														} else if (event.key === "Enter") {
-															event.preventDefault();
-															event.currentTarget.blur();
-														}
-													}}
-												/>
-											</label>
-										))}
-									</div>
-								)}
-								{!tracingRoof && (
-									<details
-										open={!roof || tool === "roof" || tool === "obstacle"}
-									>
-										<summary>
-											{__("Add a measured roof face", "linker-tools")}
-										</summary>
-										{field("width", __("Width", "linker-tools"))}
-										{field("depth", __("Depth", "linker-tools"))}
-										{roofDimensions}
-										{field("originU", __("Origin east / U", "linker-tools"))}
-										{field("originV", __("Origin north / V", "linker-tools"))}
+							<RoofInspector
+								tab={inspector}
+								change={setInspector}
+								locked={roofPropertyInvalid || calibrationOpen || editingRules}
+								geometry={
+									<>
 										<label className="sc-field">
-											<span>{__("Drawing source", "linker-tools")}</span>
-											<input
-												value={fields.source}
-												onChange={(e) => {
-													const value = e.currentTarget.value;
-													setFields((previous) => ({
-														...previous,
-														source: value,
-													}));
-												}}
-											/>
+											<span>{__("Selected roof", "linker-tools")}</span>
+											<select
+												value={roof?.id ?? ""}
+												disabled={roofPropertyInvalid || editingRules}
+												onChange={(e) => select(e.currentTarget.value)}
+											>
+												<option value="">
+													{__("Choose a roof", "linker-tools")}
+												</option>
+												{geometry.roofs.map((r) => (
+													<option key={r.id} value={r.id}>
+														{r.name}
+													</option>
+												))}
+											</select>
 										</label>
-										<label className="sc-check">
-											<input
-												type="checkbox"
-												checked={confirmed}
-												onChange={(e) => setConfirmed(e.currentTarget.checked)}
+										{roof && selectedProperties && (
+											<div
+												className="sc-selected-roof-properties"
+												ref={roofPropertiesPanel}
+											>
+												{(
+													[
+														[
+															"pitch",
+															__("Selected roof pitch", "linker-tools"),
+															"°",
+														],
+														[
+															"azimuth",
+															__("Selected roof azimuth", "linker-tools"),
+															"°",
+														],
+														[
+															"height",
+															__("Selected roof height", "linker-tools"),
+															"m",
+														],
+													] as const
+												).map(([key, label, unit]) => (
+													<label
+														className="sc-field"
+														key={`${roof.id}:${key}:${selectedProperties[key]}`}
+													>
+														<span>
+															{key === "pitch"
+																? __("Pitch", "linker-tools")
+																: key === "azimuth"
+																	? __("Azimuth", "linker-tools")
+																	: __("Height", "linker-tools")}{" "}
+															({unit})
+														</span>
+														<input
+															type="number"
+															step="any"
+															aria-label={label}
+															defaultValue={
+																Math.round(selectedProperties[key] * 100) / 100
+															}
+															readOnly={!editablePlane}
+															onBlur={(event) =>
+																applyRoofProperty(key, event.currentTarget)
+															}
+															onKeyDown={(event) => {
+																if (event.key === "Escape") {
+																	event.stopPropagation();
+																	event.currentTarget.value = String(
+																		selectedProperties[key],
+																	);
+																	clearRoofPropertyError(event.currentTarget);
+																} else if (event.key === "Enter") {
+																	event.preventDefault();
+																	event.currentTarget.blur();
+																}
+															}}
+														/>
+													</label>
+												))}
+												<button
+													type="button"
+													className="sc-edge-rule"
+													onClick={() => setEditingRules(!editingRules)}
+													aria-expanded={editingRules}
+												>
+													<span>{__("Edge clearance", "linker-tools")}</span>
+													<strong>
+														{edgeClearance == null
+															? __("Set clearance", "linker-tools")
+															: format(edgeClearance) + " m"}
+													</strong>
+												</button>
+											</div>
+										)}
+										{editingRules && roof && (
+											<LayoutRulesForm
+												key={roof.id}
+												roofId={roof.id}
+												document={geometry}
+												locale={config.locale}
+												commit={commit}
+												cancel={() => setEditingRules(false)}
+												onValidity={(valid) => setEditingRules(!valid)}
 											/>
-											{__(
-												"I confirm these dimensions and permission to use this drawing.",
-												"linker-tools",
-											)}
-										</label>
-										{!(map && firstMapRoof) &&
-											!geometry.coordinate_system.anchor &&
-											site.coordinate_basis === "user_entered" &&
-											site.latitude !== null &&
-											site.longitude !== null && (
+										)}
+										{tracingRoof && (
+											<>
+												<p className="sc-field-help">
+													{__(
+														"Enter your roof measurements, then trace around the roof in one drag. You can also tap each corner and finish the outline.",
+														"linker-tools",
+													)}
+												</p>
+												{roofDimensions}
+											</>
+										)}
+										{!tracingRoof && (
+											<details
+												open={!roof || tool === "roof" || tool === "obstacle"}
+											>
+												<summary>
+													{__("Add a measured roof face", "linker-tools")}
+												</summary>
+												{field("width", __("Width", "linker-tools"))}
+												{field("depth", __("Depth", "linker-tools"))}
+												{roofDimensions}
+												{field(
+													"originU",
+													__("Origin east / U", "linker-tools"),
+												)}
+												{field(
+													"originV",
+													__("Origin north / V", "linker-tools"),
+												)}
+												<label className="sc-field">
+													<span>{__("Drawing source", "linker-tools")}</span>
+													<input
+														value={fields.source}
+														onChange={(e) => {
+															const value = e.currentTarget.value;
+															setFields((previous) => ({
+																...previous,
+																source: value,
+															}));
+														}}
+													/>
+												</label>
+												<label className="sc-check">
+													<input
+														type="checkbox"
+														checked={confirmed}
+														onChange={(e) =>
+															setConfirmed(e.currentTarget.checked)
+														}
+													/>
+													{__(
+														"I confirm these dimensions and permission to use this drawing.",
+														"linker-tools",
+													)}
+												</label>
+												{!(map && firstMapRoof) &&
+													!geometry.coordinate_system.anchor &&
+													site.coordinate_basis === "user_entered" &&
+													site.latitude !== null &&
+													site.longitude !== null && (
+														<button
+															type="button"
+															disabled={!confirmed || !fields.source.trim()}
+															onClick={confirmMapReference}
+														>
+															{__(
+																"Confirm site coordinates as map origin and use true north",
+																"linker-tools",
+															)}
+														</button>
+													)}
 												<button
 													type="button"
 													disabled={!confirmed || !fields.source.trim()}
-													onClick={confirmMapReference}
+													onClick={() => addRoof()}
 												>
-													{__(
-														"Confirm site coordinates as map origin and use true north",
-														"linker-tools",
-													)}
+													{__("Add rectangular roof", "linker-tools")}
 												</button>
-											)}
-										<button
-											type="button"
-											disabled={!confirmed || !fields.source.trim()}
-											onClick={() => addRoof()}
-										>
-											{__("Add rectangular roof", "linker-tools")}
-										</button>
-									</details>
-								)}
-								{field(
-									"obstacleHeight",
-									__("Obstacle height above roof", "linker-tools"),
-								)}
-								<button
-									type="button"
-									disabled={!roof}
-									onClick={() => addObstacle()}
-								>
-									{__("Add obstacle", "linker-tools")}
-								</button>
-								{!placingOnMap && moduleLayout}
-								<button
-									type="button"
-									disabled={!module || !roof}
-									onClick={() => placeModules()}
-								>
-									{__("Place module group", "linker-tools")}
-								</button>
-								<button
-									type="button"
-									disabled={!selected}
-									onClick={removeSelected}
-								>
-									{__("Remove selected", "linker-tools")}
-								</button>
-								{geometry.arrays.some((a) => a.id === selected) && (
-									<div className="sc-actions">
-										{(
-											[
-												[-0.1, 0, "←"],
-												[0, -0.1, "↑"],
-												[0, 0.1, "↓"],
-												[0.1, 0, "→"],
-											] as const
-										).map(([u, v, label]) => (
+											</details>
+										)}
+										<details className="sc-studio-obstacle">
+											<summary>{__("Raised obstacle", "linker-tools")}</summary>
 											<button
 												type="button"
-												key={label}
-												aria-label={`${__("Move selected", "linker-tools")} ${label}`}
-												onClick={() =>
-													commit({
-														type: "move_arrays",
-														ids: [selected!],
-														delta_uv: [u, v],
-													})
-												}
+												disabled={!roof || mapToolUnavailable("obstacle")}
+												aria-pressed={tool === "obstacle"}
+												onClick={() => startTool("obstacle")}
 											>
-												{label}
+												{__("Obstacle", "linker-tools")}
 											</button>
-										))}
+											{field(
+												"obstacleHeight",
+												__("Obstacle height above roof", "linker-tools"),
+											)}
+											<button
+												type="button"
+												disabled={!roof}
+												onClick={() => addObstacle()}
+											>
+												{__("Add obstacle", "linker-tools")}
+											</button>
+										</details>
+									</>
+								}
+								modules={
+									<>
+										<p className="sc-field-help">
+											{module
+												? sprintf(
+														__(
+															"Generic %s W PV module (reference only — not supplied by Linker)",
+															"linker-tools",
+														),
+														formatComputedDecimal(
+															module.stc_power_w,
+															config.locale,
+														),
+													)
+												: __(
+														"PV modules are design references and are not supplied by Linker.",
+														"linker-tools",
+													)}
+										</p>
+										{moduleChoice}
 										<button
 											type="button"
-											onClick={() =>
-												commit({
-													type: "rotate_arrays",
-													ids: [selected!],
-													delta_deg: 90,
-												})
-											}
+											disabled={!roof || mapToolUnavailable("modules")}
+											aria-pressed={tool === "modules"}
+											onClick={() => startTool("modules")}
 										>
-											{__("Rotate selected", "linker-tools")}
+											{__("Place modules", "linker-tools")}
 										</button>
-									</div>
-								)}
-							</aside>
+										{moduleLayout}
+										{!placingOnMap && (
+											<div className="sc-fields">
+												{field(
+													"originU",
+													__("Origin east / U", "linker-tools"),
+												)}
+												{field(
+													"originV",
+													__("Origin north / V", "linker-tools"),
+												)}
+											</div>
+										)}
+
+										<button
+											type="button"
+											disabled={!module || !roof}
+											onClick={() => placeModules()}
+										>
+											{__("Place module group", "linker-tools")}
+										</button>
+										<button
+											type="button"
+											disabled={!selected}
+											onClick={removeSelected}
+										>
+											{__("Remove selected", "linker-tools")}
+										</button>
+										{geometry.arrays.some((a) => a.id === selected) && (
+											<div className="sc-actions">
+												{(
+													[
+														[-0.1, 0, "←"],
+														[0, -0.1, "↑"],
+														[0, 0.1, "↓"],
+														[0.1, 0, "→"],
+													] as const
+												).map(([u, v, label]) => (
+													<button
+														type="button"
+														key={label}
+														aria-label={`${__("Move selected", "linker-tools")} ${label}`}
+														onClick={() =>
+															commit({
+																type: "move_arrays",
+																ids: [selected!],
+																delta_uv: [u, v],
+															})
+														}
+													>
+														{label}
+													</button>
+												))}
+												<button
+													type="button"
+													onClick={() =>
+														commit({
+															type: "rotate_arrays",
+															ids: [selected!],
+															delta_deg: 90,
+														})
+													}
+												>
+													{__("Rotate selected", "linker-tools")}
+												</button>
+											</div>
+										)}
+									</>
+								}
+								summary={
+									<>
+										<h3>{__("Roof summary", "linker-tools")}</h3>
+										{geometry.roofs.map((face) => (
+											<div className="sc-roof-face-summary" key={face.id}>
+												<strong>{face.name}</strong>
+												<span>
+													{format(
+														ringArea(face.boundary_uv) -
+															face.holes_uv.reduce(
+																(sum, ring) => sum + ringArea(ring),
+																0,
+															),
+													)}
+													 m²
+												</span>
+											</div>
+										))}
+										<p>
+											{annualGenerationKwh === null
+												? __(
+														"Calculate annual yield from the roof layout and site in the energy step.",
+														"linker-tools",
+													)
+												: __(
+														"Annual yield uses the project’s calculated solar profile.",
+														"linker-tools",
+													)}
+										</p>
+									</>
+								}
+							/>
 						</div>
 					</fieldset>
+					<ImageCalibrationWorkspace
+						geometry={geometry}
+						roofId={null}
+						locale={config.locale}
+						disabled={blocked || importOpen || vertices.length > 0}
+						onActivity={setCalibrationOpen}
+						commit={(command) => {
+							if (!commit({ calibration: command })) return false;
+							setView("plan");
+							startTool("select");
+							select(command.edits[1].value.id);
+							return true;
+						}}
+					/>
 					{error && <p role="alert">{error}</p>}
 				</section>
 			)}
@@ -2331,6 +2652,7 @@ export function SolarInstallation({
 						!coordinatesValid ||
 						blocked ||
 						calibrationOpen ||
+						editingRules ||
 						importOpen ||
 						roofPropertyInvalid ||
 						(editingPanel && !module) ||

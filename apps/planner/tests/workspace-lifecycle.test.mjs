@@ -338,13 +338,13 @@ test("step changes retain the energy input and undo history and protect unfinish
 	await act(async () => nav("Solar").click());
 	await act(async () => button("Place modules on the roof").click());
 	await act(async () => button("Open roof layout").click());
-	await act(async () => button("Draw roof").click());
+	await act(async () => button("Draw polygon").click());
 	await act(async () => nav("Project").click());
 	assert.equal(location.hash, "#sc-solar");
 	assert.ok(
 		document.body.textContent.includes("Finish or cancel roof editing"),
 	);
-	await act(async () => button("Select / move").click());
+	await act(async () => button("Select plane").click());
 	await act(async () => nav("Project").click());
 	assert.equal(location.hash, "#sc-project");
 });

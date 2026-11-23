@@ -835,11 +835,15 @@ export default function MapViewport({
 					)}
 				</p>
 			)}
-			<div
-				className="sc-map-toolbar"
-				role="group"
-				aria-label={__("Map controls", "linker-tools")}
-			>
+			<div className="sc-map-consent">
+				<span>
+					{external
+						? __("The external map is on.", "linker-tools")
+						: __(
+								"Map tiles stay off until you allow the provider to load them.",
+								"linker-tools",
+							)}
+				</span>
 				<button
 					type="button"
 					className="sc-button"
@@ -858,6 +862,12 @@ export default function MapViewport({
 							? __("Hide street map", "linker-tools")
 							: __("Load street map", "linker-tools")}
 				</button>
+			</div>
+			<div
+				className="sc-map-toolbar"
+				role="group"
+				aria-label={__("Map controls", "linker-tools")}
+			>
 				{placement && (
 					<>
 						<p className="sc-field-help">

@@ -126,6 +126,10 @@ async function click(text) {
 	await act(async () => button(text).click());
 }
 function input(label) {
+	const named = [...document.querySelectorAll("input[aria-label]")].find(
+		(el) => el.getAttribute("aria-label") === label,
+	);
+	if (named) return named;
 	const el = [...document.querySelectorAll("label")].find((e) =>
 		e.querySelector("span")?.textContent.startsWith(label),
 	);
@@ -419,7 +423,7 @@ test("a roof address opens its consented aerial map ready to draw and honours wi
 				(b) => b.textContent === "Hide aerial map",
 			),
 	);
-	assert.equal(button("Draw roof").getAttribute("aria-pressed"), "true");
+	assert.equal(button("Draw polygon").getAttribute("aria-pressed"), "true");
 	await act(async () =>
 		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
 	);
@@ -447,7 +451,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	);
 	await openRoof();
 	await until(() => button("Load street map"));
-	assert.equal(button("Draw roof").disabled, true);
+	assert.equal(button("Draw polygon").disabled, true);
 	assert.doesNotMatch(
 		document.body.textContent,
 		/Mark each roof corner on the aerial map/,
@@ -487,7 +491,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	);
 	assert.equal(sources[0].rights_basis, "user_attestation");
 	assert.equal(button("Plan view").getAttribute("aria-pressed"), "true");
-	assert.equal(button("Select / move").getAttribute("aria-pressed"), "true");
+	assert.equal(button("Select").getAttribute("aria-pressed"), "true");
 });
 
 async function openRoof(locale = "en") {
@@ -789,7 +793,7 @@ test("Solar can show and withdraw a viewing mosaic without acquiring geometry", 
 		tile.state = "loaded";
 		viewer.emit("idle");
 	});
-	for (const tool of ["Draw roof", "Obstacle", "Place modules"]) {
+	for (const tool of ["Draw polygon", "Obstacle", "Place modules"]) {
 		await click(tool);
 		assert.equal(document.querySelector('[data-collecting="true"]'), null);
 		assert.equal(document.querySelector('[data-array-placement="true"]'), null);
@@ -914,7 +918,7 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 			button("Show aerial map") &&
 			document.querySelector('[data-map-status="ready"]'),
 	);
-	await click("Draw roof");
+	await click("Draw polygon");
 	assert.equal(document.querySelector('[data-collecting="true"]'), null);
 	await click("Show aerial map");
 	await until(() => map().getSource("linker-site-imagery"));
@@ -1030,7 +1034,7 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 	await point(11.56608, 48.14512);
 	assert.equal(app.inputs.geometry.arrays.length, 1);
 	assert.equal(app.inputs.geometry.arrays[0].columns, 2);
-	await click("Draw roof");
+	await click("Draw polygon");
 	await until(() => document.querySelector('[data-collecting="true"]'));
 	const canvas = map().getCanvas();
 	map().unproject = ([x, y]) => ({
@@ -1268,4 +1272,110 @@ test("new roof interaction places moves rotates removes and undoes an actual mod
 		app.inputs.geometry.coordinate_system,
 		flat.coordinate_system,
 	);
+});
+
+test("roof studio presents the current layout, editable geometry, modules and summary", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.roofs[0].holes_uv = [
+		[
+			[6, 6],
+			[8, 6],
+			[8, 8],
+			[6, 8],
+		],
+	];
+	const app = await mount(
+		t,
+		{ brief: emptyBrief(), geometry },
+		null,
+		null,
+		"en",
+		{},
+		{ initialPlan: true },
+	);
+	const inspector = document.querySelector(
+		'[role="tablist"][aria-label="Roof inspector"]',
+	);
+	assert.ok(inspector, "the inspector has one set of tabs");
+	assert.deepEqual(
+		[...inspector.querySelectorAll('[role="tab"]')].map(
+			(tab) => tab.textContent,
+		),
+		["Geometry", "Modules", "Summary"],
+	);
+	assert.match(
+		document.querySelector(".sc-roof-metrics").textContent,
+		/396\s*m²/,
+	);
+	await click("Modules");
+	assert.equal(button("Modules").getAttribute("aria-selected"), "true");
+	assert.ok(document.querySelector('[role="tabpanel"]:not([hidden]) select'));
+	await click("Summary");
+	assert.match(
+		document.querySelector('[role="tabpanel"]:not([hidden])').textContent,
+		/Fixture roof396/,
+	);
+	assert.deepEqual(app.inputs.geometry, geometry);
+});
+
+test("measure the plan without changing the roof, then save and reopen an exclusion", async (t) => {
+	const geometry = structuredClone(flat);
+	const app = await mount(
+		t,
+		{ brief: emptyBrief(), geometry },
+		null,
+		null,
+		"en",
+		{},
+		{ initialPlan: true },
+	);
+	const svg = document.querySelector('svg[aria-label="Editable roof plan"]');
+	svg.getScreenCTM = () => ({ inverse: () => ({}) });
+	svg.createSVGPoint = () => ({
+		x: 0,
+		y: 0,
+		matrixTransform() {
+			return this;
+		},
+	});
+	const corner = (x, y) =>
+		act(async () =>
+			svg.dispatchEvent(
+				new window.MouseEvent("click", {
+					bubbles: true,
+					clientX: x,
+					clientY: y,
+				}),
+			),
+		);
+	await click("Measure");
+	await corner(1, 2);
+	await corner(4, 6);
+	assert.match(
+		document.querySelector(".sc-studio-measurement").textContent,
+		/5\s*m/,
+	);
+	assert.deepEqual(app.inputs.geometry, geometry);
+	await click("Keep-out");
+	for (const [x, y] of [
+		[1, 1],
+		[3, 1],
+		[3, 3],
+		[1, 3],
+	])
+		await corner(x, y);
+	await click("Finish outline");
+	assert.deepEqual(app.inputs.geometry.keepouts.at(-1).footprint_uv, [
+		[1, 1],
+		[3, 1],
+		[3, 3],
+		[1, 3],
+	]);
+	assert.equal(
+		app.inputs.geometry.keepouts.at(-1).roof_id,
+		geometry.roofs[0].id,
+	);
+	await click("Use this layout");
+	await click("Open roof layout");
+	assert.ok(document.querySelector(".sc-keepout-shape"));
 });

@@ -694,18 +694,14 @@
   .sc-configurator .sc-solar .sc-option-card:hover:enabled { background: var(--proto-teal-50); }
   .sc-configurator .sc-solar .sc-option-card[aria-pressed="true"], .sc-configurator .sc-solar .sc-option-card.active { border-color: var(--proto-accent); background: var(--proto-teal-50); color: var(--proto-teal-800); }
   .sc-configurator .sc-solar .sc-card > :is(.sc-fields, .sc-roof-layout) { margin-top: 20px; }
-  .sc-configurator .sc-solar .sc-roof-layout { display: grid; grid-template-columns: minmax(0, 1fr) 240px; align-items: start; gap: 18px; }
   .sc-configurator .sc-solar .sc-roof-layout > div { min-width: 0; }
   .sc-configurator .sc-solar .sc-roof-tools { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
   .sc-configurator .sc-solar :is(.sc-roof-tools, .sc-roof-props, .sc-next) button, .sc-configurator .sc-solar .sc-roof-layout > div > button { min-width: 0; min-height: 44px; max-width: 100%; padding: 8px 12px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); font-weight: 600; font-size: 13px; line-height: 1.45; }
   .sc-configurator .sc-solar :is(.sc-roof-tools, .sc-roof-props) button:hover:enabled, .sc-configurator .sc-solar .sc-roof-layout > div > button:hover:enabled { background: var(--proto-teal-50); }
   .sc-configurator .sc-solar .sc-roof-tools button[aria-pressed="true"] { background: var(--proto-ink-deep); color: var(--proto-neutral-0); border-color: var(--proto-ink-deep); }
   .sc-configurator .sc-solar svg.sc-roof-board { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; min-height: 300px; max-height: 65vh; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-paper-journal); color: var(--proto-ink-deep); }
-  .sc-configurator .sc-solar .sc-roof-props { display: grid; gap: 14px; min-width: 0; padding: 16px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); }
   .sc-configurator .sc-solar .sc-roof-props .sc-field { font-size: 12px; }
-  .sc-configurator .sc-selected-roof-properties { display: grid; gap: 12px; }
   .sc-configurator .sc-roof-props > details[open] > :not(summary) { margin-top: 12px; }
-  .sc-configurator .sc-solar .sc-roof-props :is(input:not([type="checkbox"]), select) { min-height: 44px; padding: 8px; }
   .sc-configurator .sc-solar .sc-check { display: flex; align-items: flex-start; gap: 10px; min-width: 0; font-size: 12px; font-weight: 400; }
   .sc-configurator .sc-solar .sc-check input { flex: 0 0 20px; margin: 2px 0 0; padding: 0; }
   .sc-configurator .sc-solar .sc-hint { margin-top: 12px; color: var(--proto-neutral-500); font-size: 13px; overflow-wrap: anywhere; }
@@ -713,17 +709,11 @@
   .sc-configurator .sc-solar .sc-next { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; }
   .sc-configurator .sc-solar .sc-next button { padding: 9px 15px; background: var(--proto-accent); border-color: var(--proto-accent); color: var(--proto-neutral-0); }
   .sc-configurator .sc-solar .sc-next button:hover:enabled { background: var(--proto-teal-700); border-color: var(--proto-teal-700); }
-  @media (max-width: 1000px) {
-    .sc-configurator .sc-solar .sc-roof-layout { grid-template-columns: minmax(0, 1fr); }
-    .sc-configurator .sc-solar .sc-roof-props { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; }
-    .sc-configurator .sc-solar .sc-roof-props :is(.sc-check, .sc-actions) { grid-column: 1 / -1; }
-  }
   @media (max-width: 600px) {
     .sc-configurator .sc-solar .sc-option-card { flex-basis: 100%; padding: 16px; }
     .sc-configurator .sc-solar .sc-roof-tools { gap: 5px; }
     .sc-configurator .sc-solar .sc-roof-tools button { padding: 6px 9px; font-size: 12px; }
     .sc-configurator .sc-solar svg.sc-roof-board { min-height: 280px; }
-    .sc-configurator .sc-solar .sc-roof-props { grid-template-columns: minmax(0, 1fr); padding: 12px; }
     .sc-configurator .sc-solar .sc-next button { width: 100%; }
   }
   .sc-configurator .sc-solar svg.sc-roof-preview { min-height: 0; max-height: 180px; margin-block: 16px; }
