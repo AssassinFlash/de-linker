@@ -1202,6 +1202,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	line-height: var(--proto-leading-body);
 }
 .linker-inquiry-promise { margin: 0; }
+.linker-inquiry-promise a { white-space: nowrap; }
 :is(#tv-woo-b2b-checkout, .sc-preliminary-review) .linker-inquiry-form .linker-form-primary:disabled { opacity: 0.6; cursor: wait; }
 .linker-inquiry-guest { padding: var(--proto-space-3) var(--proto-space-4); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-md); color: var(--proto-ink-muted-deep); font-size: var(--proto-size-sm); }
 .linker-inquiry-guest summary { cursor: pointer; }

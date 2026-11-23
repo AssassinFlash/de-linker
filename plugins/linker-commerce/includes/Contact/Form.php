@@ -13,27 +13,7 @@ use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Settings\Options;
 
 /**
- * The markup of the contact form (ticket #68, GAP-8): the card the old live
- * pages showed — heading, question, topic, reply details, consent and send
- * row — and the two cards beside it ("Prefer email?", "Still exploring?").
- *
- * The composition is the live card's (README of docs/acceptance/2026-10-14/
- * contact-form/; the captures `contact-en-1440-live.png`, `contact-de-1440-
- * live.png`, `contact-en-390-live.png` and `contact-de-390-live.png` of the
- * 2026-10-12/13 rounds): the same blocks in the same order, the same fields,
- * and the card's words. The consent and button copy follow the #68 review.
- * The #1143 updates to the lead, contact details and response promise are
- * recorded in docs/acceptance/2026-11-18/1143/copy-review.md.
- * Its colours are not carried
- * over — the site's tokens are (AGENTS.md §2, 2026-10-11: the site's palette
- * is the current one) — and neither is the retired runtime that rendered it:
- * this form posts to admin-post.php, keeps its meaning without JavaScript,
- * and carries the language of the page it was written on.
- *
- * The composition is data assembly: semantic markup and class names, no
- * styles and no scripts of its own (AGENTS.md §5 — the styles of the page
- * come from the WindPress pipeline, which scans the rendered shortcode). The
- * shapes and the spacing live in content/windpress/contact-card.css.
+ * Renders the contact form and its sales and technical support panel.
  */
 final class Form {
 
@@ -110,9 +90,6 @@ final class Form {
 		LanguageDraft::enqueue();
 		$state = $this->state_message();
 		if ( str_contains( $state, 'linker-form-success' ) ) {
-			// A sent message keeps the card's side cards, the way the live
-			// workspace kept them around the receipt. The receipt is the box
-			// itself (its own panel), so the wrapper carries no card styling.
 			return '<div class="linker-contact-card"><div class="linker-contact-form linker-contact-receipt">' . $state . '</div>' . $this->rail() . '</div>';
 		}
 		if ( ! \Linker\Commerce\Protection\Identity::ensure_browser_cookie() ) {
@@ -242,10 +219,7 @@ final class Form {
 	}
 
 	/**
-	 * The two cards beside the form: the direct address and the way into
-	 * Genie. Words from the live card; the address is the team mailbox
-	 * customers see. The form's own letter goes to the internal notification
-	 * address instead (owner ruling 2026-10-17, Options::notify_to()).
+	 * The public support address, response time and link to Genie.
 	 */
 	private function rail(): string {
 		$email = ( new Options() )->team_mailbox();
