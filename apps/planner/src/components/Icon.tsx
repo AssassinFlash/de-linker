@@ -1,6 +1,7 @@
 import type { SVGProps } from "react";
 
 const paths = {
+	upload: "M12 16V3m-5 5 5-5 5 5M4 16v5h16v-5",
 	plus: "M12 5v14M5 12h14",
 	folder: "M3 7V5h6l2 2h10v13H3V7Z",
 	overview: "M3 3h7v7H3V3Zm11 0h7v7h-7V3ZM3 14h7v7H3v-7Zm11 0h7v7h-7v-7Z",

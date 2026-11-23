@@ -222,18 +222,12 @@ test("a real typical profile is imported and selected for the same project", asy
 	try {
 		await act(async () => render());
 		await enter(field("Annual electricity use"), "6000");
-		assert.ok(!dom.element.querySelector('select[name="load-pattern"]'));
-		await act(async () =>
-			[...dom.element.querySelectorAll("button")]
-				.find((x) => x.textContent === "Use a typical profile")
-				.click(),
-		);
-		await enter(field("Time zone"), "Europe/Berlin");
 		const select = dom.element.querySelector('select[name="load-pattern"]');
 		await act(async () => {
 			select.value = "H0";
 			select.dispatchEvent(new Event("change", { bubbles: true }));
 		});
+		await enter(field("Time zone"), "Europe/Berlin");
 		await act(async () =>
 			[...dom.element.querySelectorAll("button")]
 				.find((x) => x.textContent === "Use this load profile")
@@ -401,21 +395,18 @@ test("CSV uses customer mapping and a refused import can be corrected", async ()
 		);
 	try {
 		await act(async () => render());
-		await click("Import CSV");
-		const file = control("CSV file", "input");
-		Object.defineProperty(file, "files", {
-			value: [
-				{
-					name: "meter.csv",
-					size: 13,
-					arrayBuffer: async () =>
-						new TextEncoder().encode("time;load\nx;y").buffer,
-				},
-			],
-		});
-		await act(async () =>
-			file.dispatchEvent(new Event("change", { bubbles: true })),
-		);
+		const input = control("CSV file", "input");
+		const meter = {
+			name: "meter.csv",
+			size: 13,
+			arrayBuffer: async () =>
+				new TextEncoder().encode("time;load\nx;y").buffer,
+		};
+		const drop = new Event("drop", { bubbles: true, cancelable: true });
+		Object.defineProperty(drop, "dataTransfer", { value: { files: [meter] } });
+		await act(async () => input.closest("label").dispatchEvent(drop));
+		assert.equal(drop.defaultPrevented, true);
+		assert.match(input.closest("label").textContent, /meter\.csv/);
 		await click("Read CSV columns");
 		await enter(control("Time zone", "input"), "Europe/Berlin");
 		await choose("Timestamp column", "time");

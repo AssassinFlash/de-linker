@@ -1,3 +1,4 @@
+import { FileDropzone } from "../FileDropzone.tsx";
 import { useEffect, useRef, useState } from "react";
 import type { Draft } from "../../domain/draft.ts";
 import { readBrief } from "../../domain/brief.ts";
@@ -416,56 +417,38 @@ export function CommercialSizing({
 				) : null}
 				<fieldset className="sc-brief-fields">
 					<legend>{__("Load profile", "linker-tools")}</legend>
-					<label className="sc-field">
-						<span>{__("15-minute load profile (CSV)", "linker-tools")}</span>
-						<span className="sc-file-picker">
-							<span className="sc-file-button">
-								{__("Choose file", "linker-tools")}
-							</span>
-							<span className="sc-file-name">
-								{profile?.name ?? __("No file chosen", "linker-tools")}
-							</span>
-							<input
-								type="file"
-								accept=".csv,text/csv,text/plain"
-								onChange={(event) => {
-									const file = event.currentTarget.files?.[0];
-									// Clearing the field lets the customer pick the same
-									// file again after a failed read, which a retained
-									// value would swallow as a "no change" event.
-									event.currentTarget.value = "";
-									setResult(null);
-									setFailure(null);
-									if (!file) {
-										setProfile(null);
-										return;
-									}
-									void file
-										.text()
-										.then((text) => setProfile({ name: file.name, text }))
-										.catch(() => {
-											setProfile(null);
-											setFailure(
-												__(
-													"The file could not be read. Choose it again or export a fresh copy.",
-													"linker-tools",
-												),
-											);
-										});
-								}}
-							/>
-						</span>
-						<small>
-							{__(
-								"One value per line, optionally after a timestamp; the last number of each line counts.",
-								"linker-tools",
-							)}{" "}
-							{__(
-								"Timestamps must carry a UTC offset, so the series stays unambiguous when the clocks change.",
-								"linker-tools",
-							)}
-						</small>
-					</label>
+					<FileDropzone
+						label={__("15-minute load profile (CSV)", "linker-tools")}
+						action={__("Choose CSV file", "linker-tools")}
+						accept=".csv,text/csv,text/plain"
+						filename={profile?.name}
+						onFile={(file) => {
+							setResult(null);
+							setFailure(null);
+							void file
+								.text()
+								.then((text) => setProfile({ name: file.name, text }))
+								.catch(() => {
+									setProfile(null);
+									setFailure(
+										__(
+											"The file could not be read. Choose it again or export a fresh copy.",
+											"linker-tools",
+										),
+									);
+								});
+						}}
+					/>
+					<small>
+						{__(
+							"One value per line, optionally after a timestamp; the last number of each line counts.",
+							"linker-tools",
+						)}{" "}
+						{__(
+							"Timestamps must carry a UTC offset, so the series stays unambiguous when the clocks change.",
+							"linker-tools",
+						)}
+					</small>
 					<label className="sc-field">
 						<span>{__("Values in the file", "linker-tools")}</span>
 						<select

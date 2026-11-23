@@ -1,3 +1,4 @@
+import { FileDropzone } from "./FileDropzone.tsx";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { isPreMutationInputRefusal } from "../data/inputRefusal.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
@@ -792,36 +793,19 @@ export function ProfileIntake({
 									)}
 								</p>
 								<div className="grid gap-5 md:grid-cols-2">
-									<label className="sc-field">
-										<span id={id + "-file"}>
-											{__("Source file", "linker-tools")}
-										</span>
-										<div className="sc-file-picker">
-											<span className="sc-file-button" aria-hidden="true">
-												{__("Choose CSV file", "linker-tools")}
-											</span>
-											<span
-												className="sc-file-name"
-												id={id + "-file-name"}
-												aria-live="polite"
-											>
-												{fileName ||
-													(content
-														? __("Recovered source file", "linker-tools")
-														: __("No file selected", "linker-tools"))}
-											</span>
-											<input
-												ref={fileInput}
-												type="file"
-												aria-labelledby={id + "-file"}
-												aria-describedby={id + "-file-name"}
-												accept=".csv,.txt,text/csv,text/plain"
-												onChange={(event) => {
-													void chooseFile(event.currentTarget.files?.[0]);
-												}}
-											/>
-										</div>
-									</label>
+									<FileDropzone
+										label={__("Source file", "linker-tools")}
+										action={__("Choose CSV file", "linker-tools")}
+										accept=".csv,.txt,text/csv,text/plain"
+										filename={
+											fileName ||
+											(content
+												? __("Recovered source file", "linker-tools")
+												: "")
+										}
+										inputRef={fileInput}
+										onFile={(file) => void chooseFile(file)}
+									/>
 									<label className="sc-field">
 										<span id={id + "-delimiter"}>
 											{__("Column delimiter", "linker-tools")}

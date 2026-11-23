@@ -6,14 +6,12 @@ const entry = {
 	en: {
 		home: '/',
 		configurator: '/solution-configurator/',
-		roof: 'Start with your roof',
 		plan: 'Use a roof plan or measurements',
 		deleteProject: 'Delete project',
 	},
 	de: {
 		home: '/de/',
 		configurator: '/de/loesungskonfigurator/',
-		roof: 'Dach planen',
 		plan: 'Dachplan oder Aufmaß verwenden',
 		deleteProject: 'Projekt löschen',
 	},
@@ -24,9 +22,8 @@ export async function roofEntry(page: Page, lang: SiteLanguage) {
 	await page.goto(instance().url + text.home, {
 		waitUntil: 'domcontentloaded',
 	});
-	await page.locator('[data-linker-planner-entry="home-hero"] a').click();
+	await page.locator('a.showcase-roof').click();
 	const workspace = page.locator('[data-linker-planner]');
-	await workspace.getByRole('link', { name: text.roof, exact: true }).click();
 	return workspace
 		.locator('form')
 		.filter({ has: page.locator('[name="location_label"]') });

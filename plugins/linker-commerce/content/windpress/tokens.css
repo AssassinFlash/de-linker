@@ -163,11 +163,14 @@
   --proto-pill-b-hover-line: var(--proto-neutral-900);
 --proto-focus-ring: 2px solid var(--proto-teal-600);
   --proto-focus-offset: 2px;
---proto-input-bg: #ffffff;
+  --proto-form-max-width: 1180px;
+  --proto-form-control-height: 48px;
+  --proto-form-focus-ring: 0 0 0 3px rgb(12 127 115 / 14%);
+  --proto-input-bg: #eef1f1;
   --proto-input-line: var(--proto-neutral-300);
   --proto-input-line-focus: var(--proto-teal-600);
   --proto-input-radius: var(--proto-radius-lg);
-  --proto-input-height: 2.75rem;
+  --proto-input-height: var(--proto-form-control-height);
 --proto-color-canvas: var(--proto-canvas);
   --proto-color-surface: var(--proto-neutral-0);
   --proto-color-ink: var(--proto-ink);
