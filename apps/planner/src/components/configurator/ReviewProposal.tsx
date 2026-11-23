@@ -1,5 +1,6 @@
 import {
 	useCallback,
+	useContext,
 	useEffect,
 	useId,
 	useRef,
@@ -27,6 +28,7 @@ import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { __, sprintf } from "../../i18n.ts";
 import { EvidenceCard } from "../shared/EvidenceCard.tsx";
 import { useReportLogo } from "./ReportLogo.tsx";
+import { InquiryProductSkus } from "./ReviewInquiry.tsx";
 import { InquiryExportBar } from "./InquiryExportBar.tsx";
 import { readReportFile } from "../../data/readReportFile.ts";
 import { Icon } from "../Icon.tsx";
@@ -37,7 +39,45 @@ function isReportItemSection(section: ReportSection) {
 	return ["bom", "site-materials", "pv-components"].includes(section.id);
 }
 
-function ReportContent({ section }: { section: ReportSection }) {
+export function ReportContent({ section }: { section: ReportSection }) {
+	const displayed = useContext(InquiryProductSkus);
+	const table = section.table;
+	if (displayed && isReportItemSection(section) && table) {
+		const rows = table.rows.filter(
+			([, , sku, supply]) =>
+				!(
+					sku &&
+					displayed.has(sku) &&
+					supply === __("Selected equipment", "linker-tools")
+				),
+		);
+		if (!rows.length) return null;
+		return (
+			<ul className="sc-inquiry-products" aria-label={section.title}>
+				{rows.map(([quantity, product, sku, supply], index) => (
+					<li key={index}>
+						<div className="linker-inquiry-line">
+							<div className="linker-inquiry-identity">
+								<strong>{product}</strong>
+								{sku && (
+									<small className="linker-inquiry-sku" title={sku}>
+										{sku}
+									</small>
+								)}
+							</div>
+							<div className="linker-inquiry-identity">
+								<span>
+									{table.columns[0]} · {quantity}
+								</span>
+								<small>{supply}</small>
+							</div>
+						</div>
+					</li>
+				))}
+			</ul>
+		);
+	}
+
 	return (
 		<>
 			{section.paragraphs.map((text, index) => (
@@ -490,7 +530,13 @@ export function reportCanTransfer(
 }
 
 export function ReviewProposal({
+	branding,
+	preparationFailed,
+	noteOnly,
+	retryBlocked,
+	retryPreparation,
 	inquiry,
+	recoverTransfer,
 	project,
 	inputs,
 	run,
@@ -510,6 +556,12 @@ export function ReviewProposal({
 	recheck,
 }: {
 	inquiry?: ReactNode;
+	recoverTransfer?: boolean;
+	branding: ReturnType<typeof useReportLogo>;
+	preparationFailed?: boolean;
+	noteOnly?: boolean;
+	retryBlocked?: boolean;
+	retryPreparation?: () => void;
 	project: Project;
 	inputs: JsonObject;
 	run: PlanningRun | null;
@@ -533,10 +585,7 @@ export function ReviewProposal({
 	const selected = history?.selected != null;
 	const earlierRun = history?.run?.state === "succeeded" ? history.run : null;
 	const earlierReport = earlierRun?.result ? reportFromRun(earlierRun) : null;
-	const { logo, logoField, logoPending } = useReportLogo(
-		blocked || operations.busy,
-		runLogo,
-	);
+	const { logo, logoField, logoPending } = branding;
 	const waiting = Boolean(
 		run && ["queued", "running", "retry_wait"].includes(run.state),
 	);
@@ -742,53 +791,89 @@ export function ReviewProposal({
 				)}
 			</section>
 		);
-	if (inquiry && report && run && !selected)
+	if (inquiry && !selected) {
+		const ready = current && run?.state === "succeeded" && report !== null;
 		return (
 			<article
 				className="sc-review sc-report-workspace"
 				aria-label={project.title}
 			>
-				<ReportDownloads
-					run={run}
-					report={report}
+				<InquiryExportBar
 					client={client}
 					scope={scope}
-					recheck={recheck}
-					askGenie={() => askGenie(run)}
-					extraActionsOnly
+					project={project}
+					locale={locale}
+					run={ready ? run : null}
+					prepare={prepareExport}
+					runLogo={runLogo}
+					accept={acceptExport}
+					blocked={!ready || blocked || logoPending}
+					logo={logo?.data ?? null}
+					logoField={logoField}
 				>
-					{({ actions, error }) => (
-						<InquiryExportBar
+					{ready ? (
+						<ReportDownloads
+							run={run}
+							report={report}
 							client={client}
 							scope={scope}
-							project={project}
-							locale={locale}
-							run={run}
-							prepare={prepareExport}
-							runLogo={runLogo}
-							accept={acceptExport}
-							blocked={blocked || logoPending}
-							logo={logo?.data ?? null}
-							logoField={logoField}
+							recheck={recheck}
+							askGenie={() => askGenie(run)}
+							extraActionsOnly
 						>
-							{actions}
-							{error}
-						</InquiryExportBar>
+							{({ actions, error }) => (
+								<>
+									{actions}
+									{error}
+								</>
+							)}
+						</ReportDownloads>
+					) : noteOnly ? (
+						<p>
+							{__(
+								"Choose a project direction to download a report.",
+								"linker-tools",
+							)}
+						</p>
+					) : preparationFailed ? (
+						<div role="alert">
+							<p>
+								{__(
+									"The report could not be generated. Please try again.",
+									"linker-tools",
+								)}
+							</p>
+							<button
+								type="button"
+								className="sc-button"
+								disabled={retryBlocked}
+								onClick={retryPreparation}
+							>
+								{__("Try again", "linker-tools")}
+							</button>
+						</div>
+					) : (
+						<p role="status">
+							{__("Preparing planning report…", "linker-tools")}
+						</p>
 					)}
-				</ReportDownloads>
+				</InquiryExportBar>
 				{inquiry}
+				{recoverTransfer && draftTransfer}
 				<details className="sc-card sc-review-details">
 					<summary>{__("Project report", "linker-tools")}</summary>
-					{report.sections.map((section) => (
-						<section key={section.id}>
-							<h3>{section.title}</h3>
-							<ReportContent section={section} />
-						</section>
-					))}
+					{ready &&
+						report.sections.map((section) => (
+							<section key={section.id}>
+								<h3>{section.title}</h3>
+								<ReportContent section={section} />
+							</section>
+						))}
 				</details>
 				{historyPanel}
 			</article>
 		);
+	}
 	return (
 		<article
 			className="sc-review sc-report-workspace"

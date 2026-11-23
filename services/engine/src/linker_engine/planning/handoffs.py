@@ -239,7 +239,8 @@ class Handoffs:
         report_only = (
             isinstance(source.get("retained_inverter"), dict) and equipment is None
         )
-        if not report_only and not isinstance(equipment, dict):
+        selected = source.get("customer_equipment")
+        if not selected and not report_only and not isinstance(equipment, dict):
             raise HandoffIncomplete("the report has no selected products")
         products = (
             {
@@ -270,6 +271,8 @@ class Handoffs:
                 if line["handling"] == "woo_product"
             ]
         items = purchase_items(cast(list[Object], material_lines), products)
+        if selected and not items:
+            report_only = True
         if not items and not report_only:
             raise HandoffIncomplete("the report has no selected products")
         asset = Assets(self.workspace).get(
@@ -298,7 +301,7 @@ class Handoffs:
         candidate_id = (
             cast(str, candidate["candidate_id"])
             if isinstance(candidate, dict)
-            else digest(encode(equipment))
+            else digest(encode(selected or equipment))
             if not report_only
             else source_hash
         )

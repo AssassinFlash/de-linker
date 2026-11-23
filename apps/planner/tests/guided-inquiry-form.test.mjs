@@ -10,6 +10,8 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 	t.after(() => fixture.dispose(root));
 	const { ReviewInquiry } =
 		await import("../src/components/configurator/ReviewInquiry.tsx");
+	const { ReportContent } =
+		await import("../src/components/configurator/ReviewProposal.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const brief = emptyBrief();
 	const project = {
@@ -59,6 +61,7 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 					{
 						product_id: 42,
 						label: "Selected inverter",
+						sku: "INV-42",
 						quantity: 4,
 						project_id: project.id,
 					},
@@ -84,6 +87,32 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 				React.createElement(ReviewInquiry, {
 					project,
 					reportRunId,
+					equipmentDetails: React.createElement(ReportContent, {
+						section: {
+							id: "bom",
+							title: "Bill of materials",
+							rows: [],
+							paragraphs: [],
+							table: {
+								columns: ["Quantity", "Product", "Reference", "Supply scope"],
+								rows: [
+									["4 pc", "Selected inverter", "INV-42", "Selected equipment"],
+									[
+										"1 pc",
+										"Installed inverter",
+										"INV-42",
+										"Retained equipment",
+									],
+									[
+										"—",
+										"Selected battery",
+										"BAT-55",
+										"Confirm the required quantity in your inquiry",
+									],
+								],
+							},
+						},
+					}),
 					direction: "storage_addition",
 					client,
 					scope: "owned",
@@ -108,6 +137,16 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 			},
 		],
 	]);
+	const details = fixture.element.querySelector(
+		'ul[aria-label="Bill of materials"]',
+	);
+	assert.ok(details);
+	assert.equal(details.querySelector("table"), null);
+	assert.doesNotMatch(details.textContent, /Selected inverter/);
+	assert.match(details.textContent, /Installed inverter/);
+	assert.match(details.textContent, /1 pc/);
+	assert.match(details.textContent, /Selected battery/);
+	assert.match(details.textContent, /Confirm the required quantity/);
 	const cable = fixture.element.querySelector(
 		'a[href="https://fixture.invalid/product/cable/"]',
 	);
@@ -171,4 +210,82 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 			fixture.element.querySelector('[name="' + key + '"]').value,
 			value,
 		);
+});
+
+test("contact fields remain editable until Woo returns the report-bound form and its products", async (t) => {
+	const page = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { ReviewInquiry } =
+		await import("../src/components/configurator/ReviewInquiry.tsx");
+	const root = createRoot(page.element);
+	t.after(() => page.dispose(root));
+	const project = { id: "2".repeat(32), revision: 3, inputs: {} };
+	const run = "3".repeat(32);
+	let finish;
+	const waiting = new Promise((resolve) => {
+		finish = resolve;
+	});
+	const client = {
+		origin: location.origin,
+		isCurrentScope: () => true,
+		async query(_, command) {
+			if (command.report_run_id) await waiting;
+			return {
+				schema_version: 1,
+				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php"><input name="linker_preliminary_project" type="hidden" value="${project.id}:3">${command.report_run_id ? `<input type="hidden" name="linker_report_transfer" value="${run}:owned">` : ""}<input name="email"><button type="submit">Send inquiry</button></form>`,
+				inquiry_lines: command.report_run_id
+					? [
+							{
+								product_id: 42,
+								label: "Selected inverter",
+								quantity: 2,
+								project_id: project.id,
+							},
+						]
+					: [],
+			};
+		},
+	};
+	const props = {
+		project,
+		direction: null,
+		client,
+		scope: "owned",
+		locale: "en",
+		active: true,
+		changeSelection() {},
+		recheck() {},
+	};
+	const render = (ready) =>
+		act(async () =>
+			root.render(
+				React.createElement(ReviewInquiry, {
+					...props,
+					reportRunId: ready ? run : undefined,
+					submitReady: ready,
+				}),
+			),
+		);
+	const email = () => page.element.querySelector("input[name=email]");
+	const send = () => page.element.querySelector("button[type=submit]");
+	await render(false);
+	assert.equal(send().disabled, true);
+	email().focus();
+	email().value = "installer";
+	await render(true);
+	assert.equal(document.activeElement, email());
+	email().value += "@example.test";
+	assert.equal(send().disabled, true);
+	await act(async () => finish());
+	assert.equal(send().disabled, false);
+	assert.equal(email().value, "installer@example.test");
+	assert.equal(document.activeElement, email());
+	assert.match(
+		page.element.querySelector("aside").textContent,
+		/Selected inverter/,
+	);
+	assert.equal(
+		page.element.querySelector("input[name=linker_report_transfer]").value,
+		run + ":owned",
+	);
 });

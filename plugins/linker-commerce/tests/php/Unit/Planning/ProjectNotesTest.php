@@ -546,19 +546,20 @@ final class ProjectNotesTest extends TestCase {
 
 	/** The project follows its reviewed revision even when the note is empty or excluded.
 	 *
-	 * @return list<array{string,bool}>
+	 * @return list<array{string,bool,string|null}>
 	 */
 	public static function preliminary_notes(): array {
-		return array( array( '', false ), array( self::NOTE, true ), array( self::NOTE, false ) );
+		return array( array( '', false, 'pv_only' ), array( self::NOTE, true, 'pv_only' ), array( self::NOTE, false, 'pv_only' ), array( '', false, null ) );
 	}
 
 	/** Captures the reviewed project in the native Woo customer note.
 	 *
 	 * @dataProvider preliminary_notes
-	 * @param string $text Reviewed project note.
-	 * @param bool   $include_note Whether the customer includes that note.
+	 * @param string      $text Reviewed project note.
+	 * @param bool        $include_note Whether the customer includes that note.
+	 * @param string|null $scope Planned system, if the customer has chosen one.
 	 */
-	public function test_preliminary_project_reaches_sales( string $text, bool $include_note ): void {
+	public function test_preliminary_project_reaches_sales( string $text, bool $include_note, ?string $scope ): void {
 		$id   = str_repeat( 'b', 32 );
 		$post = array( 'linker_preliminary_project' => $id . ':3' );
 		$note = array(
@@ -569,7 +570,7 @@ final class ProjectNotesTest extends TestCase {
 			'text'          => $text,
 			'inputs'        => array(
 				'brief'                    => array(
-					'system_scope' => 'pv_only',
+					'system_scope' => $scope,
 					'site'         => array( 'location_label' => 'Oslo' ),
 					'annual_load'  => array(
 						'kwh'   => 6400,
@@ -638,8 +639,13 @@ final class ProjectNotesTest extends TestCase {
 			}
 		);
 		$this->assertStringEndsWith( "\n\nPlease call.", $output );
-		foreach ( array( 'Canal house', 'input revision 3', 'Solar', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Grid phases: To confirm', 'Reduce peak demand', 'Target grid import limit: 0 kW', 'Lösungsentwurf: April proposal' ) as $fact ) {
+		foreach ( array( 'Canal house', 'input revision 3', 'Oslo', '6400 kWh', 'Electricity bills', 'PV array size: 7.5 kWp', 'Grid phases: To confirm', 'Reduce peak demand', 'Target grid import limit: 0 kW', 'Lösungsentwurf: April proposal' ) as $fact ) {
 			$this->assertStringContainsString( $fact, $output );
+		}
+		if ( null === $scope ) {
+			$this->assertStringNotContainsString( 'Planned system:', $output );
+		} else {
+			$this->assertStringContainsString( 'Solar', $output );
 		}
 		$this->assertSame( $id . ':3', $meta['_linker_preliminary_project'] );
 		$this->assertSame( array(), Context::stored( $order ) );

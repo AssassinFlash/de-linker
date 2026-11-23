@@ -1250,13 +1250,12 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 		cache.clear();
 		wrongProject = true;
 		window.history.replaceState(null, "", deepLink);
-		await render("en");
+		await render("de");
 		await until(() => button("Refresh calculation status", history()));
 		assert.equal(button("Download PDF"), undefined);
 		assert.equal(button("Ask Genie", history()), undefined);
 		await act(async () => button("Close", history()).click());
-		await act(async () => button("Earlier calculations").click());
-		await until(() => button("Download PDF"));
+		await until(() => button("Download PDF")?.matches(":enabled"));
 
 		await act(async () => root.render(null));
 		cache.clear();
@@ -1265,6 +1264,7 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 		await render("en");
 		await until(() => dom.element.querySelector('[name="location_label"]'));
 		await enter(dom.element.querySelector('[name="location_label"]'), "Berlin");
+		await until(() => button("Save snapshot")?.matches(":enabled"));
 		await act(async () => button("Save snapshot").click());
 		await until(() => requests.some(([path]) => path === "projects/revise"));
 		const step = [...dom.element.querySelectorAll(".sc-nav button")].find(
@@ -1360,7 +1360,7 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 				? Promise.resolve({ items: [currentSummary], next: null })
 				: priorQuery(path, command);
 		window.history.replaceState(null, "", `?project=${project.id}#sc-review`);
-		await render("en");
+		await render("de");
 		await until(() => button("Retry transfer"));
 		await until(() => transfer.includes("draft/read"));
 		assert.equal(button("Retry transfer").disabled, false);
@@ -1371,7 +1371,7 @@ test("Report & inquiry asks Genie and downloads the chosen report while inquiry 
 				(link) => link.textContent === "Continue to inquiry",
 			);
 		await until(inquiryLink);
-		assert.equal(inquiryLink().href, location.origin + "/inquiry/");
+		assert.equal(inquiryLink().href, location.origin + "/de/anfrage/");
 		assert.deepEqual(transfer, ["draft/read", "draft/apply"]);
 	} finally {
 		await dom.dispose(root);
@@ -1388,6 +1388,9 @@ for (const scenario of [
 	"matching energy and equipment",
 	"changed energy and equipment",
 	"automatic wiring check",
+	"single manually selected equipment",
+	"pending manually selected equipment",
+	"plant manually selected equipment",
 	"single-system wiring entered in Solar",
 	"multi-system wiring entered in Solar",
 	"pending wiring check",
@@ -1423,7 +1426,10 @@ for (const scenario of [
 			},
 		};
 		const editWiring = scenario.endsWith("wiring entered in Solar");
-		const plantWiring = scenario === "multi-system wiring entered in Solar";
+		const manual = scenario.includes("manually selected equipment");
+		const plantWiring =
+			scenario === "multi-system wiring entered in Solar" ||
+			scenario === "plant manually selected equipment";
 		const editPeak = scenario === "edited peak target with a saved candidate";
 		if (editWiring) window.location.hash = "sc-solar";
 		if (editPeak) window.location.hash = "sc-energy";
@@ -1570,10 +1576,15 @@ for (const scenario of [
 		}
 		let wiringCheck;
 		let queuedCheck;
-		if (scenario.includes("wiring")) {
+		if (
+			scenario.includes("wiring") ||
+			manual ||
+			scenario === "changed energy and equipment"
+		) {
 			project.inputs.equipment_setup = {
 				schema_version: 1,
-				inverter_product_id: 101,
+				inverter_product_id:
+					scenario === "changed energy and equipment" ? 102 : 101,
 				battery_product_id: null,
 				modules_per_stack: null,
 				parallel_stacks: null,
@@ -1585,7 +1596,8 @@ for (const scenario of [
 				required_discharge_ac_kw: null,
 			};
 			if (editWiring) project.inputs.geometry = flatRoof;
-			else project.inputs.pv_string_plan = { schema_version: 1, strings: [] };
+			else if (!manual && scenario !== "changed energy and equipment")
+				project.inputs.pv_string_plan = { schema_version: 1, strings: [] };
 			if (plantWiring) {
 				const { beginPlant, plantInputs, readPlantDraft } =
 					await import("../src/domain/equipmentPlant.ts");
@@ -1614,13 +1626,14 @@ for (const scenario of [
 						checks: [],
 						provisional_bill_of_materials: [],
 						selected_products: [],
-						...(scenario !== "missing wiring evidence" && {
-							pv_electrical: {
-								schema_version: 1,
-								method: "woo_layout_electrical_v2",
-								strings: [],
-							},
-						}),
+						...(!manual &&
+							scenario !== "missing wiring evidence" && {
+								pv_electrical: {
+									schema_version: 1,
+									method: "woo_layout_electrical_v2",
+									strings: [],
+								},
+							}),
 					},
 				},
 			);
@@ -1630,7 +1643,11 @@ for (const scenario of [
 				result: null,
 				result_sha256: null,
 			};
-			if (scenario === "pending wiring check") runs.unshift(queuedCheck);
+			if (
+				scenario === "pending wiring check" ||
+				scenario === "pending manually selected equipment"
+			)
+				runs.unshift(queuedCheck);
 			if (scenario === "completed wiring check") runs.unshift(wiringCheck);
 			desired.equipment_run_id = wiringCheck.id;
 		}
@@ -1784,7 +1801,32 @@ for (const scenario of [
 							result_sha256: null,
 						};
 					}
-					assert.deepEqual(command.inputs, project.inputs);
+					if (scenario === "changed energy and equipment") {
+						const { authoredDiscoveryInputs } =
+							await import("../src/domain/currentCalculation.ts");
+						assert.deepEqual(
+							command.inputs,
+							authoredDiscoveryInputs(project.inputs),
+						);
+						project = {
+							...project,
+							revision: project.revision + 1,
+							input_sha256: "6".repeat(64),
+							inputs: command.inputs,
+						};
+						wiringCheck = equipmentRun(
+							"qualify_woo_equipment_v1",
+							project.revision,
+							project.input_sha256,
+							{ assessment: wiringCheck.result.assessment },
+						);
+						queuedCheck = {
+							...wiringCheck,
+							state: "queued",
+							result: null,
+							result_sha256: null,
+						};
+					} else assert.deepEqual(command.inputs, project.inputs);
 					runs.unshift(wiringCheck);
 					return {
 						schema_version: 1,
@@ -2011,12 +2053,6 @@ for (const scenario of [
 				assert.equal(savedInputs.equipment_candidate, undefined);
 				return;
 			}
-			const generate = () =>
-				[...dom.element.querySelectorAll("button")].find(
-					(button) => button.textContent === "Generate project report",
-				);
-			await until(() => generate() && !generate().disabled);
-			await act(async () => generate().click());
 			if (scenario === "missing wiring evidence") {
 				await until(() =>
 					dom.element.textContent.includes(
@@ -2034,7 +2070,9 @@ for (const scenario of [
 				requests.map(([path]) => path),
 				editWiring
 					? ["projects/revise", "runs/check-equipment", "runs/report"]
-					: scenario === "automatic wiring check"
+					: scenario === "automatic wiring check" ||
+						  (manual && scenario !== "pending manually selected equipment") ||
+						  scenario === "changed energy and equipment"
 						? ["runs/check-equipment", "runs/report"]
 						: ["runs/report"],
 			);

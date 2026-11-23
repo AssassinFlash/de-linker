@@ -277,7 +277,7 @@ def electrical_sections(electrical: Object, locale: str) -> list[ReportSection]:
             )
         sections.append(
             ReportSection(
-                id=f"installation-electrical-{circuit['circuit_id']}-{result['condition_id']}",
+                id=f"installation-electrical-{circuit['circuit_id']}:{result['condition_id']}",
                 title=f"{circuit['name']} / {result['name']}",
                 paragraphs=[
                     _label(reason, locale)

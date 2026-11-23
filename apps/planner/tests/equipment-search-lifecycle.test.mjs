@@ -226,11 +226,14 @@ async function equipmentApp(
 	{
 		projectId,
 		projectRevision = 1,
+		locale = "en-US",
+		reports = [],
 		inputs,
 		hash,
 		guided = false,
 		loseSelectionReply = false,
 		failFirstReport = false,
+		loseFirstReportResponse = false,
 		rejectFind = false,
 		foreignSelection = false,
 		selectionGate = null,
@@ -346,15 +349,27 @@ async function equipmentApp(
 			assert.equal(scope, admittedScope);
 			reads.push({ path, body, scope });
 			if (path === readGate?.path) await readGate.wait();
+			if (path === "inquiry/form")
+				return {
+					schema_version: 1,
+					inquiry_lines: [],
+					inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php">
+						<input type="hidden" name="linker_preliminary_project" value="${projectId}:${body.revision}">
+						<input name="email" type="email"><button type="submit">Send inquiry</button></form>`,
+				};
 			if (path === "products/current") return catalog();
 			if (path === "assets/read" && body.asset_id === selectedPv?.id)
 				return structuredClone(selectedPv);
 			if (path === "projects/runs")
 				return {
-					items: serverRun ? [runPageItem(serverRun)] : [],
+					items: [...reports, ...(serverRun ? [serverRun] : [])].map(
+						runPageItem,
+					),
 					next: null,
 				};
 			if (path === "runs/read") {
+				const historic = reports.find((run) => run.id === body.run_id);
+				if (historic) return structuredClone(historic);
 				assert.equal(
 					body.run_id,
 					(body.run_id === reportRun?.id ? reportRun : serverRun)?.id,
@@ -448,6 +463,10 @@ async function equipmentApp(
 				return structuredClone(project);
 			}
 			if (path === "runs/report") {
+				if (loseFirstReportResponse) {
+					loseFirstReportResponse = false;
+					throw new ApiError(503, "service_unavailable");
+				}
 				reportRun = makeRun(
 					projectId,
 					++reportAttempts === 1 && failFirstReport ? "failed" : "queued",
@@ -491,7 +510,7 @@ async function equipmentApp(
 	const config = {
 		baseUrl: location.origin + "/api/",
 		nonceUrl: location.origin + "/nonce",
-		locale: "en-US",
+		locale,
 		countries: { NO: "Norway" },
 	};
 	const root = createRoot(fixture.element);
@@ -502,24 +521,26 @@ async function equipmentApp(
 			else delete globalThis[name];
 		}
 	});
-	await act(async () =>
-		root.render(
-			React.createElement(
-				React.StrictMode,
-				null,
-				React.createElement(SessionBoundary, { client }, (value, recheck) =>
-					React.createElement(Workspace, {
-						key: value.query_scope,
-						session: value,
-						client,
-						store,
-						config,
-						recheck,
-					}),
+	const mount = () =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					React.StrictMode,
+					null,
+					React.createElement(SessionBoundary, { client }, (value, recheck) =>
+						React.createElement(Workspace, {
+							key: value.query_scope,
+							session: value,
+							client,
+							store,
+							config,
+							recheck,
+						}),
+					),
 				),
 			),
-		),
-	);
+		);
+	await mount();
 	const button = (text) =>
 		[...document.querySelectorAll("button")].find(
 			(node) =>
@@ -567,6 +588,10 @@ async function equipmentApp(
 	}
 
 	return {
+		async reopen() {
+			await act(async () => root.render(null));
+			await mount();
+		},
 		async switchScope() {
 			nextScope = "9".repeat(64);
 			await act(async () => window.dispatchEvent(new window.Event("focus")));
@@ -933,10 +958,6 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Review the proposal").click());
 	assert.equal(location.hash, "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
-	await untilRun(() =>
-		app.button("Generate project report")?.matches(":enabled"),
-	);
-	await act(async () => app.button("Generate project report").click());
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
 	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
 	await app.step("Roof & PV");
@@ -995,10 +1016,6 @@ for (const purpose of [
 			app.button("Review the proposal")?.matches(":enabled"),
 		);
 		await act(async () => app.button("Review the proposal").click());
-		await untilRun(() =>
-			app.button("Generate project report")?.matches(":enabled"),
-		);
-		await act(async () => app.button("Generate project report").click());
 		await untilRun(() =>
 			app.requests.some(({ path }) => path === "runs/report"),
 		);
@@ -1390,6 +1407,224 @@ test("a comparison dispatches once, polls in the background, and renders partial
 	}
 });
 
+test("a historical report opened from a guided review keeps its original run on reopening", async (t) => {
+	const current = structuredClone(nativePreparation.geometric_pv.report_run);
+	const previous = JSON.parse(
+		JSON.stringify(nativePreparation.direct_beam.report_run).replaceAll(
+			nativePreparation.direct_beam.report_run.project_id,
+			current.project_id,
+		),
+	);
+	const app = await equipmentApp(t, {
+		projectId: current.project_id,
+		projectRevision: current.revision,
+		reports: [current, previous],
+		guided: true,
+		locale: "de",
+		hash: "#sc-review",
+		inputs: {},
+	});
+	const history = () => document.querySelector(".sc-report-history");
+	const version = () =>
+		[...(history()?.querySelectorAll("button") ?? [])].find((b) =>
+			b.textContent.startsWith("Revision " + previous.revision),
+		);
+	await until(() => version());
+	await act(async () => version().click());
+	await until(
+		() =>
+			history()?.querySelector("h3")?.textContent ===
+			previous.result.report.title,
+	);
+	assert.equal(new URL(location.href).searchParams.get("run"), previous.id);
+	await app.reopen();
+	await until(
+		() =>
+			history()?.querySelector("h3")?.textContent ===
+			previous.result.report.title,
+	);
+	await act(async () => app.button("Close").click());
+	await until(
+		() =>
+			document.querySelector(".sc-export-strip") &&
+			new URL(location.href).searchParams.get("run") === current.id,
+	);
+});
+test("a failed later report leaves the successful report in the same language available", async (t) => {
+	const ready = structuredClone(nativePreparation.direct_beam.report_run);
+	const failed = {
+		...ready,
+		id: "f".repeat(32),
+		state: "failed",
+		result: null,
+		result_sha256: null,
+	};
+	const app = await equipmentApp(t, {
+		projectId: ready.project_id,
+		projectRevision: ready.revision,
+		reports: [failed, ready],
+		hash: "#sc-review",
+		inputs: {},
+	});
+	await until(() => app.button("Download PDF")?.matches(":enabled"));
+	assert.equal(
+		app.requests.filter(({ path }) => path === "runs/report").length,
+		0,
+	);
+	assert.ok(
+		app.reads.some(
+			({ path, body }) => path === "runs/read" && body.run_id === ready.id,
+		),
+	);
+});
+test("a saved battery without an inverter requests a project report without a system assessment", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const app = await equipmentApp(t, {
+		projectId: "9".repeat(32),
+		hash: "#sc-preliminary-review",
+		inputs: {
+			brief: emptyBrief(),
+			equipment_setup: {
+				...emptySetup,
+				battery_product_id: 201,
+				modules_per_stack: 3,
+				parallel_stacks: 1,
+			},
+		},
+	});
+	await until(() => app.requests.some(({ path }) => path === "runs/report"));
+	assert.equal(location.hash, "#sc-review");
+	assert.equal(
+		app.requests.some(({ path }) => path === "runs/check-equipment"),
+		false,
+	);
+	assert.equal(
+		app.requests.find(({ path }) => path === "runs/report").body.options
+			.equipment_run_id,
+		null,
+	);
+});
+test("an energy report without equipment evidence does not cover a saved manual inverter", async (t) => {
+	const original = nativePreparation.direct_beam.report_run;
+	const old = JSON.parse(
+		JSON.stringify(original).replaceAll(original.project_id, "c15e".repeat(8)),
+	);
+	old.result.source_runs[0].kind = "plant_shared_dc_energy_replay_v1";
+	const app = await equipmentApp(t, {
+		projectId: old.project_id,
+		projectRevision: old.revision,
+		reports: [old],
+		hash: "#sc-review",
+		inputs: { equipment_setup: { ...savedSetup, inverter_product_id: 101 } },
+	});
+	await until(() =>
+		app.requests.some(({ path }) => path === "runs/check-equipment"),
+	);
+	assert.equal(app.button("Download PDF").disabled, true);
+});
+for (const hasGermanReport of [false, true]) {
+	test(`German review ${hasGermanReport ? "reuses its saved report behind a newer English report" : "prepares its own report after an English calculation"}`, async (t) => {
+		const english = structuredClone(nativePreparation.direct_beam.report_run);
+		const german = JSON.parse(
+			JSON.stringify(nativePreparation.geometric_pv.report_run).replaceAll(
+				nativePreparation.geometric_pv.report_run.project_id,
+				english.project_id,
+			),
+		);
+		german.revision =
+			german.result.revision =
+			german.manifest.revision =
+				english.revision;
+		const app = await equipmentApp(t, {
+			projectId: english.project_id,
+			projectRevision: english.revision,
+			locale: "de-DE",
+			reports: hasGermanReport ? [english, german] : [english],
+			hash: "#sc-review",
+			inputs: {},
+		});
+		if (hasGermanReport) {
+			await until(() => app.button("Download PDF")?.matches(":enabled"));
+			assert.equal(
+				app.requests.filter(({ path }) => path === "runs/report").length,
+				0,
+			);
+			assert.ok(
+				app.reads.some(
+					({ path, body }) => path === "runs/read" && body.run_id === german.id,
+				),
+			);
+		} else {
+			await until(() =>
+				app.requests.some(
+					({ path, body }) =>
+						path === "runs/report" && body.options.locale === "de",
+				),
+			);
+			assert.equal(app.button("Download PDF").disabled, true);
+		}
+		assert.ok(
+			!app.reads.some(
+				({ path, body }) =>
+					path === "inquiry/form" && body.report_run_id === english.id,
+			),
+		);
+	});
+}
+
+test("a roof project without a direction or a completed calculation can send its owned inquiry", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const app = await equipmentApp(t, {
+		projectId: "4".repeat(32),
+		hash: "#sc-review",
+		inputs: { brief: emptyBrief() },
+	});
+	await until(() => app.button("Send inquiry")?.matches(":enabled"));
+	assert.equal(app.button("Download PDF").disabled, true);
+	assert.ok(
+		document
+			.querySelector(".sc-export-strip")
+			.textContent.includes("Choose a project direction"),
+	);
+	assert.equal(
+		document.querySelector("[name=linker_preliminary_project]").value,
+		app.project.id + ":1",
+	);
+	assert.deepEqual(app.requests, []);
+});
+test("full project review takes contact details while the current report is preparing and reuses that run on return", async (t) => {
+	const app = await equipmentApp(t, {
+		projectId: "e".repeat(32),
+		hash: "#sc-project",
+		inputs: {},
+	});
+	await app.step("Review & send");
+	await until(() => document.querySelector(".linker-inquiry-form"));
+	assert.equal(app.button("Generate project report"), undefined);
+	assert.equal(app.button("Send inquiry").disabled, true);
+	assert.equal(app.button("Download PDF").disabled, true);
+	await enter(
+		document.querySelector("input[name=email]"),
+		"installer@example.test",
+	);
+	assert.doesNotMatch(
+		document.querySelector("aside.sc-inquiry-overview").textContent,
+		/No products selected/,
+	);
+	await until(() => app.requests.some(({ path }) => path === "runs/report"));
+	await app.step("Project & direction");
+	await app.step("Review & send");
+	await until(
+		() =>
+			document.querySelector("input[name=email]")?.value ===
+			"installer@example.test",
+	);
+	assert.equal(
+		app.requests.filter(({ path }) => path === "runs/report").length,
+		1,
+	);
+});
+
 test("one guided configuration choice saves it and prepares its report", async (t) => {
 	const app = await equipmentApp(t, {
 		projectId: "b".repeat(32),
@@ -1518,10 +1753,6 @@ for (const [multi, selection] of [
 		await untilRun(() => app.button("Selected"));
 		assert.equal(app.requests.length, 1);
 		await act(async () => app.button("Review the proposal").click());
-		await untilRun(() =>
-			app.button("Generate project report")?.matches(":enabled"),
-		);
-		await act(async () => app.button("Generate project report").click());
 		await untilRun(() =>
 			app.requests.some(({ path }) => path === "runs/report"),
 		);
@@ -1854,10 +2085,6 @@ test("a saved change to model preferences refuses a new current report from the 
 		},
 	});
 	await untilRun(() =>
-		app.button("Generate project report")?.matches(":enabled"),
-	);
-	await act(async () => app.button("Generate project report").click());
-	await untilRun(() =>
 		document.body.textContent.includes("Compare systems again"),
 	);
 	assert.deepEqual(app.requests, []);
@@ -1997,3 +2224,25 @@ for (const authored of [false, true]) {
 		assert.equal(setup.application, "commercial");
 	});
 }
+
+test("the review retry confirms the original report request after a lost response", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const brief = { ...emptyBrief(), system_scope: "pv_only" };
+	const app = await equipmentApp(t, {
+		projectId: "b".repeat(32),
+		hash: "#sc-review",
+		inputs: { brief },
+		loseFirstReportResponse: true,
+	});
+	const retry = () =>
+		document.querySelector(".sc-export-strip [role=alert] button");
+	await untilRun(() => retry());
+	assert.equal(retry().disabled, false);
+	await act(async () => retry().click());
+	await untilRun(
+		() =>
+			app.requests.filter(({ path }) => path === "runs/report").length === 2,
+	);
+	const reports = app.requests.filter(({ path }) => path === "runs/report");
+	assert.deepEqual(reports[0].body, reports[1].body);
+});

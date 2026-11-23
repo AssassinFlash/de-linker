@@ -828,13 +828,22 @@ def _installation_report_projection(
         section.id: cast(Object, section.model_dump(mode="json"))
         for section in installation_sections(safe, locale)
     }
+    # Frozen circuit/condition order also identifies details in older reports,
+    # whose hyphen-joined IDs can coincide or differ from the redacted IDs.
+    electrical_details = (
+        section
+        for key, section in replacements.items()
+        if key.startswith("installation-electrical-")
+    )
     materials = safe.get("materials")
     if not isinstance(materials, dict):
         materials = project_materials(safe)
     sections: list[Json] = []
     for section in cast(list[Object], report.get("sections", [])):
         identifier = str(section.get("id", ""))
-        if identifier in replacements:
+        if identifier.startswith("installation-electrical-"):
+            sections.append(next(electrical_details))
+        elif identifier in replacements:
             sections.append(replacements[identifier])
         elif identifier == "bom" and isinstance(section.get("table"), dict):
             table = cast(Object, section["table"])

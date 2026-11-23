@@ -45,7 +45,11 @@ import {
 	type RunPage,
 	type TaskKind,
 } from "../../data/planningProtocol.ts";
-import { REPORT_TASK, type ReportOptions } from "../../data/planningReport.ts";
+import {
+	REPORT_TASK,
+	reportFromRun,
+	type ReportOptions,
+} from "../../data/planningReport.ts";
 import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
 import { DC_PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
 import { readObject } from "../../data/readProtocol.ts";
@@ -67,6 +71,7 @@ import {
 import {
 	authoredCalculationInputs,
 	authoredDiscoveryInputs,
+	projectEquipmentScope,
 	needsComparisonModels,
 	restoreComparisonModels,
 	sameEquipmentDemand,
@@ -100,7 +105,12 @@ import {
 	type SystemComparison,
 } from "./SystemOptions.tsx";
 import { SolarInstallation } from "./SolarInstallation.tsx";
-import { reportCanTransfer, ReviewProposal } from "./ReviewProposal.tsx";
+import {
+	reportCanTransfer,
+	ReportContent,
+	ReviewProposal,
+} from "./ReviewProposal.tsx";
+import { useReportLogo } from "./ReportLogo.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
 import { ProjectHeading } from "./ProjectHeading.tsx";
 import { PlantPvStringSetup } from "../equipment/PlantPvStringSetup.tsx";
@@ -121,6 +131,7 @@ import {
 } from "../../domain/pvgisReference.ts";
 import { moduleSummary } from "../../domain/panelPoses.ts";
 import { activePvGeometry, checkPvWeather } from "../../domain/solarSetup.ts";
+import { guidedInquiryRetry } from "../../data/inquiryRecovery.ts";
 import { __, sprintf } from "../../i18n.ts";
 
 import {
@@ -342,11 +353,14 @@ export default function ProjectWorkbench({
 		runId: string;
 		data: string | null;
 	} | null>(null);
+	const [noteOnlyRevision, setNoteOnlyRevision] = useState<number | null>(null);
 	const [preparingReport, setPreparingReport] = useState(false);
 	const [replacedSearch, setReplacedSearch] = useState<string | null>(null);
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
 	const [comparison, setComparison] = useState<SystemComparison | null>(null);
-	const [submittedReport, setSubmittedReport] = useState<string | null>(null);
+	const [submittedReport, setSubmittedReport] = useState<PlanningRun | null>(
+		null,
+	);
 	const [savedEnergy, setSavedEnergy] = useState<"run" | "comparison" | null>(
 		() => {
 			if (step !== "energy" || params.get("project") !== project.id)
@@ -357,7 +371,9 @@ export default function ProjectWorkbench({
 	);
 	const [viewedReport, setViewedReport] = useState(() => {
 		const params = new URL(location.href).searchParams;
-		return step === "review" && params.get("project") === project.id
+		return (!guided || params.get("energy_view") === "reports") &&
+			step === "review" &&
+			params.get("project") === project.id
 			? params.get("run")
 			: null;
 	});
@@ -481,18 +497,85 @@ export default function ProjectWorkbench({
 	const requestedReport = params.get("run");
 	const guidedReportId =
 		guided &&
+		viewedReport === null &&
 		step === "review" &&
 		requestedReport &&
 		/^[a-f0-9]{32}$/.test(requestedReport)
 			? requestedReport
 			: null;
+	const reportLocale = config.locale.startsWith("de") ? "de" : "en";
+	const retryReport = guidedInquiryRetry(new URL(location.href))
+		? guidedReportId
+		: null;
+	function matchesReview(id: string) {
+		const cached = cache.getQueryData<PlanningRun>([
+			session.query_scope,
+			"configurator-result",
+			project.id,
+			REPORT_TASK,
+			id,
+		]);
+		if (cached?.result) {
+			if (readObject(cached.result.report).locale !== reportLocale)
+				return false;
+			const saved = draft?.baseline.inputs;
+			if (saved && !saved.equipment_candidate) {
+				const equipment = projectEquipmentScope(saved);
+				if (equipment !== "none") {
+					const requiredSection =
+						equipment === "products"
+							? "customer-selected-equipment"
+							: "equipment";
+					return reportFromRun(cached).sections.some(
+						(section) => section.id === requiredSection,
+					);
+				}
+			}
+			return true;
+		}
+		const issued = operations.records.find(
+			(record) => record.path === "runs/report" && record.resultId === id,
+		);
+		return (
+			!issued ||
+			readObject(readPlanningOperation(issued.path, issued.body).options)
+				.locale === reportLocale
+		);
+	}
+	const candidateIds = [
+		submittedReport?.revision === draft?.baseline.revision
+			? submittedReport?.id
+			: null,
+		guidedReportId,
+		...reportRuns
+			.filter((item) => item.revision === draft?.baseline.revision)
+			.map((item) => item.id),
+	];
+	const eligibleReports = candidateIds.filter((id): id is string =>
+		Boolean(id && matchesReview(id)),
+	);
+	const historyTail = olderHistory.data?.pages.at(-1) ?? history.data;
+	const moreCurrentReports = Boolean(
+		draft &&
+		historyTail?.next &&
+		historyTail.items.some((item) => item.revision >= draft.baseline.revision),
+	);
 	const reportId =
-		submittedReport ??
-		guidedReportId ??
-		(guided
-			? reportRuns.find((item) => item.revision === draft?.baseline.revision)
-			: reportRuns[0]
-		)?.id ??
+		retryReport ??
+		eligibleReports.find((id) => {
+			const cached = cache.getQueryData<PlanningRun>([
+				session.query_scope,
+				"configurator-result",
+				project.id,
+				REPORT_TASK,
+				id,
+			]);
+			const status =
+				cached?.state ?? reportRuns.find((row) => row.id === id)?.state;
+			return status !== "failed" && status !== "cancelled";
+		}) ??
+		(moreCurrentReports ? null : eligibleReports[0]) ??
+		(viewedReport ? reportRuns[0]?.id : null) ??
 		null;
 	const report = useProjectResult(
 		client,
@@ -560,7 +643,11 @@ export default function ProjectWorkbench({
 		if (id === null) url.searchParams.delete("run");
 		else url.searchParams.set("run", id);
 		url.searchParams.delete("compare");
-		url.searchParams.delete("energy_view");
+		if (guided && id) {
+			url.searchParams.set("energy_view", "reports");
+			url.searchParams.delete("retry_revision");
+			url.searchParams.delete("linker_inquiry_retry");
+		} else url.searchParams.delete("energy_view");
 		replacePlannerLocation(url);
 	}
 	const searchRun =
@@ -570,6 +657,7 @@ export default function ProjectWorkbench({
 		reportRun = report.data ?? null;
 	const reviewedReportId =
 		guided &&
+		viewedReport === null &&
 		step === "review" &&
 		draft &&
 		reportRun?.state === "succeeded" &&
@@ -674,7 +762,7 @@ export default function ProjectWorkbench({
 		if (task === SEARCH_TASK) {
 			setReplacedSearch(null);
 			setSubmittedSearch(run.id);
-		} else if (task === REPORT_TASK) setSubmittedReport(run.id);
+		} else if (task === REPORT_TASK) setSubmittedReport(run);
 		else setSubmittedDc({ id: run.id, task });
 		void history.refetch();
 	}
@@ -696,6 +784,7 @@ export default function ProjectWorkbench({
 	);
 	const independentlyBlocked = projectWritesBlocked || Boolean(draft?.pending);
 	const blocked = independentlyBlocked || unconfirmedOperation;
+	const branding = useReportLogo(!admitted, reportLogo.current?.data);
 	const requestedRoofSave = useRef<JsonObject | null>(null);
 	const attemptedRoofSave = useRef<JsonObject | null>(null);
 	useEffect(() => {
@@ -874,8 +963,10 @@ export default function ProjectWorkbench({
 			url.searchParams.delete("compare");
 			setSavedEnergy(null);
 		}
-		if (guided && previous === "#sc-review" && next !== "review") {
+		if (previous === "#sc-review" && next !== "review") {
+			setViewedReport(null);
 			url.searchParams.delete("run");
+			url.searchParams.delete("energy_view");
 			url.searchParams.delete("retry_revision");
 			url.searchParams.delete("linker_inquiry_retry");
 		}
@@ -1088,7 +1179,8 @@ export default function ProjectWorkbench({
 	}
 	async function generate(logo: string | null, showResult = true) {
 		if (
-			blocked ||
+			projectWritesBlocked ||
+			unconfirmedOperation ||
 			modelsUnavailable ||
 			reportPreparation.current ||
 			!latest.current
@@ -1103,7 +1195,7 @@ export default function ProjectWorkbench({
 		try {
 			let saved = await controller.save();
 			if (!saved || !current()) return;
-			const { options: sources, pendingWiringCheck } =
+			const { options: sources, pendingEquipmentCheck } =
 				await configuratorReportSources({
 					project: saved,
 					pageSize: session.runtime.limits.max_page_size,
@@ -1114,7 +1206,29 @@ export default function ProjectWorkbench({
 			if (!current()) return;
 			if (sharedDcReportRun(saved.inputs) && !sources.energy_run_id)
 				throw new ApiError(409, "report_inputs_changed");
-			if (hasReportWiring(saved.inputs) && !sources.equipment_run_id) {
+			const wiring = hasReportWiring(saved.inputs);
+			const equipment = projectEquipmentScope(saved.inputs);
+			let checkManualEquipment =
+				!saved.inputs.equipment_candidate &&
+				equipment === "system" &&
+				!sources.equipment_run_id;
+			if (checkManualEquipment && !wiring && sources.energy_run_id) {
+				const energy = readRun(
+					await client.query(
+						"runs/read",
+						{ schema_version: 1, run_id: sources.energy_run_id },
+						session.query_scope,
+						request.signal,
+					),
+					project.id,
+					sources.energy_run_id,
+				);
+				checkManualEquipment = !energy.result?.equipment_binding;
+			}
+			if (
+				((wiring && equipment !== "products") || checkManualEquipment) &&
+				!sources.equipment_run_id
+			) {
 				const readCheck = async (id: string) =>
 					readRun(
 						await client.query(
@@ -1128,8 +1242,8 @@ export default function ProjectWorkbench({
 						RUN_OPERATIONS["runs/check-equipment"],
 					);
 				let run: PlanningRun;
-				if (pendingWiringCheck) {
-					run = await readCheck(pendingWiringCheck);
+				if (pendingEquipmentCheck) {
+					run = await readCheck(pendingEquipmentCheck);
 				} else {
 					const checked = await operations.start("runs/check-equipment", {
 						expected_revision: saved.revision,
@@ -1150,10 +1264,25 @@ export default function ProjectWorkbench({
 					run.manifest.input_sha256 !== saved.input_sha256 ||
 					run.state !== "succeeded" ||
 					!run.result ||
-					readObject(run.result.assessment).pv_electrical == null
+					(wiring && readObject(run.result.assessment).pv_electrical == null)
 				)
-					throw new ApiError(422, "report_wiring_check_failed");
+					throw new ApiError(
+						422,
+						wiring
+							? "report_wiring_check_failed"
+							: "equipment_selection_changed",
+					);
 				sources.equipment_run_id = run.id;
+			}
+			if (
+				!readObject(saved.inputs.brief ?? {}).system_scope &&
+				equipment === "none" &&
+				!sources.energy_run_id &&
+				!sources.pv_run_id &&
+				!sources.equipment_run_id
+			) {
+				setNoteOnlyRevision(saved.revision);
+				return;
 			}
 			const reply = await operations.start("runs/report", {
 				expected_revision: saved.revision,
@@ -1169,10 +1298,7 @@ export default function ProjectWorkbench({
 					runId: reply.run.id,
 					data: logo,
 				};
-				if (showResult) {
-					accepted(reply.run);
-					navigate("review");
-				}
+				if (showResult) accepted(reply.run);
 				return reply.run;
 			}
 		} catch (cause) {
@@ -1197,35 +1323,55 @@ export default function ProjectWorkbench({
 		searchRun.manifest.input_sha256 === draft.baseline.input_sha256 &&
 		!isDirty(draft),
 	);
-	const prepareGuidedReport = useEffectEvent(() => {
-		void generate(null);
+	const prepareReviewReport = useEffectEvent(() => {
+		void generate(branding.logo?.data ?? null);
 	});
-	const guidedReportAttempt = useRef<number | null>(null);
+	const reviewAttempt = useRef<string | null>(null);
+	const reviewRevision = draft
+		? draft.baseline.revision + Number(isDirty(draft))
+		: null;
+
 	useEffect(() => {
 		if (
-			!guided ||
 			step !== "review" ||
+			viewedReport !== null ||
 			!draft ||
-			blocked ||
+			reviewRevision === null ||
+			projectWritesBlocked ||
+			unconfirmedOperation ||
 			modelsUnavailable ||
+			controller.failed ||
 			!history.isSuccess ||
-			reportId !== null ||
-			(!choice && !canKeepInstalled) ||
-			guidedReportAttempt.current === draft.baseline.revision
+			(reportId !== null &&
+				!isDirty(draft) &&
+				(!reportRun || reportRun.revision === draft.baseline.revision)) ||
+			reviewAttempt.current === reportLocale + ":" + reviewRevision
 		)
 			return;
-		guidedReportAttempt.current = draft.baseline.revision;
-		prepareGuidedReport();
+		if (!isDirty(draft) && moreCurrentReports) {
+			if (!olderHistory.isFetching && !olderHistory.isError)
+				void olderHistory.fetchNextPage();
+			return;
+		}
+		reviewAttempt.current = reportLocale + ":" + reviewRevision;
+		prepareReviewReport();
 	}, [
-		guided,
 		step,
-		draft,
-		blocked,
+		viewedReport,
+		reviewRevision,
+		reportLocale,
+		moreCurrentReports,
+		olderHistory.isFetching,
+		olderHistory.isError,
+		history.data,
+		projectWritesBlocked,
+		unconfirmedOperation,
 		modelsUnavailable,
+		controller.failed,
 		history.isSuccess,
 		reportId,
-		choice,
-		canKeepInstalled,
+		reportRun,
+		draft,
 	]);
 	if (!draft)
 		return <p role="status">{__("Opening the project…", "linker-tools")}</p>;
@@ -1318,9 +1464,6 @@ export default function ProjectWorkbench({
 				: step;
 	const guidedReview = guided && activeStep === "review";
 	const guidedView = guidedReview || (guided && activeStep === "system");
-	const guidedReportFailed =
-		guidedReview &&
-		(reportRun?.state === "failed" || reportRun?.state === "cancelled");
 	const guidedChoiceNeedsSave =
 		guided && activeStep === "system" && choice && draft.pending;
 	const outdatedOption =
@@ -1333,56 +1476,130 @@ export default function ProjectWorkbench({
 	const currentReport = Boolean(
 		reportRun &&
 		reportRun.revision === draft.baseline.revision &&
+		(!reportRun.result ||
+			retryReport === reportRun.id ||
+			readObject(reportRun.result.report).locale === reportLocale) &&
 		!isDirty(draft),
 	);
 	const activeTransferRunId =
 		activeStep === "review" && currentReport && reportCanTransfer(reportRun)
 			? reportRun?.id
 			: undefined;
+	const reviewRequest =
+		activeStep === "review" &&
+		unconfirmed.find((record) => {
+			if (
+				record.path !== "runs/check-equipment" &&
+				record.path !== "runs/report"
+			)
+				return false;
+			const command = readPlanningOperation(record.path, record.body);
+			return (
+				command.expected_revision === draft.baseline.revision &&
+				(record.path !== "runs/report" ||
+					readObject(command.options).locale === reportLocale)
+			);
+		});
+	function retryPrevious(record: (typeof unconfirmed)[number]) {
+		void operations.retry(record).then((reply) => {
+			if (reply?.path === "runs/check-equipment") {
+				reviewAttempt.current = null;
+				void history.refetch();
+				navigate("review");
+			} else if (
+				reply &&
+				"run" in reply &&
+				reply.path !== "runs/pvgis-reference"
+			) {
+				accepted(reply.run);
+				if (reply.path === "runs/report") {
+					const options = readObject(
+						readPlanningOperation(record.path, record.body).options,
+					);
+					reportLogo.current = {
+						project: project.id,
+						runId: reply.run.id,
+						data: typeof options.logo === "string" ? options.logo : null,
+					};
+					navigate("review");
+				} else if (reply.path === "runs/find-equipment") navigate("system");
+				else if (
+					reply.path === "runs/calculate" ||
+					reply.path === "runs/weather" ||
+					reply.path === "runs/pv"
+				)
+					navigate("energy");
+			}
+		});
+	}
 	const otherUnconfirmed = unconfirmed.filter(
 		(record) =>
-			record.path !== "draft/apply" ||
-			!activeTransferRunId ||
-			readPlanningOperation(record.path, record.body).report_run_id !==
-				activeTransferRunId,
+			record !== reviewRequest &&
+			(record.path !== "draft/apply" ||
+				!activeTransferRunId ||
+				readPlanningOperation(record.path, record.body).report_run_id !==
+					activeTransferRunId),
 	);
-	const inlineReview =
-		currentReport &&
-		reportRun?.state === "succeeded" &&
-		reportCanTransfer(reportRun) &&
-		brief.system_scope ? (
-			<ReviewInquiry
-				project={draft.baseline}
-				direction={brief.system_scope}
-				client={client}
-				scope={session.query_scope}
-				locale={config.locale}
-				active
-				ready={!blocked}
-				changeSelection={() => navigate("system")}
-				enterDetails={() => {
-					if (mayLeave()) {
-						setEditingEquipment(true);
-						showStep("project");
-					}
-				}}
-				recheck={recheck}
-				reportRunId={reportRun.id}
-				changeRequestedQuantity={async (productId, current, next) => {
-					if (
-						!edit((inputs) =>
-							changeInquiryQuantity(inputs, productId, current, next),
-						)
+	const noteOnly =
+		noteOnlyRevision === draft.baseline.revision && !isDirty(draft);
+	const reportReady = currentReport && reportRun?.state === "succeeded";
+	const reviewFailed = Boolean(
+		olderHistory.isError ||
+		failure ||
+		controller.failed ||
+		reportRun?.state === "failed" ||
+		reportRun?.state === "cancelled",
+	);
+	const reportSections = reportReady ? reportFromRun(reportRun).sections : [];
+	const selectedProducts = reportSections.find(
+		(section) => section.id === "customer-selected-equipment",
+	);
+	const inlineReview = (
+		<ReviewInquiry
+			project={draft.baseline}
+			direction={brief.system_scope}
+			client={client}
+			scope={session.query_scope}
+			locale={config.locale}
+			active
+			ready={admitted}
+			submitReady={(reportReady || noteOnly) && !blocked}
+			equipmentDetails={
+				selectedProducts && (
+					<details open className="sc-review-details">
+						<summary>{selectedProducts.title}</summary>
+						<ReportContent section={selectedProducts} />
+						{reportSections
+							.filter(
+								(section) =>
+									section.id === "bom" || section.id === "site-materials",
+							)
+							.map((section) => (
+								<ReportContent key={section.id} section={section} />
+							))}
+					</details>
+				)
+			}
+			changeSelection={() => navigate("system")}
+			enterDetails={() => {
+				if (mayLeave()) {
+					setEditingEquipment(true);
+					showStep("project");
+				}
+			}}
+			recheck={recheck}
+			{...(activeTransferRunId && { reportRunId: activeTransferRunId })}
+			changeRequestedQuantity={async (productId, current, next) => {
+				if (
+					!edit((inputs) =>
+						changeInquiryQuantity(inputs, productId, current, next),
 					)
-						throw new ApiError(409, "equipment_selection_changed");
-					await generate(
-						reportLogo.current?.project === project.id
-							? reportLogo.current.data
-							: null,
-					);
-				}}
-			/>
-		) : null;
+				)
+					throw new ApiError(409, "equipment_selection_changed");
+				await generate(branding.logo?.data ?? null);
+			}}
+		/>
+	);
 	return (
 		<div
 			className={
@@ -1498,11 +1715,6 @@ export default function ProjectWorkbench({
 									)}
 					</p>
 				)}
-			{preparingReport && activeStep === "review" && !guidedReview && (
-				<p className="sc-card" role="status">
-					{__("Preparing planning report…", "linker-tools")}
-				</p>
-			)}
 			{Boolean(failure) && (
 				<div className="sc-card" role="alert">
 					<p>
@@ -1605,30 +1817,7 @@ export default function ProjectWorkbench({
 					<button
 						className="sc-button"
 						disabled={operations.busy}
-						onClick={() =>
-							void operations.retry(record).then((reply) => {
-								if (reply?.path === "runs/check-equipment") {
-									guidedReportAttempt.current = null;
-									void history.refetch();
-									navigate("review");
-								} else if (
-									reply &&
-									"run" in reply &&
-									reply.path !== "runs/pvgis-reference"
-								) {
-									accepted(reply.run);
-									if (reply.path === "runs/report") navigate("review");
-									else if (reply.path === "runs/find-equipment")
-										navigate("system");
-									else if (
-										reply.path === "runs/calculate" ||
-										reply.path === "runs/weather" ||
-										reply.path === "runs/pv"
-									)
-										navigate("energy");
-								}
-							})
-						}
+						onClick={() => retryPrevious(record)}
 					>
 						{__("Check previous request", "linker-tools")}
 					</button>
@@ -2025,49 +2214,30 @@ export default function ProjectWorkbench({
 							)}
 						</>
 					)}
-					{guidedReview && !inlineReview && (
-						<section className="sc-card">
-							{Boolean(failure) ||
-							(reportRun && !runPending(reportRun.state)) ||
-							(!choice && !canKeepInstalled && history.isSuccess) ? (
-								<>
-									<p>
-										{__(
-											"The inquiry form could not be loaded.",
-											"linker-tools",
-										)}
-									</p>
-									{(Boolean(failure) || guidedReportFailed) &&
-										(choice || canKeepInstalled) &&
-										!blocked && (
-											<button
-												className="sc-button sc-primary"
-												onClick={() =>
-													report.isError
-														? void report.refetch()
-														: void generate(null)
-												}
-											>
-												{__("Try again", "linker-tools")}
-											</button>
-										)}
-									<button
-										className="sc-button"
-										onClick={() => navigate("system")}
-									>
-										{__("Change selection", "linker-tools")}
-									</button>
-								</>
-							) : (
-								<p role="status">
-									{__("Preparing your inquiry…", "linker-tools")}
-								</p>
-							)}
-						</section>
-					)}
-					{activeStep === "review" && (!guidedReview || inlineReview) && (
+					{activeStep === "review" && (
 						<ReviewProposal
 							inquiry={inlineReview}
+							recoverTransfer={operations.records.some(
+								(record) =>
+									record.path === "draft/apply" &&
+									readPlanningOperation(record.path, record.body)
+										.report_run_id === activeTransferRunId,
+							)}
+							branding={branding}
+							preparationFailed={reviewFailed || Boolean(reviewRequest)}
+							noteOnly={noteOnly}
+							retryBlocked={
+								projectWritesBlocked || (unconfirmedOperation && !reviewRequest)
+							}
+							retryPreparation={() => {
+								if (reviewRequest) retryPrevious(reviewRequest);
+								else if (history.isError) void history.refetch();
+								else if (olderHistory.isError)
+									void olderHistory.fetchNextPage();
+								else if (report.isError) void report.refetch();
+								else if (failedRead) void failedRead.refetch();
+								else void generate(branding.logo?.data ?? null);
+							}}
 							project={draft.baseline}
 							inputs={inputs}
 							run={reportRun}

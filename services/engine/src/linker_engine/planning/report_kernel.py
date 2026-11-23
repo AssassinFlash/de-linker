@@ -254,6 +254,12 @@ class ReportKernel:
                     "locale": report.locale,
                 },
             )
+        has_draft_items = any(
+            isinstance(line, dict)
+            and line.get("handling") == "woo_product"
+            and not _fully_retained(line)
+            for line in cast(list[Object], materials["lines"])
+        )
         return AssetResult(
             {
                 "schema": 1,
@@ -267,15 +273,11 @@ class ReportKernel:
                 "report": report_document,
                 "report_sha256": report_sha,
                 "materials_sha256": dependencies["materials_model"],
-                "has_draft_items": any(
-                    isinstance(line, dict)
-                    and line.get("handling") == "woo_product"
-                    and not _fully_retained(line)
-                    for line in cast(list[Object], materials["lines"])
-                ),
+                "has_draft_items": has_draft_items,
                 **(
                     {"has_report_only_handoff": True}
                     if "retained_inverter" in source
+                    or ("customer_equipment" in source and not has_draft_items)
                     else {}
                 ),
                 "source_runs": source["source_runs"],

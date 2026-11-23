@@ -603,7 +603,7 @@
 /* The verification pair sits in one soft box (prototype line 36-37): the two
  * fields are each optional, one of them is required. */
 .linker-auth-verify { margin-top: 14px; padding: 14px 16px 16px; border: 1px solid var(--acct-line-soft); border-radius: 16px; background: #f7f9f9; }
-.linker-auth-verify .linker-auth-fields > :first-child { margin-top: 6px; }
+.linker-auth-verify .linker-auth-fields { margin-top: 6px; }
 
 /* The business type: the prototype's three pills (registration-prototype.css
  * 29-33) drawn the accessible way (#351): RoleField nests each native input

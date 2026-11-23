@@ -87,7 +87,9 @@ def _equipment_shares(
 
 
 def project_materials(source: Object) -> Object:
-    lines: list[Json] = []
+    lines: list[Json] = [
+        dict(line) for line in cast(list[Object], source.get("customer_equipment", []))
+    ]
     covered_inclusions: set[tuple[str, str]] = set()
     equipment = source.get("equipment")
     if isinstance(equipment, dict):
@@ -982,7 +984,11 @@ def material_list(line: Object, locale: str) -> str:
         and retained >= quantity
     ):
         return text("site_material_list", locale)
-    if line["handling"] in ("woo_product", "manufacturer_included"):
+    if line["handling"] in (
+        "woo_product",
+        "manufacturer_included",
+        "customer_equipment_pending",
+    ):
         return text("equipment_list", locale)
     return text("site_material_list", locale)
 

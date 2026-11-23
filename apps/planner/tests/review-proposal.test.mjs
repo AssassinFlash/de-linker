@@ -3,8 +3,17 @@ import test from "node:test";
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { setupDom, deferred } from "./dom-fixture.mjs";
-import { ReviewProposal } from "../src/components/configurator/ReviewProposal.tsx";
+import { useReportLogo } from "../src/components/configurator/ReportLogo.tsx";
+import { ReviewProposal as Proposal } from "../src/components/configurator/ReviewProposal.tsx";
 import fixture from "./fixtures/index.ts";
+
+function ReviewProposal(props) {
+	const branding = useReportLogo(
+		props.blocked || props.operations.busy,
+		props.runLogo,
+	);
+	return React.createElement(Proposal, { ...props, branding });
+}
 
 const scope = "a".repeat(64);
 function props(run = structuredClone(fixture.geometric_pv.report_run)) {

@@ -61,6 +61,8 @@
   .sc-configurator .sc-roof-studio .sc-selected-roof-properties, .sc-configurator .sc-roof-inspector .sc-fields {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(min(145px,100%), 1fr)); gap: var(--proto-space-4) var(--proto-space-3); align-items: end;
   }
+  .sc-configurator .sc-roof-inspector details > .sc-fields { display: flex; flex-wrap: wrap; }
+  .sc-configurator .sc-roof-inspector details > .sc-fields > .sc-field { flex: 1 1 145px; }
   .sc-configurator .sc-roof-inspector .sc-field { min-width: 0; }
   .sc-configurator .sc-roof-inspector .sc-selected-roof-properties .sc-field > span { white-space: nowrap; }
   .sc-configurator .sc-solar .sc-roof-inspector .sc-edge-rule button { min-height: 48px; background: var(--proto-neutral-0); text-align: start; }

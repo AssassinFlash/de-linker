@@ -430,6 +430,14 @@ def build_report(source: Object) -> Report:
             )
         )
 
+    if source.get("customer_equipment"):
+        sections.append(
+            ReportSection(
+                id="customer-selected-equipment",
+                title=text("customer_selected_equipment", locale),
+                paragraphs=[text("customer_selected_equipment_scope", locale)],
+            )
+        )
     assessment = source.get("equipment")
     if isinstance(assessment, dict):
         selected = {
@@ -911,6 +919,8 @@ def build_report(source: Object) -> Report:
                     rows=list({(d.label, d.href): d for d in documents}.values()),
                 )
             )
+    elif isinstance(brief_country_code, str) and brief_country_code:
+        sections.extend(unfilled_grid_connection_sections(brief_country_code, locale))
     sections.extend(installation_sections(source, locale))
     materials = source.get("materials")
     if not isinstance(materials, dict):
@@ -970,9 +980,6 @@ def build_report(source: Object) -> Report:
                 table=part_table,
             )
         )
-
-    elif isinstance(brief_country_code, str) and brief_country_code:
-        sections.extend(unfilled_grid_connection_sections(brief_country_code, locale))
 
     binding = source.get("energy_equipment")
     if isinstance(binding, dict) and "selection" in binding:

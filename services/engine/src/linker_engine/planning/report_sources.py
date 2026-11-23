@@ -45,6 +45,7 @@ from .geometry import read_geometry
 from .geometry_documents import GeometryDocument
 from .installation_inputs import InstallationInputs
 from .installation_takeoff import product_basis, route_takeoff
+from .partial_equipment import partial_equipment
 from .plant_energy_inputs import PlantEnergyInputs
 from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
@@ -1197,9 +1198,17 @@ def report_sources(
                     "installation instances differ from the selected equipment assessment scope"
                 )
 
+    customer_selection = (
+        partial_equipment(project.inputs, products)
+        if assessment is None and not comparison_only and retained_comparison is None
+        else None
+    )
+    if customer_selection:
+        bases["customer_equipment"] = workspace.blobs.put_object(customer_selection[1])
     brief = project.inputs.get("brief")
     if (
         not sources
+        and not customer_selection
         and installation is None
         and not (isinstance(brief, dict) and brief.get("system_scope"))
     ):
@@ -1426,6 +1435,11 @@ def report_sources(
             else {}
         ),
         "equipment": assessment,
+        **(
+            {"customer_equipment": cast(list[Json], customer_selection[0])}
+            if customer_selection
+            else {}
+        ),
         "installation": installation,
         "energy": energy,
         "energy_scenario": scenario.model_dump(mode="json")
