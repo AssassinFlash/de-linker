@@ -490,7 +490,8 @@ class Proxy {
 	public function turn_headers( WP_REST_Response $response, $server, WP_REST_Request $request ): WP_REST_Response {
 		unset( $server );
 		$route = strtolower( $request->get_route() );
-		if ( '/' . self::NAMESPACE . self::ROUTE === $route || str_starts_with( $route, '/' . self::NAMESPACE . self::ROUTE . '/' ) ) {
+		$base  = '/' . self::NAMESPACE . self::ROUTE;
+		if ( $route === $base || $route === $base . '/start' || ( str_starts_with( $route, $base . '/' ) && wp_is_uuid( substr( $route, strlen( $base ) + 1 ), 4 ) ) ) {
 			$response->header( 'Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0' );
 			if ( isset( $_SERVER['REQUEST_TIME_FLOAT'] ) ) {
 				$response->header( 'Server-Timing', 'php;dur=' . number_format( ( microtime( true ) - (float) $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000, 2, '.', '' ) );
@@ -617,8 +618,9 @@ class Proxy {
 	 * @param float               $started Original start time.
 	 * @param string              $operation Verified operation.
 	 * @param string              $fingerprint Verified input.
+	 * @param bool                $resume Whether a previous terminal poll may already have committed.
 	 */
-	private function finish( int $conversation, array $messages, string $stream, array $publication, string $locale, float $started, string $operation, string $fingerprint ): WP_REST_Response|WP_Error {
+	private function finish( int $conversation, array $messages, string $stream, array $publication, string $locale, float $started, string $operation, string $fingerprint, bool $resume = false ): WP_REST_Response|WP_Error {
 		$permitted = $this->publication->validate( $publication );
 		if ( is_wp_error( $permitted ) ) {
 			return self::unrecorded( $permitted );
@@ -644,7 +646,9 @@ class Proxy {
 		if ( $left < 0 ) {
 			$left = 0;
 		}
-		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left, $operation, $fingerprint ) ) {
+		$stored   = $resume ? $this->thread->read( $conversation ) : array();
+		$recorded = ( $stored['operation_id'] ?? null ) === $operation && ( $stored['operation_fingerprint'] ?? null ) === $fingerprint && $split['stream'] === ( $stored['stream'] ?? null );
+		if ( ! $recorded && ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left, $operation, $fingerprint ) ) {
 			// The answer was produced and is not stored. The other turn
 			// stays. The shell re-reads the thread, puts the question back
 			// in the field, and keeps the uploads so the customer can send
@@ -724,10 +728,7 @@ class Proxy {
 		if ( ! PendingTurns::save( $turn ) ) {
 			return self::unrecorded( self::job_error( 503 ) );
 		}
-		if ( $turn['partner'] ) {
-			update_post_meta( $receipt, '_linker_genie_priced', 1 );
-		}
-		$this->conversations->select_pending_guest();
+				$this->conversations->select_pending_guest();
 		return new WP_REST_Response( PendingTurns::progress( $turn ), 202 );
 	}
 
@@ -822,7 +823,7 @@ class Proxy {
 			return self::unrecorded( PublicationGuard::refused() );
 		}
 		$this->conversations->resume_pending_guest( $id );
-		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'], $turn['operation_id'], $turn['fingerprint'] );
+		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'], $turn['operation_id'], $turn['fingerprint'], true );
 		if ( is_wp_error( $reply ) ) {
 			if ( ! empty( $reply->get_error_data()['unrecorded'] ) ) {
 				PendingTurns::fail( $turn );

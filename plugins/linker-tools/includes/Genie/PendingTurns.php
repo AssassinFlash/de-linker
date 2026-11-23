@@ -26,7 +26,7 @@ final class PendingTurns {
 		$id      = $turn['conversation_id'];
 		$receipt = $turn['receipt'];
 		$key     = self::PREFIX . $turn['job_id'];
-		if ( ! add_post_meta( $receipt, $key, $id, true ) ) {
+		if ( ( $turn['partner'] && ! add_post_meta( $receipt, '_linker_genie_priced', 1, true ) ) || ! add_post_meta( $receipt, $key, $id, true ) ) {
 			return false;
 		}
 		if ( ! add_post_meta( $id, self::PENDING, wp_slash( $turn ), true ) ) {
