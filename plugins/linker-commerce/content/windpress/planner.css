@@ -519,6 +519,11 @@
   .sc-configurator .sc-summary > * { min-width: 0; overflow-wrap: anywhere; }
   .sc-configurator .sc-summary dd { margin: 0; text-align: right; }
   .sc-configurator .sc-field-wide { grid-column: 1 / -1; }
+  @media (width > 600px) {
+    .sc-configurator :where(#sc-project, .sc-comparison-intake) > .sc-card > .sc-fields { display: flex; flex-wrap: wrap; }
+    .sc-configurator :where(#sc-project, .sc-comparison-intake) > .sc-card > .sc-fields > .sc-field { flex: 1 1 calc(50% - 10px); }
+    .sc-configurator :where(#sc-project, .sc-comparison-intake) > .sc-card > .sc-fields > .sc-field-wide { flex-basis: 100%; }
+  }
   .sc-configurator .sc-existing-system { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--proto-color-line); }
   .sc-configurator .sc-existing-system > :is(details, .sc-fields) { margin-top: var(--proto-space-4); }
   .sc-configurator :is(.sc-project-equipment, .sc-review-details) { width: 100%; border-block: 1px solid var(--proto-color-line); }
@@ -712,7 +717,10 @@
   .sc-configurator .sc-roof-callout :is(button,a) { flex: none; }
   .sc-configurator .sc-direction-comparison table { display: block; }
   .sc-configurator .sc-direction-comparison thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .sc-configurator .sc-direction-comparison tbody { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin-top: 20px; }
+  .sc-configurator .sc-direction-comparison tbody { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-top: 20px; }
+  @media (width > 700px) {
+    .sc-configurator .sc-direction-comparison tbody:has(> tr:nth-child(3):last-child) { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  }
   .sc-configurator .sc-direction-comparison tbody tr { display: grid; grid-row: span 4; grid-template-rows: subgrid; min-width: 0; padding: 20px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-lg); }
   .sc-configurator .sc-direction-comparison tbody :is(th,td) { width: auto; padding: 0; text-align: start; }
   .sc-configurator .sc-direction-details > span { display: block; font-weight: 650; }
@@ -747,6 +755,7 @@
   .sc-configurator .sc-scene small { color: var(--proto-ink-muted-deep); font-weight: 400; line-height: 1.45; }
 }
 
+body:has([data-linker-planner]) .linker-genie-peek { display: none; }
 .sc-configurator .sc-assistant-link { display: none; }
 @media (max-width: 700px) {
   .sc-configurator .sc-assistant-link {
