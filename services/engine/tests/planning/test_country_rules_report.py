@@ -329,6 +329,41 @@ def test_report_never_rounds_declared_power_across_a_rule_threshold(
     assert text("country_rule_type_a", locale) in rendered
 
 
+@pytest.mark.parametrize(
+    ("locale", "heading"),
+    [("en", "Grid connection review"), ("de", "Prüfung des Netzanschlusses")],
+)
+def test_known_pv_with_selected_equipment_prints_one_grid_review(
+    feed: FixtureObject, locale: str, heading: str
+) -> None:
+    from linker_engine import pdf
+    from linker_engine.planning.report_model import build_report
+
+    values = inputs(feed, 3)
+    values["equipment_selection"]["pv_dc_kw"] = 8
+    values["brief"] = {"site": {"country_code": "DE"}}
+    report = build_report(
+        {
+            "title": "Known PV size",
+            "project_id": "de-known-pv",
+            "input_sha256": "1" * 64,
+            "revision": 1,
+            "locale": locale,
+            "generated_at": "2026-11-23T00:00:00Z",
+            "source_runs": [],
+            "brief": values["brief"],
+            "equipment": assess_equipment(values, feed),
+            "declared_pv_panels": {"count": 16, "stc_power_w": 500},
+        }
+    )
+    ids = [section.id for section in report.sections]
+    document = PdfReader(io.BytesIO(pdf.render(report)))
+    extracted = "\n".join(page.extract_text() for page in document.pages)
+    assert extracted.count(heading) == 1
+    assert ids.count("grid-connection-evidence") == 1
+    assert len(ids) == len(set(ids))
+
+
 @pytest.mark.parametrize("locale", ["en", "de"])
 def test_all_50_european_countries_report_official_sources_or_explicit_rule_gaps(
     locale: str,
