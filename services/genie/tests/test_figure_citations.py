@@ -244,3 +244,69 @@ def test_contradictory_placement_cannot_ship_a_qualified_current(
     prose, links = answer(text, product(1179), locale=locale)
     assert "50 A" not in prose
     assert {link.url for link in links} == {MANUAL, DATASHEET}
+
+
+@pytest.mark.parametrize(
+    ("product", "value", "unit", "extra", "published", "pages"),
+    [
+        (3612, "8.70", "kWh", False, True, [3]),
+        (3612, "8.6", "kWh", False, True, []),
+        (3612, "8.7", "Ah", False, True, []),
+        (3612, "8.7", "kWh", True, True, []),
+        (3612, "8.7", "kWh", False, False, []),
+        (99, "8.7", "kWh", False, True, []),
+    ],
+)
+def test_catalog_usable_energy_cites_only_the_same_unambiguous_published_figure(
+    product: int,
+    value: str,
+    unit: str,
+    extra: bool,
+    published: bool,
+    pages: list[int],
+) -> None:
+    from linker_genie.hydrate import hydrate
+    from linker_genie.schema import TurnOutput
+
+    figure = {
+        "value": value,
+        "unit": unit,
+        "citation": {"url": DATASHEET, "page": 3, "title": "Battery datasheet"},
+    }
+    evidence = collect(
+        "linker/get-product",
+        {
+            "product_id": product,
+            "model": "Battery",
+            "facts": {"usable_kwh": 8.7},
+            "figures": {
+                "module_energy_kwh_usable": figure,
+                **({"system_usable_energy_kwh": figure} if extra else {}),
+            },
+            "documents": [
+                {
+                    "url": DATASHEET,
+                    "title": "Battery datasheet",
+                    "document_id": "doc-" + "b" * 64,
+                    "document_revision": "a" * 64 if published else None,
+                }
+            ],
+        },
+    )
+    selection = collect(
+        "linker/get-product", {"product_id": 3612, "facts": {"usable_kwh": 8.7}}
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="Usable capacity: {fact:p3612.usable_kwh} kWh.", refs=["3612"]
+            )
+        ],
+    )
+    blocks = hydrate(output, merge([evidence, selection])).blocks
+    assert [
+        int(b.url.split("#page=")[1])
+        for b in blocks
+        if isinstance(b, DocumentBlock) and b.url and "#page=" in b.url
+    ] == pages

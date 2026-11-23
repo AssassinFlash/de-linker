@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
+from decimal import Decimal
 
 from linker_genie.facts import (
     Document,
@@ -284,6 +285,45 @@ def hydrate(
     return output.model_copy(update={"blocks": blocks})
 
 
+def _figure_with_source(fact: Fact, facts: TurnFacts) -> Fact | None:
+    if fact.source == "datasheet-figures":
+        return fact
+    product, _, field = fact.id.partition(".")
+    if fact.source != "selection-facts" or field != "usable_kwh":
+        return None
+    # These three registry fields project to Woo's usable_kwh (Materials::fact_keys).
+    # A single product may declare both a module and a system capacity.
+    projections = [
+        candidate
+        for key in (
+            "module_energy_kwh_usable",
+            "system_usable_energy_kwh",
+            "usable_energy_kwh",
+        )
+        if (candidate := facts.facts.get(f"{product}.{key}")) is not None
+    ]
+    if len(projections) != 1:
+        return None
+    figure = projections[0]
+    if figure.qualifier or figure.source != "datasheet-figures":
+        return None
+    number = re.fullmatch(r"(\d+(?:[.,]\d+)?) kWh", figure.value)
+    if number is None or not re.fullmatch(r"\d+(?:[.,]\d+)?", fact.value):
+        return None
+    if Decimal(number[1].replace(",", ".")) != Decimal(fact.value.replace(",", ".")):
+        return None
+    refs = facts.supporting_documents.get(figure.id, ())
+    if not refs or not all(
+        (doc := facts.documents.get(ref)) is not None
+        and doc.evidence is not None
+        and f"p{doc.figure_product_id}" == product
+        and doc.page is not None
+        for ref in refs
+    ):
+        return None
+    return figure
+
+
 def used_figure_sources(output: TurnOutput, facts: TurnFacts) -> list[str]:
     """Citation refs of the Woo figures actually used in the answer."""
     return [
@@ -294,8 +334,8 @@ def used_figure_sources(output: TurnOutput, facts: TurnFacts) -> list[str]:
             block.text if isinstance(block, TextBlock) else block.summary
         )
         if (fact := _lookup(facts, fact_id)) is not None
-        if fact.source == "datasheet-figures"
-        for ref in facts.supporting_documents.get(fact.id, ())
+        if (figure := _figure_with_source(fact, facts)) is not None
+        for ref in facts.supporting_documents.get(figure.id, ())
     ]
 
 
