@@ -1455,3 +1455,20 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	border-color: var(--proto-input-line-focus);
 	box-shadow: var(--proto-form-focus-ring);
 }
+
+.linker-form-assistant { display: none; }
+@media (max-width: 700px) {
+	body:has(a.linker-form-assistant) .linker-genie:has(> .linker-genie-open[aria-expanded="false"]),
+	#contact-form:has(a.linker-form-assistant) .linker-contact-explore { display: none; }
+	a.linker-form-assistant {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--proto-form-control-height);
+		justify-self: start;
+		color: var(--proto-teal-700);
+		font-size: var(--proto-size-sm);
+		font-weight: var(--proto-weight-semibold);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+}

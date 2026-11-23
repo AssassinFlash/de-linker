@@ -131,6 +131,7 @@ final class Form {
 
 		$html .= '<div class="linker-contact-head">';
 		$html .= '<h2>' . esc_html__( 'What can we help with?', 'linker-commerce' ) . '</h2>';
+		$html .= \Linker\Commerce\Presentation\Shortcodes::form_assistant();
 		$html .= '</div>';
 
 		$html .= LanguageDraft::notice();
