@@ -642,7 +642,7 @@ final class Gateway {
 		if ( ( $project['id'] ?? null ) !== $id || ! is_int( $project['revision'] ?? null ) || 1 > $project['revision'] || ! is_string( $project['title'] ?? null ) || ! is_string( $text ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
-		if ( null !== $revision && ( $project['revision'] !== $revision || ! in_array( $project['inputs']['brief']['system_scope'] ?? null, array( 'new_pv_storage', 'storage_addition', 'pv_only', 'storage_only' ), true ) ) ) {
+		if ( null !== $revision && ( $project['revision'] !== $revision || ! is_array( $project['inputs'] ?? null ) || ! in_array( $project['inputs']['brief']['system_scope'] ?? null, array( null, 'new_pv_storage', 'storage_addition', 'pv_only', 'storage_only' ), true ) ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		return null === $revision && '' === trim( $text ) ? null : array(

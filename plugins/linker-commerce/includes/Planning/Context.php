@@ -851,7 +851,7 @@ final class Context {
 		if ( $project instanceof WP_Error ) {
 			return $project;
 		}
-		if ( ! isset( $project['inputs']['brief']['system_scope'] ) || $project['project_id'] !== $match[1] || (string) $project['revision'] !== $match[2] ) {
+		if ( ! is_array( $project['inputs'] ?? null ) || $project['project_id'] !== $match[1] || (string) $project['revision'] !== $match[2] ) {
 			return self::notes_changed();
 		}
 		return $project;
@@ -962,7 +962,7 @@ final class Context {
 	 */
 	private static function project_facts( array $project, bool $include_direction, bool $for_planner = false ): array {
 		$inputs  = $project['inputs'];
-		$brief   = $inputs['brief'];
+		$brief   = $inputs['brief'] ?? array();
 		$site    = $brief['site'] ?? array();
 		$number  = static fn ( $value ): string => $for_planner ? wc_format_localized_decimal( (string) $value ) : (string) $value;
 		$country = $site['country_code'] ?? '';
@@ -970,7 +970,8 @@ final class Context {
 			$country = WC()->countries->get_countries()[ $country ] ?? $country;
 		}
 		// phpcs:disable WordPress.WP.I18n.TextDomainMismatch -- Use the configurator's existing EN/DE field labels.
-		$scope = match ( $brief['system_scope'] ) {
+		$scope = match ( $brief['system_scope'] ?? null ) {
+			null               => '',
 			'new_pv_storage'   => __( 'Solar and storage', 'linker-tools' ),
 			'storage_addition' => __( 'Storage for existing PV', 'linker-tools' ),
 			'storage_only'     => __( 'Storage', 'linker-tools' ),
@@ -1021,7 +1022,7 @@ final class Context {
 			};
 		}
 		$inverter = '';
-		if ( ! $for_planner && 'storage_addition' === $brief['system_scope'] && isset( $inputs['existing_system']['keep_inverter'] ) ) {
+		if ( ! $for_planner && 'storage_addition' === ( $brief['system_scope'] ?? null ) && isset( $inputs['existing_system']['keep_inverter'] ) ) {
 			$inverter = $inputs['existing_system']['keep_inverter'] ? __( 'Keep the existing inverter', 'linker-tools' ) : __( 'Consider a replacement inverter', 'linker-tools' );
 		}
 		$facts = array(
