@@ -647,7 +647,7 @@ class Proxy {
 			$left = 0;
 		}
 		$stored   = $resume ? $this->thread->read( $conversation ) : array();
-		$recorded = ( $stored['operation_id'] ?? null ) === $operation && ( $stored['operation_fingerprint'] ?? null ) === $fingerprint && $split['stream'] === ( $stored['stream'] ?? null );
+		$recorded = ( $stored['operation_id'] ?? null ) === $operation && ( $stored['operation_fingerprint'] ?? null ) === $fingerprint && $stored['stream'] === $split['stream'];
 		if ( ! $recorded && ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left, $operation, $fingerprint ) ) {
 			// The answer was produced and is not stored. The other turn
 			// stays. The shell re-reads the thread, puts the question back
