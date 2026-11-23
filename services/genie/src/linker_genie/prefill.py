@@ -220,12 +220,12 @@ BACKUP_CHOICES = {
     "en": {
         "none": "No backup",
         "needed": "Built-in backup",
-        "needed_accessory_ok": "Backup with an accessory",
+        "needed_accessory_ok": "Backup with an accessory if needed",
     },
     "de": {
         "none": "Kein Ersatzstrom",
         "needed": "Integrierter Ersatzstrom",
-        "needed_accessory_ok": "Ersatzstrom mit Zubehör",
+        "needed_accessory_ok": "Ersatzstrom, bei Bedarf mit Zubehör",
     },
 }
 
@@ -237,6 +237,8 @@ _BACKUP_ANSWERS = {
 _BACKUP_ANSWERS.update({key: key for key in BACKUP_CHOICES["en"]})
 _BACKUP_ANSWERS.update(
     {
+        "backup with an accessory": "needed_accessory_ok",
+        "ersatzstrom mit zubehör": "needed_accessory_ok",
         "ohne": "none",
         "benötigt": "needed",
         "benötigt, zubehör akzeptiert": "needed_accessory_ok",
