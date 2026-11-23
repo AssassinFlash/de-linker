@@ -491,7 +491,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	);
 	assert.equal(sources[0].rights_basis, "user_attestation");
 	assert.equal(button("Plan view").getAttribute("aria-pressed"), "true");
-	assert.equal(button("Select").getAttribute("aria-pressed"), "true");
+	assert.equal(button("Select plane").getAttribute("aria-pressed"), "true");
 });
 
 async function openRoof(locale = "en") {

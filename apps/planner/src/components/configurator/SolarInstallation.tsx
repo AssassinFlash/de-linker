@@ -1750,6 +1750,13 @@ export function SolarInstallation({
 									>
 										{__("Undo", "linker-tools")}
 									</button>
+									<button
+										type="button"
+										disabled={!selected}
+										onClick={removeSelected}
+									>
+										{__("Remove selected", "linker-tools")}
+									</button>
 									{(
 										[
 											["plan", __("Plan view", "linker-tools")],
@@ -2306,13 +2313,7 @@ export function SolarInstallation({
 										>
 											{__("Place module group", "linker-tools")}
 										</button>
-										<button
-											type="button"
-											disabled={!selected}
-											onClick={removeSelected}
-										>
-											{__("Remove selected", "linker-tools")}
-										</button>
+
 										{geometry.arrays.some((a) => a.id === selected) && (
 											<div className="sc-actions">
 												{(
