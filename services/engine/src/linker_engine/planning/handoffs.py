@@ -167,6 +167,8 @@ def purchase_items(
             if quantity - retained <= 0:
                 continue
             quantity -= retained
+        if "inquiry_quantity" in line:
+            quantity = cast(int, line["inquiry_quantity"])
         product = products.get(product_id, {})
         label = (
             " ".join(

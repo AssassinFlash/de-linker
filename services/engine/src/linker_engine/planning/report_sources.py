@@ -1379,6 +1379,11 @@ def report_sources(
         "title": project.title,
         "brief": None if comparison_only else project.inputs.get("brief"),
         **(
+            {"inquiry_quantities": project.inputs["inquiry_quantities"]}
+            if not comparison_only and "inquiry_quantities" in project.inputs
+            else {}
+        ),
+        **(
             {"existing_system": project.inputs["existing_system"]}
             if not comparison_only and "existing_system" in project.inputs
             else {}

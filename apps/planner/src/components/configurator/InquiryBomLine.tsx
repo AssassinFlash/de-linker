@@ -11,6 +11,7 @@ export function InquiryBomLine({
 	onBusy,
 	onUpdated,
 	onEditConfiguration,
+	onProjectQuantity,
 }: {
 	line: Review["lines"][number];
 	edit: Review["draftEdit"];
@@ -18,15 +19,21 @@ export function InquiryBomLine({
 	onBusy: (value: boolean) => void;
 	onUpdated: () => void;
 	onEditConfiguration?: (() => void) | undefined;
+	onProjectQuantity?: ((next: number) => Promise<void>) | undefined;
 }) {
 	const [error, setError] = useState(false);
 	const { label, imageUrl, sku, availability, productUrl, quantity, cartKey } =
 		line;
 	async function update(next: number) {
-		if (pending || !edit || !cartKey) return;
+		if (pending) return;
 		onBusy(true);
 		setError(false);
 		try {
+			if (onProjectQuantity) {
+				await onProjectQuantity(next);
+				return;
+			}
+			if (!edit || !cartKey) return;
 			const response = await fetch(edit.url, {
 				method: "POST",
 				mode: "same-origin",
@@ -84,7 +91,7 @@ export function InquiryBomLine({
 							: __("Currently unavailable", "linker-tools")}
 					</span>
 				)}
-				{cartKey && edit ? (
+				{onProjectQuantity || (cartKey && edit) ? (
 					<div className="linker-inquiry-stepper">
 						<button
 							type="button"
@@ -114,7 +121,7 @@ export function InquiryBomLine({
 					<span>× {quantity}</span>
 				)}
 			</div>
-			{!cartKey && onEditConfiguration && (
+			{!onProjectQuantity && !cartKey && onEditConfiguration && (
 				<button
 					type="button"
 					className="btn-ghost"

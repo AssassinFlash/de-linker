@@ -49,6 +49,7 @@ import { REPORT_TASK, type ReportOptions } from "../../data/planningReport.ts";
 import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
 import { DC_PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
 import { readObject } from "../../data/readProtocol.ts";
+import { changeInquiryQuantity } from "../../domain/inquiryQuantities.ts";
 import { readEquipmentProducts } from "../../data/equipmentProducts.ts";
 import {
 	SEARCH_TASK,
@@ -336,6 +337,9 @@ export default function ProjectWorkbench({
 	const [error, setError] = useState<unknown>(null);
 	const [selecting, setSelecting] = useState(false);
 	const reportPreparation = useRef<AbortController | null>(null);
+	const reportLogo = useRef<{ project: string; data: string | null } | null>(
+		null,
+	);
 	const [preparingReport, setPreparingReport] = useState(false);
 	const [replacedSearch, setReplacedSearch] = useState<string | null>(null);
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
@@ -1158,6 +1162,7 @@ export default function ProjectWorkbench({
 				},
 			});
 			if (reply?.path === "runs/report" && current()) {
+				reportLogo.current = { project: project.id, data: logo };
 				if (showResult) {
 					accepted(reply.run);
 					navigate("review");
@@ -1357,6 +1362,19 @@ export default function ProjectWorkbench({
 				}}
 				recheck={recheck}
 				reportRunId={reportRun.id}
+				changeRequestedQuantity={async (productId, current, next) => {
+					if (
+						!edit((inputs) =>
+							changeInquiryQuantity(inputs, productId, current, next),
+						)
+					)
+						throw new ApiError(409, "equipment_selection_changed");
+					await generate(
+						reportLogo.current?.project === project.id
+							? reportLogo.current.data
+							: null,
+					);
+				}}
 			/>
 		) : null;
 	return (

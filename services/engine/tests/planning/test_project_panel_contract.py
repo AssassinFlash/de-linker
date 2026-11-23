@@ -77,7 +77,7 @@ def test_saved_panel_data_survives_old_write_and_requires_supported_rollback(
     tmp_path: Path,
 ) -> None:
     inputs: Object = {"known_panel_details": {"count": 4, "power_w": 430}}
-    writer = SUPPORTED_INPUT_CONTRACTS[-1]
+    writer = "project_panel_parameters_v1"
     saved = workspace.create(
         owner, "Roof survey", inputs, key="create-panels", input_contract=writer
     )
@@ -98,7 +98,10 @@ def test_saved_panel_data_survives_old_write_and_requires_supported_rollback(
     assert workspace.get(owner, saved.id, revision=1).inputs == inputs
     storage = tmp_path / "private"
     with pytest.raises(ValueError, match="does not support retained"):
-        check_project_input_contracts(storage, list(SUPPORTED_INPUT_CONTRACTS[:-1]))
+        check_project_input_contracts(
+            storage,
+            list(SUPPORTED_INPUT_CONTRACTS[: SUPPORTED_INPUT_CONTRACTS.index(writer)]),
+        )
     assert check_project_input_contracts(storage, list(SUPPORTED_INPUT_CONTRACTS))[
         "required_input_contracts"
     ] == [writer]

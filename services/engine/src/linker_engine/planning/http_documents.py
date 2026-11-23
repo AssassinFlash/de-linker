@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal, cast
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, TypeAdapter, field_validator, model_validator
 
 from .brief import PlanningBrief
 from .canonical import Object
@@ -97,6 +97,16 @@ class ProjectAssistant(Command):
     unsaved_changes: bool = False
 
 
+class InquiryQuantity(Document):
+    planned_purchase: Annotated[int, Field(strict=True, gt=0)]
+    requested: Annotated[int, Field(strict=True, gt=0)]
+
+
+inquiry_quantities = TypeAdapter(
+    dict[Annotated[str, Field(pattern=r"^[1-9][0-9]*$")], InquiryQuantity]
+)
+
+
 class ProjectInputs(Command):
     inputs: Object
     input_contract: InputContract | None = None
@@ -116,6 +126,8 @@ class ProjectInputs(Command):
         from .equipment_plant import assert_plant_exclusivity
 
         assert_plant_exclusivity(value)
+        if "inquiry_quantities" in value:
+            inquiry_quantities.validate_python(value["inquiry_quantities"])
         if "brief" in value:
             PlanningBrief.model_validate(value["brief"])
         if "existing_system" in value:

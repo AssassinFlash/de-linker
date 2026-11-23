@@ -135,6 +135,7 @@ function takeNavigationDraft(
 export function ReviewInquiry({
 	project,
 	reportRunId,
+	changeRequestedQuantity,
 	direction,
 	client,
 	scope,
@@ -148,6 +149,11 @@ export function ReviewInquiry({
 }: {
 	project: Project;
 	reportRunId?: string;
+	changeRequestedQuantity?: (
+		productId: number,
+		current: number,
+		next: number,
+	) => Promise<void>;
 	direction: NonNullable<Brief["system_scope"]>;
 	client: PlannerClient;
 	scope: string;
@@ -445,11 +451,7 @@ export function ReviewInquiry({
 			(option) => option.keep === inverter.keep_inverter,
 		);
 	const changes = review?.changes ?? [];
-	const lines = review?.lines.filter(
-		(line) =>
-			line.projectId !== projectId ||
-			!changes.some((row) => row.productId === line.productId),
-	);
+	const lines = review?.lines;
 	return (
 		<section
 			className="sc-main sc-draft-transfer sc-preliminary-review"
@@ -499,32 +501,56 @@ export function ReviewInquiry({
 						</p>
 					)}
 					{!checkingInquiry && Boolean(lines?.length) && (
-						<ul className="sc-inquiry-products">
-							{lines?.map((line, index) => (
-								<li
-									key={
-										line.cartKey ??
-										`${line.projectId ?? "cart"}-${line.productId}-${index}`
-									}
-								>
-									<InquiryBomLine
-										line={line}
-										edit={review?.draftEdit ?? null}
-										pending={cartBusy || checkingInquiry}
-										onBusy={setCartBusy}
-										onUpdated={() => {
-											setReview(null);
-											setAttempt((value) => value + 1);
-										}}
-										onEditConfiguration={
-											reportRunId && line.projectId === projectId
-												? editConfiguration
-												: undefined
+						<>
+							{changeRequestedQuantity && (
+								<p className="sc-muted">
+									{__(
+										"Adjust the quantities you want to request. The system design stays the same.",
+										"linker-tools",
+									)}
+								</p>
+							)}
+							<ul className="sc-inquiry-products">
+								{lines?.map((line, index) => (
+									<li
+										key={
+											line.cartKey ??
+											`${line.projectId ?? "cart"}-${line.productId}-${index}`
 										}
-									/>
-								</li>
-							))}
-						</ul>
+									>
+										<InquiryBomLine
+											line={line}
+											edit={review?.draftEdit ?? null}
+											pending={cartBusy || checkingInquiry}
+											onBusy={setCartBusy}
+											onUpdated={() => {
+												setReview(null);
+												setAttempt((value) => value + 1);
+											}}
+											onProjectQuantity={
+												reportRunId &&
+												line.projectId === projectId &&
+												changeRequestedQuantity
+													? async (next) => {
+															save();
+															await changeRequestedQuantity(
+																line.productId,
+																line.quantity,
+																next,
+															);
+														}
+													: undefined
+											}
+											onEditConfiguration={
+												reportRunId && line.projectId === projectId
+													? editConfiguration
+													: undefined
+											}
+										/>
+									</li>
+								))}
+							</ul>
+						</>
 					)}
 					{!checkingInquiry && changes.length > 0 && (
 						<table className="sc-data-table">

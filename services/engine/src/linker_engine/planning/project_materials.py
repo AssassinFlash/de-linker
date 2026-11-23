@@ -549,6 +549,20 @@ def project_materials(source: Object) -> Object:
                 )
     brief = source.get("brief")
     direction = brief.get("system_scope") if isinstance(brief, dict) else None
+    requested = source.get("inquiry_quantities")
+    if isinstance(requested, dict):
+        for raw_line in lines:
+            material = cast(Object, raw_line)
+            if material["handling"] != "woo_product":
+                continue
+            entry = requested.get(str(material["product_id"]))
+            planned = _requested_quantity(material)
+            if (
+                isinstance(entry, dict)
+                and planned is not None
+                and entry.get("planned_purchase") == planned
+            ):
+                material["inquiry_quantity"] = entry["requested"]
     return {
         "schema_version": 3,
         **({"system_scope": direction} if direction else {}),
@@ -750,6 +764,10 @@ def material_scope(line: Object, locale: str) -> str:
                 else text("material_replacements_unresolved", locale)
             )
             scope += f" · {description}"
+        if "inquiry_quantity" in line:
+            scope += (
+                f" · {text('inquiry_quantity', locale)}: {line['inquiry_quantity']}"
+            )
         return scope
     if line.get("package_supply") == "retained":
         scope = (
@@ -969,6 +987,15 @@ def material_list(line: Object, locale: str) -> str:
     return text("site_material_list", locale)
 
 
+def _requested_quantity(line: Object) -> int | None:
+    if line.get("handling") != "woo_product":
+        return None
+    quantity, retained = line.get("quantity"), line.get("retained_quantity", 0)
+    if type(quantity) is not int or type(retained) is not int or quantity <= retained:
+        return None
+    return cast(int, line.get("inquiry_quantity", quantity - retained))
+
+
 def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
@@ -985,6 +1012,9 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
             ]
         )
         return output.getvalue().encode("utf-8-sig")
+    has_requested = any(
+        "inquiry_quantity" in row for row in cast(list[Object], materials["lines"])
+    )
     writer.writerow(
         [
             text(key, locale)
@@ -1000,6 +1030,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 "material_assessment",
                 "material_unit",
                 "material_list",
+                *(("inquiry_quantity",) if has_requested else ()),
             )
         ]
     )
@@ -1073,6 +1104,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 assessment,
                 material_unit(line, locale),
                 material_list(line, locale),
+                *((_requested_quantity(line),) if has_requested else ()),
             )
         )
     # BOM ensures Excel also recognizes German names as UTF-8.

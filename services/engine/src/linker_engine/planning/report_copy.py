@@ -1985,6 +1985,7 @@ TEXT = {
         "Installationsmaterialien müssen projektspezifisch ausgelegt werden",
     ),
     "quantity": ("Quantity", "Menge"),
+    "inquiry_quantity": ("Requested quantity", "Anfragemenge"),
     "product": ("Product", "Produkt"),
     "model": ("Model", "Modell"),
     "reference": ("Reference", "Referenz"),

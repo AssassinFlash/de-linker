@@ -53,7 +53,8 @@
 .lk-field select.linker-form-input,
 .sc-configurator .sc-field select,
 .sc-configurator select,
-.linker-account .linker-auth-register .form-row select[name] {
+.linker-account .linker-auth-register .form-row select[name],
+.linker-account .linker-auth-register .form-row .select2-selection--single {
   appearance: none;
   padding-inline-end: 42px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233a4242' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
@@ -61,6 +62,8 @@
   background-size: 16px;
   background-position: right 14px center;
 }
+.linker-auth-register .form-row .select2-selection__arrow { display: none; }
+.linker-auth-register .form-row .select2-selection--single .select2-selection__rendered { padding-inline: 0; }
 .lk-field :is(input, select, textarea):focus,
 .sc-configurator :is(input:not([type="checkbox"],[type="radio"],[type="file"]), select, textarea):focus,
 .linker-auth-register .form-row :is(.input-text, select, .select2-selection--single):focus {
@@ -120,6 +123,7 @@
   .lk-dropzone-action { margin-block-start: var(--proto-space-2); text-align: center; }
 }
 @media (forced-colors: active) {
-  .lk-field select.linker-form-input, .sc-configurator select, .linker-account .linker-auth-register .form-row select[name] { appearance: auto; background-image: none; }
+  .lk-field select.linker-form-input, .sc-configurator select, .linker-account .linker-auth-register .form-row select[name],
+.linker-account .linker-auth-register .form-row .select2-selection--single { appearance: auto; background-image: none; }
   .lk-dropzone:focus-within, .lk-field :focus-visible { outline: 2px solid Highlight; }
 }

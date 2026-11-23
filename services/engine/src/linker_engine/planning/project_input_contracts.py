@@ -37,7 +37,9 @@ type InputContract = Literal[
     "backup_demand_v1",
     "existing_system_v1",
     "project_panel_parameters_v1",
+    "inquiry_quantities_v1",
 ]
+INQUIRY_QUANTITIES_INPUT_CONTRACT: InputContract = "inquiry_quantities_v1"
 PANEL_PARAMETERS_INPUT_CONTRACT: InputContract = "project_panel_parameters_v1"
 EXISTING_SYSTEM_INPUT_CONTRACT: InputContract = "existing_system_v1"
 BACKUP_DEMAND_INPUT_CONTRACT: InputContract = "backup_demand_v1"
@@ -99,6 +101,7 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     BACKUP_DEMAND_INPUT_CONTRACT,
     EXISTING_SYSTEM_INPUT_CONTRACT,
     PANEL_PARAMETERS_INPUT_CONTRACT,
+    INQUIRY_QUANTITIES_INPUT_CONTRACT,
 )
 
 
@@ -130,6 +133,8 @@ def _has_panel_parameters(inputs: Mapping[str, object]) -> bool:
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
+    if "inquiry_quantities" in inputs:
+        required.append(INQUIRY_QUANTITIES_INPUT_CONTRACT)
     if _has_panel_parameters(inputs):
         required.append(PANEL_PARAMETERS_INPUT_CONTRACT)
     if "existing_system" in inputs:
