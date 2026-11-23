@@ -1485,12 +1485,60 @@ export default function ProjectWorkbench({
 		activeStep === "review" && currentReport && reportCanTransfer(reportRun)
 			? reportRun?.id
 			: undefined;
+	const reviewRequest =
+		activeStep === "review" &&
+		unconfirmed.find((record) => {
+			if (
+				record.path !== "runs/check-equipment" &&
+				record.path !== "runs/report"
+			)
+				return false;
+			const command = readPlanningOperation(record.path, record.body);
+			return (
+				command.expected_revision === draft.baseline.revision &&
+				(record.path !== "runs/report" ||
+					readObject(command.options).locale === reportLocale)
+			);
+		});
+	function retryPrevious(record: (typeof unconfirmed)[number]) {
+		void operations.retry(record).then((reply) => {
+			if (reply?.path === "runs/check-equipment") {
+				reviewAttempt.current = null;
+				void history.refetch();
+				navigate("review");
+			} else if (
+				reply &&
+				"run" in reply &&
+				reply.path !== "runs/pvgis-reference"
+			) {
+				accepted(reply.run);
+				if (reply.path === "runs/report") {
+					const options = readObject(
+						readPlanningOperation(record.path, record.body).options,
+					);
+					reportLogo.current = {
+						project: project.id,
+						runId: reply.run.id,
+						data: typeof options.logo === "string" ? options.logo : null,
+					};
+					navigate("review");
+				} else if (reply.path === "runs/find-equipment") navigate("system");
+				else if (
+					reply.path === "runs/calculate" ||
+					reply.path === "runs/weather" ||
+					reply.path === "runs/pv"
+				)
+					navigate("energy");
+			}
+		});
+	}
 	const otherUnconfirmed = unconfirmed.filter(
 		(record) =>
-			record.path !== "draft/apply" ||
-			!activeTransferRunId ||
-			readPlanningOperation(record.path, record.body).report_run_id !==
-				activeTransferRunId,
+			record !== reviewRequest &&
+			(record.path !== "draft/apply" ||
+				!activeTransferRunId ||
+				readPlanningOperation(record.path, record.body).report_run_id !==
+					activeTransferRunId),
 	);
 	const noteOnly =
 		noteOnlyRevision === draft.baseline.revision && !isDirty(draft);
@@ -1769,30 +1817,7 @@ export default function ProjectWorkbench({
 					<button
 						className="sc-button"
 						disabled={operations.busy}
-						onClick={() =>
-							void operations.retry(record).then((reply) => {
-								if (reply?.path === "runs/check-equipment") {
-									reviewAttempt.current = null;
-									void history.refetch();
-									navigate("review");
-								} else if (
-									reply &&
-									"run" in reply &&
-									reply.path !== "runs/pvgis-reference"
-								) {
-									accepted(reply.run);
-									if (reply.path === "runs/report") navigate("review");
-									else if (reply.path === "runs/find-equipment")
-										navigate("system");
-									else if (
-										reply.path === "runs/calculate" ||
-										reply.path === "runs/weather" ||
-										reply.path === "runs/pv"
-									)
-										navigate("energy");
-								}
-							})
-						}
+						onClick={() => retryPrevious(record)}
 					>
 						{__("Check previous request", "linker-tools")}
 					</button>
@@ -2199,11 +2224,14 @@ export default function ProjectWorkbench({
 										.report_run_id === activeTransferRunId,
 							)}
 							branding={branding}
-							preparationFailed={reviewFailed}
+							preparationFailed={reviewFailed || Boolean(reviewRequest)}
 							noteOnly={noteOnly}
-							retryBlocked={projectWritesBlocked || unconfirmedOperation}
+							retryBlocked={
+								projectWritesBlocked || (unconfirmedOperation && !reviewRequest)
+							}
 							retryPreparation={() => {
-								if (history.isError) void history.refetch();
+								if (reviewRequest) retryPrevious(reviewRequest);
+								else if (history.isError) void history.refetch();
 								else if (olderHistory.isError)
 									void olderHistory.fetchNextPage();
 								else if (report.isError) void report.refetch();

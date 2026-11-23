@@ -233,6 +233,7 @@ async function equipmentApp(
 		guided = false,
 		loseSelectionReply = false,
 		failFirstReport = false,
+		loseFirstReportResponse = false,
 		rejectFind = false,
 		foreignSelection = false,
 		selectionGate = null,
@@ -462,6 +463,10 @@ async function equipmentApp(
 				return structuredClone(project);
 			}
 			if (path === "runs/report") {
+				if (loseFirstReportResponse) {
+					loseFirstReportResponse = false;
+					throw new ApiError(503, "service_unavailable");
+				}
 				reportRun = makeRun(
 					projectId,
 					++reportAttempts === 1 && failFirstReport ? "failed" : "queued",
@@ -2219,3 +2224,25 @@ for (const authored of [false, true]) {
 		assert.equal(setup.application, "commercial");
 	});
 }
+
+test("the review retry confirms the original report request after a lost response", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const brief = { ...emptyBrief(), system_scope: "pv_only" };
+	const app = await equipmentApp(t, {
+		projectId: "b".repeat(32),
+		hash: "#sc-review",
+		inputs: { brief },
+		loseFirstReportResponse: true,
+	});
+	const retry = () =>
+		document.querySelector(".sc-export-strip [role=alert] button");
+	await untilRun(() => retry());
+	assert.equal(retry().disabled, false);
+	await act(async () => retry().click());
+	await untilRun(
+		() =>
+			app.requests.filter(({ path }) => path === "runs/report").length === 2,
+	);
+	const reports = app.requests.filter(({ path }) => path === "runs/report");
+	assert.deepEqual(reports[0].body, reports[1].body);
+});
