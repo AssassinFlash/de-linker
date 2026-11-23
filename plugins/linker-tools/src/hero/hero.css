@@ -522,6 +522,12 @@
 		grid-column: 1;
 		margin-inline: 12px;
 	}
+	#home-a
+		.hero-cinematic.linker-genie-hero--open
+		.hero-dialog[data-genie-view="expanded"]
+		.hero-prompt {
+		height: calc(2lh + 12px);
+	}
 	.linker-genie-home-history {
 		position: absolute;
 		inset: 0;
