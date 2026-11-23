@@ -13,7 +13,38 @@ import {
 } from "./currentCalculation.ts";
 import type { Project } from "../data/protocol.ts";
 
-import { authoredDiscoveryInputs } from "./currentCalculation.ts";
+import {
+	authoredDiscoveryInputs,
+	projectEquipmentScope,
+} from "./currentCalculation.ts";
+import { equipmentDraft } from "./equipment.ts";
+
+test("a plant uses its shared operating mode to check all selected inverters", () => {
+	const unit = (id: string, operating_mode: string | null) => ({
+		id,
+		name: id,
+		inputs: {
+			equipment_setup: {
+				...equipmentDraft({}),
+				inverter_product_id: 4107,
+				operating_mode,
+			},
+		},
+	});
+	const plant = (mode: string | null, localMode: string | null) => ({
+		equipment_plant_setup: {
+			schema_version: 1,
+			requirements: { operating_mode: mode },
+			units: [unit("main", "grid_connected"), unit("annex", localMode)],
+			parallel_groups: [],
+		},
+	});
+	assert.equal(projectEquipmentScope(plant("grid_connected", null)), "system");
+	assert.equal(
+		projectEquipmentScope(plant(null, "grid_connected")),
+		"products",
+	);
+});
 
 test("equipment discovery preserves explicit application and promotes only missing legacy filters", () => {
 	const hardware = {

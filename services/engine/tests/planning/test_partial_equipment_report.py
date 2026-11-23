@@ -10,6 +10,7 @@ from linker_engine.planning.canonical import Object
 from linker_engine.planning.errors import ProductEvidenceChanged
 from linker_engine.planning.handoffs import Handoffs
 from linker_engine.planning.jobs import Jobs
+from linker_engine.planning.partial_equipment import partial_equipment
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
 from linker_engine.planning.records import Actor
@@ -191,3 +192,36 @@ def test_unpublished_customer_selection_cannot_enter_a_report(
     )
     with pytest.raises(ProductEvidenceChanged):
         ReportKernel(workspace, products).context(owner, project.id, 1, options)
+
+
+@pytest.mark.parametrize(
+    ("plant_mode", "unit_mode", "partial"),
+    [("grid_connected", None, False), (None, "grid_connected", True)],
+)
+def test_plant_readiness_uses_the_shared_operating_mode(
+    products: ProductSources,
+    plant_mode: str | None,
+    unit_mode: str | None,
+    partial: bool,
+) -> None:
+    units = [
+        {
+            "id": key,
+            "inputs": {
+                "equipment_setup": {
+                    "inverter_product_id": 4107,
+                    "operating_mode": mode,
+                    "accessory_product_ids": [],
+                },
+            },
+        }
+        for key, mode in (("main", "grid_connected"), ("annex", unit_mode))
+    ]
+    inputs = {
+        "equipment_plant_setup": {
+            "units": units,
+            "requirements": {"operating_mode": plant_mode},
+            "parallel_groups": [],
+        }
+    }
+    assert (partial_equipment(cast(Object, inputs), products) is not None) is partial

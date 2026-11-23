@@ -20,15 +20,17 @@ def partial_equipment(
             cast(Object, unit["inputs"]) for unit in cast(list[Object], plant["units"])
         ]
         groups = cast(list[Object], plant["parallel_groups"])
+        requirements = cast(Object, plant["requirements"])
     else:
-        units, groups = [inputs], []
+        units, groups, requirements = [inputs], [], None
     setups = [
         unit.get("equipment_setup", unit.get("equipment_selection")) for unit in units
     ]
     if all(
         isinstance(setup, dict)
         and setup.get("inverter_product_id")
-        and setup.get("operating_mode") in ("grid_connected", "backup")
+        and (setup if requirements is None else requirements).get("operating_mode")
+        in ("grid_connected", "backup")
         for setup in setups
     ):
         return None
