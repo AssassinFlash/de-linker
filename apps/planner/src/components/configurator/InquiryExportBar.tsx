@@ -21,6 +21,7 @@ export function InquiryExportBar({
 	accept,
 	logoField,
 	logo,
+	runLogo,
 	blocked,
 	children,
 }: {
@@ -33,6 +34,7 @@ export function InquiryExportBar({
 		((logo: string | null) => Promise<PlanningRun | undefined>) | undefined;
 	accept?: ((completed: PlanningRun) => void) | undefined;
 	logo: string | null;
+	runLogo?: string | null | undefined;
 	logoField: ReactNode;
 	blocked: boolean;
 	children?: ReactNode;
@@ -66,7 +68,7 @@ export function InquiryExportBar({
 				(!run || cached.run.id === run.id);
 			const original =
 				run?.revision === project.revision &&
-				!logo &&
+				(runLogo === undefined ? !logo : runLogo === logo) &&
 				reportFromRun(run).locale === lang
 					? run
 					: null;

@@ -611,3 +611,67 @@ test("the first PDF download after picking a logo uses the new branded file", as
 		value.run.result.prepared_asset.id,
 	]);
 });
+
+test("generating with the chosen logo then downloading PDF and CSV creates only one report", async (t) => {
+	const { until } = await import("./dom-fixture.mjs");
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(),
+		created = [],
+		downloads = [];
+	t.after(() => page.dispose(root));
+	value.project.revision = value.run.revision;
+	value.locale = value.run.result.report.locale;
+	const oldReader = globalThis.FileReader;
+	globalThis.FileReader = window.FileReader;
+	const anchor = window.HTMLAnchorElement.prototype,
+		click = anchor.click;
+	anchor.click = () => {};
+	t.after(() => {
+		globalThis.FileReader = oldReader;
+		anchor.click = click;
+	});
+	const generate = (data) => {
+		created.push(data);
+		return value.run;
+	};
+	value.client.reportPdf = async (_project, id) => {
+		downloads.push(id);
+		return new Blob(["pdf"]);
+	};
+	value.client.reportCsv = async (_project, id) => {
+		downloads.push(id);
+		return new Blob(["csv"]);
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, { ...value, run: null, generate }),
+		),
+	);
+	const input = document.querySelector('input[type="file"]');
+	Object.defineProperty(input, "files", {
+		value: [new window.File(["mark"], "logo.png", { type: "image/png" })],
+	});
+	await act(async () =>
+		input.dispatchEvent(new window.Event("change", { bubbles: true })),
+	);
+	await until(() => button("Remove logo"));
+	await act(async () => button("Generate project report").click());
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, {
+				...value,
+				inquiry: React.createElement("form"),
+				runLogo: created[0],
+				prepareExport: async (logo) => generate(logo),
+			}),
+		),
+	);
+	await act(async () => button("Download PDF").click());
+	await act(async () => button("Download bill of materials (CSV)").click());
+	assert.deepEqual(created, ["data:image/png;base64,bWFyaw=="]);
+	assert.deepEqual(downloads, [
+		value.run.result.prepared_asset.id,
+		value.run.result.prepared_attachments.bill_of_materials_csv.id,
+	]);
+});
