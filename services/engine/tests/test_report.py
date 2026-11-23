@@ -463,3 +463,31 @@ def test_a_site_row_the_visitor_never_declared_is_left_out() -> None:
     rows = {row.label: row.value for row in sections["site"].rows}
     assert rows["Country"] == "DE"
     assert "Time zone" not in rows
+
+
+def test_pdf_keeps_datasheet_and_rule_references_on_their_labelled_page() -> None:
+    rows = [
+        ReportRow(
+            label=f"Source {index:02d}",
+            value=(
+                "EEG 2023 §9. Source reviewed 2026-11-04 · "
+                "https://www.gesetze-im-internet.de/eeg_2014/__9.html · "
+                f"{'0123456789abcdef' * 4} (ref-{index:02d})"
+            ),
+        )
+        for index in range(45)
+    ]
+    source_report = Report(
+        title="Project planning report",
+        subtitle="Saved project inputs and selected calculation results",
+        generated_at="2026-11-23T00:00:00Z",
+        locale="en",
+        sections=[
+            ReportSection(id="references", title="Reference documents", rows=rows)
+        ],
+    )
+    pages = [
+        p.extract_text() for p in PdfReader(io.BytesIO(pdf.render(source_report))).pages
+    ]
+    for index, row in enumerate(rows):
+        assert any(row.label in page and f"(ref-{index:02d})" in page for page in pages)

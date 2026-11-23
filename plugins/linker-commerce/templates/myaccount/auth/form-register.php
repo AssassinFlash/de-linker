@@ -63,6 +63,7 @@ $active_step     = Fields::active_step();
 				<header class="linker-auth-card-heading">
 					<h1 id="linker-auth-register-heading"><?php esc_html_e( 'Create your business account', 'linker-commerce' ); ?></h1>
 					<p><?php esc_html_e( 'You can access your account straight away. Net prices are available after approval.', 'linker-commerce' ); ?></p>
+					<?php echo \Linker\Commerce\Presentation\Shortcodes::form_assistant(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped component markup. ?>
 				</header>
 
 				<div data-registration-notices>

@@ -105,14 +105,14 @@ final class FieldsTest extends TestCase {
 	}
 
 	/**
-	 * Company, business type, country, website or VAT ID, then the customer's
-	 * name; the address is collected by the Proforma request page, not here.
+	 * Company and country share a row above the business type choices.
+	 * Website and VAT ID share the verification row before the personal fields.
 	 */
 	public function test_fields(): void {
 		$fields = ( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->fields( 'DE' );
 
 		$this->assertSame(
-			array( 'billing_company', CustomerRole::META, 'billing_country', Website::META, VatProfile::VAT_META, 'billing_first_name', 'billing_last_name' ),
+			array( 'billing_company', 'billing_country', CustomerRole::META, Website::META, VatProfile::VAT_META, 'billing_first_name', 'billing_last_name' ),
 			array_keys( $fields )
 		);
 		$this->assertTrue( $fields['billing_company']['required'] );

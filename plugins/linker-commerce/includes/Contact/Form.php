@@ -13,27 +13,7 @@ use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Settings\Options;
 
 /**
- * The markup of the contact form (ticket #68, GAP-8): the card the old live
- * pages showed — heading, question, topic, reply details, consent and send
- * row — and the two cards beside it ("Prefer email?", "Still exploring?").
- *
- * The composition is the live card's (README of docs/acceptance/2026-10-14/
- * contact-form/; the captures `contact-en-1440-live.png`, `contact-de-1440-
- * live.png`, `contact-en-390-live.png` and `contact-de-390-live.png` of the
- * 2026-10-12/13 rounds): the same blocks in the same order, the same fields,
- * and the card's words. The consent and button copy follow the #68 review.
- * The #1143 updates to the lead, contact details and response promise are
- * recorded in docs/acceptance/2026-11-18/1143/copy-review.md.
- * Its colours are not carried
- * over — the site's tokens are (AGENTS.md §2, 2026-10-11: the site's palette
- * is the current one) — and neither is the retired runtime that rendered it:
- * this form posts to admin-post.php, keeps its meaning without JavaScript,
- * and carries the language of the page it was written on.
- *
- * The composition is data assembly: semantic markup and class names, no
- * styles and no scripts of its own (AGENTS.md §5 — the styles of the page
- * come from the WindPress pipeline, which scans the rendered shortcode). The
- * shapes and the spacing live in content/windpress/contact-card.css.
+ * Renders the contact form and its sales and technical support panel.
  */
 final class Form {
 
@@ -110,9 +90,6 @@ final class Form {
 		LanguageDraft::enqueue();
 		$state = $this->state_message();
 		if ( str_contains( $state, 'linker-form-success' ) ) {
-			// A sent message keeps the card's side cards, the way the live
-			// workspace kept them around the receipt. The receipt is the box
-			// itself (its own panel), so the wrapper carries no card styling.
 			return '<div class="linker-contact-card"><div class="linker-contact-form linker-contact-receipt">' . $state . '</div>' . $this->rail() . '</div>';
 		}
 		if ( ! \Linker\Commerce\Protection\Identity::ensure_browser_cookie() ) {
@@ -129,7 +106,7 @@ final class Form {
 	private function form( string $state ): string {
 		$previous = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
 		$field    = 'linker-form-input';
-		$label    = 'linker-form-label';
+		$label    = 'lk-field linker-form-label';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
 		$query    = wp_unslash( $_GET );
 		$raw      = $previous[ SelectionContext::FIELD ] ?? ( is_string( $query[ SelectionContext::FIELD ] ?? null ) ? $query[ SelectionContext::FIELD ] : '' );
@@ -153,37 +130,26 @@ final class Form {
 		}
 
 		$html .= '<div class="linker-contact-head">';
-		$html .= '<span class="linker-contact-overline">' . esc_html__( 'CONTACT LINKER', 'linker-commerce' ) . '</span>';
 		$html .= '<h2>' . esc_html__( 'What can we help with?', 'linker-commerce' ) . '</h2>';
-		$html .= '<p>' . esc_html__( 'Tell us what you need.', 'linker-commerce' ) . '</p>';
+		$html .= \Linker\Commerce\Presentation\Shortcodes::form_assistant();
 		$html .= '</div>';
 
 		$html .= LanguageDraft::notice();
 
 		$html .= SelectionView::form( $context, $raw, $included );
 
-		$html .= '<div class="linker-contact-question">';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-message"><span>' . esc_html__( 'Your question', 'linker-commerce' ) . '</span>'
-			. '<textarea class="' . esc_attr( $field ) . '" id="linker-contact-message" name="message" rows="4" maxlength="' . esc_attr( (string) Submission::MAX_MESSAGE ) . '" placeholder="' . esc_attr__( 'What would you like to know?', 'linker-commerce' ) . '" required></textarea></label>';
-		$html .= '</div>';
-
-		$html .= '<div class="linker-contact-topic">';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-intent"><span>' . esc_html__( 'This is about', 'linker-commerce' ) . '</span>'
+		$html .= '<div class="linker-form-fields">';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-name"><span class="lk-field-heading">' . esc_html__( 'Name', 'linker-commerce' ) . '<span class="lk-required" aria-hidden="true"> *</span></span>'
+			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-name" type="text" name="name" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="name" required /></label>';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-email"><span class="lk-field-heading">' . esc_html__( 'Email address', 'linker-commerce' ) . '<span class="lk-required" aria-hidden="true"> *</span></span>'
+			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-email" type="email" name="email" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="email" required /></label>';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-company"><span class="lk-field-heading">' . esc_html__( 'Company', 'linker-commerce' ) . ' <small class="linker-form-optional">' . esc_html__( 'optional', 'linker-commerce' ) . '</small></span>'
+			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-company" type="text" name="company" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="organization" /></label>';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-intent"><span class="lk-field-heading">' . esc_html__( 'This is about', 'linker-commerce' ) . '</span>'
 			. '<select class="' . esc_attr( $field ) . '" id="linker-contact-intent" name="' . esc_attr( Submission::INTENT_FIELD ) . '">' . $this->intent_options() . '</select></label>';
 		$html .= '</div>';
-
-		$html .= '<div class="linker-contact-reply">';
-		$html .= '<h3>' . esc_html__( 'Your contact details', 'linker-commerce' ) . '</h3>';
-		$html .= '<div class="linker-form-fields">';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-name"><span>' . esc_html__( 'Name', 'linker-commerce' ) . '</span>'
-			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-name" type="text" name="name" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="name" required /></label>';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-email"><span>' . esc_html__( 'Email address', 'linker-commerce' ) . '</span>'
-			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-email" type="email" name="email" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="email" required /></label>';
-		$html .= '</div>';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-company"><span>' . esc_html__( 'Company', 'linker-commerce' ) . ' <small class="linker-form-optional">' . esc_html__( 'optional', 'linker-commerce' ) . '</small></span>'
-			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-company" type="text" name="company" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="organization" /></label>';
-		$html .= '<p class="linker-form-note">' . esc_html__( 'No account or Project is needed to ask a question.', 'linker-commerce' ) . '</p>';
-		$html .= '</div>';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-message"><span class="lk-field-heading">' . esc_html__( 'Your question', 'linker-commerce' ) . '<span class="lk-required" aria-hidden="true"> *</span></span>'
+			. '<textarea class="' . esc_attr( $field ) . '" id="linker-contact-message" name="message" rows="4" maxlength="' . esc_attr( (string) Submission::MAX_MESSAGE ) . '" placeholder="' . esc_attr__( 'What would you like to know?', 'linker-commerce' ) . '" required></textarea></label>';
 
 		$html   .= '<div class="linker-contact-end">';
 		$privacy = get_privacy_policy_url();
@@ -195,7 +161,7 @@ final class Form {
 		$html .= '</span></label>';
 		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '' );
 		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
-			. '<p class="linker-form-note">' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p></div>';
+			. '</div>';
 		$html .= '</div>';
 
 		$html .= '</form>';
@@ -254,22 +220,17 @@ final class Form {
 	}
 
 	/**
-	 * The two cards beside the form: the direct address and the way into
-	 * Genie. Words from the live card; the address is the team mailbox
-	 * customers see. The form's own letter goes to the internal notification
-	 * address instead (owner ruling 2026-10-17, Options::notify_to()).
+	 * The public support address, response time and link to Genie.
 	 */
 	private function rail(): string {
 		$email = ( new Options() )->team_mailbox();
 		$html  = '<aside class="linker-contact-rail">';
 		$html .= '<div class="linker-contact-rail-card linker-contact-email">';
-		$html .= '<span class="linker-contact-overline">' . esc_html__( 'Prefer email?', 'linker-commerce' ) . '</span>';
+		$html .= '<h2 class="linker-contact-rail-title">' . esc_html__( 'Sales and technical support', 'linker-commerce' ) . '</h2>';
 		$html .= '<a class="linker-contact-address" href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a>';
-		$html .= '<p>' . esc_html__( 'Send your question directly to our team. Opening your email app does not send a message.', 'linker-commerce' ) . '</p>';
+		$html .= '<p>' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-rail-card linker-contact-explore">';
-		$html .= '<span class="linker-contact-overline">' . esc_html__( 'Still exploring?', 'linker-commerce' ) . '</span>';
-		$html .= '<h3>' . esc_html__( 'Take your time.', 'linker-commerce' ) . '</h3>';
 		$html .= '<p>' . esc_html__( 'Use Genie to explore the options, then return to your question.', 'linker-commerce' ) . '</p>';
 		$html .= '<a href="' . esc_url( $this->genie_url() ) . '">' . esc_html__( 'Explore with Genie', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></a>';
 		$html .= '</div>';

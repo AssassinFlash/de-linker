@@ -119,3 +119,14 @@ export function parseHoles(
 				.map((ring) => parseRing(ring, locale))
 		: [];
 }
+
+/** Ring area in the roof plane, for review only; the server checks the layout. */
+export function ringArea(ring: readonly Vec2[]): number {
+	let sum = 0;
+	for (let index = 0; index < ring.length; index++) {
+		const [u1, v1] = ring[index]!,
+			[u2, v2] = ring[(index + 1) % ring.length]!;
+		sum += u1 * v2 - u2 * v1;
+	}
+	return Math.abs(sum) / 2;
+}

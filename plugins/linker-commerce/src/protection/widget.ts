@@ -56,7 +56,7 @@ export function createWidgets( config: WidgetConfig ): Widgets {
 		status.hidden = true;
 		const retry = document.createElement( 'button' );
 		retry.type = 'button';
-		retry.className = 'button';
+		retry.className = 'btn-secondary';
 		retry.textContent = __( 'Try again', 'linker-commerce' );
 		retry.hidden = true;
 		container.append( slot, status, retry );

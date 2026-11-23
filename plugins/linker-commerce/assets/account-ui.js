@@ -22,6 +22,7 @@
 	function syncDraftState() {
 		const form = draftForm();
 		const busy = Boolean( form?.classList.contains( 'processing' ) );
+		form?.querySelectorAll( '[data-quantity-step][hidden]' ).forEach( ( button ) => { button.hidden = false; } );
 		if ( send ) {
 			send.disabled = busy;
 		}
@@ -113,6 +114,15 @@
 			}
 		} );
 		draftSurface.addEventListener( 'click', ( event ) => {
+			const step = event.target.closest( 'button[data-quantity-step]' );
+			if ( step ) {
+				const input = step.closest( '.linker-inquiry-stepper' ).querySelector( 'input.qty' );
+				if ( step.dataset.quantityStep === '1' ) input.stepUp();
+				else input.stepDown();
+				input.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+				input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				return;
+			}
 			const link = event.target.closest( '.wc-proceed-to-checkout a' );
 			if ( link && event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey ) {
 				carryRetry( link, new URLSearchParams( window.location.search ).get( retryField ) );

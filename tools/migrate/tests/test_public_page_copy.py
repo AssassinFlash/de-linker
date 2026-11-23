@@ -92,3 +92,28 @@ def test_release_restores_manual_copy_only_if_translation_state_still_matches(
     release.main()
     release.main()
     assert state == original
+
+
+def test_contact_retains_authored_story_and_anchor_and_retires_old_editor(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import runpy
+
+    monkeypatch.syspath_prepend(str(Path(__file__).parents[1]))
+    release = runpy.run_path(str(Path(__file__).parents[1] / "public-page-copy.py"))
+    source = (
+        '<div id="tv-contact-v1"><section aria-labelledby="cp-page-title" class="cp-hero">'
+        '<h1>Old hero</h1></section><div class="cp-paper">'
+        '<section class="cp-intro">Old introduction</section>'
+        '<section id="contact-form"><div data-linker-contact-mount>[linker_contact_form]</div></section>'
+        '<section class="cp-story">Original wording</section></div></div>'
+        '<script data-site-js="contact-page.js">var observer = new MutationObserver(layout);</script>'
+    )
+    result = release["planned"]("contact", {"pages": {"28": source, "6907": source}})
+    assert "contact-page.js" not in result["28"]
+    assert '<h1 id="cp-page-title">Kontakt</h1>' in result["6907"]
+    for value in result.values():
+        assert value.count("[linker_contact_form]") == 1
+        assert '<section id="contact-form">' in value
+        assert '<section class="cp-story">Original wording</section>' in value
+    assert release["planned"]("contact", {"pages": result}) == result

@@ -98,7 +98,7 @@ test("a transient authentication refusal recovers native reads without replaying
 			discoveryCalls >= 2 &&
 			client.isCurrentScope(session.query_scope) &&
 			[...document.querySelectorAll("button")].some(
-				(x) => x.textContent === "Compare systems",
+				(x) => x.textContent.trim() === "Enter project details" && !x.disabled,
 			),
 	);
 	assert.equal(
@@ -239,7 +239,8 @@ for (const status of [401, 503])
 				client.isCurrentScope(session.query_scope) &&
 				!retry() &&
 				[...document.querySelectorAll("button")].some(
-					(x) => x.textContent === "Compare systems",
+					(x) =>
+						x.textContent.trim() === "Enter project details" && !x.disabled,
 				),
 		);
 		assert.equal(bootstraps, status === 401 ? 4 : 1);

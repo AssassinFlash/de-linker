@@ -88,6 +88,10 @@ it( 'loads on a Genie transfer, not chat, and can retry a failed script in place
 	const widgets = createWidgets( { siteKey: 'public-key', language: 'en' } );
 	expect( document.head.querySelector( 'script' ) ).toBeNull();
 	const close = widgets.mount( container, 'genie_inquiry', response );
+	const retry = container.querySelector< HTMLButtonElement >(
+		'button.btn-secondary'
+	)!;
+	expect( retry ).toHaveAttribute( 'hidden' );
 	const script = document.head.querySelector( 'script' )!;
 	expect( script.src ).toMatch(
 		/^https:\/\/challenges\.cloudflare\.com\/turnstile\/v0\/api\.js\?render=explicit$/
@@ -107,7 +111,8 @@ it( 'loads on a Genie transfer, not chat, and can retry a failed script in place
 		remove: vi.fn(),
 	};
 	window.turnstile = api;
-	container.querySelector( 'button' )!.click();
+	expect( retry ).not.toHaveAttribute( 'hidden' );
+	retry.click();
 	await vi.waitFor( () => expect( api.render ).toHaveBeenCalledOnce() );
 	options!.callback( 'native-response' );
 	expect( response ).toHaveBeenLastCalledWith( 'native-response' );

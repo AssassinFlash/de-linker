@@ -38,6 +38,7 @@ final class Shortcodes {
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
 		add_shortcode( 'linker_contact_invitation', array( $this, 'contact_invitation' ) );
 		add_shortcode( 'linker_site_url', array( $this, 'site_url' ) );
+		add_shortcode( 'linker_form_assistant', array( $this, 'form_assistant' ) );
 		// The cart template's [lc_if] conditions are the global functions in
 		// template-functions.php (linker_commerce_draft_empty/_filled):
 		// LiveCanvas resolves a condition with function_exists(), never a
@@ -350,6 +351,15 @@ final class Shortcodes {
 	public function site_url( $atts = array() ): string {
 		unset( $atts );
 		return esc_url( PageUrls::home() );
+	}
+
+	/** Open the existing assistant without leaving the customer's form. */
+	public static function form_assistant(): string {
+		return sprintf(
+			'<a class="linker-form-assistant" href="%s" data-linker-genie-open aria-controls="linker-genie-mount" aria-expanded="false">%s</a>',
+			esc_url( PageUrls::page( 'genie' ) ),
+			esc_html__( 'Ask Genie', 'linker-commerce' )
+		);
 	}
 
 	/**

@@ -1,4 +1,4 @@
-import { Icon } from "../Icon.tsx";
+import { FileDropzone } from "../FileDropzone.tsx";
 import { attachGrossLoad } from "../../domain/grossLoad.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
@@ -238,6 +238,7 @@ export function EnergyDemand({
 	);
 	const csv = profileMethod === "csv";
 	const [content, setContent] = useState("");
+	const [filename, setFilename] = useState("");
 	const [delimiter, setDelimiter] = useState(";");
 	const [inspection, setInspection] = useState<CsvInspection | null>(null);
 	const [mapping, setMapping] = useState(() =>
@@ -459,27 +460,26 @@ export function EnergyDemand({
 					"linker-tools",
 				)}
 			</p>
-			<div
-				className="sc-profile-methods"
-				role="group"
-				aria-label={__("Electricity use over time", "linker-tools")}
-			>
-				{(["typical", "csv"] as const).map((method) => (
-					<button
-						key={method}
-						className="sc-button"
-						type="button"
-						disabled={demandBlocked || pending.current !== null}
-						aria-pressed={profileMethod === method}
-						onClick={() => setProfileMethod(method)}
-					>
-						<Icon name={method === "csv" ? "report" : "energy"} />
-						{method === "csv"
-							? __("Import CSV", "linker-tools")
-							: __("Use a typical profile", "linker-tools")}
-					</button>
-				))}
-			</div>
+			<FileDropzone
+				label={__("CSV file", "linker-tools")}
+				action={__("Choose CSV file", "linker-tools")}
+				accept=".csv,text/csv,text/plain"
+				filename={content ? filename : ""}
+				disabled={demandBlocked || pending.current !== null}
+				onFile={(file) =>
+					void run(async () => {
+						const encoded = await fileBase64(
+							file,
+							session.runtime.limits.max_csv_bytes,
+						);
+						setProfileMethod("csv");
+						setContent(encoded);
+						setInspection(null);
+						setFilename(file.name);
+						setLabel(file.name);
+					})
+				}
+			/>
 			{profileMethod && (
 				<fieldset disabled={demandBlocked} className="sc-profile-fields">
 					<div className="sc-fields sc-profile-sources">
@@ -491,37 +491,23 @@ export function EnergyDemand({
 								onChange={(event) => setZone(event.currentTarget.value)}
 							/>
 						</label>
-						{!csv && (
+						{csv ? (
+							<label className="sc-field">
+								<span>{__("Column delimiter", "linker-tools")}</span>
+								<select
+									value={delimiter}
+									onChange={(event) => {
+										setDelimiter(event.currentTarget.value);
+										setInspection(null);
+									}}
+								>
+									<option value=";">{__("Semicolon", "linker-tools")}</option>
+									<option value=",">{__("Comma", "linker-tools")}</option>
+									<option value={"\t"}>{__("Tab", "linker-tools")}</option>
+								</select>
+							</label>
+						) : (
 							<>
-								<label className="sc-field">
-									<span>{__("Typical use", "linker-tools")}</span>
-									<select
-										name="load-pattern"
-										value={pattern}
-										onChange={(event) => setPattern(event.currentTarget.value)}
-									>
-										<option value="">
-											{__("Choose a template", "linker-tools")}
-										</option>
-										{[
-											["H0", __("Household", "linker-tools")],
-											["G0", __("General business", "linker-tools")],
-											["G1", __("Business hours, weekdays", "linker-tools")],
-											["G2", __("Evening business", "linker-tools")],
-											["G3", __("Continuous operation", "linker-tools")],
-											["G4", __("Retail", "linker-tools")],
-											["G5", __("Bakery", "linker-tools")],
-											["G6", __("Weekend business", "linker-tools")],
-											["H25", __("Household (2025)", "linker-tools")],
-											["G25", __("Business (2025)", "linker-tools")],
-											["L25", __("Agriculture (2025)", "linker-tools")],
-										].map(([value, text]) => (
-											<option key={value} value={value}>
-												{text} · {value}
-											</option>
-										))}
-									</select>
-								</label>
 								<label className="sc-field">
 									<span>{__("Profile year", "linker-tools")}</span>
 									<input
@@ -571,42 +557,6 @@ export function EnergyDemand({
 						</>
 					) : (
 						<>
-							<div className="sc-fields">
-								<label className="sc-field">
-									<span>{__("CSV file", "linker-tools")}</span>
-									<input
-										type="file"
-										accept=".csv,text/csv,text/plain"
-										onChange={(event) => {
-											const file = event.currentTarget.files?.[0];
-											if (file)
-												void run(async () => {
-													const encoded = await fileBase64(
-														file,
-														session.runtime.limits.max_csv_bytes,
-													);
-													setContent(encoded);
-													setInspection(null);
-													setLabel(file.name);
-												});
-										}}
-									/>
-								</label>
-								<label className="sc-field">
-									<span>{__("Column delimiter", "linker-tools")}</span>
-									<select
-										value={delimiter}
-										onChange={(event) => {
-											setDelimiter(event.currentTarget.value);
-											setInspection(null);
-										}}
-									>
-										<option value=";">{__("Semicolon", "linker-tools")}</option>
-										<option value=",">{__("Comma", "linker-tools")}</option>
-										<option value={"\t"}>{__("Tab", "linker-tools")}</option>
-									</select>
-								</label>
-							</div>
 							<button
 								className="sc-button"
 								type="button"
@@ -889,6 +839,40 @@ export function EnergyDemand({
 							</option>
 						</select>
 					</label>
+					<label className="sc-field">
+						<span>{__("Typical use", "linker-tools")}</span>
+						<select
+							name="load-pattern"
+							value={profileMethod === "typical" ? pattern : ""}
+							disabled={demandBlocked || pending.current !== null}
+							onChange={(event) => {
+								const value = event.currentTarget.value;
+								setPattern(value);
+								setProfileMethod(value ? "typical" : content ? "csv" : null);
+							}}
+						>
+							<option value="">
+								{__("Choose a template", "linker-tools")}
+							</option>
+							{[
+								["H0", __("Household", "linker-tools")],
+								["G0", __("General business", "linker-tools")],
+								["G1", __("Business hours, weekdays", "linker-tools")],
+								["G2", __("Evening business", "linker-tools")],
+								["G3", __("Continuous operation", "linker-tools")],
+								["G4", __("Retail", "linker-tools")],
+								["G5", __("Bakery", "linker-tools")],
+								["G6", __("Weekend business", "linker-tools")],
+								["H25", __("Household (2025)", "linker-tools")],
+								["G25", __("Business (2025)", "linker-tools")],
+								["L25", __("Agriculture (2025)", "linker-tools")],
+							].map(([value, text]) => (
+								<option key={value} value={value}>
+									{text} · {value}
+								</option>
+							))}
+						</select>
+					</label>
 					{number(
 						"annual",
 						__("Annual electricity use", "linker-tools"),
@@ -1066,14 +1050,7 @@ export function EnergyDemand({
 						</details>
 					</>
 				)}
-				{preview ? (
-					<details>
-						<summary>{__("Change load profile", "linker-tools")}</summary>
-						{profileEditor}
-					</details>
-				) : (
-					profileEditor
-				)}
+				{profileEditor}
 				{busy && (
 					<p role="status">{__("Loading consumption data…", "linker-tools")}</p>
 				)}

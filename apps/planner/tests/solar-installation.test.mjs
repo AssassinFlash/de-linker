@@ -62,7 +62,7 @@ async function mount(
 		return React.createElement(SolarInstallation, {
 			...mapEntry,
 			inputs,
-			config: { locale, mapModuleUrl: null },
+			config: { locale, mapModuleUrl: null, ...mapEntry.config },
 			session: { query_scope: "test" },
 			client: {
 				isCurrentScope: () => true,
@@ -126,6 +126,10 @@ async function click(text) {
 	await act(async () => button(text).click());
 }
 function input(label) {
+	const named = [...document.querySelectorAll("input[aria-label]")].find(
+		(el) => el.getAttribute("aria-label") === label,
+	);
+	if (named) return named;
 	const el = [...document.querySelectorAll("label")].find((e) =>
 		e.querySelector("span")?.textContent.startsWith(label),
 	);
@@ -419,7 +423,7 @@ test("a roof address opens its consented aerial map ready to draw and honours wi
 				(b) => b.textContent === "Hide aerial map",
 			),
 	);
-	assert.equal(button("Draw roof").getAttribute("aria-pressed"), "true");
+	assert.equal(button("Draw polygon").getAttribute("aria-pressed"), "true");
 	await act(async () =>
 		document.dispatchEvent(new window.Event("cookieyes_consent_update")),
 	);
@@ -447,7 +451,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	);
 	await openRoof();
 	await until(() => button("Load street map"));
-	assert.equal(button("Draw roof").disabled, true);
+	assert.equal(button("Draw polygon").disabled, true);
 	assert.doesNotMatch(
 		document.body.textContent,
 		/Mark each roof corner on the aerial map/,
@@ -487,7 +491,7 @@ test("a site without licensed aerial imagery can open the roof image wizard whil
 	);
 	assert.equal(sources[0].rights_basis, "user_attestation");
 	assert.equal(button("Plan view").getAttribute("aria-pressed"), "true");
-	assert.equal(button("Select / move").getAttribute("aria-pressed"), "true");
+	assert.equal(button("Select plane").getAttribute("aria-pressed"), "true");
 });
 
 async function openRoof(locale = "en") {
@@ -789,7 +793,7 @@ test("Solar can show and withdraw a viewing mosaic without acquiring geometry", 
 		tile.state = "loaded";
 		viewer.emit("idle");
 	});
-	for (const tool of ["Draw roof", "Obstacle", "Place modules"]) {
+	for (const tool of ["Draw polygon", "Obstacle", "Place modules"]) {
 		await click(tool);
 		assert.equal(document.querySelector('[data-collecting="true"]'), null);
 		assert.equal(document.querySelector('[data-array-placement="true"]'), null);
@@ -914,7 +918,7 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 			button("Show aerial map") &&
 			document.querySelector('[data-map-status="ready"]'),
 	);
-	await click("Draw roof");
+	await click("Draw polygon");
 	assert.equal(document.querySelector('[data-collecting="true"]'), null);
 	await click("Show aerial map");
 	await until(() => map().getSource("linker-site-imagery"));
@@ -1030,7 +1034,7 @@ test("the first aerial roof uses the selected roof corner as its confirmed origi
 	await point(11.56608, 48.14512);
 	assert.equal(app.inputs.geometry.arrays.length, 1);
 	assert.equal(app.inputs.geometry.arrays[0].columns, 2);
-	await click("Draw roof");
+	await click("Draw polygon");
 	await until(() => document.querySelector('[data-collecting="true"]'));
 	const canvas = map().getCanvas();
 	map().unproject = ([x, y]) => ({
@@ -1267,5 +1271,312 @@ test("new roof interaction places moves rotates removes and undoes an actual mod
 	assert.deepEqual(
 		app.inputs.geometry.coordinate_system,
 		flat.coordinate_system,
+	);
+});
+
+test("roof studio presents the current layout, editable geometry, modules and summary", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.roofs[0].holes_uv = [
+		[
+			[6, 6],
+			[8, 6],
+			[8, 8],
+			[6, 8],
+		],
+	];
+	const app = await mount(
+		t,
+		{ brief: emptyBrief(), geometry },
+		null,
+		null,
+		"en",
+		{},
+		{ initialPlan: true },
+	);
+	const inspector = document.querySelector(
+		'[role="tablist"][aria-label="Roof inspector"]',
+	);
+	assert.ok(inspector, "the inspector has one set of tabs");
+	assert.deepEqual(
+		[...inspector.querySelectorAll('[role="tab"]')].map(
+			(tab) => tab.textContent,
+		),
+		["Geometry", "Modules", "Summary"],
+	);
+	assert.match(
+		document.querySelector(".sc-roof-metrics").textContent,
+		/396\s*m²/,
+	);
+	await click("Modules");
+	assert.equal(button("Modules").getAttribute("aria-selected"), "true");
+	assert.ok(document.querySelector('[role="tabpanel"]:not([hidden]) select'));
+	await click("Summary");
+	assert.match(
+		document.querySelector('[role="tabpanel"]:not([hidden])').textContent,
+		/Fixture roof396/,
+	);
+	assert.deepEqual(app.inputs.geometry, geometry);
+});
+
+test("measure the plan without changing the roof, then save and reopen an exclusion", async (t) => {
+	const geometry = structuredClone(flat);
+	const editing = [];
+	const app = await mount(
+		t,
+		{
+			brief: {
+				...emptyBrief(),
+				site: {
+					...emptyBrief().site,
+					country_code: "NL",
+					location_label: "Amsterdam",
+					latitude: 52.36,
+					longitude: 4.88,
+				},
+			},
+			geometry,
+		},
+		aerial,
+		null,
+		"en",
+		{},
+		{ initialPlan: true, onEditing: (value) => editing.push(value) },
+	);
+
+	const corner = (x, y) => {
+		const svg = document.querySelector('svg[aria-label="Editable roof plan"]');
+		assert.ok(svg, "The tool opens the measured roof plane");
+		svg.getScreenCTM = () => ({ inverse: () => ({}) });
+		svg.createSVGPoint = () => ({
+			x: 0,
+			y: 0,
+			matrixTransform() {
+				return this;
+			},
+		});
+		return act(async () =>
+			svg.dispatchEvent(
+				new window.MouseEvent("click", {
+					bubbles: true,
+					clientX: x,
+					clientY: y,
+				}),
+			),
+		);
+	};
+	await click("Measure");
+	await corner(1, 2);
+	await corner(4, 6);
+	assert.match(
+		document.querySelector(".sc-studio-measurement").textContent,
+		/5\s*m/,
+	);
+	assert.deepEqual(app.inputs.geometry, geometry);
+	assert.equal(editing.at(-1), false);
+	for (const tool of [
+		"Draw polygon",
+		"Obstacle",
+		"Place modules",
+		"Keep-out",
+	]) {
+		await click("Aerial map");
+		await until(() => document.querySelector('[data-map-status="ready"]'));
+		assert.equal(button("Select plane").getAttribute("aria-pressed"), "true");
+		await click(tool);
+		assert.equal(
+			button("Plan view").getAttribute("aria-pressed"),
+			"true",
+			tool,
+		);
+		if (tool === "Obstacle") {
+			await enter(input("Obstacle height above roof"), "0.5");
+			await corner(4, 4);
+			await corner(5, 4);
+			await corner(4, 5);
+			await click("Finish outline");
+			assert.deepEqual(app.inputs.geometry.obstacles.at(-1).footprint_uv, [
+				[4, 4],
+				[5, 4],
+				[4, 5],
+			]);
+		}
+	}
+
+	for (const [x, y] of [
+		[1, 1],
+		[3, 1],
+		[3, 3],
+		[1, 3],
+	])
+		await corner(x, y);
+	await click("Finish outline");
+	assert.deepEqual(app.inputs.geometry.keepouts.at(-1).footprint_uv, [
+		[1, 1],
+		[3, 1],
+		[3, 3],
+		[1, 3],
+	]);
+	assert.equal(
+		app.inputs.geometry.keepouts.at(-1).roof_id,
+		geometry.roofs[0].id,
+	);
+	await click("Use this layout");
+	await click("Open roof layout");
+	assert.ok(document.querySelector(".sc-keepout-shape"));
+});
+
+test("the plan offers only the located aerial source and retains the drawn roof when the visitor withdraws", async (t) => {
+	const inputs = {
+		brief: {
+			...emptyBrief(),
+			site: {
+				...emptyBrief().site,
+				country_code: "NL",
+				location_label: "Amsterdam",
+				latitude: 52.36,
+				longitude: 4.88,
+			},
+		},
+		geometry: structuredClone(flat),
+	};
+	const app = await mount(
+		t,
+		inputs,
+		aerial,
+		null,
+		"en",
+		{ latitude: 52.36, longitude: 4.88 },
+		{ initialPlan: true },
+	);
+	await until(() =>
+		[...document.querySelectorAll("button")].some(
+			(el) => el.textContent.trim() === "Allow aerial map",
+		),
+	);
+	assert.equal(document.querySelector("[data-map-status]"), null);
+	await click("Allow aerial map");
+	await until(() =>
+		[...document.querySelectorAll("button")].some(
+			(el) =>
+				el.textContent.trim() === "Hide aerial map" &&
+				el.getAttribute("aria-pressed") === "true",
+		),
+	);
+	await click("Hide aerial map");
+	assert.equal(button("Show aerial map").getAttribute("aria-pressed"), "false");
+	assert.deepEqual(app.inputs.geometry, inputs.geometry);
+});
+
+test("a measured roof without a map position can supply coordinates without changing its survey origin", async (t) => {
+	const brief = emptyBrief();
+	brief.site = {
+		...brief.site,
+		country_code: "NL",
+		location_label: "Amsterdam",
+	};
+	const inputs = { brief, geometry: structuredClone(flat) };
+	const app = await mount(
+		t,
+		inputs,
+		aerial,
+		null,
+		"en",
+		{ latitude: null, longitude: null },
+		{ initialPlan: true },
+	);
+	await until(() => document.querySelector(".sc-studio-location"));
+	await click("Enter map coordinates");
+	const form = document.querySelector(".sc-studio-location");
+	await enter(form.querySelector('input[name="latitude"]'), "52.36");
+	await enter(form.querySelector('input[name="longitude"]'), "4.88");
+	await until(() =>
+		[...document.querySelectorAll("button")].some(
+			(el) => el.textContent.trim() === "Allow aerial map",
+		),
+	);
+	assert.equal(app.inputs.geometry.coordinate_system.anchor, null);
+	assert.equal(app.inputs.brief.site.latitude, 52.36);
+	assert.equal(app.inputs.brief.site.longitude, 4.88);
+	assert.equal(document.querySelector("[data-map-status]"), null);
+});
+
+test("an installer can locate the project address explicitly and retry a failed lookup with the measured roof intact", async (t) => {
+	const brief = emptyBrief();
+	brief.site = {
+		...brief.site,
+		country_code: "NL",
+		location_label: "Museumstraat 1, Amsterdam",
+	};
+	const original = structuredClone(flat);
+	const app = await mount(
+		t,
+		{ brief, geometry: original },
+		aerial,
+		null,
+		"en",
+		{},
+		{ initialPlan: true, config: { googleMapsApiKey: "fixture" } },
+	);
+	let searches = 0;
+	t.mock.method(globalThis, "fetch", async (url, options) => {
+		assert.equal(url, "https://places.googleapis.com/v1/places:searchText");
+		assert.equal(
+			JSON.parse(options.body).textQuery,
+			"Museumstraat 1, Amsterdam",
+		);
+		searches++;
+		if (searches === 1) return new Response(null, { status: 503 });
+		return Response.json({
+			places: [
+				{
+					formattedAddress: "Museumstraat 1, 1071 XX Amsterdam",
+					location: { latitude: 52.36, longitude: 4.88 },
+					addressComponents: [{ types: ["country"], shortText: "NL" }],
+				},
+			],
+		});
+	});
+	await until(() => document.querySelector(".sc-studio-location"));
+	assert.equal(searches, 0);
+	await click("Find this address with Google Maps");
+	assert.equal(searches, 1);
+	assert.ok(
+		document.querySelector('.sc-studio-location input[name="latitude"]'),
+	);
+	assert.equal(app.inputs.brief.site.latitude, null);
+	await click("Find this address with Google Maps");
+	assert.equal(searches, 2);
+	assert.equal(app.inputs.brief.site.longitude, 4.88);
+	assert.equal(app.inputs.brief.site.latitude, 52.36);
+	assert.deepEqual(app.inputs.geometry, original);
+	assert.equal(document.querySelector("[data-map-status]"), null);
+});
+
+test("the German roof inspector displays and saves fractional survey heights with decimal commas", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.sources[0].kind = "user_measurement";
+	geometry.sources[0].rights_basis = "user_attestation";
+	geometry.roofs[0].origin_enu[2] = 3.5;
+	const app = await mount(
+		t,
+		{ brief: emptyBrief(), geometry },
+		null,
+		null,
+		"de",
+		{},
+		{ initialPlan: true },
+	);
+	const height = document.querySelectorAll(
+		".sc-selected-roof-properties input",
+	)[2];
+	assert.equal(height.value, "3,5");
+	await enter(height, "4,25");
+	await act(async () =>
+		height.dispatchEvent(new window.FocusEvent("focusout", { bubbles: true })),
+	);
+	assert.equal(app.inputs.geometry.roofs[0].origin_enu[2], 4.25);
+	assert.equal(
+		document.querySelectorAll(".sc-selected-roof-properties input")[2].value,
+		"4,25",
 	);
 });

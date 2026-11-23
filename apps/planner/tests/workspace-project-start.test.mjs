@@ -708,7 +708,7 @@ test("visitors with project data can open setup from the comparison and keep the
 			document.querySelector(".sc-inquiry-stages").children,
 			(step) => step.textContent,
 		),
-		["Compare options", "Choose an option", "Review and send"],
+		["1Project & direction", "2Fine-tune (optional)", "3Review & send"],
 	);
 	await act(async () => history.forward());
 	await until(() => document.querySelector('input[name="project_title"]'));
@@ -792,6 +792,8 @@ test("visitors with project data can open setup from the comparison and keep the
 				.click(),
 		);
 		assert.equal(location.hash, "");
+		assert.equal(new URL(location.href).searchParams.get("projects"), "1");
+		assert.equal(document.querySelector(".sc-saved-projects").hidden, false);
 	} finally {
 		await act(async () => createResponse.resolve());
 	}
@@ -1481,7 +1483,9 @@ async function lostReceipt(
 	);
 
 	assert.equal(
-		fixture.element.querySelector(".sc-draft-transfer aside button").disabled,
+		fixture.element.querySelector(
+			".sc-draft-transfer .sc-review-actions button",
+		).disabled,
 		true,
 	);
 	assert.equal(
@@ -2005,33 +2009,56 @@ async function compareEntryRetrofit(t, view) {
 			),
 		),
 	);
-	const selector = 'select[name="system_scope"]';
-	await until(() => document.querySelector(selector));
-	const scope = document.querySelector(selector);
-	const equipment = scope.form.querySelector("details.sc-project-equipment");
-	assert.equal(equipment.open, view === "equipment");
-	if (view === "equipment")
-		assert.ok(
-			equipment.compareDocumentPosition(scope) &
-				window.Node.DOCUMENT_POSITION_FOLLOWING,
+	if (!view) {
+		const scene = () =>
+			[...document.querySelectorAll("button")].find(
+				(b) =>
+					b.getAttribute("aria-label") === "Storage retrofit" &&
+					b.matches(":enabled") &&
+					!b.closest("fieldset:disabled"),
+			);
+		await until(scene);
+		await act(async () => scene().click());
+		const known = document.querySelector('button[aria-label="Known PV size"]');
+		await act(async () => known.click());
+		assert.equal(known.getAttribute("aria-pressed"), "true");
+		assert.ok(!document.querySelector("#sc-direction-keep"));
+		assert.equal(
+			JSON.parse(window.sessionStorage.getItem("linker-comparison-draft"))
+				.scene,
+			"known",
 		);
-	assert.equal(
-		equipment.querySelector('button[aria-pressed="true"]').textContent,
-		"Single system",
-	);
-	await act(async () => {
-		scope.value = "storage_addition";
-		scope.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
-	const compare = [...scope.form.querySelectorAll("button")].find(
-		(el) => el.textContent === "Compare systems",
-	);
-	assert.ok(compare, "the new project has a Compare systems action");
-	await until(() => !compare.disabled);
-	await act(async () => compare.click());
-	await until(() =>
-		document.querySelector(".sc-direction-comparison tbody tr"),
-	);
+		await act(async () => scene().click());
+	} else {
+		const selector = 'select[name="system_scope"]';
+		await until(() => document.querySelector(selector));
+		const scope = document.querySelector(selector);
+		const equipment = scope.form.querySelector("details.sc-project-equipment");
+		assert.equal(equipment.open, view === "equipment");
+		if (view === "equipment")
+			assert.ok(
+				equipment.compareDocumentPosition(scope) &
+					window.Node.DOCUMENT_POSITION_FOLLOWING,
+			);
+		assert.equal(
+			equipment.querySelector('button[aria-pressed="true"]').textContent,
+			"Single system",
+		);
+		await act(async () => {
+			scope.value = "storage_addition";
+			scope.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+		const compare = [...scope.form.querySelectorAll("button")].find(
+			(el) => el.textContent === "Compare systems",
+		);
+		assert.ok(compare, "the new project has a Compare systems action");
+		await until(() => !compare.disabled);
+		await act(async () => compare.click());
+		await until(() =>
+			document.querySelector(".sc-direction-comparison tbody tr"),
+		);
+	}
+
 	const rows = [
 		...document.querySelectorAll(".sc-direction-comparison tbody tr"),
 	];
@@ -2039,7 +2066,7 @@ async function compareEntryRetrofit(t, view) {
 		rows.map((row) => row.querySelector("th").textContent),
 		["Keep the existing inverter", "Consider a replacement inverter"],
 	);
-	assert.equal(project.inputs.brief.system_scope, "storage_addition");
+	if (view) assert.equal(project.inputs.brief.system_scope, "storage_addition");
 	await until(() => !rows[0].querySelector("button").disabled);
 	await act(async () => rows[0].querySelector("button").click());
 	await until(() =>
@@ -2048,5 +2075,5 @@ async function compareEntryRetrofit(t, view) {
 		),
 	);
 	assert.equal(inquiry.project_id, project.id);
-	assert.equal(inquiry.revision, 2);
+	assert.equal(inquiry.revision, view ? 2 : 1);
 }

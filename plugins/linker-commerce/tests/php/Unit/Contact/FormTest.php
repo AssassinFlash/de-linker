@@ -72,26 +72,24 @@ final class FormTest extends TestCase {
 
 		// The heading block: eyebrow, heading, lead.
 		$this->assertStringContainsString( 'linker-contact-head', $html );
-		$this->assertStringContainsString( 'CONTACT LINKER', $html );
 		$this->assertStringContainsString( '<h2>What can we help with?</h2>', $html );
-		$this->assertStringContainsString( '<p>Tell us what you need.</p>', $html );
 
 		// The question block: its label and the prompt as the placeholder.
-		$this->assertStringContainsString( 'linker-contact-question', $html );
+		$this->assertStringContainsString( 'id="linker-contact-message"', $html );
 		$this->assertStringContainsString( 'Your question', $html );
 		$this->assertStringContainsString( 'placeholder="What would you like to know?"', $html );
 
 		// The topic block: its label and the select.
-		$this->assertStringContainsString( 'linker-contact-topic', $html );
+		$this->assertStringContainsString( 'id="linker-contact-intent"', $html );
 		$this->assertStringContainsString( 'This is about', $html );
 		$this->assertStringContainsString( 'name="intent"', $html );
 
 		// The reply block: its heading, the fields, the note.
-		$this->assertStringContainsString( 'linker-contact-reply', $html );
-		$this->assertStringContainsString( '<h3>Your contact details</h3>', $html );
-		$this->assertStringContainsString( 'for="linker-contact-email"><span>Email address</span>', $html );
+		$this->assertStringContainsString( 'id="linker-contact-email"', $html );
+		$this->assertStringContainsString( 'for="linker-contact-name"', $html );
+		$this->assertStringContainsString( 'for="linker-contact-email"><span class="lk-field-heading">Email address<span class="lk-required"', $html );
 		$this->assertStringContainsString( 'linker-form-fields', $html );
-		$this->assertStringContainsString( 'No account or Project is needed to ask a question.', $html );
+		$this->assertStringContainsString( 'class="linker-form-optional"', $html );
 
 		// The end block: consent with the privacy link, the honeypot, the send row.
 		$this->assertStringContainsString( 'linker-contact-end', $html );
@@ -111,9 +109,9 @@ final class FormTest extends TestCase {
 		// The blocks keep the live card's order, the side cards follow the form.
 		$order = array(
 			'linker-contact-head',
-			'linker-contact-question',
-			'linker-contact-topic',
-			'linker-contact-reply',
+			'id="linker-contact-email"',
+			'id="linker-contact-intent"',
+			'id="linker-contact-message"',
 			'linker-contact-end',
 			'</form>',
 			'linker-contact-rail',
@@ -188,12 +186,10 @@ final class FormTest extends TestCase {
 
 		$this->assertStringContainsString( '<aside class="linker-contact-rail">', $html );
 		$this->assertStringContainsString( 'linker-contact-email', $html );
-		$this->assertStringContainsString( 'Prefer email?', $html );
+		$this->assertStringContainsString( 'Sales and technical support', $html );
 		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
-		$this->assertStringContainsString( 'Send your question directly to our team. Opening your email app does not send a message.', $html );
+		$this->assertStringContainsString( 'The Linker team replies within one business day.', $html );
 		$this->assertStringContainsString( 'linker-contact-explore', $html );
-		$this->assertStringContainsString( 'Still exploring?', $html );
-		$this->assertStringContainsString( 'Take your time.', $html );
 		$this->assertStringContainsString( 'Use Genie to explore the options, then return to your question.', $html );
 		$this->assertStringContainsString( 'href="http://site/genie/"', $html );
 		$this->assertStringContainsString( 'Explore with Genie', $html );
@@ -218,7 +214,7 @@ final class FormTest extends TestCase {
 
 		$html = ( new Form() )->render();
 		$this->assertStringContainsString( 'name="lang" value="de"', $html );
-		foreach ( array( 'linker-contact-head', 'linker-contact-question', 'linker-contact-topic', 'linker-contact-reply', 'linker-contact-end', 'linker-contact-rail' ) as $block ) {
+		foreach ( array( 'linker-contact-head', 'id="linker-contact-message"', 'id="linker-contact-intent"', 'id="linker-contact-email"', 'linker-contact-end', 'linker-contact-rail' ) as $block ) {
 			$this->assertStringContainsString( $block, $html );
 		}
 		$this->assertStringContainsString( 'href="http://site/de/genie/"', $html );

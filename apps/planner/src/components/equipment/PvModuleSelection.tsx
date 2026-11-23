@@ -217,7 +217,7 @@ export function PvModuleSelection({
 							disabled={disabled}
 							onClick={() => order("row")}
 						>
-							{__("Order by rows", "linker-tools")}
+							{__("Arrange by rows", "linker-tools")}
 						</button>
 						<button
 							type="button"
@@ -225,7 +225,7 @@ export function PvModuleSelection({
 							disabled={disabled}
 							onClick={() => order("column")}
 						>
-							{__("Order by columns", "linker-tools")}
+							{__("Arrange by columns", "linker-tools")}
 						</button>
 						<button
 							type="button"

@@ -3,6 +3,11 @@
 from __future__ import annotations
 
 TEXT = {
+    "planned_system": ("Planned system", "Geplantes System"),
+    "scope_new_pv_storage": ("Solar and storage", "Photovoltaik und Speicher"),
+    "scope_storage_addition": ("Storage for existing PV", "PV-Speicher nachrüsten"),
+    "scope_pv_only": ("Solar", "Photovoltaik"),
+    "scope_storage_only": ("Storage", "Speicher"),
     "plant_backup_runtime": (
         "Whole-site backup",
         "Ersatzstrom für den gesamten Standort",
@@ -1942,7 +1947,14 @@ TEXT = {
         "Vom Kunden angegebene Moduldaten",
     ),
     "panel_parameters": ("Panel parameters", "Moduldaten"),
-    "panel_unspecified": ("Solar panels", "PV-Module"),
+    "panel_reference_power": (
+        "Generic {power} W PV module (reference only — not supplied by Linker)",
+        "Generisches {power}-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)",
+    ),
+    "panel_reference_only": (
+        "Generic PV module (reference only — not supplied by Linker)",
+        "Generisches PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)",
+    ),
     "equipment_list": ("Equipment from Linker", "Geräte von Linker"),
     "site_material_list": (
         "Site and installation materials",
@@ -1973,6 +1985,7 @@ TEXT = {
         "Installationsmaterialien müssen projektspezifisch ausgelegt werden",
     ),
     "quantity": ("Quantity", "Menge"),
+    "inquiry_quantity": ("Requested quantity", "Anfragemenge"),
     "product": ("Product", "Produkt"),
     "model": ("Model", "Modell"),
     "reference": ("Reference", "Referenz"),

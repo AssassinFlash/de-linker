@@ -1,3 +1,4 @@
+import { ringArea } from "../../domain/geometryEditing.ts";
 /** Two-point image calibration inside Roof design: upload, set the scale, trace.
  *
  * The photograph or drawing never leaves the browser in this increment; the
@@ -84,17 +85,6 @@ async function decodeImage(file: File): Promise<Drawing> {
 	} finally {
 		bitmap.close();
 	}
-}
-
-/** Ring area in the roof plane, for review only; the server checks the layout. */
-function ringArea(ring: readonly Vec2[]): number {
-	let sum = 0;
-	for (let index = 0; index < ring.length; index++) {
-		const [u1, v1] = ring[index]!,
-			[u2, v2] = ring[(index + 1) % ring.length]!;
-		sum += u1 * v2 - u2 * v1;
-	}
-	return Math.abs(sum) / 2;
 }
 
 /**

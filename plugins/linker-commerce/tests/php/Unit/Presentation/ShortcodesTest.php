@@ -56,6 +56,7 @@ final class ShortcodesTest extends TestCase {
 			'linker_contact_link'       => 'contact_link',
 			'linker_contact_invitation' => 'contact_invitation',
 			'linker_site_url'           => 'site_url',
+			'linker_form_assistant'     => 'form_assistant',
 		) as $tag => $method
 		) {
 			WP_Mock::userFunction(

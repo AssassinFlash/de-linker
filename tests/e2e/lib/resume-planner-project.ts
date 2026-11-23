@@ -5,7 +5,8 @@ import { instance } from './instance';
 export async function resumePlannerProject(
 	page: Page,
 	language: 'en' | 'de',
-	title: string
+	title: string,
+	refinement?: 'roof' | 'energy'
 ) {
 	const de = language === 'de';
 	await page.goto(instance().url + (de ? '/de/' : '/'));
@@ -30,5 +31,22 @@ export async function resumePlannerProject(
 		name: de ? 'Projektnavigation' : 'Project navigation',
 	});
 	await expect(nav).toBeVisible();
+	if (refinement) {
+		await nav
+			.getByRole('button', {
+				name: de ? 'Verfeinern (optional)' : 'Fine-tune (optional)',
+			})
+			.click();
+		const tabs = workspace.locator('.sc-refinement-tabs');
+		const label =
+			refinement === 'roof'
+				? de
+					? 'Dach & PV'
+					: 'Roof & PV'
+				: de
+					? 'Lastprofil & CSV'
+					: 'Energy profile & CSV';
+		await tabs.getByRole('button', { name: label, exact: true }).click();
+	}
 	return nav;
 }

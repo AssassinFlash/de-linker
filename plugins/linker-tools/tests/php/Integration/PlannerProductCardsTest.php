@@ -24,6 +24,8 @@ final class PlannerProductCardsTest extends TestCase {
 		$english = new \WC_Product_Simple();
 		$english->set_name( 'Sample inverter' );
 		$english->set_status( 'publish' );
+		$english->set_sku( 'LINKER-TEST-BOM' );
+		$english->set_stock_status( 'outofstock' );
 		$english->set_short_description( 'Example single-phase inverter.' );
 		$en     = $english->save();
 		$german = new \WC_Product_Simple();
@@ -42,6 +44,8 @@ final class PlannerProductCardsTest extends TestCase {
 			);
 			$cards = Module::product_cards( array( $en ), 'de' );
 			self::assertSame( 'Beispielwechselrichter', $cards[ $en ]['label'] );
+			self::assertSame( 'LINKER-TEST-BOM', $cards[ $en ]['sku'] );
+			self::assertSame( 'unavailable', $cards[ $en ]['availability'] );
 			self::assertSame( get_permalink( $de ), $cards[ $en ]['product_url'] );
 			self::assertSame( $german->get_short_description(), $cards[ $en ]['highlight'] );
 			update_post_meta( $en, EngineeringReference::ROLE_META_KEY, EngineeringReference::CABLE );

@@ -33,32 +33,12 @@
         "justification": "ordered sampling grids in a PV input, not a purchase"
       }
     ],
-    "apps/planner/src/components/energy/PlanningReportResult.tsx": [
-      {
-        "term": "order*",
-        "string": "The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
-        "count": 1,
-        "justification": "order of module IDs inside a CSV row"
-      }
-    ],
     "apps/planner/src/components/equipment/PvModuleSelection.tsx": [
       {
         "term": "order*",
         "string": "Choose modules and review their order to match your planned wiring. Enter the MPPT and inverter input for each string.",
         "count": 1,
         "justification": "the order modules are wired into strings"
-      },
-      {
-        "term": "order*",
-        "string": "Order by columns",
-        "count": 1,
-        "justification": "table sort control in the Planner"
-      },
-      {
-        "term": "order*",
-        "string": "Order by rows",
-        "count": 1,
-        "justification": "table sort control in the Planner"
       },
       {
         "term": "order*",
@@ -134,18 +114,6 @@
       },
       {
         "term": "order*",
-        "string": "Order by columns",
-        "count": 1,
-        "justification": "table sort control in the Planner"
-      },
-      {
-        "term": "order*",
-        "string": "Order by rows",
-        "count": 1,
-        "justification": "table sort control in the Planner"
-      },
-      {
-        "term": "order*",
         "string": "Reverse order",
         "count": 1,
         "justification": "reverses the displayed module sequence"
@@ -161,12 +129,6 @@
         "string": "The PV reference needs a retained weather source, two ordered sampling grids and complete PV model parameters.",
         "count": 1,
         "justification": "ordered sampling grids in a PV input, not a purchase"
-      },
-      {
-        "term": "order*",
-        "string": "The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
-        "count": 1,
-        "justification": "order of module IDs inside a CSV row"
       },
       {
         "term": "order*",

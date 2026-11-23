@@ -375,7 +375,7 @@ test("a roof edit cannot silently drop selected modules or rewrite a string chan
 test("row/column ordering and individual moves affect only the reviewed string sequence", async (t) => {
 	const r = await setup(t);
 	await click(button("Select all available modules"));
-	await click(button("Order by columns"));
+	await click(button("Arrange by columns"));
 	await enter(field("MPPT"), "1");
 	await enter(field("Inverter input"), "1");
 	const firstLabel = document

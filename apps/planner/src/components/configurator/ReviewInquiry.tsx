@@ -2,6 +2,7 @@ import { ProductCard } from "../shared/ProductCard.tsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError, type Project } from "../../data/protocol.ts";
+import { InquiryBomLine } from "./InquiryBomLine.tsx";
 import { readInquiryForm } from "../../data/draftTransfer.ts";
 import {
 	pendingInquiry,
@@ -134,6 +135,7 @@ function takeNavigationDraft(
 export function ReviewInquiry({
 	project,
 	reportRunId,
+	changeRequestedQuantity,
 	direction,
 	client,
 	scope,
@@ -147,6 +149,11 @@ export function ReviewInquiry({
 }: {
 	project: Project;
 	reportRunId?: string;
+	changeRequestedQuantity?: (
+		productId: number,
+		current: number,
+		next: number,
+	) => Promise<void>;
 	direction: NonNullable<Brief["system_scope"]>;
 	client: PlannerClient;
 	scope: string;
@@ -159,6 +166,7 @@ export function ReviewInquiry({
 	inquiryPending?: (pending: boolean) => void;
 }) {
 	const [failed, setFailed] = useState(false);
+	const [cartBusy, setCartBusy] = useState(false);
 	const [review, setReview] = useState<ReturnType<
 		typeof readInquiryForm
 	> | null>(null);
@@ -193,21 +201,23 @@ export function ReviewInquiry({
 		Boolean(pendingInquiry(scope, project)),
 	);
 	// The next form consumes the draft only for the same owned project.
-	const save = useCallback(() => {
-		const form = host.current?.querySelector("form");
-		if (!form || posting.current || !client.isCurrentScope(scope)) return;
-		const values = readCustomerFields(form, retained.current);
-		retained.current = values;
-		if (values.size)
-			window.sessionStorage.setItem(
-				DRAFT_KEY,
-				JSON.stringify({
-					scope,
-					projectId,
-					fields: Object.fromEntries(values),
-				}),
-			);
-	}, [client, projectId, scope]);
+	const save = useCallback(
+		(form = host.current?.querySelector("form")) => {
+			if (!form || posting.current || !client.isCurrentScope(scope)) return;
+			const values = readCustomerFields(form, retained.current);
+			retained.current = values;
+			if (values.size)
+				window.sessionStorage.setItem(
+					DRAFT_KEY,
+					JSON.stringify({
+						scope,
+						projectId,
+						fields: Object.fromEntries(values),
+					}),
+				);
+		},
+		[client, projectId, scope],
+	);
 	useEffect(() => {
 		const onPageHide = (event: PageTransitionEvent) => {
 			try {
@@ -398,7 +408,14 @@ export function ReviewInquiry({
 			window.clearTimeout(expiry);
 			abort();
 			const form = node.querySelector("form");
-			if (form) retained.current = readCustomerFields(form, retained.current);
+			if (form) {
+				retained.current = readCustomerFields(form, retained.current);
+				try {
+					save(form);
+				} catch {
+					// A download can continue in the same mounted form without browser storage.
+				}
+			}
 			node.replaceChildren();
 		};
 	}, [
@@ -410,8 +427,21 @@ export function ReviewInquiry({
 		attempt,
 		recheck,
 		ready,
+		save,
 		reportRunId,
 	]);
+	const editConfiguration = enterDetails
+		? () => {
+				if (posting.current || !client.isCurrentScope(scope)) return;
+				try {
+					save();
+				} catch {
+					setNavigationFailed(true);
+					return;
+				}
+				enterDetails();
+			}
+		: undefined;
 	const facts = review?.facts ?? [];
 	const inverter = existingSystem(project.inputs);
 	const retrofit =
@@ -421,11 +451,7 @@ export function ReviewInquiry({
 			(option) => option.keep === inverter.keep_inverter,
 		);
 	const changes = review?.changes ?? [];
-	const lines = review?.lines.filter(
-		(line) =>
-			line.projectId !== projectId ||
-			!changes.some((row) => row.productId === line.productId),
-	);
+	const lines = review?.lines;
 	return (
 		<section
 			className="sc-main sc-draft-transfer sc-preliminary-review"
@@ -455,9 +481,7 @@ export function ReviewInquiry({
 					<details
 						ref={summaryDetails}
 						className="sc-review-details"
-						hidden={
-							!retrofit && !facts.length && !lines?.length && !changes.length
-						}
+						hidden={!retrofit && !facts.length}
 					>
 						<summary>{__("Project details", "linker-tools")}</summary>
 						{retrofit && (
@@ -467,40 +491,6 @@ export function ReviewInquiry({
 							</div>
 						)}
 						{facts.length > 0 && <ProjectFacts facts={facts} />}
-
-						{!checkingInquiry && Boolean(lines?.length) && (
-							<ul className="sc-inquiry-products">
-								{lines?.map((line, index) => (
-									<li key={index}>
-										<ProductCard {...line} quantity={`× ${line.quantity}`} />
-									</li>
-								))}
-							</ul>
-						)}
-						{!checkingInquiry && changes.length > 0 && (
-							<table className="sc-data-table">
-								<thead>
-									<tr>
-										<th scope="col">{__("Product", "linker-tools")}</th>
-										<th scope="col">
-											{__("Current quantity", "linker-tools")}
-										</th>
-										<th scope="col">{__("New quantity", "linker-tools")}</th>
-									</tr>
-								</thead>
-								<tbody>
-									{changes.map((line) => (
-										<tr key={line.productId}>
-											<th scope="row">
-												<ProductCard {...line} />
-											</th>
-											<td>{line.before}</td>
-											<td>{line.after}</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						)}
 					</details>
 					{!checkingInquiry && review && !lines?.length && !changes.length && (
 						<p className="sc-empty-supply">
@@ -509,6 +499,80 @@ export function ReviewInquiry({
 								"linker-tools",
 							)}
 						</p>
+					)}
+					{!checkingInquiry && Boolean(lines?.length) && (
+						<>
+							{changeRequestedQuantity && (
+								<p className="sc-muted">
+									{__(
+										"Adjust the quantities you want to request. The system design stays the same.",
+										"linker-tools",
+									)}
+								</p>
+							)}
+							<ul className="sc-inquiry-products">
+								{lines?.map((line, index) => (
+									<li
+										key={
+											line.cartKey ??
+											`${line.projectId ?? "cart"}-${line.productId}-${index}`
+										}
+									>
+										<InquiryBomLine
+											line={line}
+											edit={review?.draftEdit ?? null}
+											pending={cartBusy || checkingInquiry}
+											onBusy={setCartBusy}
+											onUpdated={() => {
+												setReview(null);
+												setAttempt((value) => value + 1);
+											}}
+											onProjectQuantity={
+												reportRunId &&
+												line.projectId === projectId &&
+												changeRequestedQuantity
+													? async (next) => {
+															save();
+															await changeRequestedQuantity(
+																line.productId,
+																line.quantity,
+																next,
+															);
+														}
+													: undefined
+											}
+											onEditConfiguration={
+												reportRunId && line.projectId === projectId
+													? editConfiguration
+													: undefined
+											}
+										/>
+									</li>
+								))}
+							</ul>
+						</>
+					)}
+					{!checkingInquiry && changes.length > 0 && (
+						<table className="sc-data-table">
+							<thead>
+								<tr>
+									<th scope="col">{__("Product", "linker-tools")}</th>
+									<th scope="col">{__("Current quantity", "linker-tools")}</th>
+									<th scope="col">{__("New quantity", "linker-tools")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{changes.map((line) => (
+									<tr key={line.productId}>
+										<th scope="row">
+											<ProductCard {...line} />
+										</th>
+										<td>{line.before}</td>
+										<td>{line.after}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
 					)}
 					{!checkingInquiry &&
 						review?.conflicts.map((conflict) => (
@@ -525,45 +589,6 @@ export function ReviewInquiry({
 								)}
 							</p>
 						))}
-					<div className="sc-review-actions">
-						<button
-							className="sc-button"
-							type="button"
-							disabled={checkingInquiry}
-							onClick={() => {
-								if (reportRunId) {
-									try {
-										save();
-									} catch {
-										setNavigationFailed(true);
-										return;
-									}
-								}
-								changeSelection();
-							}}
-						>
-							{__("Change selection", "linker-tools")}
-						</button>
-						{enterDetails && (
-							<button
-								className="sc-button"
-								type="button"
-								disabled={checkingInquiry}
-								onClick={() => {
-									if (posting.current || !client.isCurrentScope(scope)) return;
-									try {
-										save();
-									} catch {
-										setNavigationFailed(true);
-										return;
-									}
-									enterDetails();
-								}}
-							>
-								{__("Enter project details", "linker-tools")}
-							</button>
-						)}
-					</div>
 				</aside>
 				<div className="sc-inquiry-fields">
 					{!review && !failed && (
@@ -571,8 +596,10 @@ export function ReviewInquiry({
 					)}
 					<div
 						ref={host}
+						inert={cartBusy || undefined}
 						onSubmit={(event) => {
-							if (!client.isCurrentScope(scope)) event.preventDefault();
+							if (cartBusy || !review || !client.isCurrentScope(scope))
+								event.preventDefault();
 							if (
 								event.defaultPrevented ||
 								!(event.target instanceof window.HTMLFormElement)
@@ -628,6 +655,36 @@ export function ReviewInquiry({
 							</button>
 						</div>
 					)}
+					<div className="sc-review-actions">
+						<button
+							className="sc-button btn-secondary"
+							type="button"
+							disabled={checkingInquiry}
+							onClick={() => {
+								if (reportRunId) {
+									try {
+										save();
+									} catch {
+										setNavigationFailed(true);
+										return;
+									}
+								}
+								changeSelection();
+							}}
+						>
+							{__("Change selection", "linker-tools")}
+						</button>
+						{enterDetails && (
+							<button
+								className="sc-button btn-ghost"
+								type="button"
+								disabled={checkingInquiry}
+								onClick={editConfiguration}
+							>
+								{__("Enter project details", "linker-tools")}
+							</button>
+						)}
+					</div>
 				</div>
 			</div>
 			{navigationFailed && (

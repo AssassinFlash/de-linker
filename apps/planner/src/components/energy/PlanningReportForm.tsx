@@ -1,3 +1,4 @@
+import { FileDropzone } from "../FileDropzone.tsx";
 import { isEnergyTask } from "../../data/readEnergyResult.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { RunSummary } from "../../data/planningProtocol.ts";
@@ -56,7 +57,7 @@ export function PlanningReportForm({
 			hasWiring && equipmentOptions[0] ? equipmentOptions[0].id : "",
 		),
 		[equipmentTouched, setEquipmentTouched] = useState(false),
-		[logo, setLogo] = useState<string | null>(null),
+		[logo, setLogo] = useState<{ name: string; data: string } | null>(null),
 		[error, setError] = useState(false),
 		[reading, setReading] = useState(false);
 	const reader = useRef<FileReader | null>(null);
@@ -127,7 +128,7 @@ export function PlanningReportForm({
 		pv_run_id: pv || null,
 		...(beam ? { direct_beam_run_id: beam } : {}),
 		equipment_run_id: canSelectEquipmentCheck && equipment ? equipment : null,
-		logo,
+		logo: logo?.data ?? null,
 		...(installation && hasInstallation ? { include_installation: true } : {}),
 		...(certificates && (hasCandidate || equipment)
 			? { inspect_certificate_declarations: true }
@@ -239,21 +240,19 @@ export function PlanningReportForm({
 								</small>
 							</label>
 						)}
-						<label className="sc-field">
-							<span>
-								{__("Your logo on the PDF (optional)", "linker-tools")}
-							</span>
-							<input
-								type="file"
+						<div>
+							<FileDropzone
+								label={__("Your logo on the PDF (optional)", "linker-tools")}
+								action={__("Choose logo", "linker-tools")}
 								accept="image/png,image/jpeg"
 								disabled={disabled}
-								onChange={(event) => {
+								filename={logo?.name}
+								onFile={(file) => {
 									reader.current?.abort();
 									setLogo(null);
 									setReading(false);
 									setError(false);
-									const file = event.currentTarget.files?.[0];
-									if (!file) return;
+
 									if (
 										file.size > 500000 ||
 										!["image/png", "image/jpeg"].includes(file.type)
@@ -269,7 +268,7 @@ export function PlanningReportForm({
 											reader.current === next &&
 											typeof next.result === "string"
 										) {
-											setLogo(next.result);
+											setLogo({ name: file.name, data: next.result });
 											setReading(false);
 										}
 									};
@@ -283,7 +282,7 @@ export function PlanningReportForm({
 								}}
 							/>
 							<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
-						</label>
+						</div>
 					</div>
 				</aside>
 			</div>

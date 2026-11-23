@@ -2011,11 +2011,11 @@
 			"revision": 2,
 			"state": "succeeded",
 			"is_current": false,
-			"manifest_sha256": "f1e04f804b5fb2267b1b33a7338eea5d1b6f4a7d08f36ee7fce6b925774fe679",
+			"manifest_sha256": "112f53314a26713603c8c82fd0bebbad1a6bf9510befce6409294dcd100b7512",
 			"manifest": {
 				"context": {
 					"assets": {
-						"report.source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9",
+						"report.source": "9355fbf99cd351c3f7e70a26e36eb09fa00bb2941a8a15cdeaf6788890c9fffb",
 						"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 					},
 					"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
@@ -2036,36 +2036,36 @@
 				"revision": 2,
 				"schema": 1
 			},
-			"result_sha256": "b4bc748e3adb39696558074804b9d18218da7b230bdb63f1431306b85286fb72",
+			"result_sha256": "fd3f641ad9c880d7bf2d76ebcfaca1386fc77257e86d64939b8dc36ce267fdca",
 			"result": {
 				"dependencies": {
-					"materials_model": "6be7812893d7ce0934ea156bceb53188ddd8a0914c70dfbbc619bfe5039b0a24",
-					"prepared_asset_content": "329e83e628db746f5606feefe9fad6f254b428330c8d42a49bcf7193ab3922cc",
-					"prepared_asset_metadata": "29e45c95551d84a48102e6f89272798e01e4eeeceab9d9d81a4afa298a47c2d4",
-					"prepared_attachment.bill_of_materials_csv.content": "08998cb2e85802a5e33a22ec9b3140df6e76b478f770de8c2a057af0bfa10725",
-					"prepared_attachment.bill_of_materials_csv.metadata": "a9bc58813e46e2d4a1c6e16290aa8818ae71bf051648868f0050e2bc4d323177",
-					"report_model": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
-					"report_source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9"
+					"materials_model": "05d240d303681b43e781bd65b613d29b60d86c183bd5fed5a8475da1c2d43820",
+					"prepared_asset_content": "aa285f42da7ff4d721d876cfca9765e373d88303a8e144ef3d85f3571f685869",
+					"prepared_asset_metadata": "7abaedf17d30c46920bd5157669ce8c46e5226a46f94237910ce7d31d8d40485",
+					"prepared_attachment.bill_of_materials_csv.content": "f6bebc8712d3a443706444e492a08c6ccc74ccabd5a5fa278efc2dca75a0478e",
+					"prepared_attachment.bill_of_materials_csv.metadata": "338bd6adfb6f30ec1056f32960151ba9cf6b5e430d1f7b327153653545e312e7",
+					"report_model": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
+					"report_source": "9355fbf99cd351c3f7e70a26e36eb09fa00bb2941a8a15cdeaf6788890c9fffb"
 				},
 				"equipment_candidate": null,
 				"has_draft_items": false,
 				"input_sha256": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93",
 				"kind": "planning_report_v1",
-				"manifest_sha256": "f1e04f804b5fb2267b1b33a7338eea5d1b6f4a7d08f36ee7fce6b925774fe679",
-				"materials_sha256": "6be7812893d7ce0934ea156bceb53188ddd8a0914c70dfbbc619bfe5039b0a24",
+				"manifest_sha256": "112f53314a26713603c8c82fd0bebbad1a6bf9510befce6409294dcd100b7512",
+				"materials_sha256": "05d240d303681b43e781bd65b613d29b60d86c183bd5fed5a8475da1c2d43820",
 				"pinned_assets": {
-					"report.source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9",
+					"report.source": "9355fbf99cd351c3f7e70a26e36eb09fa00bb2941a8a15cdeaf6788890c9fffb",
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 				},
 				"prepared_asset": {
-					"content_sha256": "329e83e628db746f5606feefe9fad6f254b428330c8d42a49bcf7193ab3922cc",
+					"content_sha256": "aa285f42da7ff4d721d876cfca9765e373d88303a8e144ef3d85f3571f685869",
 					"id": "00000000000000000000000000000012",
 					"media_type": "application/pdf",
 					"metadata": {
 						"dependencies": {
-							"materials_model": "6be7812893d7ce0934ea156bceb53188ddd8a0914c70dfbbc619bfe5039b0a24",
-							"report_model": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
-							"report_source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9"
+							"materials_model": "05d240d303681b43e781bd65b613d29b60d86c183bd5fed5a8475da1c2d43820",
+							"report_model": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
+							"report_source": "9355fbf99cd351c3f7e70a26e36eb09fa00bb2941a8a15cdeaf6788890c9fffb"
 						},
 						"locale": "en",
 						"provenance": {
@@ -2073,23 +2073,23 @@
 							"label": "Project planning report",
 							"rights_basis": "Private project output and customer-provided branding"
 						},
-						"report_model_sha256": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
+						"report_model_sha256": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "29e45c95551d84a48102e6f89272798e01e4eeeceab9d9d81a4afa298a47c2d4",
+					"metadata_sha256": "7abaedf17d30c46920bd5157669ce8c46e5226a46f94237910ce7d31d8d40485",
 					"project_id": "0000000000000000000000000000000c",
 					"purpose": "planning_report_pdf_v1"
 				},
 				"prepared_attachments": {
 					"bill_of_materials_csv": {
-						"content_sha256": "08998cb2e85802a5e33a22ec9b3140df6e76b478f770de8c2a057af0bfa10725",
+						"content_sha256": "f6bebc8712d3a443706444e492a08c6ccc74ccabd5a5fa278efc2dca75a0478e",
 						"id": "00000000000000000000000000000013",
 						"media_type": "text/csv",
 						"metadata": {
 							"dependencies": {
-								"materials_model": "6be7812893d7ce0934ea156bceb53188ddd8a0914c70dfbbc619bfe5039b0a24",
-								"report_model": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
-								"report_source": "12cb526eb3a557c21a8e19429fdc6222a13ba344ea2e455b334102f41b6f67a9"
+								"materials_model": "05d240d303681b43e781bd65b613d29b60d86c183bd5fed5a8475da1c2d43820",
+								"report_model": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
+								"report_source": "9355fbf99cd351c3f7e70a26e36eb09fa00bb2941a8a15cdeaf6788890c9fffb"
 							},
 							"locale": "en",
 							"provenance": {
@@ -2099,7 +2099,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "a9bc58813e46e2d4a1c6e16290aa8818ae71bf051648868f0050e2bc4d323177",
+						"metadata_sha256": "338bd6adfb6f30ec1056f32960151ba9cf6b5e430d1f7b327153653545e312e7",
 						"project_id": "0000000000000000000000000000000c",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -2315,7 +2315,13 @@
 									"Panel parameters",
 									"Module power (STC)"
 								],
-								"rows": [["5", "PV 460 Wp · 1762 × 1134 mm", "460 W"]]
+								"rows": [
+									[
+										"5",
+										"Generic 460 W PV module (reference only — not supplied by Linker) · 1,762 × 1,134 mm",
+										"460 W"
+									]
+								]
 							},
 							"title": "Solar panel layout"
 						},
@@ -2336,7 +2342,7 @@
 					"subtitle": "Saved project inputs and selected calculation results",
 					"title": "Project planning report"
 				},
-				"report_sha256": "f45debdf6cb2abd09c5923b775a77d3f7f57b7493f6f89b98e0dfc2bd04870e1",
+				"report_sha256": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
 				"revision": 2,
 				"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 				"schema": 1,
@@ -4152,11 +4158,11 @@
 			"revision": 3,
 			"state": "succeeded",
 			"is_current": true,
-			"manifest_sha256": "9f5d001e982509c27b9f8b42cf4fd72ee32e7152050ffbf13ce1c3665d2f06f9",
+			"manifest_sha256": "ff10be41f0b0e5940f4822c4c797ba40f68a717b9c604aec88509f7b6c430252",
 			"manifest": {
 				"context": {
 					"assets": {
-						"report.source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4",
+						"report.source": "b00a9bb2fd7c7cb9be3cccafdd773310cf9e2c7ba71219c7a397e0b59646f032",
 						"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 					},
 					"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
@@ -4177,36 +4183,36 @@
 				"revision": 3,
 				"schema": 1
 			},
-			"result_sha256": "9c0409183af2a1de3c14c33ab18252799515c4b816cf14190ebb6bd4a7d0af15",
+			"result_sha256": "100dffa712545386dc5e1b0fa01f02762d54791f2725bd5316388ce22deffeb2",
 			"result": {
 				"dependencies": {
-					"materials_model": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
-					"prepared_asset_content": "504e4c7cbedb724f5c31024ff624ecf39cb9fba6f3809d7170bab67279fead44",
-					"prepared_asset_metadata": "d3712fa9dbe8be60508224af600e107135db59b9de853e4007034c43b63bc221",
-					"prepared_attachment.bill_of_materials_csv.content": "4c3543b9580a7696a75a754ad9839e4bf45b123c3e1bd3019f2855eeed625b8f",
-					"prepared_attachment.bill_of_materials_csv.metadata": "ac257590667704b07b94c59b69eb51504c8c55c498881e92a73c9ff3e70e2d19",
-					"report_model": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
-					"report_source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4"
+					"materials_model": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
+					"prepared_asset_content": "48c6d1bd4350a96dbb23cfef2c5a96f89834db9dfcca327ea3da01f6c9dec278",
+					"prepared_asset_metadata": "5d1bf4087a1e8570eb147e97cd27a2b0fea9b45a885f4b3dbcc7e87e3e19f697",
+					"prepared_attachment.bill_of_materials_csv.content": "e991a0fd0091e5575ab1e133c86694b93ee8ba077308ae7fea4f8ae14bd143b8",
+					"prepared_attachment.bill_of_materials_csv.metadata": "f1490d7a004f48fa0971db87e3b488c2cfdcffca56c639c3f563966a9d5d458a",
+					"report_model": "f7b07e1f450d47b1a80ae655c1d2505b01467e0a309d50eff2d2044c3e30c7df",
+					"report_source": "b00a9bb2fd7c7cb9be3cccafdd773310cf9e2c7ba71219c7a397e0b59646f032"
 				},
 				"equipment_candidate": null,
 				"has_draft_items": false,
 				"input_sha256": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf",
 				"kind": "planning_report_v1",
-				"manifest_sha256": "9f5d001e982509c27b9f8b42cf4fd72ee32e7152050ffbf13ce1c3665d2f06f9",
-				"materials_sha256": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
+				"manifest_sha256": "ff10be41f0b0e5940f4822c4c797ba40f68a717b9c604aec88509f7b6c430252",
+				"materials_sha256": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
 				"pinned_assets": {
-					"report.source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4",
+					"report.source": "b00a9bb2fd7c7cb9be3cccafdd773310cf9e2c7ba71219c7a397e0b59646f032",
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 				},
 				"prepared_asset": {
-					"content_sha256": "504e4c7cbedb724f5c31024ff624ecf39cb9fba6f3809d7170bab67279fead44",
+					"content_sha256": "48c6d1bd4350a96dbb23cfef2c5a96f89834db9dfcca327ea3da01f6c9dec278",
 					"id": "00000000000000000000000000000020",
 					"media_type": "application/pdf",
 					"metadata": {
 						"dependencies": {
-							"materials_model": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
-							"report_model": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
-							"report_source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4"
+							"materials_model": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
+							"report_model": "f7b07e1f450d47b1a80ae655c1d2505b01467e0a309d50eff2d2044c3e30c7df",
+							"report_source": "b00a9bb2fd7c7cb9be3cccafdd773310cf9e2c7ba71219c7a397e0b59646f032"
 						},
 						"locale": "de",
 						"provenance": {
@@ -4214,23 +4220,23 @@
 							"label": "Projektplanungsbericht",
 							"rights_basis": "Private project output and customer-provided branding"
 						},
-						"report_model_sha256": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
+						"report_model_sha256": "f7b07e1f450d47b1a80ae655c1d2505b01467e0a309d50eff2d2044c3e30c7df",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "d3712fa9dbe8be60508224af600e107135db59b9de853e4007034c43b63bc221",
+					"metadata_sha256": "5d1bf4087a1e8570eb147e97cd27a2b0fea9b45a885f4b3dbcc7e87e3e19f697",
 					"project_id": "00000000000000000000000000000014",
 					"purpose": "planning_report_pdf_v1"
 				},
 				"prepared_attachments": {
 					"bill_of_materials_csv": {
-						"content_sha256": "4c3543b9580a7696a75a754ad9839e4bf45b123c3e1bd3019f2855eeed625b8f",
+						"content_sha256": "e991a0fd0091e5575ab1e133c86694b93ee8ba077308ae7fea4f8ae14bd143b8",
 						"id": "00000000000000000000000000000021",
 						"media_type": "text/csv",
 						"metadata": {
 							"dependencies": {
-								"materials_model": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
-								"report_model": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
-								"report_source": "b860eaea8bcbaac2d679704c03152ae5cf720a2800050d59c7e6ca6ae39e94e4"
+								"materials_model": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
+								"report_model": "f7b07e1f450d47b1a80ae655c1d2505b01467e0a309d50eff2d2044c3e30c7df",
+								"report_source": "b00a9bb2fd7c7cb9be3cccafdd773310cf9e2c7ba71219c7a397e0b59646f032"
 							},
 							"locale": "de",
 							"provenance": {
@@ -4240,7 +4246,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "ac257590667704b07b94c59b69eb51504c8c55c498881e92a73c9ff3e70e2d19",
+						"metadata_sha256": "f1490d7a004f48fa0971db87e3b488c2cfdcffca56c639c3f563966a9d5d458a",
 						"project_id": "00000000000000000000000000000014",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -4517,7 +4523,13 @@
 							"table": {
 								"column_weights": [1.0, 3.0, 2.0],
 								"columns": ["Menge", "Moduldaten", "Modulleistung (STC)"],
-								"rows": [["1", "PV 460 Wp · 1762 × 1134 mm", "460 W"]]
+								"rows": [
+									[
+										"1",
+										"Generisches 460-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker) · 1.762 × 1.134 mm",
+										"460 W"
+									]
+								]
 							},
 							"title": "PV-Modulbelegung"
 						},
@@ -4638,7 +4650,7 @@
 					"subtitle": "Gespeicherte Projekteingaben und ausgewählte Berechnungsergebnisse",
 					"title": "Projektplanungsbericht"
 				},
-				"report_sha256": "00a4799691af601c42e6cacdfc7b02ed4d2017655cb83697ea8bce12f4f7f70f",
+				"report_sha256": "f7b07e1f450d47b1a80ae655c1d2505b01467e0a309d50eff2d2044c3e30c7df",
 				"revision": 3,
 				"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 				"schema": 1,
@@ -4923,8 +4935,8 @@
 					"state": "succeeded",
 					"matches_view_revision": true,
 					"is_current": true,
-					"manifest_sha256": "9f5d001e982509c27b9f8b42cf4fd72ee32e7152050ffbf13ce1c3665d2f06f9",
-					"result_sha256": "9c0409183af2a1de3c14c33ab18252799515c4b816cf14190ebb6bd4a7d0af15",
+					"manifest_sha256": "ff10be41f0b0e5940f4822c4c797ba40f68a717b9c604aec88509f7b6c430252",
+					"result_sha256": "100dffa712545386dc5e1b0fa01f02762d54791f2725bd5316388ce22deffeb2",
 					"kind": "planning_report_v1",
 					"scope": {},
 					"rows": [
@@ -5108,7 +5120,7 @@
 							"label": "Solar panel layout",
 							"value": {
 								"Quantity": "1",
-								"Panel parameters": "PV 460 Wp · 1762 × 1134 mm",
+								"Panel parameters": "Generic 460 W PV module (reference only — not supplied by Linker) · 1,762 × 1,134 mm",
 								"Module power (STC)": "460 W"
 							}
 						},
@@ -5237,7 +5249,7 @@
 					"saved_roof_panel_count": 1,
 					"materials": {
 						"status": "verified",
-						"sha256": "22efcbd889ae642dedbb4890ee8711e5d30897ee01c325832b94aefa0205b920",
+						"sha256": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
 						"model": "project_materials_v3",
 						"line_count": 1,
 						"unresolved_quantity_count": 0,

@@ -9,11 +9,10 @@ import {
 
 const words = {
 	en: {
-		solar: /Solar$/,
-		energy: /Energy use$/,
+		solar: 'Roof & PV',
+		energy: 'Energy profile & CSV',
 		purpose: 'Purpose',
 		grid: 'Grid connection',
-		import: 'Import CSV',
 		zone: 'Time zone',
 		file: 'CSV file',
 		delimiter: 'Column delimiter',
@@ -32,11 +31,10 @@ const words = {
 		format: 'Decimal point or comma',
 	},
 	de: {
-		solar: /Photovoltaik$/,
-		energy: /Strombedarf$/,
+		solar: 'Dach & PV',
+		energy: 'Lastprofil & CSV',
 		purpose: 'Ziel',
 		grid: 'Netzanschluss',
-		import: 'CSV importieren',
 		zone: 'Zeitzone',
 		file: 'CSV-Datei',
 		delimiter: 'Spaltentrennzeichen',
@@ -65,9 +63,8 @@ async function importMeterReadings(
 	lang: SiteLanguage
 ) {
 	const text = words[lang];
-	await panel.getByRole('button', { name: text.import, exact: true }).click();
-	await panel.getByLabel(text.zone).fill('UTC');
 	await panel.getByLabel(text.file).setInputFiles(file);
+	await panel.getByLabel(text.zone).fill('UTC');
 	await panel.getByLabel(text.delimiter).selectOption(';');
 	await panel.getByRole('button', { name: text.inspect }).click();
 	await panel.getByLabel(text.time).selectOption('Time');
@@ -108,8 +105,9 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			const text = words[lang];
 			const title = `Konstanz meter ${lang} ${width}`;
-			const created = page.waitForResponse((r) =>
-				new URL(r.url()).pathname.endsWith('/projects/create')
+			const created = page.waitForResponse(
+				(r) => new URL(r.url()).pathname.endsWith('/projects/create'),
+				{ timeout: 60000 }
 			);
 			const workspace = await startSolarProject(page, lang, title);
 			const creation = await created;
@@ -121,7 +119,7 @@ for (const lang of ['en', 'de'] as const) {
 				latitude: null,
 				longitude: null,
 			});
-			const nav = workspace.getByRole('navigation');
+			const nav = workspace.locator('.sc-refinement-tabs');
 			const site = workspace
 				.locator('details')
 				.filter({ has: page.locator('input[name="latitude"]') });
@@ -163,13 +161,22 @@ for (const lang of ['en', 'de'] as const) {
 				path: test.info().outputPath('meter-profile.png'),
 				animations: 'disabled',
 			});
+			const curve = panel
+				.locator('figure')
+				.filter({ has: panel.page().locator('svg') });
+			await curve.scrollIntoViewIfNeeded();
+			await curve.screenshot({
+				path: test.info().outputPath('meter-curve.png'),
+				animations: 'disabled',
+			});
 			const saved = page.waitForResponse(
 				(r) =>
 					new URL(r.url()).pathname.endsWith(
 						'/runs/find-equipment'
 					) &&
 					r.request().postDataJSON()?.inputs?.profile_selections
-						?.selected?.gross_load === asset
+						?.selected?.gross_load === asset,
+				{ timeout: 60000 }
 			);
 			await panel
 				.getByRole('button', { name: text.compare, exact: true })

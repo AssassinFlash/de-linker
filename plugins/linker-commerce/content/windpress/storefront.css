@@ -2235,7 +2235,7 @@ body.woocommerce-order-received #container-content-page > div {
 #tv-woo-b2b-checkout #order_comments_field {
 	grid-column: 1 / -1;
 }
-#tv-woo-b2b-checkout label {
+#tv-woo-b2b-checkout label:not(.lk-field, .linker-form-consent) {
 	display: block;
 	margin: 0 0 0.4rem;
 	font-size: 14px;

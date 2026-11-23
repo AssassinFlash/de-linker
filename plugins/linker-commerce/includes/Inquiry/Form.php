@@ -322,12 +322,12 @@ final class Form {
 		$words = array(
 			'title'              => __( 'Send an inquiry', 'linker-commerce' ),
 			'intro'              => __( 'Tell us what you need. The products in your solution draft will be included.', 'linker-commerce' ),
-			'message'            => __( 'Message (optional)', 'linker-commerce' ),
+			'message'            => __( 'Project message', 'linker-commerce' ),
 			'details'            => __( 'Your reply details', 'linker-commerce' ),
 			'change'             => __( 'Change', 'linker-commerce' ),
 			'name'               => __( 'Name', 'linker-commerce' ),
-			'email'              => __( 'Reply email', 'linker-commerce' ),
-			'company'            => __( 'Company (optional)', 'linker-commerce' ),
+			'email'              => __( 'Work email', 'linker-commerce' ),
+			'company'            => __( 'Company', 'linker-commerce' ),
 			'consent'            => __( 'I agree that my details may be used to respond to this message.', 'linker-commerce' ),
 			'privacy'            => __( 'Privacy', 'linker-commerce' ),
 			'send'               => '1' === ( $this->flash['fields']['linker_inquiry_receipt_only'] ?? '' )
@@ -335,7 +335,9 @@ final class Form {
 				: __( 'Send inquiry', 'linker-commerce' ),
 			'promise'            => __( 'We reply within one business day.', 'linker-commerce' ),
 			'no-account'         => __( 'No account needed.', 'linker-commerce' ),
-			'partner'            => __( 'Have an approved account? Log in for net prices and saved details.', 'linker-commerce' ),
+			'partner-summary'    => __( 'Already a Linker partner? Sign in', 'linker-commerce' ),
+			'sign-in'            => __( 'Sign in', 'linker-commerce' ),
+			'optional'           => __( 'optional', 'linker-commerce' ),
 			'draft'              => __( 'Solution draft', 'linker-commerce' ),
 			'edit'               => __( 'Edit solution draft', 'linker-commerce' ),
 			'quantity'           => __( 'Quantity', 'linker-commerce' ),
@@ -356,7 +358,10 @@ final class Form {
 			if ( ! $product instanceof \WC_Product ) {
 				continue;
 			}
-			$html .= strtr(
+			$source_id = \Linker\Commerce\Products\Publication::canonical_id( $product->get_id() );
+			$source    = $source_id === $product->get_id() ? $product : wc_get_product( $source_id );
+			$in_stock  = $source instanceof \WC_Product && $source->is_in_stock();
+			$html     .= strtr(
 				Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/line.html' ),
 				array(
 					'{{name}}'               => esc_html( $product->get_name() ),
@@ -370,7 +375,11 @@ final class Form {
 						)
 					),
 					'{{quantity}}'           => esc_html( (string) $line['quantity'] ),
-					'{{quantity-label}}'     => esc_html__( 'Quantity', 'linker-commerce' ),
+					'{{sku}}'                => $source instanceof \WC_Product ? esc_attr( (string) $source->get_sku() ) : '',
+					'{{stock-state}}'        => $in_stock ? 'in-stock' : 'unavailable',
+					'{{availability}}'       => $in_stock ? esc_html__( 'In stock', 'linker-commerce' ) : esc_html__( 'Currently unavailable', 'linker-commerce' ),
+					'{{decrease}}'           => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Decrease quantity for %s', 'linker-commerce' ), $product->get_name() ) ),
+					'{{increase}}'           => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Increase quantity for %s', 'linker-commerce' ), $product->get_name() ) ),
 					'{{key}}'                => esc_attr( $key ),
 					'{{label}}'              => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Quantity for %s', 'linker-commerce' ), $product->get_name() ) ),
 					'{{price}}'              => wp_kses_post( $product->get_price_html() ),

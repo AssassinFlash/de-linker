@@ -30,6 +30,7 @@ from .project_materials import (
     material_quantity,
     material_reference,
     material_scope,
+    panel_description,
     project_materials,
 )
 from .pv_operating_report import operating_sections
@@ -218,6 +219,10 @@ def build_report(source: Object) -> Report:
     brief = source.get("brief")
     brief_country_code: Any = None
     if isinstance(brief, dict):
+        if direction := brief.get("system_scope"):
+            sections[0].rows.append(
+                row("planned_system", text(f"scope_{direction}", locale))
+            )
         site = cast(Object, brief["site"])
         brief_country_code = site.get("country_code")
         # A row the visitor never declared is left out rather than printed as a
@@ -946,7 +951,7 @@ def build_report(source: Object) -> Report:
                 rows=[
                     [
                         number(component["quantity"], locale),
-                        str(component["model"]),
+                        panel_description(component, locale),
                         number(component["stc_power_w"], locale, "W"),
                     ]
                     for component in components
@@ -1177,7 +1182,7 @@ def build_report(source: Object) -> Report:
                         rows=[
                             [
                                 number(component["quantity"], locale),
-                                str(component["model"]),
+                                panel_description(component, locale),
                                 number(component["stc_power_w"], locale, "W"),
                             ]
                             for component in components

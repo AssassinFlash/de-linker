@@ -7,6 +7,7 @@ export interface ComparisonDraft {
 	scope: string;
 	source: string;
 	title: string;
+	scene?: "new" | "known" | "retrofit" | "commercial" | null;
 	inputs: JsonObject | null;
 	useHints: boolean;
 	languageUrl?: string;

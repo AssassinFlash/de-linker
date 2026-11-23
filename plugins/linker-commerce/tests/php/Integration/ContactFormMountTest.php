@@ -55,7 +55,7 @@ final class ContactFormMountTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'linker-contact-head', $html );
 		$this->assertStringContainsString( 'What can we help with?', $html );
 		$this->assertStringContainsString( 'linker-contact-rail', $html );
-		$this->assertStringContainsString( 'Prefer email?', $html );
+		$this->assertStringContainsString( 'Sales and technical support', $html );
 		$this->assertStringContainsString( 'Send message', $html );
 		$this->assertStringNotContainsString( '[' . Form::SHORTCODE . ']', $html, 'the shortcode is expanded, not left as text' );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
@@ -72,10 +72,10 @@ final class ContactFormMountTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'name="lang" value="de"', $html );
 		$this->assertStringContainsString( 'Ihre Frage', $html );
 		$this->assertStringContainsString( 'Wie können wir helfen?', $html );
-		$this->assertStringContainsString( 'Wohin dürfen wir antworten?', $html );
+		$this->assertStringContainsString( 'E-Mail-Adresse', $html );
 		$this->assertStringContainsString( 'Nachricht senden', $html );
-		$this->assertStringContainsString( 'Lieber per E-Mail?', $html );
-		$this->assertStringContainsString( 'Noch in der Orientierung?', $html );
+		$this->assertStringContainsString( 'Vertrieb und technischer Support', $html );
+		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
 	}
 

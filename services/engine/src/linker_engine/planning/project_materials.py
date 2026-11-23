@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import io
 import math
+import re
 from decimal import Decimal
 from typing import Any, cast
 
@@ -310,6 +311,11 @@ def project_materials(source: Object) -> Object:
                     "handling": "pv_reference",
                     "product_id": None,
                     "model": part["model"],
+                    **{
+                        key: part[key]
+                        for key in ("stc_power_w", "length_m", "width_m")
+                        if key in part
+                    },
                     "quantity": part["quantity"],
                     "unit": "piece",
                     "basis": "saved_layout",
@@ -541,8 +547,25 @@ def project_materials(source: Object) -> Object:
                         **({"unit_name": scope["name"]} if "name" in scope else {}),
                     }
                 )
+    brief = source.get("brief")
+    direction = brief.get("system_scope") if isinstance(brief, dict) else None
+    requested = source.get("inquiry_quantities")
+    if isinstance(requested, dict):
+        for raw_line in lines:
+            material = cast(Object, raw_line)
+            if material["handling"] != "woo_product":
+                continue
+            entry = requested.get(str(material["product_id"]))
+            planned = _requested_quantity(material)
+            if (
+                isinstance(entry, dict)
+                and planned is not None
+                and entry.get("planned_purchase") == planned
+            ):
+                material["inquiry_quantity"] = entry["requested"]
     return {
         "schema_version": 3,
+        **({"system_scope": direction} if direction else {}),
         "kind": "project_materials_v3",
         "project_id": source["project_id"],
         "revision": source["revision"],
@@ -555,14 +578,35 @@ def project_materials(source: Object) -> Object:
     }
 
 
-def material_name(line: Object, locale: str) -> str:
-    if line["handling"] == "pv_declared":
-        power = line.get("stc_power_w")
-        return (
-            f"{power:g} Wp"
-            if isinstance(power, (float, int))
-            else text("panel_unspecified", locale)
+def panel_description(panel: Object, locale: str) -> str:
+    """Describe project parameters independently of the supply list."""
+    power = panel.get("stc_power_w")
+    length, width = panel.get("length_m"), panel.get("width_m")
+    dimensions = ""
+    if isinstance(length, (int, float)) and isinstance(width, (int, float)):
+        dimensions = (
+            f" · {number(length * 1000, locale)} × {number(width * 1000, locale)} mm"
         )
+    if not isinstance(power, (int, float)):
+        # Earlier materials stored these parameters in panel_label's display string.
+        historical = re.fullmatch(
+            r"(?:PV )?([0-9]+(?:\.[0-9]+)?) Wp(?: · ([0-9]+(?:\.[0-9]+)?) × ([0-9]+(?:\.[0-9]+)?) mm)?",
+            str(panel.get("model") or ""),
+        )
+        if not historical:
+            return text("panel_reference_only", locale)
+        power = float(historical[1])
+        if historical[2] and historical[3]:
+            dimensions = f" · {number(float(historical[2]), locale)} × {number(float(historical[3]), locale)} mm"
+    return (
+        text("panel_reference_power", locale).format(power=number(power, locale))
+        + dimensions
+    )
+
+
+def material_name(line: Object, locale: str) -> str:
+    if line["handling"] in {"pv_declared", "pv_reference"}:
+        return panel_description(line, locale)
     if line["handling"] == "pending_battery_selection":
         return text("pending_battery", locale)
     if line["handling"] == "existing_system_declared":
@@ -720,6 +764,10 @@ def material_scope(line: Object, locale: str) -> str:
                 else text("material_replacements_unresolved", locale)
             )
             scope += f" · {description}"
+        if "inquiry_quantity" in line:
+            scope += (
+                f" · {text('inquiry_quantity', locale)}: {line['inquiry_quantity']}"
+            )
         return scope
     if line.get("package_supply") == "retained":
         scope = (
@@ -939,9 +987,34 @@ def material_list(line: Object, locale: str) -> str:
     return text("site_material_list", locale)
 
 
+def _requested_quantity(line: Object) -> int | None:
+    if line.get("handling") != "woo_product":
+        return None
+    quantity, retained = line.get("quantity"), line.get("retained_quantity", 0)
+    if type(quantity) is not int or type(retained) is not int or quantity <= retained:
+        return None
+    return cast(int, line.get("inquiry_quantity", quantity - retained))
+
+
 def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
+    direction = materials.get("system_scope")
+    if not materials["lines"] and direction:
+        writer.writerow(
+            text(key, locale) for key in ("project_id", "revision", "planned_system")
+        )
+        writer.writerow(
+            [
+                _cell(materials["project_id"]),
+                materials["revision"],
+                text(f"scope_{direction}", locale),
+            ]
+        )
+        return output.getvalue().encode("utf-8-sig")
+    has_requested = any(
+        "inquiry_quantity" in row for row in cast(list[Object], materials["lines"])
+    )
     writer.writerow(
         [
             text(key, locale)
@@ -957,6 +1030,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 "material_assessment",
                 "material_unit",
                 "material_list",
+                *(("inquiry_quantity",) if has_requested else ()),
             )
         ]
     )
@@ -1030,6 +1104,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 assessment,
                 material_unit(line, locale),
                 material_list(line, locale),
+                *((_requested_quantity(line),) if has_requested else ()),
             )
         )
     # BOM ensures Excel also recognizes German names as UTF-8.

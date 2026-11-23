@@ -78,6 +78,8 @@ import {
 
 type LanguageIssue = "csv" | "number" | "storage";
 
+import { ProjectDirections } from "./configurator/ProjectDirections.tsx";
+
 export function NewProject({
 	session,
 	client,
@@ -150,6 +152,9 @@ export function NewProject({
 		draftEntry ? readComparisonDraft(session.query_scope, source) : null,
 	);
 	const draftId = useRef(restored?.id);
+	const [scene, setScene] = useState<NonNullable<
+		ComparisonDraft["scene"]
+	> | null>(restored?.scene ?? null);
 	const savedDraft = useRef<ComparisonDraft | null>(null);
 	const [draftUnavailable, setDraftUnavailable] = useState(false);
 	const [languageIssue, setLanguageIssue] = useState<LanguageIssue | null>(
@@ -303,6 +308,7 @@ export function NewProject({
 					id: (draftId.current ??= crypto.randomUUID()),
 					scope: session.query_scope,
 					source,
+					scene,
 					title,
 					inputs: directComparison ? currentInputs() : draft,
 					useHints,
@@ -358,6 +364,7 @@ export function NewProject({
 		document.addEventListener("click", handoff, true);
 		return () => document.removeEventListener("click", handoff, true);
 	}, [
+		scene,
 		draftEntry,
 		compareOnLoad,
 		directComparison,
@@ -519,7 +526,7 @@ export function NewProject({
 			(!intent.current &&
 				!direction &&
 				!compareRoofSite &&
-				(roof
+				(roof || roofPlan
 					? !roofPlan &&
 						(!brief.site.country_code || !brief.site.location_label.trim())
 					: !directComparison && (!title.trim() || !brief.system_scope)))
@@ -691,7 +698,7 @@ export function NewProject({
 						? "roof-plan"
 						: roof
 							? "roof"
-							: directComparison
+							: directComparison && !direction
 								? "guided-comparison"
 								: direction
 									? "preliminary-review"
@@ -987,37 +994,35 @@ export function NewProject({
 				waitingForProduct ||
 				!admitted;
 			const retry = Boolean(intent.current);
-			const roofUrl = new URL(location.href);
-			roofUrl.searchParams.set("step", "roof");
-			roofUrl.hash = "";
 			return (
-				<section className="sc-main">
+				<section className="sc-main sc-direction-entry">
+					<ProjectDirections
+						selectedScene={scene}
+						changeScene={setScene}
+						inputs={inputs}
+						title={title}
+						changeTitle={setTitle}
+						edit={edit}
+						config={config ?? { locale, countries: {} }}
+						validity={reportDemand}
+						disabled={disabled || retry}
+						roof={() => void submit(undefined, { useRoofPlan: true })}
+						compare={
+							brief.system_scope &&
+							equipmentDraft(inputs).grid_phase != null &&
+							!invalidDemand.size
+								? () => void submit()
+								: undefined
+						}
+						details={enterDetails}
+					/>
 					<PreliminaryOptions
 						locale={locale}
 						inputs={inputs}
-						disabled={disabled || retry}
+						disabled={disabled || retry || invalidDemand.size > 0}
 						choose={(direction) => void submit(direction)}
 						chooseRetrofit={(keepInverter) =>
 							void submit("storage_addition", { keepInverter })
-						}
-						action={
-							enterDetails && (
-								<div className="sc-actions">
-									{!retry && !disabled && (
-										<a className="sc-button" href={roofUrl.href}>
-											{__("Start with your roof", "linker-tools")}
-										</a>
-									)}
-									<button
-										className="sc-button"
-										type="button"
-										disabled={disabled || retry}
-										onClick={enterDetails}
-									>
-										{__("Enter project details", "linker-tools")}
-									</button>
-								</div>
-							)
 						}
 					/>
 					{pendingRequests}

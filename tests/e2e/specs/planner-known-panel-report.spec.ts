@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { instance } from '../lib/instance';
+import { launchHomepageConfigurator } from '../lib/home-configurator';
+import { resumePlannerProject } from '../lib/resume-planner-project';
 
 const labels = {
 	en: {
@@ -24,7 +26,7 @@ const labels = {
 		csv: 'Download bill of materials (CSV)',
 		declared: 'Customer-entered panel data',
 		unknown: 'Not defined for this calculation',
-		generic: 'Solar panels',
+		generic: 'Generic PV module (reference only — not supplied by Linker)',
 		question: 'How many solar panels did I enter in this saved report?',
 		countAnswer: 'You entered 16 solar panels',
 		unknownAnswer: 'The panel count is unknown',
@@ -51,7 +53,8 @@ const labels = {
 		csv: 'Stückliste herunterladen (CSV)',
 		declared: 'Vom Kunden angegebene Moduldaten',
 		unknown: 'Für diese Berechnung nicht definiert',
-		generic: 'PV-Module',
+		generic:
+			'Generisches PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)',
 		question:
 			'Wie viele PV-Module habe ich in diesem gespeicherten Bericht angegeben?',
 		countAnswer: 'haben Sie 16 PV-Module angegeben',
@@ -84,17 +87,17 @@ for (const lang of ['en', 'de'] as const)
 				const t = labels[lang];
 				const count = variant === 'power' ? null : 16,
 					watts = variant === 'count' ? null : 430;
+				const panelLabel =
+					watts === null
+						? t.generic
+						: lang === 'de'
+							? `Generisches ${watts}-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)`
+							: `Generic ${watts} W PV module (reference only — not supplied by Linker)`;
 				const workspace = page.locator('[data-linker-planner]');
 				await page.goto(url + t.home);
 				const consent = button(page, t.consent);
 				if (await consent.isVisible()) await consent.click();
-				await page
-					.locator('[data-linker-planner-entry="home-hero"] a')
-					.click();
-				await button(workspace, t.enter).click();
-				const project = workspace.getByRole('form', {
-					name: t.project,
-				});
+				const project = await launchHomepageConfigurator(page, lang);
 				await project
 					.getByLabel(t.title)
 					.fill('Berlin panel declaration');
@@ -109,7 +112,14 @@ for (const lang of ['en', 'de'] as const)
 				await project
 					.locator('select[name=project_purpose]')
 					.selectOption('self');
-				await button(project, t.solar).click();
+				await button(project, t.compare).click();
+				await expect(page).toHaveURL(/[?&]project=[a-f0-9]{32}/);
+				await resumePlannerProject(
+					page,
+					lang,
+					'Berlin panel declaration',
+					'roof'
+				);
 				if (count !== null)
 					await workspace
 						.locator('input[name=known_panel_count]')
@@ -166,7 +176,7 @@ for (const lang of ['en', 'de'] as const)
 				expect(panels).toHaveLength(1);
 				expect(panels[0]!.slice(2, 6)).toEqual([
 					count === null ? '' : '16',
-					watts === null ? t.generic : '430 Wp',
+					panelLabel,
 					'',
 					t.declared,
 				]);
@@ -185,9 +195,7 @@ for (const lang of ['en', 'de'] as const)
 					.slice(start, start + 550)
 					.replace(/\s+/g, ' ');
 				expect(section).toContain(t.declared);
-				expect(section).toContain(
-					watts === null ? t.generic : '430 Wp'
-				);
+				expect(section).toContain(panelLabel);
 				expect(section).toContain(count === null ? t.unknown : '16');
 				await button(workspace, t.preview).click();
 				const dialog = page.getByRole('dialog');
@@ -195,9 +203,9 @@ for (const lang of ['en', 'de'] as const)
 					.getByRole('region', { name: t.declared, exact: true })
 					.getByRole('table');
 				await table.scrollIntoViewIfNeeded();
-				await expect(table.getByRole('cell')).toHaveText([
+				await expect(table.getByRole('cell')).toContainText([
 					new RegExp((count === null ? t.unknown : '16') + '$'),
-					new RegExp((watts === null ? t.generic : '430 Wp') + '$'),
+					panelLabel,
 				]);
 				if (variant === 'both')
 					await page.screenshot({

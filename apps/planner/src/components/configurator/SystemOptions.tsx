@@ -387,6 +387,50 @@ export function SystemOptions({
 		: products;
 	const measure = (value: unknown, unit: string) =>
 		typeof value === "number" ? `${format(value)} ${unit}` : "—";
+	function optionMetrics(item: EquipmentCandidate) {
+		const metrics = item.demand?.metrics;
+		if (!metrics) return null;
+		const ratio = metrics.pv_input_self_use;
+		const selfUse =
+			ratio && typeof ratio === "object" && "value" in ratio
+				? ratio.value
+				: null;
+		const energy = (value: unknown) =>
+			typeof value === "number"
+				? value >= 1000
+					? format(value / 1000) + " MWh"
+					: format(value) + " kWh"
+				: null;
+		const rows = [
+			[
+				__("PV generation", "linker-tools"),
+				energy(metrics.pv_generated_ac_kwh),
+			],
+			[
+				__("Self-use", "linker-tools"),
+				typeof selfUse === "number"
+					? new Intl.NumberFormat(locale, {
+							style: "percent",
+							maximumFractionDigits: 1,
+						}).format(selfUse)
+					: null,
+			],
+			[__("Grid import", "linker-tools"), energy(metrics.grid_import_kwh)],
+		].filter((row) => row[1] !== null);
+		return rows.length ? (
+			<dl
+				className="sc-option-metrics"
+				aria-label={__("Calculated for the supplied period", "linker-tools")}
+			>
+				{rows.map(([label, value]) => (
+					<div key={label}>
+						<dt>{label}</dt>
+						<dd>{value}</dd>
+					</div>
+				))}
+			</dl>
+		) : null;
+	}
 	const bounds = (item: EquipmentCandidate) => {
 		if (!bounded || !item.demand) return null;
 		const facts = readObject(item.demand);
@@ -925,78 +969,85 @@ export function SystemOptions({
 								);
 							})}
 						</div>
-						{isPlantCandidate(item) && (
-							<p>{item.plant.units.map((unit) => unit.name).join(" · ")}</p>
-						)}
-						{!solarOnly && (
-							<div className="sc-package-capacity">
-								<strong>{capacity(item)}</strong>
-								<span>{__("Usable battery capacity", "linker-tools")}</span>
-							</div>
-						)}
-						{systems(item).map(({ id, name, selection }) =>
-							selection.modules_per_stack && selection.parallel_stacks ? (
-								<p key={id}>
-									{name && `${name} · `}
-									{sprintf(
-										selection.parallel_stacks === 1
-											? __("%d stack", "linker-tools")
-											: __("%d stacks", "linker-tools"),
-										selection.parallel_stacks,
-									)}
-									{" × "}
-									{sprintf(
-										selection.modules_per_stack === 1
-											? __("%d battery module", "linker-tools")
-											: __("%d battery modules", "linker-tools"),
-										selection.modules_per_stack,
-									)}
-								</p>
-							) : null,
-						)}
-						<p className="sc-package-status">{equipmentStatus(item.status)}</p>
-						{backupEnergy !== null &&
-							typeof item.usable_energy_kwh === "number" && (
-								<p>
-									{item.usable_energy_kwh < backupEnergy
-										? sprintf(
-												__(
-													"%s kWh below the backup load energy",
-													"linker-tools",
-												),
-												format(backupEnergy - item.usable_energy_kwh),
-											)
-										: sprintf(
-												__(
-													"%s kWh capacity margin before losses",
-													"linker-tools",
-												),
-												format(item.usable_energy_kwh - backupEnergy),
-											)}
-								</p>
+						<div className="sc-option-figures">
+							{optionMetrics(item)}
+							{isPlantCandidate(item) && (
+								<p>{item.plant.units.map((unit) => unit.name).join(" · ")}</p>
 							)}
-						{backupEnergy !== null &&
-							fitRank(item, backupEnergy) !== 0 &&
-							fitRank(item, backupEnergy) !== 3 && (
-								<p>{__("Backup duration to confirm", "linker-tools")}</p>
+							{!solarOnly && (
+								<div className="sc-package-capacity">
+									<strong>{capacity(item)}</strong>
+									<span>{__("Usable battery capacity", "linker-tools")}</span>
+								</div>
 							)}
-						{bounds(item)}
-						<button
-							type="button"
-							className="sc-button"
-							aria-pressed={item.id === selectedId}
-							disabled={
-								disabled ||
-								selecting ||
-								item.id === selectedId ||
-								(detail.isError && candidate?.id === item.id)
-							}
-							onClick={() => void select(item)}
-						>
-							{item.id === selectedId
-								? __("Selected", "linker-tools")
-								: __("Use this configuration", "linker-tools")}
-						</button>
+						</div>
+						<div className="sc-option-body">
+							{systems(item).map(({ id, name, selection }) =>
+								selection.modules_per_stack && selection.parallel_stacks ? (
+									<p key={id}>
+										{name && `${name} · `}
+										{sprintf(
+											selection.parallel_stacks === 1
+												? __("%d stack", "linker-tools")
+												: __("%d stacks", "linker-tools"),
+											selection.parallel_stacks,
+										)}
+										{" × "}
+										{sprintf(
+											selection.modules_per_stack === 1
+												? __("%d battery module", "linker-tools")
+												: __("%d battery modules", "linker-tools"),
+											selection.modules_per_stack,
+										)}
+									</p>
+								) : null,
+							)}
+							<p className="sc-package-status">
+								{equipmentStatus(item.status)}
+							</p>
+							{backupEnergy !== null &&
+								typeof item.usable_energy_kwh === "number" && (
+									<p>
+										{item.usable_energy_kwh < backupEnergy
+											? sprintf(
+													__(
+														"%s kWh below the backup load energy",
+														"linker-tools",
+													),
+													format(backupEnergy - item.usable_energy_kwh),
+												)
+											: sprintf(
+													__(
+														"%s kWh capacity margin before losses",
+														"linker-tools",
+													),
+													format(item.usable_energy_kwh - backupEnergy),
+												)}
+									</p>
+								)}
+							{backupEnergy !== null &&
+								fitRank(item, backupEnergy) !== 0 &&
+								fitRank(item, backupEnergy) !== 3 && (
+									<p>{__("Backup duration to confirm", "linker-tools")}</p>
+								)}
+							{bounds(item)}
+							<button
+								type="button"
+								className="sc-button"
+								aria-pressed={item.id === selectedId}
+								disabled={
+									disabled ||
+									selecting ||
+									item.id === selectedId ||
+									(detail.isError && candidate?.id === item.id)
+								}
+								onClick={() => void select(item)}
+							>
+								{item.id === selectedId
+									? __("Selected", "linker-tools")
+									: __("Use this configuration", "linker-tools")}
+							</button>
+						</div>
 					</article>
 				))}
 			</div>

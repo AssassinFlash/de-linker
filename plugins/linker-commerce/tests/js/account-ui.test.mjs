@@ -655,3 +655,25 @@ test('a rejected native registration keeps the entered password and reopens veri
  assert.equal(button.hasAttribute('aria-busy'),false);
  assert.equal(refreshes,1);
 });
+
+test('inquiry quantity controls update the native Woo line without submitting either form', () => {
+ const {win,draft,send}=inquiryDraft();
+ const qty=draft.querySelector('input.qty');
+ const group=win.document.createElement('div');
+ group.className='linker-inquiry-stepper';
+ qty.before(group);
+ group.append(qty);
+ const buttons=[-1,1].map(step=>{
+  const button=win.document.createElement('button');
+  button.type='button';button.dataset.quantityStep=String(step);group.append(button);return button;
+ });
+ let edits=0;
+ qty.addEventListener('change',()=>edits++);
+ buttons[1].click();
+ assert.equal(qty.value,'2');
+ buttons[0].click();
+ assert.equal(qty.value,'1');
+ assert.equal(edits,2);
+ assert.equal(send.disabled,false);
+ win.close();
+});

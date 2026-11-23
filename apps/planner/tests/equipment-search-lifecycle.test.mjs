@@ -547,14 +547,25 @@ async function equipmentApp(
 		});
 	}
 	async function step(label) {
-		const item = [
-			...document.querySelectorAll(
-				'nav[aria-label="Project navigation"] button',
-			),
-		].find((node) => node.textContent.replace(/^\d+/, "").trim() === label);
-		assert.ok(item, `Expected the ${label} step`);
-		await act(async () => item.click());
+		const find = (name) =>
+			[
+				...document.querySelectorAll(
+					".sc-project-navigation button,.sc-refinement-tabs button",
+				),
+			].find((node) => node.textContent.replace(/^\d+/, "").trim() === name);
+		async function activate(name) {
+			await untilRun(() => find(name)?.matches(":enabled"));
+			await act(async () => find(name).click());
+		}
+		if (
+			!find(label) &&
+			["Roof & PV", "Energy profile & CSV", "Matched equipment"].includes(label)
+		) {
+			await activate("Fine-tune (optional)");
+		}
+		await activate(label);
 	}
+
 	return {
 		async switchScope() {
 			nextScope = "9".repeat(64);
@@ -707,7 +718,7 @@ for (const pvFailure of [null, "provider", "receipt"]) {
 					"PVGIS could not estimate generation",
 				),
 			);
-			await app.step("Solar");
+			await app.step("Roof & PV");
 			const latitude = app.fieldInput("Latitude");
 			assert.equal(latitude.value, "52.12567");
 			await enter(latitude, "52.1");
@@ -778,7 +789,7 @@ for (const waitingForHistory of [true, false]) {
 		const field = () => document.querySelector('input[name="location_label"]');
 		await until(field);
 		await enter(field(), "North quay");
-		await app.step("System");
+		await app.step("Matched equipment");
 		await act(async () => historyGate.resolve());
 		await untilRun(() =>
 			app.requests.some(({ path }) => path === "projects/revise"),
@@ -806,7 +817,7 @@ for (const state of ["succeeded", "queued"])
 			savedRun: makeRun(id, state),
 		});
 		await chooseGoal(app, "backup");
-		await app.step("System");
+		await app.step("Matched equipment");
 		await untilRun(() => document.querySelector(".sc-direction-comparison"));
 		assert.equal(app.button("Use this configuration"), undefined);
 		assert.equal(app.project.inputs.backup_demand.duration_hours, null);
@@ -836,7 +847,7 @@ for (const entry of ["navigation", "direct"])
 			});
 			if (entry === "navigation") {
 				await untilRun(() => app.fieldSelect("Planned system"));
-				await app.step("System");
+				await app.step("Matched equipment");
 			}
 			await untilRun(() => app.button("Try again"));
 			assert.equal(app.button("Use this configuration"), undefined);
@@ -869,7 +880,7 @@ test("Solar opens System using the edited array capacity rather than a previous 
 		await act(async () => option.click());
 	await untilRun(field);
 	await enter(field(), "13.7");
-	await app.step("System");
+	await app.step("Matched equipment");
 	await untilRun(() => searchRequests(app).length === 1);
 	assert.equal(app.button("Use this configuration"), undefined);
 	assert.ok(
@@ -928,7 +939,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 	await act(async () => app.button("Generate project report").click());
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));
 	assert.equal(app.requests.at(-1).body.options.pv_run_id, app.serverRunId());
-	await app.step("Solar");
+	await app.step("Roof & PV");
 	await untilRun(() => app.button("Open roof layout")?.matches(":enabled"));
 	await act(async () => app.button("Open roof layout").click());
 	await act(async () =>
@@ -937,7 +948,7 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 			.dispatchEvent(new window.MouseEvent("click", { bubbles: true })),
 	);
 	await act(async () => app.button("Remove selected").click());
-	await app.step("System");
+	await app.step("Matched equipment");
 	assert.equal(Boolean(app.button("Selected")), false);
 	assert.equal(app.button("Review the proposal").disabled, true);
 });
@@ -1028,14 +1039,6 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 	await click("Continue with solar");
 	await click("Place modules on the roof");
 	await click("Open roof layout");
-	const module =
-		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
-	await untilRun(() =>
-		app
-			.fieldSelect("Panel dimensions for this layout")
-			?.querySelector(`option[value="${module.id}"]`),
-	);
-	await app.updateSelect("Panel dimensions for this layout", module.id);
 	for (const [label, value] of [
 		["Width", "8"],
 		["Depth", "5"],
@@ -1049,6 +1052,16 @@ test("a manually drawn solar-only roof compares its placed capacity without a lo
 		await enter(app.fieldInput(label), value);
 	await act(async () => document.querySelector(".sc-check input").click());
 	await click("Add rectangular roof");
+	await click("Modules");
+	const module =
+		nativePreparation.pvgis_reference_project.inputs.geometry.module_specs[0];
+	await untilRun(() =>
+		app
+			.fieldSelect("Panel dimensions for this layout")
+			?.querySelector(`option[value="${module.id}"]`),
+	);
+	await app.updateSelect("Panel dimensions for this layout", module.id);
+
 	for (const [label, value] of [
 		["Rows", "1"],
 		["Columns", "2"],
@@ -1286,7 +1299,7 @@ test("a lost comparison receipt blocks another comparison and explicitly replays
 	);
 	assert.equal(searchRequests(app).length, 1);
 	assert.equal(app.button("Compare systems").disabled, true);
-	await app.step("System");
+	await app.step("Matched equipment");
 	assert.doesNotMatch(
 		document.querySelector("main").textContent,
 		/Enter your energy needs/,
@@ -1359,8 +1372,8 @@ test("a comparison dispatches once, polls in the background, and renders partial
 			option().querySelector(".sc-option-products").getAttribute("aria-label"),
 			"Linker ESS 5K + Linker Battery HV",
 		);
-		assert.match(option().textContent, /80 kWh/);
-		assert.doesNotMatch(option().textContent, /100 kWh/);
+		assert.match(option().textContent, /80\s+kWh/);
+		assert.doesNotMatch(option().textContent, /100\s+kWh/);
 		assert.match(
 			document.querySelector("main").textContent,
 			/Search incomplete: some configurations remain unchecked/,
@@ -1489,7 +1502,7 @@ for (const [multi, selection] of [
 		});
 		await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
 		if (multi) await act(async () => app.button("Multiple systems").click());
-		await app.step("Energy use");
+		await app.step("Energy profile & CSV");
 		await chooseGoal(app, selection === "backup" ? "backup" : "self");
 		if (selection === "backup") {
 			await enter(app.fieldInput("Backup load"), "5");
@@ -1565,7 +1578,7 @@ for (const [multi, selection] of [
 				100,
 			);
 		}
-		await app.step("Energy use");
+		await app.step("Energy profile & CSV");
 		await compare(app);
 		await untilRun(
 			() =>
@@ -1577,7 +1590,7 @@ for (const [multi, selection] of [
 		assert.deepEqual(again.equipment_candidate, saved.equipment_candidate);
 		if (selection === "none") {
 			await untilRun(app.pending);
-			await app.step("Project");
+			await app.step("Project & direction");
 			const declarations = [
 				...document.querySelectorAll("details > summary"),
 			].find(
@@ -1596,7 +1609,7 @@ for (const [multi, selection] of [
 				"",
 			);
 			await app.updateSelect("Inverter or integrated storage system", "101");
-			await app.step("Energy use");
+			await app.step("Energy profile & CSV");
 			await compare(app);
 			await untilRun(() => searchRequests(app).length === 3);
 			const edited = searchRequests(app).at(-1).body.inputs;
@@ -1663,7 +1676,7 @@ for (const multi of [false, true]) {
 		await untilRun(() => field()?.matches(":enabled"));
 		assert.equal(field().value, "");
 		await app.updateSelect("Inverter or integrated storage system", "101");
-		await app.step("Energy use");
+		await app.step("Energy profile & CSV");
 		await chooseGoal(app);
 		await compare(app);
 		await untilRun(() => searchRequests(app).length === 1);
@@ -1706,7 +1719,7 @@ for (const adopted of [true, false]) {
 		await untilRun(() =>
 			document.querySelector('nav[aria-label="Project navigation"]'),
 		);
-		await app.step("System");
+		await app.step("Matched equipment");
 		const empty = /Enter your energy needs/;
 		assert.doesNotMatch(document.querySelector("main").textContent, empty);
 		assert.equal(
@@ -1800,7 +1813,7 @@ test("a failed legacy model read still lets the customer save annual electricity
 	assert.equal(app.requests.at(-1).body.inputs.brief.annual_load.kwh, 42);
 	app.recoverLegacyInputs();
 	await act(async () => app.button("Try again").click());
-	await app.step("Project");
+	await app.step("Project & direction");
 	const details = document.querySelector(
 		'section[aria-label="System arrangement"] details',
 	);
@@ -1870,7 +1883,7 @@ for (const change of [
 		if (change === "plant model preference") {
 			await untilRun(() => app.button("Multiple systems")?.matches(":enabled"));
 			await act(async () => app.button("Multiple systems").click());
-			await app.step("Energy use");
+			await app.step("Energy profile & CSV");
 		}
 		await chooseGoal(app);
 		await compare(app);
@@ -1880,7 +1893,7 @@ for (const change of [
 			app.button("Use this configuration")?.matches(":enabled"),
 		);
 		if (change.endsWith("model preference")) {
-			await app.step("Project");
+			await app.step("Project & direction");
 			const details = document.querySelector(
 				'section[aria-label="System arrangement"] details',
 			);
@@ -1892,15 +1905,15 @@ for (const change of [
 					?.matches(":enabled"),
 			);
 			await app.updateSelect("Inverter or integrated storage system", "101");
-			await app.step("System");
+			await app.step("Matched equipment");
 		} else if (change === "purpose") {
-			await app.step("Energy use");
+			await app.step("Energy profile & CSV");
 			await app.updateSelect("Purpose", "peak");
-			await app.step("System");
+			await app.step("Matched equipment");
 		} else if (change === "system scope") {
-			await app.step("Project");
+			await app.step("Project & direction");
 			await app.updateSelect("Planned system", "storage_only");
-			await app.step("System");
+			await app.step("Matched equipment");
 		}
 		if (change !== "foreign snapshot" && change !== "session scope") {
 			await untilRun(() => searchRequests(app).length === 2);

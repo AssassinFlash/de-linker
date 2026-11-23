@@ -41,9 +41,9 @@ const labels = {
 		logo: 'Your logo on the PDF (optional)',
 		openPdf: 'Open report PDF',
 		navigation: 'Project navigation',
-		projectChapter: /^(?:1\s*)?Project$/,
+		projectChapter: /^(?:1\s*)?Project & direction$/,
 		projectSection: 'What is the project?',
-		solarChapter: /^(?:2\s*)?Solar$/,
+		solarChapter: /^(?:2\s*)?Fine-tune \(optional\)$/,
 	},
 	de: {
 		roofChoice: 'Module auf dem Dach platzieren',
@@ -80,9 +80,9 @@ const labels = {
 		logo: 'Ihr Logo im PDF (optional)',
 		openPdf: 'Berichts-PDF öffnen',
 		navigation: 'Projektnavigation',
-		projectChapter: /^(?:1\s*)?Projekt$/,
+		projectChapter: /^(?:1\s*)?Projekt & Richtung$/,
 		projectSection: 'Was planen Sie?',
-		solarChapter: /^(?:2\s*)?Photovoltaik$/,
+		solarChapter: /^(?:2\s*)?Verfeinern \(optional\)$/,
 	},
 } as const;
 
@@ -226,7 +226,8 @@ for (const lang of ['en', 'de'] as const) {
 				name: words.enterDetails,
 				exact: true,
 			});
-			await expect(details).toBeInViewport();
+			await expect(workspace.locator('.sc-scene-grid')).toBeInViewport();
+			await expect(details).toBeVisible();
 			await screen(page, 'known-project-entry');
 			await details.click();
 			await expect(page).toHaveURL(/#sc-project$/);

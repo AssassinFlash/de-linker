@@ -26,6 +26,9 @@ import type { usePlanningOperations } from "../../data/usePlanningOperations.ts"
 import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { __, sprintf } from "../../i18n.ts";
 import { EvidenceCard } from "../shared/EvidenceCard.tsx";
+import { useReportLogo } from "./ReportLogo.tsx";
+import { InquiryExportBar } from "./InquiryExportBar.tsx";
+import { readReportFile } from "../../data/readReportFile.ts";
 import { Icon } from "../Icon.tsx";
 import { DraftTransferButton } from "../energy/DraftTransferButton.tsx";
 import { runStateLabel } from "../energy/planningLabels.ts";
@@ -280,6 +283,7 @@ function ReportDownloads({
 	scope,
 	recheck,
 	askGenie,
+	extraActionsOnly = false,
 	suspended = false,
 	children,
 }: {
@@ -289,6 +293,7 @@ function ReportDownloads({
 	scope: string;
 	recheck: () => void;
 	askGenie: () => void;
+	extraActionsOnly?: boolean;
 	suspended?: boolean;
 	children?: (files: {
 		actions: ReactNode;
@@ -345,48 +350,27 @@ function ReportDownloads({
 	async function download(format: "pdf" | "materials" | "rules" | "series") {
 		if (!run.result || busy || flight.current || !client.isCurrentScope(scope))
 			return;
-		const raw =
-			format === "pdf"
-				? run.result.prepared_asset
-				: attachments?.[
-						format === "materials"
-							? "bill_of_materials_csv"
-							: format === "rules"
-								? "country_rule_review_csv"
-								: "pv_series_csv"
-					];
-		if (!raw) return;
-		const file = readObject(raw),
-			controller = new AbortController(),
+		const controller = new AbortController(),
 			instance = lifetime.current;
 		flight.current = controller;
 		setBusy(true);
 		setError(false);
 		try {
-			const blob =
-				format === "pdf"
-					? await readPdf(controller.signal)
-					: await client.reportCsv(
-							run.project_id,
-							String(file.id),
-							scope,
-							String(file.content_sha256),
-							controller.signal,
-							format === "series",
-						);
+			const { blob, filename } = await readReportFile(
+				client,
+				run,
+				scope,
+				report.locale,
+				format,
+				controller.signal,
+			);
 			if (instance !== lifetime.current || !client.isCurrentScope(scope))
 				return;
 			if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
 			objectUrl.current = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.href = objectUrl.current;
-			const suffix =
-				format === "rules"
-					? "-country-rules"
-					: format === "series"
-						? "-pv-strings"
-						: "";
-			link.download = `linker-planning-${run.project_id}-r${run.revision}-${report.locale}${suffix}.${format === "pdf" ? "pdf" : "csv"}`;
+			link.download = filename;
 			link.click();
 		} catch (cause) {
 			if (instance !== lifetime.current) return;
@@ -415,14 +399,16 @@ function ReportDownloads({
 				allowed={client.isCurrentScope(scope)}
 				loadPdf={loadPreviewPdf}
 			/>
-			<button
-				type="button"
-				className="sc-button"
-				disabled={busy || !client.isCurrentScope(scope)}
-				onClick={() => void download("pdf")}
-			>
-				{__("Download PDF", "linker-tools")}
-			</button>
+			{!extraActionsOnly && (
+				<button
+					type="button"
+					className="sc-button"
+					disabled={busy || !client.isCurrentScope(scope)}
+					onClick={() => void download("pdf")}
+				>
+					{__("Download PDF", "linker-tools")}
+				</button>
+			)}
 			{Boolean(attachments?.country_rule_review_csv) && (
 				<button
 					type="button"
@@ -504,6 +490,7 @@ export function reportCanTransfer(
 }
 
 export function ReviewProposal({
+	inquiry,
 	project,
 	inputs,
 	run,
@@ -516,9 +503,12 @@ export function ReviewProposal({
 	transferBlocked = blocked,
 	current,
 	generate,
+	prepareExport,
+	acceptExport,
 	askGenie,
 	recheck,
 }: {
+	inquiry?: ReactNode;
 	project: Project;
 	inputs: JsonObject;
 	run: PlanningRun | null;
@@ -531,6 +521,8 @@ export function ReviewProposal({
 	transferBlocked?: boolean;
 	current: boolean;
 	generate: (logo: string | null) => void;
+	prepareExport?: (logo: string | null) => Promise<PlanningRun | undefined>;
+	acceptExport?: (run: PlanningRun) => void;
 	askGenie: (run: PlanningRun) => void;
 	recheck: () => void;
 }) {
@@ -539,118 +531,14 @@ export function ReviewProposal({
 	const selected = history?.selected != null;
 	const earlierRun = history?.run?.state === "succeeded" ? history.run : null;
 	const earlierReport = earlierRun?.result ? reportFromRun(earlierRun) : null;
-	const [logo, setLogo] = useState<{ name: string; data: string } | null>(null),
-		[logoError, setLogoError] = useState(false),
-		[reading, setReading] = useState(false);
-	const reader = useRef<FileReader | null>(null);
-	const logoInput = useRef<HTMLInputElement>(null);
-	const resetLogo = () => {
-		reader.current?.abort();
-		reader.current = null;
-		setLogo(null);
-		setLogoError(false);
-		setReading(false);
-	};
-	useEffect(
-		() => () => {
-			reader.current?.abort();
-			reader.current = null;
-		},
-		[],
+	const { logo, logoField, logoPending } = useReportLogo(
+		blocked || operations.busy,
 	);
 	const waiting = Boolean(
 		run && ["queued", "running", "retry_wait"].includes(run.state),
 	);
 	const disabled =
-		blocked ||
-		operations.busy ||
-		operations.checking ||
-		waiting ||
-		reading ||
-		logoError;
-	const logoField = (
-		<div className="sc-report-logo">
-			<label className="sc-field">
-				<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
-				<span className="sc-file-picker">
-					<span className="sc-file-button" aria-hidden="true">
-						{__("Choose logo", "linker-tools")}
-					</span>
-					<span className="sc-file-name" aria-hidden="true">
-						{logo?.name ?? __("No file chosen", "linker-tools")}
-					</span>
-					<input
-						ref={logoInput}
-						aria-label={__("Your logo on the PDF (optional)", "linker-tools")}
-						type="file"
-						accept="image/png,image/jpeg"
-						disabled={blocked || operations.busy}
-						onChange={(event) => {
-							resetLogo();
-							const file = event.currentTarget.files?.[0];
-							if (!file) return;
-							if (
-								file.size > 500000 ||
-								!["image/png", "image/jpeg"].includes(file.type)
-							) {
-								setLogoError(true);
-								return;
-							}
-							const next = new FileReader();
-							reader.current = next;
-							setReading(true);
-							next.onload = () => {
-								if (
-									reader.current === next &&
-									typeof next.result === "string"
-								) {
-									setLogo({ name: file.name, data: next.result });
-									setReading(false);
-								}
-							};
-							next.onerror = () => {
-								if (reader.current === next) {
-									setLogoError(true);
-									setReading(false);
-								}
-							};
-							next.readAsDataURL(file);
-						}}
-					/>
-				</span>
-				<small>{__("PNG or JPG, up to 500 kB.", "linker-tools")}</small>
-				{logoError && (
-					<small role="alert">
-						{__(
-							"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
-							"linker-tools",
-						)}
-					</small>
-				)}
-			</label>
-			{(logo || logoError || reading) && (
-				<div className="sc-actions">
-					{logo && (
-						<img src={logo.data} alt={__("Report logo", "linker-tools")} />
-					)}
-					<button
-						type="button"
-						className="sc-button"
-						disabled={blocked || operations.busy}
-						onClick={() => {
-							resetLogo();
-							if (logoInput.current) {
-								logoInput.current.value = "";
-								logoInput.current.focus();
-							}
-						}}
-					>
-						{__("Remove logo", "linker-tools")}
-					</button>
-				</div>
-			)}
-		</div>
-	);
+		blocked || operations.busy || operations.checking || waiting || logoPending;
 	const reportOnly = run?.result?.has_report_only_handoff === true;
 	const transferable = reportCanTransfer(run, report);
 
@@ -850,6 +738,52 @@ export function ReviewProposal({
 					</>
 				)}
 			</section>
+		);
+	if (inquiry && report && run && !selected)
+		return (
+			<article
+				className="sc-review sc-report-workspace"
+				aria-label={project.title}
+			>
+				<ReportDownloads
+					run={run}
+					report={report}
+					client={client}
+					scope={scope}
+					recheck={recheck}
+					askGenie={() => askGenie(run)}
+					extraActionsOnly
+				>
+					{({ actions, error }) => (
+						<InquiryExportBar
+							client={client}
+							scope={scope}
+							project={project}
+							locale={locale}
+							run={run}
+							prepare={prepareExport}
+							accept={acceptExport}
+							blocked={blocked || logoPending}
+							logo={logo?.data ?? null}
+							logoField={logoField}
+						>
+							{actions}
+							{error}
+						</InquiryExportBar>
+					)}
+				</ReportDownloads>
+				{inquiry}
+				<details className="sc-card sc-review-details">
+					<summary>{__("Project report", "linker-tools")}</summary>
+					{report.sections.map((section) => (
+						<section key={section.id}>
+							<h3>{section.title}</h3>
+							<ReportContent section={section} />
+						</section>
+					))}
+				</details>
+				{historyPanel}
+			</article>
 		);
 	return (
 		<article

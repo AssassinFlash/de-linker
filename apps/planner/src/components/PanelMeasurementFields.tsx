@@ -1,14 +1,18 @@
+import { decimalSeparator } from "../domain/decimal.ts";
 import type { PanelElectrical } from "../domain/geometry.ts";
 import type { PanelFields } from "../domain/panelParameters.ts";
 import { __ } from "../i18n.ts";
 
 export function PanelMeasurementFields({
+	locale,
 	fields,
 	change,
 }: {
+	locale: string;
 	fields: PanelFields;
 	change: (next: PanelFields) => void;
 }) {
+	const separator = decimalSeparator(locale);
 	function field(
 		key: Exclude<keyof PanelFields, "electrical">,
 		name: string,
@@ -21,11 +25,16 @@ export function PanelMeasurementFields({
 					{label} ({unit})
 				</span>
 				<input
-					type="number"
-					step="any"
+					type="text"
+					inputMode="decimal"
 					name={name}
-					value={fields[key]}
-					onChange={(e) => change({ ...fields, [key]: e.currentTarget.value })}
+					value={fields[key].replace(".", separator)}
+					onChange={(e) =>
+						change({
+							...fields,
+							[key]: e.currentTarget.value.replace(separator, "."),
+						})
+					}
 				/>
 			</label>
 		);
@@ -42,16 +51,16 @@ export function PanelMeasurementFields({
 					{unit && " (" + unit + ")"}
 				</span>
 				<input
-					type="number"
-					step="any"
+					type="text"
+					inputMode="decimal"
 					name={"panel_" + key}
-					value={fields.electrical?.[key] ?? ""}
+					value={(fields.electrical?.[key] ?? "").replace(".", separator)}
 					onChange={(e) =>
 						change({
 							...fields,
 							electrical: {
 								...fields.electrical,
-								[key]: e.currentTarget.value,
+								[key]: e.currentTarget.value.replace(separator, "."),
 							},
 						})
 					}

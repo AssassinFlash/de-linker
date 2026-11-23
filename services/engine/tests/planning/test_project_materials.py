@@ -797,3 +797,35 @@ def test_route_quantity_uses_report_display_precision() -> None:
     line: Object = {"quantity": 12.36931687685298, "unit": "m"}
     assert material_quantity(line, "en") == "12.369 m"
     assert material_quantity(line, "de") == "12,369 m"
+
+
+def test_customer_requested_quantity_is_separate_from_system_design() -> None:
+    source = cast(Object, _source_data())
+    source["inquiry_quantities"] = {"6506": {"planned_purchase": 2, "requested": 3}}
+    materials = project_materials(source)
+    row = next(
+        line
+        for line in cast(list[Object], materials["lines"])
+        if line["handling"] == "woo_product"
+    )
+    assert row["quantity"] == 2 and row["inquiry_quantity"] == 3
+    transfer = purchase_items([row], {})
+    assert cast(Object, transfer[0])["quantity"] == 3
+    for locale, heading in (("en", "Requested quantity"), ("de", "Anfragemenge")):
+        csv_row = next(
+            csv.DictReader(
+                io.StringIO(
+                    materials_csv(materials, "0" * 64, locale).decode("utf-8-sig")
+                )
+            )
+        )
+        assert csv_row[heading] == "3"
+        assert heading + ": 3" in material_scope(row, locale)
+    source["inquiry_quantities"] = {
+        "6506": {"planned_purchase": 1, "requested": 3},
+        "829": {"planned_purchase": 1, "requested": 99},
+    }
+    updated = project_materials(source)
+    assert all(
+        "inquiry_quantity" not in line for line in cast(list[Object], updated["lines"])
+    )

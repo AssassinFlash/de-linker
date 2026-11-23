@@ -2085,3 +2085,32 @@ def test_report_subset_omits_unrelated_unprepared_device_entries(
             "inspect_certificate_declarations",
         )
     )
+
+
+def test_report_accepts_the_saved_project_direction_before_any_analysis(
+    workspace: Workspace, owner: Actor
+) -> None:
+    from .test_brief import incomplete_brief
+
+    brief = json_object(incomplete_brief())
+    brief["system_scope"] = "storage_addition"
+    project = workspace.create(
+        owner, "First inquiry", {"brief": brief}, key="preliminary"
+    )
+    sources = report_sources(
+        workspace,
+        ProductSources(
+            lambda: pytest.fail("a preliminary direction requires no Woo products")
+        ),
+        owner,
+        project,
+        ReportOptions(
+            locale="en",
+            energy_run_id=None,
+            pv_run_id=None,
+            equipment_run_id=None,
+            logo=None,
+        ),
+    )
+    assert sources["brief"] == project.inputs["brief"]
+    assert sources["energy"] is None and sources["pv"] is None

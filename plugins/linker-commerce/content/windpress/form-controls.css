@@ -1,0 +1,129 @@
+/* Fields shared by the planner, inquiry, contact and registration forms. */
+.lk-field,
+.sc-configurator .sc-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--proto-space-2);
+  min-width: 0;
+  margin: 0;
+}
+.lk-field-heading,
+.lk-field > .linker-form-label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--proto-space-1);
+  margin: 0;
+  color: var(--proto-ink-deep);
+  font-size: var(--proto-size-sm);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.lk-required { color: var(--proto-teal-700); }
+.lk-field-heading .linker-form-optional {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--proto-ink-muted-deep);
+  font-size: var(--proto-size-xs);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.lk-field :is(.linker-form-input, .lk-input, .lk-select, .lk-textarea),
+.sc-configurator :is(input:not([type]), input:is([type="text"], [type="email"], [type="number"], [type="search"], [type="date"], [type="time"], [type="url"], [type="password"]), select, textarea),
+.linker-auth-register .form-row :is(.input-text, select, .select2-selection--single) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  min-height: var(--proto-form-control-height);
+  padding: 0 14px;
+  border: 1px solid var(--proto-color-line);
+  border-radius: var(--proto-input-radius);
+  background-color: var(--proto-input-bg);
+  color: var(--proto-ink-deep);
+  font: inherit;
+  transition: border-color var(--proto-duration), background-color var(--proto-duration), box-shadow var(--proto-duration);
+}
+.lk-field textarea.linker-form-input,
+.sc-configurator textarea {
+  min-height: 110px;
+  padding-block: var(--proto-space-3);
+  line-height: 1.5;
+  resize: vertical;
+}
+.lk-field select.linker-form-input,
+.sc-configurator .sc-field select,
+.sc-configurator select,
+.linker-account .linker-auth-register .form-row select[name],
+.linker-account .linker-auth-register .form-row .select2-selection--single {
+  appearance: none;
+  padding-inline-end: 42px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233a4242' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 16px;
+  background-position: right 14px center;
+}
+.linker-auth-register .form-row .select2-selection__arrow { display: none; }
+.linker-auth-register .form-row .select2-selection--single .select2-selection__rendered { padding-inline: 0; }
+.lk-field :is(input, select, textarea):focus,
+.sc-configurator :is(input:not([type="checkbox"],[type="radio"],[type="file"]), select, textarea):focus,
+.linker-auth-register .form-row :is(.input-text, select, .select2-selection--single):focus {
+  outline: 0;
+  border-color: var(--proto-accent);
+  background-color: var(--proto-neutral-0);
+  box-shadow: var(--proto-form-focus-ring);
+}
+.lk-field :is(input,select,textarea)[aria-invalid="true"],
+.sc-configurator .sc-field [aria-invalid="true"] { border-color: var(--proto-sem-danger); }
+.btn-secondary, .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--proto-space-2);
+  min-height: var(--proto-form-control-height);
+  max-width: 100%;
+  padding: var(--proto-space-2) var(--proto-space-4);
+  border: 1px solid var(--proto-color-line);
+  border-radius: var(--proto-radius-md);
+  background: var(--proto-neutral-0);
+  color: var(--proto-ink-deep);
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+.btn-ghost { border-color: transparent; background: transparent; color: var(--proto-teal-700); }
+:is(.btn-secondary,.btn-ghost):hover { background: var(--proto-teal-50); text-decoration: none; }
+.lk-dropzone {
+  position: relative;
+  display: grid;
+  grid-template: "icon title action" auto "icon file action" auto / auto minmax(0,1fr) auto;
+  align-items: center;
+  align-content: center;
+  gap: 3px var(--proto-space-3);
+  min-width: 0;
+  padding: var(--proto-space-4);
+  border: 1px dashed var(--proto-neutral-300);
+  border-radius: var(--proto-radius-lg);
+  background: var(--proto-neutral-50);
+  cursor: pointer;
+}
+.lk-dropzone:is(:hover, :focus-within, [data-dragging]) {
+  border-color: var(--proto-accent);
+  background: var(--proto-teal-50);
+}
+.lk-dropzone:focus-within { box-shadow: var(--proto-form-focus-ring); }
+.lk-dropzone-icon { grid-area: icon; box-sizing: content-box; padding: 10px; border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-teal-700); }
+.lk-dropzone-title { grid-area: title; color: var(--proto-ink-deep); font-weight: 650; }
+.lk-dropzone-description { grid-area: file; min-width: 0; color: var(--proto-ink-muted-deep); font-size: var(--proto-size-sm); overflow-wrap: anywhere; }
+.lk-dropzone-action { grid-area: action; padding: 7px 10px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); font-size: var(--proto-size-sm); font-weight: 600; }
+.lk-dropzone input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.lk-dropzone:has(:disabled) { opacity: .65; cursor: default; }
+@media (max-width: 600px) {
+  .lk-dropzone { grid-template: "icon title" auto "icon file" auto "action action" auto / auto minmax(0,1fr); }
+  .lk-dropzone-action { margin-block-start: var(--proto-space-2); text-align: center; }
+}
+@media (forced-colors: active) {
+  .lk-field select.linker-form-input, .sc-configurator select, .linker-account .linker-auth-register .form-row select[name],
+.linker-account .linker-auth-register .form-row .select2-selection--single { appearance: auto; background-image: none; }
+  .lk-dropzone:focus-within, .lk-field :focus-visible { outline: 2px solid Highlight; }
+}
