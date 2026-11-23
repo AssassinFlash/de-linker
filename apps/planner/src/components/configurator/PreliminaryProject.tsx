@@ -13,6 +13,52 @@ import { energyGoal } from "./EnergyDemand.tsx";
 import { PreliminaryOptions } from "./PreliminaryOptions.tsx";
 import { InquiryStages, ProjectHeading } from "./ProjectHeading.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
+import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
+import { InquiryExportBar } from "./InquiryExportBar.tsx";
+import { useReportLogo } from "./ReportLogo.tsx";
+
+function PreliminaryExports({
+	project,
+	session,
+	client,
+	locale,
+	recheck,
+}: {
+	project: Project;
+	session: Session;
+	client: PlannerClient;
+	locale: string;
+	recheck: () => void;
+}) {
+	const operations = usePlanningOperations({
+		projectId: project.id,
+		session,
+		client,
+		recheck,
+	});
+	const { logo, logoField, logoPending } = useReportLogo(operations.busy);
+	return (
+		<InquiryExportBar
+			project={project}
+			scope={session.query_scope}
+			client={client}
+			locale={locale}
+			logo={logo?.data ?? null}
+			logoField={logoField}
+			blocked={logoPending || operations.checking || operations.busy}
+			prepare={async (branding) => {
+				const prepared = await operations.start("runs/report", {
+					expected_revision: project.revision,
+					options: {
+						locale: locale.startsWith("de") ? "de" : "en",
+						logo: branding,
+					},
+				});
+				return prepared?.path === "runs/report" ? prepared.run : undefined;
+			}}
+		/>
+	);
+}
 
 export function PreliminaryProject({
 	project,
@@ -180,6 +226,16 @@ export function PreliminaryProject({
 						)
 					)}
 				</div>
+			)}
+			{!showOptions && !replaying && ready && (
+				<PreliminaryExports
+					key={reviewed.id}
+					project={reviewed}
+					session={session}
+					client={client}
+					locale={locale}
+					recheck={recheck}
+				/>
 			)}
 			{brief.system_scope && (
 				<ReviewInquiry

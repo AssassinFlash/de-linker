@@ -48,7 +48,8 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 				inquiry_form_html: `<form class="linker-inquiry-form" method="post" action="/wp-admin/admin-post.php">
 					<input type="hidden" name="linker_preliminary_project" value="${project.id}:3">
 					<input type="hidden" name="linker_report_transfer" value="${binding}">
-					<button type="submit">Send inquiry</button></form>`,
+					<input name="name"><input name="email"><textarea name="message"></textarea>
+                    <button type="submit">Send inquiry</button></form>`,
 				inquiry_project_facts: [
 					{ label: "Location", value: "Utrecht, NL" },
 					{ label: "Annual electricity use", value: "6412 kWh" },
@@ -77,21 +78,23 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 			};
 		},
 	};
-	await act(async () =>
-		root.render(
-			React.createElement(ReviewInquiry, {
-				project,
-				reportRunId,
-				direction: "storage_addition",
-				client,
-				scope: "owned",
-				locale: "en",
-				active: true,
-				changeSelection() {},
-				recheck() {},
-			}),
-		),
-	);
+	const show = () =>
+		act(async () =>
+			root.render(
+				React.createElement(ReviewInquiry, {
+					project,
+					reportRunId,
+					direction: "storage_addition",
+					client,
+					scope: "owned",
+					locale: "en",
+					active: true,
+					changeSelection() {},
+					recheck() {},
+				}),
+			),
+		);
+	await show();
 	await until(() => fixture.element.querySelector(".linker-inquiry-form"));
 	assert.deepEqual(requests, [
 		[
@@ -153,4 +156,19 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 		fixture.element.querySelector("button[type=submit]").textContent,
 		"Send inquiry",
 	);
+	const edits = {
+		name: "Installer",
+		email: "installer@example.test",
+		message: "Retain my notes",
+	};
+	for (const [key, value] of Object.entries(edits))
+		fixture.element.querySelector('[name="' + key + '"]').value = value;
+	await act(async () => root.render(null));
+	await show();
+	await until(() => fixture.element.querySelector("form.linker-inquiry-form"));
+	for (const [key, value] of Object.entries(edits))
+		assert.equal(
+			fixture.element.querySelector('[name="' + key + '"]').value,
+			value,
+		);
 });

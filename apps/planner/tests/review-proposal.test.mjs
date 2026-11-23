@@ -483,3 +483,108 @@ test("report preview opens the complete pinned report and its original PDF", asy
 	assert.equal(dialog.open, false);
 	assert.deepEqual(revoked, ["blob:https://fixture.invalid/current-report"]);
 });
+
+test("a preliminary review exports PDF and materials on demand from the same project revision", async (t) => {
+	const { InquiryExportBar } =
+		await import("../src/components/configurator/InquiryExportBar.tsx");
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(),
+		prepared = [],
+		downloads = [];
+	t.after(() => page.dispose(root));
+	const run = value.run;
+	value.project.revision = run.revision;
+	const client = {
+		isCurrentScope: () => true,
+		async reportPdf(project, asset) {
+			downloads.push([project, asset]);
+			return new Blob(["pdf"]);
+		},
+		async reportCsv(project, asset) {
+			downloads.push([project, asset]);
+			return new Blob(["csv"]);
+		},
+	};
+	const anchors = window.HTMLAnchorElement.prototype;
+	const click = anchors.click;
+	anchors.click = () => {};
+	t.after(() => {
+		anchors.click = click;
+	});
+	await act(async () =>
+		root.render(
+			React.createElement(InquiryExportBar, {
+				project: value.project,
+				client,
+				scope,
+				locale: run.result.report.locale,
+				logo: null,
+				logoField: null,
+				blocked: false,
+				prepare: async (logo) => {
+					prepared.push(logo);
+					return run;
+				},
+			}),
+		),
+	);
+	assert.deepEqual(prepared, []);
+	await act(async () => button("Download PDF").click());
+	await act(async () => button("Download bill of materials (CSV)").click());
+	assert.deepEqual(prepared, [null]);
+	assert.deepEqual(downloads, [
+		[run.project_id, run.result.prepared_asset.id],
+		[run.project_id, run.result.prepared_attachments.bill_of_materials_csv.id],
+	]);
+});
+
+test("the first PDF download after picking a logo uses the new branded file", async (t) => {
+	const { until } = await import("./dom-fixture.mjs");
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props(),
+		logos = [],
+		downloads = [];
+	t.after(() => page.dispose(root));
+	value.project.revision = value.run.revision;
+	const branded = structuredClone(value.run);
+	branded.id = "e".repeat(32);
+	branded.result.prepared_asset.id = "b".repeat(32);
+	value.client.reportPdf = async (_project, asset) => {
+		downloads.push(asset);
+		return new Blob(["pdf"]);
+	};
+	const lastReader = globalThis.FileReader;
+	globalThis.FileReader = window.FileReader;
+	const anchors = window.HTMLAnchorElement.prototype;
+	const click = anchors.click;
+	anchors.click = () => {};
+	t.after(() => {
+		globalThis.FileReader = lastReader;
+		anchors.click = click;
+	});
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, {
+				...value,
+				inquiry: React.createElement("form"),
+				prepareExport: async (logo) => {
+					logos.push(logo);
+					return branded;
+				},
+			}),
+		),
+	);
+	const input = document.querySelector('input[type="file"]');
+	Object.defineProperty(input, "files", {
+		value: [new window.File(["mark"], "mark.png", { type: "image/png" })],
+	});
+	await act(async () =>
+		input.dispatchEvent(new window.Event("change", { bubbles: true })),
+	);
+	await until(() => button("Remove logo"));
+	await act(async () => button("Download PDF").click());
+	assert.deepEqual(logos, ["data:image/png;base64,bWFyaw=="]);
+	assert.deepEqual(downloads, [branded.result.prepared_asset.id]);
+});

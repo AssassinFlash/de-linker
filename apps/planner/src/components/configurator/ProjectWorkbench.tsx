@@ -1080,7 +1080,7 @@ export default function ProjectWorkbench({
 			if (instance === lifetime.current) setSelecting(false);
 		}
 	}
-	async function generate(logo: string | null) {
+	async function generate(logo: string | null, showResult = true) {
 		if (
 			blocked ||
 			modelsUnavailable ||
@@ -1158,8 +1158,11 @@ export default function ProjectWorkbench({
 				},
 			});
 			if (reply?.path === "runs/report" && current()) {
-				accepted(reply.run);
-				navigate("review");
+				if (showResult) {
+					accepted(reply.run);
+					navigate("review");
+				}
+				return reply.run;
 			}
 		} catch (cause) {
 			if (!current()) return;
@@ -2079,6 +2082,8 @@ export default function ProjectWorkbench({
 							transferBlocked={independentlyBlocked || modelsUnavailable}
 							current={currentReport}
 							generate={(logo) => void generate(logo)}
+							prepareExport={(logo) => generate(logo, false)}
+							acceptExport={accepted}
 							askGenie={(run) => setGenieReportId(run.id)}
 							recheck={recheck}
 						/>

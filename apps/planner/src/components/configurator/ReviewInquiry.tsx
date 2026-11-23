@@ -195,21 +195,23 @@ export function ReviewInquiry({
 		Boolean(pendingInquiry(scope, project)),
 	);
 	// The next form consumes the draft only for the same owned project.
-	const save = useCallback(() => {
-		const form = host.current?.querySelector("form");
-		if (!form || posting.current || !client.isCurrentScope(scope)) return;
-		const values = readCustomerFields(form, retained.current);
-		retained.current = values;
-		if (values.size)
-			window.sessionStorage.setItem(
-				DRAFT_KEY,
-				JSON.stringify({
-					scope,
-					projectId,
-					fields: Object.fromEntries(values),
-				}),
-			);
-	}, [client, projectId, scope]);
+	const save = useCallback(
+		(form = host.current?.querySelector("form")) => {
+			if (!form || posting.current || !client.isCurrentScope(scope)) return;
+			const values = readCustomerFields(form, retained.current);
+			retained.current = values;
+			if (values.size)
+				window.sessionStorage.setItem(
+					DRAFT_KEY,
+					JSON.stringify({
+						scope,
+						projectId,
+						fields: Object.fromEntries(values),
+					}),
+				);
+		},
+		[client, projectId, scope],
+	);
 	useEffect(() => {
 		const onPageHide = (event: PageTransitionEvent) => {
 			try {
@@ -400,7 +402,14 @@ export function ReviewInquiry({
 			window.clearTimeout(expiry);
 			abort();
 			const form = node.querySelector("form");
-			if (form) retained.current = readCustomerFields(form, retained.current);
+			if (form) {
+				retained.current = readCustomerFields(form, retained.current);
+				try {
+					save(form);
+				} catch {
+					// A download can continue in the same mounted form without browser storage.
+				}
+			}
 			node.replaceChildren();
 		};
 	}, [
@@ -412,6 +421,7 @@ export function ReviewInquiry({
 		attempt,
 		recheck,
 		ready,
+		save,
 		reportRunId,
 	]);
 	const editConfiguration = enterDetails
