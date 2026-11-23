@@ -1379,3 +1379,45 @@ test("measure the plan without changing the roof, then save and reopen an exclus
 	await click("Open roof layout");
 	assert.ok(document.querySelector(".sc-keepout-shape"));
 });
+
+test("the plan offers only the located aerial source and retains the drawn roof when the visitor withdraws", async (t) => {
+	const inputs = {
+		brief: {
+			...emptyBrief(),
+			site: {
+				...emptyBrief().site,
+				country_code: "NL",
+				location_label: "Amsterdam",
+				latitude: 52.36,
+				longitude: 4.88,
+			},
+		},
+		geometry: structuredClone(flat),
+	};
+	const app = await mount(
+		t,
+		inputs,
+		aerial,
+		null,
+		"en",
+		{ latitude: 52.36, longitude: 4.88 },
+		{ initialPlan: true },
+	);
+	await until(() =>
+		[...document.querySelectorAll("button")].some(
+			(el) => el.textContent.trim() === "Allow aerial map",
+		),
+	);
+	assert.equal(document.querySelector("[data-map-status]"), null);
+	await click("Allow aerial map");
+	await until(() =>
+		[...document.querySelectorAll("button")].some(
+			(el) =>
+				el.textContent.trim() === "Hide aerial map" &&
+				el.getAttribute("aria-pressed") === "true",
+		),
+	);
+	await click("Hide aerial map");
+	assert.equal(button("Show aerial map").getAttribute("aria-pressed"), "false");
+	assert.deepEqual(app.inputs.geometry, inputs.geometry);
+});

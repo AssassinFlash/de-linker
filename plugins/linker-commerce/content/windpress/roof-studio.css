@@ -11,11 +11,11 @@
     background: var(--proto-neutral-0); overflow: clip;
   }
   .sc-studio-tools {
-    display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--proto-space-2);
+    display: flex; gap: var(--proto-space-2);
     padding: var(--proto-space-4); border-block-end: 1px solid var(--proto-color-line);
   }
   .sc-configurator .sc-studio-tools button {
-    min-width: 0; min-height: 44px; padding: 4px 6px; white-space: nowrap; font-size: 13px;
+    min-width: 0; min-height: 44px; padding: 4px 14px; white-space: nowrap; font-size: 13px;
     font-weight: 600; color: var(--proto-ink-deep); background: white; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-sm);
   }
   .sc-configurator .sc-studio-tools button[aria-pressed=true] {
@@ -61,6 +61,9 @@
   .sc-edge-rule strong { display: flex; align-items: center; min-height: 48px; border-radius: var(--proto-radius-sm); border: 1px solid var(--proto-color-line); padding-inline: var(--proto-space-3); }
   .sc-roof-face-summary { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--proto-space-2); }
   .sc-roof-face-summary span { white-space: nowrap; }
+  .sc-configurator .sc-roof-inspector .sc-site-next { margin: 0; padding: var(--proto-space-4); border-top: 1px solid var(--proto-color-line); }
+  .sc-configurator .sc-roof-inspector .sc-site-next button { width: 100%; }
+  .sc-configurator .sc-solar > [hidden] { display: none; }
   .sc-map-consent { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--proto-space-3); padding: var(--proto-space-3) var(--proto-space-4); background: var(--proto-teal-50); }
   .sc-map-consent span { flex: 1 1 14rem; color: var(--proto-ink-deep); font-size: 13px; }
   .sc-studio-canvas .sc-map-host { height: clamp(300px, 45vw, 490px); }
@@ -68,7 +71,7 @@
     .sc-roof-studio .sc-roof-layout { grid-template-columns: minmax(0,1fr); }
   }
   @media (max-width: 580px) {
-    .sc-configurator .sc-studio-tools { gap: 4px; padding: 8px; }
+    .sc-configurator .sc-studio-tools { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 4px; padding: 8px; }
     .sc-configurator .sc-studio-tools button { font-size: 12px; padding-inline: 2px; }
     .sc-configurator .sc-roof-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
     .sc-studio-canvas .sc-roof-tools { padding-inline: 8px; }

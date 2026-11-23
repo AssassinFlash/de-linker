@@ -6,6 +6,7 @@ const tabs: readonly RoofTab[] = ["geometry", "modules", "summary"];
 
 export function RoofInspector({
 	tab,
+	foot,
 	change,
 	locked,
 	geometry,
@@ -13,6 +14,7 @@ export function RoofInspector({
 	summary,
 }: {
 	tab: RoofTab;
+	foot: ReactNode;
 	change: (tab: RoofTab) => void;
 	locked: boolean;
 	geometry: ReactNode;
@@ -78,6 +80,7 @@ export function RoofInspector({
 					{panels[name]}
 				</div>
 			))}
+			{foot}
 		</aside>
 	);
 }

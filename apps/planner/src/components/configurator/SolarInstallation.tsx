@@ -1,3 +1,4 @@
+import { onMapConsentChange } from "../../data/roofImageryConsent.ts";
 import { LayoutRulesForm } from "../design/LayoutRulesForm.tsx";
 import { RoofInspector, type RoofTab } from "../design/RoofInspector.tsx";
 import { useQuery } from "@tanstack/react-query";
@@ -259,7 +260,7 @@ export function SolarInstallation({
 			site.postal_code,
 			site.location_label,
 		],
-		enabled: map && !blocked && Boolean(placeQuery.trim()),
+		enabled: editingLayout && !blocked && Boolean(placeQuery.trim()),
 		retry: false,
 		queryFn: async ({ signal }) => {
 			const reply = readObject(
@@ -286,6 +287,27 @@ export function SolarInstallation({
 		refetchOnWindowFocus: false,
 	});
 	const viewingImagery = imagery.data?.viewingImagery ?? null;
+	const planImagery = imagery.data?.imagery ?? viewingImagery;
+	const requestedImagery = useRef<string | null>(null);
+	useEffect(() => {
+		const clear = () => {
+			requestedImagery.current = null;
+		};
+		const stop = onMapConsentChange(clear);
+		window.addEventListener("pagehide", clear);
+		return () => {
+			stop();
+			window.removeEventListener("pagehide", clear);
+		};
+	}, []);
+	const takeMapConsent = useCallback(
+		(source: PlaceImagery) => {
+			const matches = requestedImagery.current === imagerySourceKey(source);
+			requestedImagery.current = null;
+			return matches || (takeImageryConsent?.(source) ?? false);
+		},
+		[takeImageryConsent],
+	);
 	const viewOnly = !imagery.data?.imagery && viewingImagery !== null;
 	const noAerial =
 		map && imagery.isSuccess && !imagery.data.imagery && !viewingImagery;
@@ -1398,6 +1420,28 @@ export function SolarInstallation({
 			{field("gap", __("Module gap", "linker-tools"))}
 		</div>
 	);
+	const continueToEnergy = (
+		<footer className="sc-next sc-site-next">
+			<button
+				type="button"
+				disabled={
+					!coordinatesValid ||
+					blocked ||
+					calibrationOpen ||
+					editingRules ||
+					importOpen ||
+					roofPropertyInvalid ||
+					(editingPanel && !module) ||
+					vertices.length > 0
+				}
+				onClick={() => {
+					if (mode !== "roof" || applyPanelChanges()) next();
+				}}
+			>
+				{__("Continue with energy use", "linker-tools")} <Icon name="arrow" />
+			</button>
+		</footer>
+	);
 	return (
 		<section className="sc-solar">
 			<header className="sc-section-head" hidden={editingLayout}>
@@ -1738,49 +1782,33 @@ export function SolarInstallation({
 										</button>
 									))}
 								</div>
-								<div
-									className="sc-roof-tools"
-									role="group"
-									aria-label={__("Plan view controls", "linker-tools")}
-								>
-									<button
-										type="button"
-										disabled={!undo.length}
-										onClick={undoRoofEdit}
-									>
-										{__("Undo", "linker-tools")}
-									</button>
-									<button
-										type="button"
-										disabled={!selected}
-										onClick={removeSelected}
-									>
-										{__("Remove selected", "linker-tools")}
-									</button>
-									{(
-										[
-											["plan", __("Plan view", "linker-tools")],
-											["scene", __("3D view", "linker-tools")],
-											["map", __("Aerial map", "linker-tools")],
-										] as const
-									).map(([value, label]) => (
+								{view === "plan" && planImagery && (
+									<div className="sc-map-consent">
+										<span id={choicesId + "-provider"}>
+											{sprintf(
+												__(
+													"Allow %s to load the map using your IP address and the area shown.",
+													"linker-tools",
+												),
+												planImagery.credit,
+											)}
+										</span>
 										<button
 											type="button"
-											key={value}
-											aria-pressed={view === value}
-											disabled={
-												(value === "scene" && !roof) || vertices.length > 0
-											}
+											className="sc-button btn-secondary"
+											disabled={vertices.length > 0}
+											aria-describedby={choicesId + "-provider"}
 											onClick={() => {
-												setView(value);
-												if (value === "scene" || tool === "measure")
-													startTool("select");
+												requestedImagery.current =
+													imagerySourceKey(planImagery);
+												startTool("select");
+												setView("map");
 											}}
 										>
-											{label}
+											{__("Allow aerial map", "linker-tools")}
 										</button>
-									))}
-								</div>
+									</div>
+								)}
 								{map && imagery.isError && (
 									<div role="alert">
 										<p>
@@ -1803,7 +1831,7 @@ export function SolarInstallation({
 										imagery={imagery.data?.imagery ?? viewingImagery}
 										viewOnly={viewOnly}
 										onAerialReady={setReadyAerial}
-										takeImageryConsent={takeImageryConsent}
+										takeImageryConsent={takeMapConsent}
 										siteOutline={outline.data ?? null}
 										document={geometry}
 										poses={poses}
@@ -2040,6 +2068,49 @@ export function SolarInstallation({
 															)}
 									</p>
 								)}
+								<div
+									className="sc-roof-tools"
+									role="group"
+									aria-label={__("Plan view controls", "linker-tools")}
+								>
+									<button
+										type="button"
+										disabled={!undo.length}
+										onClick={undoRoofEdit}
+									>
+										{__("Undo", "linker-tools")}
+									</button>
+									<button
+										type="button"
+										disabled={!selected}
+										onClick={removeSelected}
+									>
+										{__("Remove selected", "linker-tools")}
+									</button>
+									{(
+										[
+											["plan", __("Plan view", "linker-tools")],
+											["scene", __("3D view", "linker-tools")],
+											["map", __("Aerial map", "linker-tools")],
+										] as const
+									).map(([value, label]) => (
+										<button
+											type="button"
+											key={value}
+											aria-pressed={view === value}
+											disabled={
+												(value === "scene" && !roof) || vertices.length > 0
+											}
+											onClick={() => {
+												setView(value);
+												if (value === "scene" || tool === "measure")
+													startTool("select");
+											}}
+										>
+											{label}
+										</button>
+									))}
+								</div>
 								<dl className="sc-roof-metrics">
 									{metrics.map(([label, value]) => (
 										<div key={label}>
@@ -2051,6 +2122,7 @@ export function SolarInstallation({
 							</div>
 							<RoofInspector
 								tab={inspector}
+								foot={continueToEnergy}
 								change={setInspector}
 								locked={roofPropertyInvalid || calibrationOpen || editingRules}
 								geometry={
@@ -2646,26 +2718,7 @@ export function SolarInstallation({
 				</div>
 			)}
 			{wiring}
-			<footer className="sc-next sc-site-next">
-				<button
-					type="button"
-					disabled={
-						!coordinatesValid ||
-						blocked ||
-						calibrationOpen ||
-						editingRules ||
-						importOpen ||
-						roofPropertyInvalid ||
-						(editingPanel && !module) ||
-						vertices.length > 0
-					}
-					onClick={() => {
-						if (mode !== "roof" || applyPanelChanges()) next();
-					}}
-				>
-					{__("Continue with energy use", "linker-tools")} <Icon name="arrow" />
-				</button>
-			</footer>
+			{!editingLayout && continueToEnergy}
 		</section>
 	);
 }
