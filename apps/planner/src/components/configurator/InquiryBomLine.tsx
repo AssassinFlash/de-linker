@@ -66,7 +66,11 @@ export function InquiryBomLine({
 	return (
 		<div className="linker-inquiry-line">
 			{productUrl ? (
-				<a className="linker-inquiry-product" href={productUrl}>
+				<a
+					className="linker-inquiry-product"
+					href={productUrl}
+					title={line.highlight ?? undefined}
+				>
 					{identity}
 				</a>
 			) : (

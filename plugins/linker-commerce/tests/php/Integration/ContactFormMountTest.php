@@ -72,10 +72,10 @@ final class ContactFormMountTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'name="lang" value="de"', $html );
 		$this->assertStringContainsString( 'Ihre Frage', $html );
 		$this->assertStringContainsString( 'Wie können wir helfen?', $html );
-		$this->assertStringContainsString( 'Wohin dürfen wir antworten?', $html );
+		$this->assertStringContainsString( 'E-Mail-Adresse', $html );
 		$this->assertStringContainsString( 'Nachricht senden', $html );
-		$this->assertStringContainsString( 'Lieber per E-Mail?', $html );
-		$this->assertStringContainsString( 'Noch in der Orientierung?', $html );
+		$this->assertStringContainsString( 'Vertrieb und technischer Support', $html );
+		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );
 	}
 

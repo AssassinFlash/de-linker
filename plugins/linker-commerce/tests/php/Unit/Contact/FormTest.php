@@ -72,9 +72,7 @@ final class FormTest extends TestCase {
 
 		// The heading block: eyebrow, heading, lead.
 		$this->assertStringContainsString( 'linker-contact-head', $html );
-		$this->assertStringContainsString( 'CONTACT LINKER', $html );
 		$this->assertStringContainsString( '<h2>What can we help with?</h2>', $html );
-		$this->assertStringContainsString( '<p>Tell us what you need.</p>', $html );
 
 		// The question block: its label and the prompt as the placeholder.
 		$this->assertStringContainsString( 'id="linker-contact-message"', $html );
@@ -192,8 +190,6 @@ final class FormTest extends TestCase {
 		$this->assertStringContainsString( 'href="mailto:sales@de-linker.com"', $html );
 		$this->assertStringContainsString( 'The Linker team replies within one business day.', $html );
 		$this->assertStringContainsString( 'linker-contact-explore', $html );
-		$this->assertStringContainsString( 'Still exploring?', $html );
-		$this->assertStringContainsString( 'Take your time.', $html );
 		$this->assertStringContainsString( 'Use Genie to explore the options, then return to your question.', $html );
 		$this->assertStringContainsString( 'href="http://site/genie/"', $html );
 		$this->assertStringContainsString( 'Explore with Genie', $html );

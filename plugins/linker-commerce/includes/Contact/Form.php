@@ -153,9 +153,7 @@ final class Form {
 		}
 
 		$html .= '<div class="linker-contact-head">';
-		$html .= '<span class="linker-contact-overline">' . esc_html__( 'CONTACT LINKER', 'linker-commerce' ) . '</span>';
 		$html .= '<h2>' . esc_html__( 'What can we help with?', 'linker-commerce' ) . '</h2>';
-		$html .= '<p>' . esc_html__( 'Tell us what you need.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 
 		$html .= LanguageDraft::notice();
@@ -253,13 +251,11 @@ final class Form {
 		$email = ( new Options() )->team_mailbox();
 		$html  = '<aside class="linker-contact-rail">';
 		$html .= '<div class="linker-contact-rail-card linker-contact-email">';
-		$html .= '<span class="linker-contact-overline">' . esc_html__( 'Sales and technical support', 'linker-commerce' ) . '</span>';
+		$html .= '<h2 class="linker-contact-rail-title">' . esc_html__( 'Sales and technical support', 'linker-commerce' ) . '</h2>';
 		$html .= '<a class="linker-contact-address" href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a>';
 		$html .= '<p>' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-rail-card linker-contact-explore">';
-		$html .= '<span class="linker-contact-overline">' . esc_html__( 'Still exploring?', 'linker-commerce' ) . '</span>';
-		$html .= '<h3>' . esc_html__( 'Take your time.', 'linker-commerce' ) . '</h3>';
 		$html .= '<p>' . esc_html__( 'Use Genie to explore the options, then return to your question.', 'linker-commerce' ) . '</p>';
 		$html .= '<a href="' . esc_url( $this->genie_url() ) . '">' . esc_html__( 'Explore with Genie', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></a>';
 		$html .= '</div>';

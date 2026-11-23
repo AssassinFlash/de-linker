@@ -22,6 +22,7 @@
 	function syncDraftState() {
 		const form = draftForm();
 		const busy = Boolean( form?.classList.contains( 'processing' ) );
+		form?.querySelectorAll( '[data-quantity-step][hidden]' ).forEach( ( button ) => { button.hidden = false; } );
 		if ( send ) {
 			send.disabled = busy;
 		}
