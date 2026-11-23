@@ -62,7 +62,7 @@ async function mount(
 		return React.createElement(SolarInstallation, {
 			...mapEntry,
 			inputs,
-			config: { locale, mapModuleUrl: null },
+			config: { locale, mapModuleUrl: null, ...mapEntry.config },
 			session: { query_scope: "test" },
 			client: {
 				isCurrentScope: () => true,
@@ -1422,4 +1422,89 @@ test("the plan offers only the located aerial source and retains the drawn roof 
 	await click("Hide aerial map");
 	assert.equal(button("Show aerial map").getAttribute("aria-pressed"), "false");
 	assert.deepEqual(app.inputs.geometry, inputs.geometry);
+});
+
+test("a measured roof without a map position can supply coordinates without changing its survey origin", async (t) => {
+	const brief = emptyBrief();
+	brief.site = {
+		...brief.site,
+		country_code: "NL",
+		location_label: "Amsterdam",
+	};
+	const inputs = { brief, geometry: structuredClone(flat) };
+	const app = await mount(
+		t,
+		inputs,
+		aerial,
+		null,
+		"en",
+		{ latitude: null, longitude: null },
+		{ initialPlan: true },
+	);
+	await until(() => document.querySelector(".sc-studio-location"));
+	await click("Enter map coordinates");
+	const form = document.querySelector(".sc-studio-location");
+	await enter(form.querySelector('input[name="latitude"]'), "52.36");
+	await enter(form.querySelector('input[name="longitude"]'), "4.88");
+	await until(() =>
+		[...document.querySelectorAll("button")].some(
+			(el) => el.textContent.trim() === "Allow aerial map",
+		),
+	);
+	assert.equal(app.inputs.geometry.coordinate_system.anchor, null);
+	assert.equal(app.inputs.brief.site.latitude, 52.36);
+	assert.equal(app.inputs.brief.site.longitude, 4.88);
+	assert.equal(document.querySelector("[data-map-status]"), null);
+});
+
+test("an installer can locate the project address explicitly and retry a failed lookup with the measured roof intact", async (t) => {
+	const brief = emptyBrief();
+	brief.site = {
+		...brief.site,
+		country_code: "NL",
+		location_label: "Museumstraat 1, Amsterdam",
+	};
+	const original = structuredClone(flat);
+	const app = await mount(
+		t,
+		{ brief, geometry: original },
+		aerial,
+		null,
+		"en",
+		{},
+		{ initialPlan: true, config: { googleMapsApiKey: "fixture" } },
+	);
+	let searches = 0;
+	t.mock.method(globalThis, "fetch", async (url, options) => {
+		assert.equal(url, "https://places.googleapis.com/v1/places:searchText");
+		assert.equal(
+			JSON.parse(options.body).textQuery,
+			"Museumstraat 1, Amsterdam",
+		);
+		searches++;
+		if (searches === 1) return new Response(null, { status: 503 });
+		return Response.json({
+			places: [
+				{
+					formattedAddress: "Museumstraat 1, 1071 XX Amsterdam",
+					location: { latitude: 52.36, longitude: 4.88 },
+					addressComponents: [{ types: ["country"], shortText: "NL" }],
+				},
+			],
+		});
+	});
+	await until(() => document.querySelector(".sc-studio-location"));
+	assert.equal(searches, 0);
+	await click("Find this address with Google Maps");
+	assert.equal(searches, 1);
+	assert.ok(
+		document.querySelector('.sc-studio-location input[name="latitude"]'),
+	);
+	assert.equal(app.inputs.brief.site.latitude, null);
+	await click("Find this address with Google Maps");
+	assert.equal(searches, 2);
+	assert.equal(app.inputs.brief.site.longitude, 4.88);
+	assert.equal(app.inputs.brief.site.latitude, 52.36);
+	assert.deepEqual(app.inputs.geometry, original);
+	assert.equal(document.querySelector("[data-map-status]"), null);
 });

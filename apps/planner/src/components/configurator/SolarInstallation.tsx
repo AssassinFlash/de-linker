@@ -1,3 +1,4 @@
+import { locateProjectSite } from "../../data/googleMaps.ts";
 import { onMapConsentChange } from "../../data/roofImageryConsent.ts";
 import { LayoutRulesForm } from "../design/LayoutRulesForm.tsx";
 import { RoofInspector, type RoofTab } from "../design/RoofInspector.tsx";
@@ -323,6 +324,48 @@ export function SolarInstallation({
 		typeof lookedUpLongitude === "number"
 			? ([lookedUpLongitude, lookedUpLatitude] as const)
 			: null);
+
+	const [manualLocation, setManualLocation] = useState(false);
+	const [locating, setLocating] = useState(false);
+	const [locationError, setLocationError] = useState(false);
+	const locationRequest = useRef(0);
+	useEffect(() => {
+		setLocating(false);
+		setLocationError(false);
+		return () => {
+			locationRequest.current++;
+		};
+	}, [view, active, session.query_scope, geometryImport?.projectId]);
+	const positioned = siteCentre !== null || mapReferenced;
+	const showLocation =
+		editingLayout &&
+		view !== "scene" &&
+		(manualLocation || (!positioned && (map || !!planImagery)));
+	async function findAddress() {
+		const request = ++locationRequest.current;
+		setLocating(true);
+		setLocationError(false);
+		const located = await locateProjectSite(site, config).catch(() => null);
+		if (
+			request !== locationRequest.current ||
+			!client.isCurrentScope(session.query_scope)
+		)
+			return;
+		setLocating(false);
+		if (!located) {
+			setLocationError(true);
+			setManualLocation(true);
+			return;
+		}
+		edit((current) => {
+			const brief = readBrief(current.brief);
+			if (!sameJson(brief.site, site)) return current;
+			return {
+				...invalidateEnergyReplay(current),
+				brief: { ...brief, site: located },
+			};
+		});
+	}
 	const firstMapRoof = siteCentre !== null && canAnchorFirstMapRoof(geometry);
 	const [calibrationOpen, setCalibrationOpen] = useState(false);
 	const [editingRules, setEditingRules] = useState(false);
@@ -1783,33 +1826,86 @@ export function SolarInstallation({
 										</button>
 									))}
 								</div>
-								{view === "plan" && planImagery && (
-									<div className="sc-map-consent">
-										<span id={choicesId + "-provider"}>
-											{sprintf(
-												__(
-													"Allow %s to load the map using your IP address and the area shown.",
-													"linker-tools",
-												),
-												planImagery.credit,
+								{showLocation && (
+									<div className="sc-studio-location">
+										{!positioned &&
+											config.googleMapsApiKey &&
+											site.country_code &&
+											site.location_label.trim() && (
+												<button
+													className="sc-button"
+													type="button"
+													disabled={locating}
+													onClick={() => void findAddress()}
+												>
+													{locating
+														? __("Finding the site…", "linker-tools")
+														: __(
+																"Find this address with Google Maps",
+																"linker-tools",
+															)}
+												</button>
 											)}
-										</span>
-										<button
-											type="button"
-											className="sc-button btn-secondary"
-											disabled={vertices.length > 0}
-											aria-describedby={choicesId + "-provider"}
-											onClick={() => {
-												requestedImagery.current =
-													imagerySourceKey(planImagery);
-												startTool("select");
-												setView("map");
-											}}
-										>
-											{__("Allow aerial map", "linker-tools")}
-										</button>
+										{locationError && (
+											<p role="alert">
+												{__(
+													"The address could not be located. Enter the coordinates to position the map.",
+													"linker-tools",
+												)}
+											</p>
+										)}
+										{manualLocation ? (
+											<div className="sc-fields">
+												<SiteCoordinates
+													site={site}
+													locale={config.locale}
+													change={coordinateChange}
+													onValidity={setCoordinatesValid}
+												/>
+											</div>
+										) : (
+											<button
+												type="button"
+												className="sc-button"
+												disabled={locating}
+												onClick={() => setManualLocation(true)}
+											>
+												{__("Enter map coordinates", "linker-tools")}
+											</button>
+										)}
 									</div>
 								)}
+								{view === "plan" &&
+									positioned &&
+									coordinatesValid &&
+									planImagery && (
+										<div className="sc-map-consent">
+											<span id={choicesId + "-provider"}>
+												{sprintf(
+													__(
+														"Allow %s to load the map using your IP address and the area shown.",
+														"linker-tools",
+													),
+													planImagery.credit,
+												)}
+											</span>
+											<button
+												type="button"
+												className="sc-button btn-secondary"
+												disabled={vertices.length > 0}
+												aria-describedby={choicesId + "-provider"}
+												onClick={() => {
+													setManualLocation(false);
+													requestedImagery.current =
+														imagerySourceKey(planImagery);
+													startTool("select");
+													setView("map");
+												}}
+											>
+												{__("Allow aerial map", "linker-tools")}
+											</button>
+										</div>
+									)}
 								{map && imagery.isError && (
 									<div role="alert">
 										<p>
@@ -1826,7 +1922,7 @@ export function SolarInstallation({
 										</button>
 									</div>
 								)}
-								{map ? (
+								{map && positioned ? (
 									<LazyMapViewport
 										mapModuleUrl={config.mapModuleUrl ?? null}
 										imagery={imagery.data?.imagery ?? viewingImagery}
@@ -2207,19 +2303,18 @@ export function SolarInstallation({
 														/>
 													</label>
 												))}
-												<button
-													type="button"
-													className="sc-edge-rule"
-													onClick={() => setEditingRules(!editingRules)}
-													aria-expanded={editingRules}
-												>
+												<div className="sc-field sc-edge-rule">
 													<span>{__("Edge clearance", "linker-tools")}</span>
-													<strong>
+													<button
+														type="button"
+														aria-expanded={editingRules}
+														onClick={() => setEditingRules(!editingRules)}
+													>
 														{edgeClearance == null
 															? __("Set clearance", "linker-tools")
 															: format(edgeClearance) + " m"}
-													</strong>
-												</button>
+													</button>
+												</div>
 											</div>
 										)}
 										{editingRules && roof && (
@@ -2441,8 +2536,7 @@ export function SolarInstallation({
 																(sum, ring) => sum + ringArea(ring),
 																0,
 															),
-													)}
-													 m²
+													) + " m²"}
 												</span>
 											</div>
 										))}
@@ -2489,7 +2583,7 @@ export function SolarInstallation({
 						)}
 					</p>
 					<div className="sc-fields">
-						{showCoordinates && (
+						{showCoordinates && !(showLocation && manualLocation) && (
 							<SiteCoordinates
 								site={site}
 								locale={config.locale}

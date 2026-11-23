@@ -92,7 +92,7 @@ export function RoofMapAction({
 		};
 	}, [country, permitted, sourceKey]);
 	return (
-		<div className="sc-field-wide">
+		<div className="sc-field-wide sc-roof-access">
 			<p className="sc-muted">
 				{__(
 					"Opening the map sends this address to Google Maps to find your building.",

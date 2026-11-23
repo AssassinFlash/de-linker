@@ -2,6 +2,12 @@
   .sc-configurator .sc-solar .sc-roof-studio {
     background: transparent; border: 0; box-shadow: none; padding: 0;
   }
+  .sc-configurator .sc-roof-access {
+    display: grid; justify-items: start; gap: var(--proto-space-3);
+    margin-top: var(--proto-space-2); padding: 20px; border: 1px solid var(--proto-color-line);
+    border-radius: var(--proto-radius-lg); background: var(--proto-neutral-50);
+  }
+  .sc-configurator .sc-roof-access > :is(p,label,button) { margin: 0; }
   .sc-roof-studio .sc-roof-layout {
     display: grid; grid-template-columns: minmax(0, 1fr) 368px;
     align-items: start; gap: var(--proto-space-5); min-width: 0;
@@ -57,8 +63,11 @@
   }
   .sc-configurator .sc-roof-inspector .sc-field { min-width: 0; }
   .sc-configurator .sc-roof-inspector .sc-selected-roof-properties .sc-field > span { white-space: nowrap; }
-  .sc-configurator .sc-roof-inspector .sc-edge-rule { border: 0; padding: 0; display: grid; gap: var(--proto-space-2); text-align: start; }
-  .sc-edge-rule strong { display: flex; align-items: center; min-height: 48px; border-radius: var(--proto-radius-sm); border: 1px solid var(--proto-color-line); padding-inline: var(--proto-space-3); }
+  .sc-configurator .sc-solar .sc-roof-inspector .sc-edge-rule button { min-height: 48px; background: var(--proto-neutral-0); text-align: start; }
+  .sc-configurator .sc-roof-studio .sc-roof-vertex { fill: var(--proto-neutral-0); stroke: var(--proto-teal-800); stroke-width: 2; vector-effect: non-scaling-stroke; cursor: grab; }
+  .sc-configurator .sc-roof-studio .sc-roof-shape { fill: var(--proto-neutral-0); stroke: var(--proto-teal-700); stroke-dasharray: 6 4; }
+  .sc-studio-location { display: flex; flex-wrap: wrap; align-items: center; gap: var(--proto-space-3); padding: var(--proto-space-3) var(--proto-space-4); background: var(--proto-neutral-50); }
+  .sc-studio-location .sc-fields { width: 100%; }
   .sc-roof-face-summary { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--proto-space-2); }
   .sc-roof-face-summary span { white-space: nowrap; }
   .sc-configurator .sc-roof-inspector .sc-site-next { margin: 0; padding: var(--proto-space-4); border-top: 1px solid var(--proto-color-line); }
