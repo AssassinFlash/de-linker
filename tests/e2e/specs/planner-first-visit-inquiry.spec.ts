@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { expect, test, type Page } from '@playwright/test';
 import {
 	applyTurnstileProfile,
@@ -590,5 +591,253 @@ for (const lang of ['en', 'de'] as const) {
 			).toContainText(result[0]);
 			await screenshot(page, `bare-receipt-${lang}-${width}`);
 		});
+	}
+}
+
+for (const lang of ['en', 'de'] as const) {
+	for (const width of [1440, 390]) {
+		test(
+			lang +
+				' ' +
+				width +
+				': a revised requested quantity reaches the PDF, materials CSV and Woo receipt',
+			async ({ page }) => {
+				const de = lang === 'de',
+					url = instance().url,
+					started = Date.now();
+				await page.setViewportSize({
+					width,
+					height: width === 390 ? 844 : 900,
+				});
+				await page.goto(url + (de ? '/de/' : '/'));
+				await page
+					.getByRole('button', {
+						name: de ? 'Alle ablehnen' : 'Reject all',
+						exact: true,
+					})
+					.click();
+				await page
+					.locator('#configurator-showcase')
+					.getByRole('link', {
+						name: de
+							? 'Konfigurator starten'
+							: 'Launch Configurator',
+						exact: true,
+					})
+					.click();
+				const intake = page
+					.locator('form[aria-label]')
+					.filter({ has: page.locator('[name=system_scope]') });
+				if (!(await intake.isVisible()))
+					await page
+						.getByRole('button', {
+							name: de
+								? 'Projektdaten eingeben'
+								: 'Enter project details',
+							exact: true,
+						})
+						.click();
+				await intake
+					.getByLabel(de ? 'Projektname' : 'Project name', {
+						exact: true,
+					})
+					.fill('C1 equipment ' + lang + ' ' + width);
+				await intake.locator('[name=country]').selectOption('DE');
+				await intake
+					.getByLabel(de ? 'Ort oder Standort' : 'Town or site')
+					.fill('Berlin');
+				await intake
+					.locator('select[name=system_scope]')
+					.selectOption('storage_only');
+				await intake
+					.getByLabel(de ? 'Nutzung des Standorts' : 'Site use')
+					.selectOption('residential');
+				await intake
+					.locator('select[name=project_purpose]')
+					.selectOption('backup');
+				await intake
+					.getByLabel(de ? 'Netzanschluss' : 'Grid connection')
+					.selectOption('3');
+				await intake
+					.getByLabel(de ? 'Ersatzstromlast' : 'Backup load')
+					.fill('3');
+				await intake
+					.getByLabel(de ? 'Gewünschte Dauer' : 'Required duration')
+					.fill('2');
+				await intake
+					.getByRole('button', {
+						name: de ? 'Systeme vergleichen' : 'Compare systems',
+						exact: true,
+					})
+					.click();
+				await page.waitForURL((u) => !!u.searchParams.get('project'));
+				const project = new URL(page.url()).searchParams.get(
+					'project'
+				)!;
+				bareProject = {
+					path: new URL(page.url()).pathname,
+					id: project,
+				};
+				const binding = (revision = 0) =>
+					page.waitForResponse(
+						(r) =>
+							r.request().method() === 'POST' &&
+							new URL(r.url()).pathname.endsWith(
+								'/inquiry/form'
+							) &&
+							r.request().postDataJSON().report_run_id &&
+							r.request().postDataJSON().revision > revision,
+						{ timeout: 120000 }
+					);
+				const first = binding();
+				await page
+					.getByRole('button', {
+						name: de
+							? 'Konfiguration übernehmen'
+							: 'Use this configuration',
+						exact: true,
+					})
+					.first()
+					.click({ timeout: 120000 });
+				const initial = (await first).request().postDataJSON();
+				const form = page.locator('form.linker-inquiry-form:visible'),
+					line = page
+						.locator(
+							'.sc-draft-transfer:visible .linker-inquiry-line'
+						)
+						.first();
+				const sku = await line
+					.locator('.linker-inquiry-sku')
+					.innerText();
+				const before = Number(
+					await line
+						.locator('.linker-inquiry-stepper > span')
+						.innerText()
+				);
+				const email = (inquiryEmail =
+					'e2e-procurement-' + Date.now() + '@example.test');
+				await form.locator('[name=name]').fill('C1 procurement');
+				await form.locator('[name=email]').fill(email);
+				const next = binding(initial.revision);
+				await line
+					.getByRole('button', {
+						name: de ? /erhöhen/i : /Increase quantity/i,
+					})
+					.click();
+				const changed = (await next).request().postDataJSON();
+				expect(changed.project_id).toBe(project);
+				expect(changed.revision).toBe(initial.revision + 1);
+				expect(changed.report_run_id).not.toBe(initial.report_run_id);
+				await expect(
+					line.locator('.linker-inquiry-stepper > span')
+				).toHaveText(String(before + 1));
+				await expect(form.locator('[name=email]')).toHaveValue(email);
+				await line.evaluate((el) =>
+					el.scrollIntoView({ block: 'center', behavior: 'instant' })
+				);
+				await screenshot(
+					page,
+					'matched-quantity-' + lang + '-' + width
+				);
+				const exports = page.locator('.sc-export-strip:visible');
+				const files: Record<string, string> = {};
+				for (const [kind, label] of [
+					['pdf', de ? 'PDF herunterladen' : 'Download PDF'],
+					['csv', /CSV/i],
+				] as const) {
+					const waiting = page.waitForEvent('download');
+					await exports
+						.getByRole('button', {
+							name: label,
+							exact: typeof label === 'string',
+						})
+						.click();
+					const download = await waiting;
+					const dest = test
+						.info()
+						.outputPath(
+							'procurement-' + lang + '-' + width + '.' + kind
+						);
+					await download.saveAs(dest);
+					files[kind] = dest;
+					expect(download.suggestedFilename()).toContain(
+						'-r' + changed.revision + '-'
+					);
+				}
+				const requested = de ? 'Anfragemenge' : 'Requested quantity';
+				const csv = execFileSync(
+					'python3',
+					[
+						'-c',
+						'import csv,json,sys; rows=list(csv.DictReader(open(sys.argv[1], encoding="utf-8-sig"))); print(json.dumps([r for r in rows if sys.argv[2] in r.values() and r.get(sys.argv[3])==sys.argv[4]]))',
+						files.csv!,
+						sku,
+						requested,
+						String(before + 1),
+					],
+					{ encoding: 'utf8' }
+				);
+				expect(JSON.parse(csv)).toHaveLength(1);
+				const pdf = execFileSync(
+					'pdftotext',
+					['-layout', files.pdf!, '-'],
+					{ encoding: 'utf8' }
+				).replace(/\s+/g, ' ');
+				expect(pdf).toContain(requested + ': ' + (before + 1));
+				await form.locator('[name=consent]').check();
+				await form
+					.getByRole('button', {
+						name: de ? 'Anfrage senden' : 'Send inquiry',
+						exact: true,
+					})
+					.click();
+				const receipt = page.getByRole('region', {
+					name: de ? 'Anfrage eingegangen' : 'Inquiry received',
+					exact: true,
+				});
+				await expect(receipt).toBeVisible({ timeout: 65000 });
+				const order = JSON.parse(
+					wp([
+						'eval',
+						String.raw`
+				$orders=wc_get_orders(['billing_email'=>'${email}','limit'=>1]); $o=$orders[0];
+				$c=\Linker\Commerce\Planning\Context::stored($o); $ref=reset($c)['reference']; $lines=[];
+				foreach($o->get_items() as $line){$p=wc_get_product(\Linker\Commerce\Products\Publication::canonical_id($line->get_product_id())); $lines[$p->get_sku()]=$line->get_quantity();}
+				echo wp_json_encode(['id'=>$o->get_id(),'number'=>$o->get_order_number(),'status'=>$o->get_status(),'reference'=>$ref,'lines'=>$lines]);`,
+					])
+				);
+				const number = String(order.number);
+				await expect(receipt).toContainText(number);
+				expect(order.status).toBe('inquiry-received');
+				expect(order.reference.revision).toBe(changed.revision);
+				expect(order.reference.report_run_id).toBe(
+					changed.report_run_id
+				);
+				expect(order.lines[sku]).toBe(before + 1);
+				await expect
+					.poll(() => receiptDelivery(order.id), {
+						timeout: 160000,
+						intervals: [1000, 2500],
+					})
+					.toBe('delivered');
+				const mail = since(started).filter((m) => m.to.includes(email));
+				expect(mail).toHaveLength(1);
+				expect(mail[0]!.subject).toContain(number);
+				await test.info().attach('procurement-readback', {
+					body: JSON.stringify({
+						lang,
+						width,
+						sku,
+						engineering: before,
+						requested: before + 1,
+						revision: changed.revision,
+						run: changed.report_run_id,
+						order: number,
+						mail: mail.length,
+					}),
+					contentType: 'application/json',
+				});
+			}
+		);
 	}
 }

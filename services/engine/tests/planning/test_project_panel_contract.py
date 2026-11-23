@@ -105,3 +105,12 @@ def test_saved_panel_data_survives_old_write_and_requires_supported_rollback(
     assert check_project_input_contracts(storage, list(SUPPORTED_INPUT_CONTRACTS))[
         "required_input_contracts"
     ] == [writer]
+
+
+def test_requested_quantities_cannot_be_erased_by_an_older_editor() -> None:
+    inputs: Object = {
+        "inquiry_quantities": {"42": {"planned_purchase": 1, "requested": 2}}
+    }
+    with pytest.raises(ProjectInputContractRequired):
+        require_input_contract(inputs, {}, "project_panel_parameters_v1")
+    require_input_contract(inputs, {}, "inquiry_quantities_v1")
