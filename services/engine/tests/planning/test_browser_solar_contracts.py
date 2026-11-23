@@ -47,6 +47,15 @@ def preparation_fixture() -> dict[str, Any]:
 
 HOST_DERIVED_FIXTURE_PATHS = frozenset(
     {
+        ("direct_beam", "report_run", "result", "prepared_asset", "content_sha256"),
+        (
+            "direct_beam",
+            "report_run",
+            "result",
+            "dependencies",
+            "prepared_asset_content",
+        ),
+        ("direct_beam", "report_run", "result_sha256"),
         ("geometric_pv", "profile_asset", "content_sha256"),
         ("geometric_pv", "profile_asset", "metadata", "dependencies", "model.witness"),
         ("geometric_pv", "profile_asset", "metadata_sha256"),
