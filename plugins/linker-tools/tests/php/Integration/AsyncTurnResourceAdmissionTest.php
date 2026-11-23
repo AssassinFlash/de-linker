@@ -159,8 +159,34 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$peer->close();
 			}
 
+			$recover = in_array( $outcome, array( 'receipt-poll', 'receipt-cron' ), true );
+			if ( $recover ) {
+				$interrupt = static function ( array $post ) {
+					if ( Replies::TYPE === $post['post_type'] ) {
+						$post['post_content'] = '';
+					}
+					return $post;
+				};
+				add_filter( 'wp_insert_post_data', $interrupt );
+				try {
+					$interrupted = $proxy->poll( $poll );
+					$this->assertInstanceOf( WP_Error::class, $interrupted );
+					$this->assertSame( 503, $interrupted->get_error_data()['status'] );
+					$this->assertArrayNotHasKey( 'unrecorded', $interrupted->get_error_data() );
+				} finally {
+					remove_filter( 'wp_insert_post_data', $interrupt );
+				}
+				$this->assertSame( $operation, ( new \Linker\Tools\Genie\Thread() )->read( $id )['operation_id'] ?? null );
+				$input               = \Linker\Tools\Genie\PendingTurns::current( $id );
+				$input['started_at'] = time() - Proxy::TURN_BUDGET - 1;
+				update_post_meta( $id, \Linker\Tools\Genie\PendingTurns::PENDING, wp_slash( $input ) );
+				if ( 'receipt-cron' === $outcome ) {
+					\Linker\Tools\Genie\PendingTurns::expire( $id, $job );
+					$this->assertSame( array(), \Linker\Tools\Genie\PendingTurns::current( $id ) );
+				}
+			}
 			$final = $proxy->poll( $poll );
-			if ( 'completed' !== $outcome ) {
+			if ( ! $recover && 'completed' !== $outcome ) {
 				$this->assertInstanceOf( WP_Error::class, $final );
 				$this->assertSame( 'revoked' === $outcome ? 409 : 503, $final->get_error_data()['status'] );
 				$this->assertTrue( $final->get_error_data()['unrecorded'] );
@@ -211,10 +237,12 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 	 */
 	public static function async_outcomes(): array {
 		return array(
-			'checked'               => array( 'completed' ),
-			'publication withdrawn' => array( 'revoked' ),
-			'worker failed'         => array( 'failed' ),
-			'deadline'              => array( 'expired' ),
+			'resume committed after deadline' => array( 'receipt-poll' ),
+			'cron recovers unsigned receipt'  => array( 'receipt-cron' ),
+			'checked'                         => array( 'completed' ),
+			'publication withdrawn'           => array( 'revoked' ),
+			'worker failed'                   => array( 'failed' ),
+			'deadline'                        => array( 'expired' ),
 		);
 	}
 }

@@ -11,6 +11,8 @@ namespace Linker\Tools\Genie;
 
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Tools\Protection\Replies;
+use WP_Error;
+use WP_REST_Response;
 
 /** Keep only the question, its publication basis and the service job until finalization. */
 final class PendingTurns {
@@ -115,11 +117,45 @@ final class PendingTurns {
 			static function () use ( $conversation, $job ): void {
 				wp_cache_delete( $conversation, 'post_meta' );
 				$current = self::current( $conversation );
-				if ( ( $current['job_id'] ?? null ) === $job ) {
+				if ( ( $current['job_id'] ?? null ) === $job && null === self::recover( $current ) ) {
 					self::fail( $current );
 				}
 			}
 		);
+	}
+
+	/** Recover an interrupted receipt write from the checked, already committed conversation.
+	 * Cron keeps an unsigned receipt. Only its authenticated reader may release actions.
+	 *
+	 * @param array<string,mixed> $turn Pending context under the native operation lock.
+	 * @return true|WP_Error|null Null when the turn has not committed.
+	 */
+	public static function recover( array $turn ): true|WP_Error|null {
+		$id     = $turn['conversation_id'];
+		$marker = get_post_meta( $id, Thread::COMPLETION, true );
+		if ( ( $marker['operation_id'] ?? null ) !== $turn['operation_id'] ) {
+			return null;
+		}
+		$saved = ( new Thread() )->read( $id );
+		if ( ( $saved['operation_id'] ?? null ) !== $turn['operation_id'] || ( $saved['operation_fingerprint'] ?? null ) !== $turn['fingerprint'] ) {
+			return new WP_Error( 'linker_resource_result', 'The saved turn could not be confirmed.', array( 'status' => 503 ) );
+		}
+		$reply = new WP_REST_Response(
+			array(
+				'job_id'          => $turn['job_id'],
+				'conversation_id' => $id,
+				'status'          => 'completed',
+				'stream'          => $saved['stream'],
+			)
+		);
+		( new PublicationGuard() )->remember( $reply, $turn['publication'] );
+		$conversations = new Conversations();
+		$conversations->resume_pending_guest( $id );
+		if ( ! $conversations->publish_answer( $id ) || ( new Replies() )->finish( $turn['receipt'], $reply, $turn['locale'] ) !== $turn['receipt'] ) {
+			return new WP_Error( 'linker_resource_result', 'The saved turn could not be confirmed.', array( 'status' => 503 ) );
+		}
+		self::clear( $turn );
+		return true;
 	}
 
 	/** Called with the operation lock held for a known unrecorded outcome.
@@ -127,10 +163,10 @@ final class PendingTurns {
 	 * @param array<string,mixed> $turn Pending context.
 	 */
 	public static function fail( array $turn ): void {
-		self::clear( $turn );
 		if ( 'auto-draft' === get_post_status( $turn['conversation_id'] ) ) {
 			wp_delete_post( $turn['conversation_id'], true );
 		}
+		self::clear( $turn );
 		wp_delete_post( $turn['receipt'], true );
 	}
 }

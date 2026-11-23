@@ -77,7 +77,21 @@ final class ProxyTest extends TestCase {
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn( $thing ): bool => $thing instanceof WP_Error ) );
 		WP_Mock::userFunction(
 			'get_post_type',
-			array( 'return' => static fn( int $id ): string => 51 === $id || 52 === $id ? Conversations::POST_TYPE : 'post' )
+			array( 'return' => static fn( int $id ): string => in_array( $id, array( 51, 52, 53 ), true ) ? Conversations::POST_TYPE : 'post' )
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 52, \Linker\Tools\Genie\PendingTurns::PENDING, true ),
+				'return' => '',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 53, \Linker\Tools\Genie\PendingTurns::PENDING, true ),
+				'return' => array( 'job_id' => 'pending-test-job' ),
+			)
 		);
 		$calls  = array();
 		$thread = new RecordingThread();
@@ -93,6 +107,7 @@ final class ProxyTest extends TestCase {
 		$proxy->forget( 52 );
 		$this->assertSame( array(), $calls, 'no readings, no call' );
 
+		$proxy->forget( 53 );
 		$thread->kept_readings = array(
 			array(
 				'id'   => 'att1',
@@ -103,7 +118,7 @@ final class ProxyTest extends TestCase {
 		$proxy->forget( 51 );
 
 		$this->assertSame(
-			array( array( 'http://127.0.0.1:8890/assistant/conversation/51/forget', array( Proxy::TOKEN_HEADER => 'token' ) ) ),
+			array( array( 'http://127.0.0.1:8890/assistant/conversation/53/forget', array( Proxy::TOKEN_HEADER => 'token' ) ), array( 'http://127.0.0.1:8890/assistant/conversation/51/forget', array( Proxy::TOKEN_HEADER => 'token' ) ) ),
 			$calls
 		);
 	}

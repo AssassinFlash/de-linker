@@ -618,9 +618,8 @@ class Proxy {
 	 * @param float               $started Original start time.
 	 * @param string              $operation Verified operation.
 	 * @param string              $fingerprint Verified input.
-	 * @param bool                $resume Whether a previous terminal poll may already have committed.
 	 */
-	private function finish( int $conversation, array $messages, string $stream, array $publication, string $locale, float $started, string $operation, string $fingerprint, bool $resume = false ): WP_REST_Response|WP_Error {
+	private function finish( int $conversation, array $messages, string $stream, array $publication, string $locale, float $started, string $operation, string $fingerprint ): WP_REST_Response|WP_Error {
 		$permitted = $this->publication->validate( $publication );
 		if ( is_wp_error( $permitted ) ) {
 			return self::unrecorded( $permitted );
@@ -646,9 +645,7 @@ class Proxy {
 		if ( $left < 0 ) {
 			$left = 0;
 		}
-		$stored   = $resume ? $this->thread->read( $conversation ) : array();
-		$recorded = ( $stored['operation_id'] ?? null ) === $operation && ( $stored['operation_fingerprint'] ?? null ) === $fingerprint && $stored['stream'] === $split['stream'];
-		if ( ! $recorded && ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left, $operation, $fingerprint ) ) {
+		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left, $operation, $fingerprint ) ) {
 			// The answer was produced and is not stored. The other turn
 			// stays. The shell re-reads the thread, puts the question back
 			// in the field, and keeps the uploads so the customer can send
@@ -796,7 +793,11 @@ class Proxy {
 	 * @param array<string,mixed> $turn Pending native turn.
 	 */
 	private function poll_owned( array $turn ): WP_REST_Response|WP_Error {
-		$id = $turn['conversation_id'];
+		$id        = $turn['conversation_id'];
+		$recovered = PendingTurns::recover( $turn );
+		if ( null !== $recovered ) {
+			return is_wp_error( $recovered ) ? $recovered : ( new Replies() )->read( $turn['receipt'], $turn['owner_binding'] );
+		}
 		if ( microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
 			$result = self::job_error( 503 );
 		} else {
@@ -823,7 +824,7 @@ class Proxy {
 			return self::unrecorded( PublicationGuard::refused() );
 		}
 		$this->conversations->resume_pending_guest( $id );
-		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'], $turn['operation_id'], $turn['fingerprint'], true );
+		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'], $turn['operation_id'], $turn['fingerprint'] );
 		if ( is_wp_error( $reply ) ) {
 			if ( ! empty( $reply->get_error_data()['unrecorded'] ) ) {
 				PendingTurns::fail( $turn );
@@ -930,14 +931,14 @@ class Proxy {
 	 * staff): the reading text of its files leaves the service's turn log
 	 * too (#236, review round 1 of PR #309, item 6). Hooked on
 	 * `before_delete_post`, while the conversation's readings can still be
-	 * read; only a conversation with readings calls the service. A failure
+	 * read; a pending turn can still be producing its first reading. A failure
 	 * is logged, never fatal to the deletion: the turn log's own retention
 	 * removes the turn later.
 	 *
 	 * @param int $post_id The post being deleted.
 	 */
 	public function forget( int $post_id ): void {
-		if ( Conversations::POST_TYPE !== get_post_type( $post_id ) || array() === $this->thread->readings( $post_id ) ) {
+		if ( Conversations::POST_TYPE !== get_post_type( $post_id ) || ( array() === $this->thread->readings( $post_id ) && ! PendingTurns::current( $post_id ) ) ) {
 			return;
 		}
 		$base = $this->base();

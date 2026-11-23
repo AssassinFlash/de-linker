@@ -93,8 +93,9 @@ final class Replies {
 	 *
 	 * @param int              $id Native placeholder ID.
 	 * @param WP_REST_Response $reply Native response, PDF bytes encoded as JSON.
+	 * @param string|null      $release_locale Language of an unsigned Genie result recovered from its thread.
 	 */
-	public function finish( int $id, WP_REST_Response $reply ): int {
+	public function finish( int $id, WP_REST_Response $reply, ?string $release_locale = null ): int {
 		if ( self::TYPE !== get_post_type( $id ) || '' === (string) get_post_meta( $id, '_linker_binding', true ) ) {
 			return 0;
 		}
@@ -104,6 +105,7 @@ final class Replies {
 			'headers'          => $reply->get_headers(),
 			'publication'      => EnginePublication::dependencies( $reply ),
 			'publication_kind' => EnginePublication::kind( $reply ),
+			...( null !== $release_locale ? array( 'genie_release_locale' => $release_locale ) : array() ),
 			'binary'           => is_string( $data ),
 			'data'             => is_string( $data ) ? base64_encode( $data ) : $data, // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Binary PDF bytes inside a native JSON receipt.
 		);
@@ -150,6 +152,13 @@ final class Replies {
 			if ( is_wp_error( $valid ) ) {
 				return $valid;
 			}
+		}
+		if ( isset( $stored['genie_release_locale'] ) ) {
+			$stream = ( new \Linker\Tools\Genie\PublicationGuard() )->release( $stored['data']['stream'], $dependencies, $stored['genie_release_locale'] );
+			if ( is_wp_error( $stream ) ) {
+				return $stream;
+			}
+			$stored['data']['stream'] = $stream;
 		}
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Restore the authenticated private PDF response, never executable code.
 		$reply = new WP_REST_Response( ! empty( $stored['binary'] ) ? base64_decode( (string) $stored['data'], true ) : $stored['data'], (int) $stored['status'], (array) $stored['headers'] );
