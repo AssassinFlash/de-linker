@@ -1508,3 +1508,32 @@ test("an installer can locate the project address explicitly and retry a failed 
 	assert.deepEqual(app.inputs.geometry, original);
 	assert.equal(document.querySelector("[data-map-status]"), null);
 });
+
+test("the German roof inspector displays and saves fractional survey heights with decimal commas", async (t) => {
+	const geometry = structuredClone(flat);
+	geometry.sources[0].kind = "user_measurement";
+	geometry.sources[0].rights_basis = "user_attestation";
+	geometry.roofs[0].origin_enu[2] = 3.5;
+	const app = await mount(
+		t,
+		{ brief: emptyBrief(), geometry },
+		null,
+		null,
+		"de",
+		{},
+		{ initialPlan: true },
+	);
+	const height = document.querySelectorAll(
+		".sc-selected-roof-properties input",
+	)[2];
+	assert.equal(height.value, "3,5");
+	await enter(height, "4,25");
+	await act(async () =>
+		height.dispatchEvent(new window.FocusEvent("focusout", { bubbles: true })),
+	);
+	assert.equal(app.inputs.geometry.roofs[0].origin_enu[2], 4.25);
+	assert.equal(
+		document.querySelectorAll(".sc-selected-roof-properties input")[2].value,
+		"4,25",
+	);
+});

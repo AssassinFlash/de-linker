@@ -34,7 +34,11 @@ export function ModuleForm({
 				!!spec && commit({ type: "put_module", before: module, value: spec })
 			}
 		>
-			<PanelMeasurementFields fields={values} change={setValues} />
+			<PanelMeasurementFields
+				locale={locale}
+				fields={values}
+				change={setValues}
+			/>
 		</GeometryForm>
 	);
 }

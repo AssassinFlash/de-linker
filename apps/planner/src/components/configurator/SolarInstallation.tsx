@@ -64,7 +64,11 @@ import {
 } from "../../domain/pvgisReference.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import { readBrief } from "../../domain/brief.ts";
-import { formatComputedDecimal } from "../../domain/decimal.ts";
+import {
+	formatComputedDecimal,
+	formatDecimal,
+	parseDecimal,
+} from "../../domain/decimal.ts";
 import { LazySceneViewport } from "../design/LazySceneViewport.tsx";
 import { LazyMapViewport } from "../design/LazyMapViewport.tsx";
 import type { MapCamera } from "../design/MapViewport.tsx";
@@ -157,6 +161,14 @@ function roofProperties(roof: RoofFace) {
 		azimuth: ((bearing * 180) / Math.PI + 360) % 360,
 		height: roof.origin_enu[2],
 	};
+}
+
+function measurement(raw: string, locale: string): number {
+	try {
+		return parseDecimal(raw, locale, "point-or-comma") ?? NaN;
+	} catch {
+		return NaN;
+	}
 }
 
 const id = () => "solar_" + crypto.randomUUID();
@@ -492,7 +504,7 @@ export function SolarInstallation({
 		],
 	];
 	const numeric = (key: keyof typeof fields) => {
-		const value = fields[key].trim() ? Number(fields[key]) : NaN;
+		const value = measurement(fields[key], config.locale);
 		if (!Number.isFinite(value))
 			throw new Error(
 				__(
@@ -576,9 +588,10 @@ export function SolarInstallation({
 		target: HTMLInputElement,
 	) {
 		if (!roof || !selectedProperties || !editablePlane) return;
-		const value = target.valueAsNumber;
+		const value = measurement(target.value, config.locale);
 		const previous = Math.round(selectedProperties[key] * 100) / 100;
 		if (value === previous) {
+			target.value = formatDecimal(previous, config.locale);
 			if (target.hasAttribute("aria-invalid")) clearRoofPropertyError(target);
 			return;
 		}
@@ -614,7 +627,7 @@ export function SolarInstallation({
 		if (commit({ type: "put_roof", before: roof, value: next })) {
 			clearRoofPropertyError(target);
 		} else {
-			target.value = String(previous);
+			target.value = formatDecimal(previous, config.locale);
 		}
 	}
 
@@ -1214,9 +1227,17 @@ export function SolarInstallation({
 							? measuredWidth
 							: undefined
 				}
-				type="number"
-				step="any"
+				type="text"
+				inputMode="decimal"
 				value={fields[key]}
+				onBlur={() => {
+					const value = measurement(fields[key], config.locale);
+					if (Number.isFinite(value))
+						setFields((previous) => ({
+							...previous,
+							[key]: formatDecimal(value, config.locale),
+						}));
+				}}
 				onChange={(e) => {
 					const value = e.currentTarget.value;
 					setFields((previous) => ({ ...previous, [key]: value }));
@@ -1425,6 +1446,7 @@ export function SolarInstallation({
 			)}
 			{(!savedPanel || editingPanel) && (
 				<PanelMeasurementFields
+					locale={config.locale}
 					fields={measurements}
 					change={setMeasurements}
 				/>
@@ -2278,12 +2300,13 @@ export function SolarInstallation({
 															({unit})
 														</span>
 														<input
-															type="number"
-															step="any"
+															type="text"
+															inputMode="decimal"
 															aria-label={label}
-															defaultValue={
-																Math.round(selectedProperties[key] * 100) / 100
-															}
+															defaultValue={formatDecimal(
+																Math.round(selectedProperties[key] * 100) / 100,
+																config.locale,
+															)}
 															readOnly={!editablePlane}
 															onBlur={(event) =>
 																applyRoofProperty(key, event.currentTarget)
@@ -2291,8 +2314,10 @@ export function SolarInstallation({
 															onKeyDown={(event) => {
 																if (event.key === "Escape") {
 																	event.stopPropagation();
-																	event.currentTarget.value = String(
-																		selectedProperties[key],
+																	event.currentTarget.value = formatDecimal(
+																		Math.round(selectedProperties[key] * 100) /
+																			100,
+																		config.locale,
 																	);
 																	clearRoofPropertyError(event.currentTarget);
 																} else if (event.key === "Enter") {
