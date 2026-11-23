@@ -6,11 +6,13 @@ export function ProjectHeading({
 	location,
 	anchor,
 	actions,
+	mobileAssistant = true,
 }: {
 	title?: string;
 	location?: string;
 	anchor?: string;
 	actions?: ReactNode;
+	mobileAssistant?: boolean;
 }) {
 	const heading = useRef<HTMLElement>(null);
 	useEffect(() => {
@@ -29,6 +31,15 @@ export function ProjectHeading({
 						__("Configure a matched PV & storage system", "linker-tools")}
 				</h1>
 				{location && <p>{location}</p>}
+				{mobileAssistant && (
+					<button
+						className="sc-assistant-link"
+						type="button"
+						data-linker-genie-open
+					>
+						{__("Ask Genie", "linker-tools")}
+					</button>
+				)}
 			</div>
 			{actions}
 		</header>

@@ -285,8 +285,7 @@ for (const lang of ['en', 'de'] as const) {
 				).toBeEnabled();
 				await reopened
 					.getByRole('button', {
-						name:
-							lang === 'en' ? 'Draw polygon' : 'Polygon',
+						name: lang === 'en' ? 'Draw polygon' : 'Polygon',
 						exact: true,
 					})
 					.click();

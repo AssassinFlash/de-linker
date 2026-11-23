@@ -1387,6 +1387,7 @@ export default function ProjectWorkbench({
 			ref={workbench}
 		>
 			<ProjectHeading
+				mobileAssistant={guidedView}
 				title={project.title}
 				location={siteLabel}
 				actions={

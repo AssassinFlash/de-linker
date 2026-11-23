@@ -747,8 +747,17 @@
   .sc-configurator .sc-scene small { color: var(--proto-ink-muted-deep); font-weight: 400; line-height: 1.45; }
 }
 
+.sc-configurator .sc-assistant-link { display: none; }
 @media (max-width: 700px) {
-  body:has([data-linker-planner]) .linker-genie:has(> .linker-genie-open[aria-expanded="false"]) > .linker-genie-peek {
+  .sc-configurator .sc-assistant-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--proto-teal-800);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  body:has([data-linker-planner] [data-linker-genie-open]) .linker-genie:has(> .linker-genie-open[aria-expanded="false"]) {
     display: none;
   }
 }

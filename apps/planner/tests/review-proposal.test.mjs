@@ -46,7 +46,7 @@ test("review shows the report's actual BOM and supports generation before a repo
 	const solarSection = [...document.querySelectorAll(".sc-card")].find(
 		(section) => section.querySelector("h2")?.textContent === solarTitle,
 	);
-	assert.match(solarSection.querySelector("table").textContent, /460 Wp/);
+	assert.match(solarSection.querySelector("table").textContent, /Generisches 460-W-PV-Modul/);
 	assert.ok(document.querySelector("details"));
 	assert.ok(button("Generate report in English"));
 	assert.equal(
@@ -256,7 +256,7 @@ for (const historical of [false, true]) {
 						"Solar panel layout" && !section.closest("dialog"),
 			);
 			assert.equal(layouts.length, 1);
-			assert.match(layouts[0].textContent, /460 Wp/);
+			assert.match(layouts[0].textContent, /Generisches 460-W-PV-Modul/);
 			assert.deepEqual(
 				[
 					...layouts[0].querySelectorAll(
@@ -467,7 +467,7 @@ test("report preview opens the complete pinned report and its original PDF", asy
 	assert.equal(dialog.open, false);
 	await act(async () => button("Preview report").click());
 	assert.equal(dialog.open, true);
-	assert.match(dialog.textContent, /460 Wp/);
+	assert.match(dialog.textContent, /Generisches 460-W-PV-Modul/);
 	assert.deepEqual(requested[0]?.slice(0, 3), [
 		value.run.project_id,
 		asset.id,

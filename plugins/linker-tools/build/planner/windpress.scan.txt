@@ -33,6 +33,7 @@ md:grid-cols-2
 project
 sc-actions
 sc-array-settings
+sc-assistant-link
 sc-bom-label
 sc-bom-table
 sc-brief-fields

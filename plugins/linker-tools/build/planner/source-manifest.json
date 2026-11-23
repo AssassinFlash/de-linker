@@ -35,19 +35,19 @@
     "src/components/configurator/HomepageDemand.tsx": "a65b6817c7ce0f4b2303bc4adfc419e208b4d9599c84ad0ac90a505b2ec9a137",
     "src/components/configurator/HomepageLoadProfile.tsx": "75e86e7a37933fa8ce4f9282eda2e7f2ddc81a96347432c98fb5bbb987fde48d",
     "src/components/configurator/HomepagePvReference.tsx": "df42bc51845b36121bcd3c5f5716f61b046f3fe0aac71aa5a4479c9f7941f05d",
-    "src/components/configurator/InquiryBomLine.tsx": "2bb2bc1a5bfb2db42ca5d354751bd0a699d5a1ac6fc88832abfa51893117e8fb",
+    "src/components/configurator/InquiryBomLine.tsx": "6fa3320dafadff066620b99e488f160109d5b21652360c1ae35313f77d93eab0",
     "src/components/configurator/InquiryExportBar.tsx": "0d67afb20ff3d53fadd0e41c4f2ef66864cbbf773c12c4da957f6a7ee6ec4828",
     "src/components/configurator/PreliminaryOptions.tsx": "e880249393197998bf8986997b1a210730333e0c63ab0c042c26bfae899af436",
-    "src/components/configurator/PreliminaryProject.tsx": "df7d1aa5c2e3492c49077cca3df230834aff8a8c8968b6b2a2d69327c24e883a",
+    "src/components/configurator/PreliminaryProject.tsx": "5582a1571b54fab40346bb463b8cc621f86da24417c8881636ea41d396331d61",
     "src/components/configurator/ProjectDetails.tsx": "498522fa3721a19b2830538c1af64400923620691f5caf6ad6c355660651962f",
     "src/components/configurator/ProjectDirections.tsx": "43c79e24eb6a92ed47ead9e55d9ade017c0b8116ac0279ec54db4eafe20050b9",
     "src/components/configurator/ProjectEquipment.tsx": "28b63db11ed3f68e37b1aa51a82cd009bce5e706ed9a90e5f251a2e60d27af51",
     "src/components/configurator/ProjectFacts.tsx": "b93ca3687b10791b9236acd6d4b8af774631fc8228606375021e48dcfcf48c78",
-    "src/components/configurator/ProjectHeading.tsx": "1d4330adf83ae6c57ab4bbc5d1d9f3d0d964c77911ee76aab018bf08787aabcd",
+    "src/components/configurator/ProjectHeading.tsx": "3b4e545915a877bacd22bc8f998e570024b91fc24c7d4d23049d61f4b5e64ae0",
     "src/components/configurator/ProjectNavigation.tsx": "53e046ff29120853519a9725599f349511c522d8f7e7087d7bec4efbe7515f29",
-    "src/components/configurator/ProjectWorkbench.tsx": "ea3477b5ebf8bf6e3d72de16231f12ad3ba51156b5902b4551efae9e6d7da9ac",
+    "src/components/configurator/ProjectWorkbench.tsx": "98326764805f0e9250d1017a618321ebb01dae77b8732dc86f8d2ba45dfb2c97",
     "src/components/configurator/ReportLogo.tsx": "8d8f9e9d3ab51c43295360ac6808c286b6297f17c041ec19a5596bb5a6ff8b56",
-    "src/components/configurator/ReviewInquiry.tsx": "460b77c464046081ff604c562cf13bca3930a008e5d75e4e46561250c026f35a",
+    "src/components/configurator/ReviewInquiry.tsx": "7c1d089f17a4c4cecd37d980871f15e2399ebce87fe17dad2390d3aec4ac519d",
     "src/components/configurator/ReviewProposal.tsx": "90eb2efdb3ad9fc2778e39ac3822b9f0bd0f63e89daa41c022d894198ff59ab0",
     "src/components/configurator/SharedDcEnergy.tsx": "fa5f2ee6add217ebecd4d187c7c072725f35a8704244a9c25bad0fdb53308e1d",
     "src/components/configurator/SiteCoordinates.tsx": "265535efa4d61522b5173d41a01e6c5ecccbe1c3975382e6dad15bde0ccd9d40",
@@ -205,7 +205,7 @@
     "src/contracts/plant-search-plan.schema.json": "39074cf3f3a8cedffc503430921ec4adeca9384f2ecd2cd10e34dd3b308b73e9",
     "src/contracts/profile-import.schema.json": "c16463c3196ae14c073ee9619ecec5149fe6642f4a83ad1c98164ca112220165",
     "src/contracts/profile-selections.schema.json": "be9081511116b82a5f45904d31421f2652c9c90c65a00bbf5123c75ac842c35c",
-    "src/contracts/project-input-contracts.json": "0b664e56edffd4dcfa0041e9f953744fa1f355965dcb45f7bb16937eb8a0ef7e",
+    "src/contracts/project-input-contracts.json": "c2da20423ff7dbb653a9ce23e1d976052859d30a572b88a44a3e015d2278a46d",
     "src/contracts/pv-generation.schema.json": "8489c002875f20bc025e60f0c4b24138b335cd5c8f4beb85af0ebfd35f041b9f",
     "src/contracts/pv-plant-string-plan.schema.json": "42f64d6b97a462924d5570e756b5c027fd57badac9d596d5eb6f32cf6d0cb572",
     "src/contracts/pv-string-plan.schema.json": "23e51185083b66fa8c520edd30165fab8f771288b4f8fc6c9239ae9b98206413",
@@ -310,6 +310,7 @@
     "src/domain/grossLoad.ts": "6ee95c03196e48bbb7793931272e3ecc1b2c9f0ffd4b614f260572fb55f26e5f",
     "src/domain/history.ts": "9efecbf6b98fb9d23756de544fcf70a168c0adbb1fd7945bd808d5e3ccde8325",
     "src/domain/imageCalibration.ts": "5bf6adb8661ad121d91ffec9b9df37902f942cd4844fed3c9ca5a58ae27d3452",
+    "src/domain/inquiryQuantities.ts": "1328da8474fce8286cedc5d287e73c1043fe82705ffc722a047e1f6a7e2dce7b",
     "src/domain/installation.ts": "6832369b01dc735e22bacf27780b160f23fdaf5ca909e4b882c3bed226acdd37",
     "src/domain/installationConductorComparison.ts": "b15387e9e012b95121a91e924b67dffedec34ccd99b1939831db0bc99b85c28e",
     "src/domain/installationElectrical.ts": "620e8a34c50ad5ed6b27e4d25e673796ecdf0f75237b5451616bfd8c0e1b14fe",
@@ -350,14 +351,14 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-BPOSRWiS.js": "5ca05d70c309cbb25f78fb96a9a72ee946d525bce2f96677ca572a7db7f787ce",
-    "assets/ProjectWorkbench-D2pqSJ3L.js": "6880083f440694c4dfdc3cb4caf096465babf4aa0905d82c176ad6e986bef48f",
-    "assets/SceneViewport-DiayGv-7.js": "1a793305261cc0d32df5125e2c87f7abaa8a933ef94f93dbed2d996bbfd1af94",
-    "assets/planner-core-C-0Bgv72.js": "089ba084fdbe53c334e2759ba8c2924dee38ff8fdc3de28f39c9ecab809c490a",
-    "assets/planner.js": "baf2c484d9194e3c6f82435f9158e844d8bde0d26c50e6ee143f6a4b5e42acfa",
+    "assets/MapViewport-Dsgwh7Ut.js": "27aaafcd004440e875743d87c7a657c0e992bb18e604d047c09e7ee427e1b178",
+    "assets/ProjectWorkbench-qpmZn04b.js": "b9243aceb8f894bccc220acf4a0c96bf79e80a586573420ed2377e1779e084c1",
+    "assets/SceneViewport-DcKHHo8D.js": "2e606e3414b20ea829df11975aaf003a7b68314b2ef10a83cbd6c74af8b5f024",
+    "assets/planner-core-CfXS2F5J.js": "5a3afa396bcf99835ad25bf3776faf8bd08a6ba662755f457d5c541d06d43388",
+    "assets/planner.js": "e7df2857da2bc0dd012c80502506ce414bb14b8cbdb7221a5a18b657cdb3c513",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "618d151a0eef92e86bfaa6f992ed72adee8d6f05ba58e26899afadf8333cb407",
-    "windpress.scan.txt": "3aa6b44623fac97b0000ed9a424b299404c22029199e24de8287241fea631871"
+    "vite-manifest.json": "bea1c4313f73eb2e70f3b5915040199b86fd55289da165a3a99d5cf2301c29e2",
+    "windpress.scan.txt": "28ef3fbaa4d92070bf54e0e174bf8b4d5cbf76ab1f0f73c7a74cdbd9db7f0e69"
   },
   "project_input_contracts": [
     "installation_pv_string_links_v1",
@@ -383,6 +384,7 @@
     "known_pv_ac_reference_v1",
     "backup_demand_v1",
     "existing_system_v1",
-    "project_panel_parameters_v1"
+    "project_panel_parameters_v1",
+    "inquiry_quantities_v1"
   ]
 }
