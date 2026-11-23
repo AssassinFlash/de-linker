@@ -1110,6 +1110,32 @@ final class ProxyTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** An owner can retain history after losing price access; the HTTP stream strips its old net amount.
+	 *
+	 * @dataProvider history_price_permissions
+	 * @param bool $approved Current Woo authority.
+	 */
+	public function test_history_price_lines_respect_the_current_approval( bool $approved ): void {
+		$this->price_rule_says( $approved );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Native wire fixture.
+		$stream = "event: block\ndata: " . '{"type":"cards","product_ids":[11,12],"prices":[{"product_id":11,"text":"€497.00","reason":null},{"product_id":12,"text":"Project request","reason":"project"}]}' . "\n\nevent: done\ndata: {}\n\n";
+		$result = \Linker\Tools\Genie\PublicationGuard::history_prices( $stream );
+		$this->assertSame( $approved, str_contains( $result, '497.00' ) );
+		$this->assertStringContainsString( 'Project request', $result );
+		$this->assertStringContainsString( '"product_ids":[11,12]', $result );
+	}
+
+	/** Current account states.
+	 *
+	 * @return array<string,array{bool}>
+	 */
+	public static function history_price_permissions(): array {
+		return array(
+			'still approved'     => array( true ),
+			'approval withdrawn' => array( false ),
+		);
+	}
+
 	/**
 	 * The conversation route hands the stored thread back.
 	 */

@@ -42,6 +42,22 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 		$cookies = $_COOKIE;
 		$user    = get_current_user_id();
 		wp_set_current_user( 0 );
+		$account        = 0;
+		$approval       = (object) array( 'status' => 'approved' );
+		$account_status = static function ( $value, $id, $key ) use ( &$account, $approval ) {
+			return $account > 0 && $id === $account && \Linker\Commerce\Registration\Approval::STATUS_META === $key ? $approval->status : $value;
+		};
+		if ( 'approval-withdrawn' === $outcome ) {
+			$account = (int) get_users(
+				array(
+					'role'   => 'administrator',
+					'number' => 1,
+					'fields' => 'ids',
+				)
+			)[0];
+			wp_set_current_user( $account );
+			add_filter( 'get_user_metadata', $account_status, 10, 3 );
+		}
 		$_COOKIE   = array( Identity::COOKIE => bin2hex( random_bytes( 16 ) ) );
 		$job       = wp_generate_uuid4();
 		$question  = 'Where is the AC rating for C:\\manuals?';
@@ -116,7 +132,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$this->assertSame( 202, $start->get_status(), (string) wp_json_encode( $start->get_data() ) );
 			$id = $start->get_data()['conversation_id'];
 
-			$this->assertSame( 'auto-draft', get_post_status( $id ) );
+			$this->assertSame( $account ? 'private' : 'auto-draft', get_post_status( $id ) );
 			$this->assertSame( $job, $start->get_data()['job_id'] );
 			$pending = $proxy->conversation()->get_data()['pending_job'];
 			$this->assertSame( $question, $pending['user_message'] );
@@ -186,7 +202,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				}
 			}
 			$final = $proxy->poll( $poll );
-			if ( ! $recover && 'completed' !== $outcome ) {
+			if ( ! $recover && ! in_array( $outcome, array( 'completed', 'approval-withdrawn' ), true ) ) {
 				$this->assertInstanceOf( WP_Error::class, $final );
 				$this->assertSame( 'revoked' === $outcome ? 409 : 503, $final->get_error_data()['status'] );
 				$this->assertTrue( $final->get_error_data()['unrecorded'] );
@@ -209,6 +225,15 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$this->assertSame( $operation, $thread['operation_id'] );
 			$this->assertCount( 1, $thread['messages'] );
 			$this->assertSame( $question, $thread['messages'][0]['content'] );
+			if ( $account ) {
+				$this->assertTrue( PublicationGuard::sees_prices() );
+				$approval->status = 'restricted';
+				$this->assertFalse( PublicationGuard::sees_prices() );
+				$replay = $proxy->poll( $poll );
+				$this->assertInstanceOf( WP_Error::class, $replay );
+				$this->assertSame( 409, $replay->get_error_data()['status'] );
+				$this->assertSame( 2, $reads );
+			}
 		} finally {
 			foreach ( $hooks as $hook => $callbacks ) {
 				if ( null === $callbacks ) {
@@ -225,6 +250,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			if ( $receipt > 0 ) {
 				wp_delete_post( $receipt, true );
 			}
+			remove_filter( 'get_user_metadata', $account_status, 10 );
 			remove_filter( 'pre_option_' . Proxy::OPTION, $service );
 			$_COOKIE = $cookies;
 			wp_set_current_user( $user );
@@ -237,6 +263,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 	 */
 	public static function async_outcomes(): array {
 		return array(
+			'completed then restricted'       => array( 'approval-withdrawn' ),
 			'resume committed after deadline' => array( 'receipt-poll' ),
 			'cron recovers unsigned receipt'  => array( 'receipt-cron' ),
 			'checked'                         => array( 'completed' ),

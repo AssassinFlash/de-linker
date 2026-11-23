@@ -127,6 +127,9 @@ class Proxy {
 	 */
 	private readonly string $token;
 
+	/** Service start duration for the current short REST request. */
+	private ?float $service_start_ms = null;
+
 	/**
 	 * Checks a turn's files (#236).
 	 *
@@ -382,7 +385,7 @@ class Proxy {
 		$source          = new \Linker\Tools\Planner\GenieSources();
 		$owner_request   = $request ?? new WP_REST_Request( 'GET' );
 		$locale          = 'de' === $request?->get_param( 'locale' ) ? 'de' : 'en';
-		$store['stream'] = $source->restore( $store['stream'], $owner_request, $locale );
+		$store['stream'] = $source->restore( PublicationGuard::history_prices( $store['stream'] ), $owner_request, $locale );
 		foreach ( $store['messages'] as $index => $message ) {
 			if ( is_array( $message['planning_sources'] ?? null ) ) {
 				$store['messages'][ $index ]['planning_sources'] = $source->restore_block( $message['planning_sources'], $owner_request, $locale );
@@ -494,7 +497,12 @@ class Proxy {
 		if ( $route === $base || $route === $base . '/start' || ( str_starts_with( $route, $base . '/' ) && wp_is_uuid( substr( $route, strlen( $base ) + 1 ), 4 ) ) ) {
 			$response->header( 'Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0' );
 			if ( isset( $_SERVER['REQUEST_TIME_FLOAT'] ) ) {
-				$response->header( 'Server-Timing', 'php;dur=' . number_format( ( microtime( true ) - (float) $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000, 2, '.', '' ) );
+				$timing = 'php;dur=' . number_format( ( microtime( true ) - (float) $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000, 2, '.', '' );
+				if ( $route === $base . '/start' && null !== $this->service_start_ms ) {
+					$timing                .= ', genie;dur=' . number_format( $this->service_start_ms, 1, '.', '' );
+					$this->service_start_ms = null;
+				}
+				$response->header( 'Server-Timing', $timing );
 			}
 		}
 		return $response;
@@ -896,6 +904,12 @@ class Proxy {
 				);
 			if ( is_wp_error( $response ) ) {
 				return new WP_Error( 'linker_genie_connection', 'Could not reach Genie.', array( 'status' => 503 ) );
+			}
+			if ( null !== $body ) {
+				$timing = wp_remote_retrieve_header( $response, 'server-timing' );
+				if ( is_string( $timing ) && preg_match( '/(?:^|,)\s*genie;dur=(\d+(?:\.\d+)?)(?=,|$)/', $timing, $duration ) ) {
+					$this->service_start_ms = (float) $duration[1];
+				}
 			}
 			$raw  = wp_remote_retrieve_body( $response );
 			$code = (int) wp_remote_retrieve_response_code( $response );
