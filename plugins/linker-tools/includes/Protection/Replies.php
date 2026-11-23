@@ -135,6 +135,14 @@ final class Replies {
 		if ( ! is_array( $stored ) || ! isset( $stored['status'], $stored['headers'] ) || ! array_key_exists( 'data', $stored ) ) {
 			return new WP_Error( 'linker_resource_result', 'The saved result is unavailable.', array( 'status' => 409 ) );
 		}
+		if ( is_array( $stored['data'] ) && isset( $stored['data']['job_id'], $stored['data']['conversation_id'] ) ) {
+			if ( ! ( new \Linker\Tools\Genie\Conversations() )->may_use( (int) $stored['data']['conversation_id'] ) ) {
+				return new WP_Error( 'linker_genie_job', 'Unknown turn.', array( 'status' => 404 ) );
+			}
+			if ( get_post_meta( $id, '_linker_genie_priced', true ) && ! \Linker\Tools\Genie\PublicationGuard::sees_prices() ) {
+				return \Linker\Tools\Genie\PublicationGuard::refused();
+			}
+		}
 		$dependencies = is_array( $stored['publication'] ?? null ) ? $stored['publication'] : array();
 		$kind         = 'genie' === ( $stored['publication_kind'] ?? null ) ? 'genie' : 'engineering';
 		if ( array() !== $dependencies ) {

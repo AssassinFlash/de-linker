@@ -22,6 +22,8 @@ final class ResourcePolicyTest extends TestCase {
 	public function test_only_result_producing_actions_enter_the_write_path(): void {
 		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/draft', 'POST' ) );
 		$this->assertSame( 'genie', ResourcePolicy::action( '/linker-ai/v1/genie/turn', 'POST' ) );
+		$this->assertSame( 'genie', ResourcePolicy::action( '/linker-ai/v1/genie/turn/start', 'POST' ) );
+		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/turn/92c56977-e0a1-45ac-90d9-9471f81f1978', 'GET' ) );
 		$this->assertSame( 'solution_save', ResourcePolicy::action( '/linker-ai/v1/genie/solution', 'POST' ) );
 		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'GET' ) );
 		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'POST', true ) );

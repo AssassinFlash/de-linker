@@ -1099,6 +1099,13 @@ final class ProxyTest extends TestCase {
 	 * The conversation route hands the stored thread back.
 	 */
 	public function test_conversation_returns_the_stored_thread(): void {
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 51, \Linker\Tools\Genie\PendingTurns::PENDING, true ),
+				'return' => '',
+			)
+		);
 		$this->wp_functions();
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Native wire fixture.
 		$thread         = new RecordingThread();

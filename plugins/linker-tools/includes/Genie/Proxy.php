@@ -9,6 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Genie;
 
+use Linker\Commerce\Inquiry\Assessment\Lock;
+use Linker\Commerce\Protection\Identity;
+use Linker\Tools\Protection\Replies;
 use Linker\Tools\Protection\Resources;
 use WP_Error;
 use WP_REST_Request;
@@ -166,31 +169,47 @@ class Proxy {
 		( new DraftActions() )->register();
 		add_filter( 'linker_tools_restored_reply', array( PublicationGuard::class, 'restored' ), 10, 2 );
 		add_filter( 'linker_tools_restored_reply', array( \Linker\Tools\Planner\GenieSources::class, 'replayed' ), 11, 2 );
+		add_filter( 'rest_post_dispatch', array( $this, 'turn_headers' ), 99, 3 );
+		$turn_args = array(
+			'messages'    => array(
+				'type'     => 'array',
+				'required' => true,
+			),
+			'locale'      => array(
+				'type' => 'string',
+				'enum' => array( 'en', 'de' ),
+			),
+			'page'        => array(
+				'type' => 'object',
+			),
+			// The turn's files, apart from its messages (#236): checked
+			// by Attachments, sent once, never stored.
+			'attachments' => array(
+				'type' => 'array',
+			),
+		);
+		foreach ( array(
+			self::ROUTE            => 'turn',
+			self::ROUTE . '/start' => 'start',
+		) as $path => $callback ) {
+			register_rest_route(
+				self::NAMESPACE,
+				$path,
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, $callback ),
+					'permission_callback' => '__return_true',
+					'args'                => $turn_args,
+				)
+			);
+		}
 		register_rest_route(
 			self::NAMESPACE,
-			self::ROUTE,
+			self::ROUTE . '/(?P<job_id>[a-f0-9-]{36})',
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'turn' ),
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'poll' ),
 				'permission_callback' => '__return_true',
-				'args'                => array(
-					'messages'    => array(
-						'type'     => 'array',
-						'required' => true,
-					),
-					'locale'      => array(
-						'type' => 'string',
-						'enum' => array( 'en', 'de' ),
-					),
-					'page'        => array(
-						'type' => 'object',
-					),
-					// The turn's files, apart from its messages (#236): checked
-					// by Attachments, sent once, never stored.
-					'attachments' => array(
-						'type' => 'array',
-					),
-				),
 			)
 		);
 		register_rest_route(
@@ -369,9 +388,11 @@ class Proxy {
 				$store['messages'][ $index ]['planning_sources'] = $source->restore_block( $message['planning_sources'], $owner_request, $locale );
 			}
 		}
-		$reply = new WP_REST_Response(
+		$pending = $this->pending_view( $id );
+		$reply   = new WP_REST_Response(
 			array(
 				'conversation_id' => $id,
+				...( array() !== $pending ? array( 'pending_job' => $pending ) : array() ),
 				'messages'        => $store['messages'],
 				'stream'          => $store['stream'],
 				...( isset( $store['operation_id'] ) && Resources::completed_genie_operation( $store['operation_id'], $store['operation_fingerprint'] ?? '' ) ? array( 'operation_id' => $store['operation_id'] ) : array() ),
@@ -449,6 +470,41 @@ class Proxy {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function turn( WP_REST_Request $request ) {
+		return $this->begin( $request, false );
+	}
+
+	/** Start an asynchronous turn using the native request contract.
+	 *
+	 * @param WP_REST_Request $request Turn request.
+	 */
+	public function start( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		return $this->begin( $request, true );
+	}
+
+	/** Never cache a private job response, including native REST errors. Measure the PHP request separately from network latency.
+	 *
+	 * @param WP_REST_Response $response Native response.
+	 * @param \WP_REST_Server  $server REST server.
+	 * @param WP_REST_Request  $request Native request.
+	 */
+	public function turn_headers( WP_REST_Response $response, $server, WP_REST_Request $request ): WP_REST_Response {
+		unset( $server );
+		$route = strtolower( $request->get_route() );
+		if ( '/' . self::NAMESPACE . self::ROUTE === $route || str_starts_with( $route, '/' . self::NAMESPACE . self::ROUTE . '/' ) ) {
+			$response->header( 'Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0' );
+			if ( isset( $_SERVER['REQUEST_TIME_FLOAT'] ) ) {
+				$response->header( 'Server-Timing', 'php;dur=' . number_format( ( microtime( true ) - (float) $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000, 2, '.', '' ) );
+			}
+		}
+		return $response;
+	}
+
+	/** Prepare the shared turn input for either service endpoint.
+	 *
+	 * @param WP_REST_Request $request Frontend turn.
+	 * @param bool            $async Whether to return the service job immediately.
+	 */
+	private function begin( WP_REST_Request $request, bool $async ): WP_REST_Response|WP_Error {
 		$base = $this->base();
 		if ( '' === $base ) {
 			return self::unrecorded( new WP_Error( 'linker_genie_unconfigured', 'Genie is not configured.', array( 'status' => 503 ) ) );
@@ -464,9 +520,12 @@ class Proxy {
 			return self::unrecorded( new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) ) );
 		}
 		try {
-			return $this->answer( $request, $base, $files, $conversation );
+			$reply = $this->answer( $request, $base, $files, $conversation, $async );
+			return $reply;
 		} finally {
-			$this->conversations->discard_unanswered_guest();
+			if ( ! isset( $reply ) || ! $reply instanceof WP_REST_Response || 202 !== $reply->get_status() ) {
+				$this->conversations->discard_unanswered_guest();
+			}
 		}
 	}
 
@@ -476,9 +535,10 @@ class Proxy {
 	 * @param string                    $base Private transport base.
 	 * @param list<array<string,mixed>> $files Verified attachments.
 	 * @param int                       $conversation Existing or provisional conversation.
+	 * @param bool                      $async Release the request after the job is accepted.
 	 * @return WP_Error|WP_REST_Response The recorded answer or the native refusal.
 	 */
-	private function answer( WP_REST_Request $request, string $base, array $files, int $conversation ): WP_Error|WP_REST_Response {
+	private function answer( WP_REST_Request $request, string $base, array $files, int $conversation, bool $async ): WP_Error|WP_REST_Response {
 		$locale = $this->locale( $request->get_param( 'locale' ) );
 		// The page the browser names, checked key by key; the service reads
 		// the page's content itself from it (#234). A solution draft's
@@ -494,16 +554,7 @@ class Proxy {
 				$page['draft_lines'][] = $line;
 			}
 		}
-		/**
-		 * Whether the visitor sees prices: linker-commerce answers with its
-		 * one price rule (CommerceState::visitor_sees_prices, #242); without
-		 * it the default stands and nobody is a partner.
-		 *
-		 * @since 0.1.0
-		 *
-		 * @param bool $sees False unless the price rule says otherwise.
-		 */
-		$partner  = true === apply_filters( 'linker_commerce_visitor_sees_prices', false ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- linker-commerce's filter, read here; not this plugin's own hook.
+		$partner  = PublicationGuard::sees_prices();
 		$body     = array(
 			'conversation_id' => (string) $conversation,
 			'messages'        => $request->get_param( 'messages' ),
@@ -546,10 +597,28 @@ class Proxy {
 			return self::unrecorded( $publication );
 		}
 		$started = microtime( true );
-		$stream  = $this->post( $base . '/assistant/turn', $body );
+		if ( $async ) {
+			return $this->start_job( $base, $body, $publication, $started );
+		}
+		$stream = $this->post( $base . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
 			return self::unrecorded( $stream );
 		}
+		return $this->finish( $conversation, $messages, $stream, $publication, $locale, $started, Resources::genie_operation(), Resources::genie_fingerprint() );
+	}
+
+	/** Validate, record and release one fully checked answer.
+	 *
+	 * @param int                 $conversation Owned conversation.
+	 * @param array<mixed>        $messages User input to commit.
+	 * @param string              $stream Checked service SSE.
+	 * @param array<string,mixed> $publication Dependencies from the beginning of the turn.
+	 * @param string              $locale Requested language.
+	 * @param float               $started Original start time.
+	 * @param string              $operation Verified operation.
+	 * @param string              $fingerprint Verified input.
+	 */
+	private function finish( int $conversation, array $messages, string $stream, array $publication, string $locale, float $started, string $operation, string $fingerprint ): WP_REST_Response|WP_Error {
 		$permitted = $this->publication->validate( $publication );
 		if ( is_wp_error( $permitted ) ) {
 			return self::unrecorded( $permitted );
@@ -575,7 +644,7 @@ class Proxy {
 		if ( $left < 0 ) {
 			$left = 0;
 		}
-		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left, Resources::genie_operation(), Resources::genie_fingerprint() ) ) {
+		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left, $operation, $fingerprint ) ) {
 			// The answer was produced and is not stored. The other turn
 			// stays. The shell re-reads the thread, puts the question back
 			// in the field, and keeps the uploads so the customer can send
@@ -606,6 +675,235 @@ class Proxy {
 		);
 		$this->publication->remember( $reply, $publication );
 		return $reply;
+	}
+
+	/** Start work while the native operation lock and receipt are owned by Resources.
+	 *
+	 * @param string              $base Service URL.
+	 * @param array<string,mixed> $body Prepared input.
+	 * @param array<string,mixed> $publication Current publication dependencies.
+	 * @param float               $started Start of the turn budget.
+	 */
+	private function start_job( string $base, array $body, array $publication, float $started ): WP_REST_Response|WP_Error {
+		$conversation = (int) $body['conversation_id'];
+		$operation    = Resources::genie_operation();
+		$receipt      = ( new Replies() )->operation( $operation );
+		if ( '' === $operation || $receipt < 1 ) {
+			return self::unrecorded( new WP_Error( 'linker_resource_result', 'The operation could not be confirmed.', array( 'status' => 503 ) ) );
+		}
+		$active = PendingTurns::current( $conversation );
+		if ( $active ) {
+			PendingTurns::expire( $conversation, $active['job_id'] );
+			if ( PendingTurns::current( $conversation ) ) {
+				return self::unrecorded( new WP_Error( 'linker_resource_pending', 'This conversation has a turn in progress.', array( 'status' => 409 ) ) );
+			}
+		}
+		$subject = $this->resource_subject( $body );
+		$job     = $this->job_request( $base . '/assistant/turn/start', $subject, $body );
+		if ( is_wp_error( $job ) ) {
+			return self::unrecorded( $job );
+		}
+		if ( ! wp_is_uuid( $job['job_id'] ?? '', 4 ) || 'running' !== ( $job['status'] ?? null ) || ! is_string( $job['stage'] ?? null ) ) {
+			return self::unrecorded( self::job_error( 502 ) );
+		}
+		$turn = array(
+			'job_id'          => $job['job_id'],
+			'stage'           => $job['stage'],
+			'started_at'      => $started,
+			'conversation_id' => $conversation,
+			'receipt'         => $receipt,
+			'subject_hash'    => $subject,
+			'owner_binding'   => get_post_meta( $receipt, '_linker_binding', true ),
+			'operation_id'    => $operation,
+			'fingerprint'     => Resources::genie_fingerprint(),
+			'locale'          => $body['locale'],
+			'partner'         => $body['user']['partner'],
+			'messages'        => $body['messages'],
+			'publication'     => $publication,
+		);
+		if ( ! PendingTurns::save( $turn ) ) {
+			return self::unrecorded( self::job_error( 503 ) );
+		}
+		if ( $turn['partner'] ) {
+			update_post_meta( $receipt, '_linker_genie_priced', 1 );
+		}
+		$this->conversations->select_pending_guest();
+		return new WP_REST_Response( PendingTurns::progress( $turn ), 202 );
+	}
+
+	/** Restore only the active owner's question and progress.
+	 *
+	 * @param int $id Currently selected conversation.
+	 * @return array<string,mixed>
+	 */
+	private function pending_view( int $id ): array {
+		$turn = PendingTurns::current( $id );
+		if ( ! $turn ) {
+			return array();
+		}
+		if ( microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
+			PendingTurns::expire( $id, $turn['job_id'] );
+			return array();
+		}
+		$identity = Identity::current();
+		if ( is_wp_error( $identity ) || ! hash_equals( $turn['owner_binding'], $identity->binding() ) ) {
+			return array();
+		}
+		$last = end( $turn['messages'] );
+		return PendingTurns::progress( $turn ) + array(
+			'operation_id' => $turn['operation_id'],
+			'user_message' => $last['content'] ?? '',
+		);
+	}
+
+	/** Read or finalize one owned service job.
+	 *
+	 * @param WP_REST_Request $request Native GET.
+	 */
+	public function poll( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		$job          = (string) $request->get_url_params()['job_id'];
+		$receipt      = PendingTurns::receipt( $job );
+		$conversation = $receipt > 0 ? PendingTurns::conversation( $receipt, $job ) : 0;
+		if ( $conversation < 1 || ! $this->conversations->may_use( $conversation ) ) {
+			return self::unknown_job();
+		}
+		$identity = Identity::current();
+		$binding  = (string) get_post_meta( $receipt, '_linker_binding', true );
+		if ( is_wp_error( $identity ) || ! hash_equals( $binding, $identity->binding() ) ) {
+			return self::unknown_job();
+		}
+		$operation = (string) get_post_field( 'post_name', $receipt );
+		$turn      = PendingTurns::current( $conversation );
+		if ( ( $turn['job_id'] ?? null ) !== $job ) {
+			return ( new Replies() )->read( $receipt, $binding );
+		}
+		// A peer may already be finalizing. Return real progress and let the next poll read its receipt.
+		$reply = new WP_REST_Response( PendingTurns::progress( $turn ) );
+		Lock::run(
+			'genie-operation-' . $operation,
+			function () use ( &$reply, $job, $conversation, $receipt, $binding ): void {
+				wp_cache_delete( $conversation, 'post_meta' );
+				$current = PendingTurns::current( $conversation );
+				$reply   = ( $current['job_id'] ?? null ) === $job ? $this->poll_owned( $current ) : ( new Replies() )->read( $receipt, $binding );
+			}
+		);
+		return $reply;
+	}
+
+	/** Fetch current progress or finish a checked result under its operation lock.
+	 *
+	 * @param array<string,mixed> $turn Pending native turn.
+	 */
+	private function poll_owned( array $turn ): WP_REST_Response|WP_Error {
+		$id = $turn['conversation_id'];
+		if ( microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
+			$result = self::job_error( 503 );
+		} else {
+			$result = $this->job_request( $this->base() . '/assistant/turn/' . $turn['job_id'], $turn['subject_hash'] );
+		}
+		if ( is_wp_error( $result ) ) {
+			if ( 'linker_genie_connection' === $result->get_error_code() ) {
+				return $result;
+			}
+			PendingTurns::fail( $turn );
+			return self::unrecorded( $result );
+		}
+		if ( 'running' === $result['status'] && is_string( $result['stage'] ?? null ) ) {
+			update_post_meta( $turn['receipt'], PendingTurns::STAGE, $result['stage'] );
+			return new WP_REST_Response( PendingTurns::progress( $turn ) );
+		}
+		if ( 'completed' !== $result['status'] || ! is_string( $result['stream'] ?? null ) ) {
+			$error = self::job_error( (int) ( $result['http_status'] ?? 502 ), (string) ( $result['code'] ?? '' ) );
+			PendingTurns::fail( $turn );
+			return self::unrecorded( $error );
+		}
+		if ( $turn['partner'] && ! PublicationGuard::sees_prices() ) {
+			PendingTurns::fail( $turn );
+			return self::unrecorded( PublicationGuard::refused() );
+		}
+		$this->conversations->resume_pending_guest( $id );
+		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'], $turn['operation_id'], $turn['fingerprint'] );
+		if ( is_wp_error( $reply ) ) {
+			if ( ! empty( $reply->get_error_data()['unrecorded'] ) ) {
+				PendingTurns::fail( $turn );
+				return $reply;
+			}
+			$reply = rest_convert_error_to_response( $reply );
+		} else {
+			$reply->set_data(
+				$reply->get_data() + array(
+					'job_id' => $turn['job_id'],
+					'status' => 'completed',
+				)
+			);
+		}
+		if ( ( new Replies() )->finish( $turn['receipt'], $reply ) !== $turn['receipt'] ) {
+			return self::job_error( 503 );
+		}
+		PendingTurns::clear( $turn );
+		return $reply;
+	}
+
+	/** Public error independent of whether another visitor owns the ID. */
+	private static function unknown_job(): WP_Error {
+		return new WP_Error( 'linker_genie_job', 'Unknown turn.', array( 'status' => 404 ) );
+	}
+
+	/** Convert the private typed service failure to the public API.
+	 *
+	 * @param int    $status Service status.
+	 * @param string $code Service failure code.
+	 */
+	private static function job_error( int $status, string $code = '' ): WP_Error {
+		if ( 'publication_changed' === $code || 'publication_unavailable' === $code ) {
+			return PublicationGuard::refused( $status );
+		}
+		return new WP_Error( 429 === $status ? 'linker_genie_quota' : 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => $status ) );
+	}
+
+	/** Authenticated short service request. The browser never receives the raw upstream body.
+	 *
+	 * @param string                   $url Private URL.
+	 * @param string                   $subject Native identity hash.
+	 * @param array<string,mixed>|null $body Start payload or null for a poll.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	private function job_request( string $url, string $subject, ?array $body = null ): array|WP_Error {
+		$headers = $this->headers() + array(
+			'Accept'                    => 'application/json',
+			'X-Linker-Resource-Subject' => $subject,
+		);
+		if ( is_callable( $this->fetch ) ) {
+			$raw = ( $this->fetch )( $url, $body ?? array(), $headers );
+		} else {
+			$response = null === $body
+				? wp_remote_get(
+					$url,
+					array(
+						'headers' => $headers,
+						'timeout' => 10,
+					)
+				)
+				: wp_remote_post(
+					$url,
+					array(
+						'headers' => $headers + array( 'Content-Type' => 'application/json' ),
+						'timeout' => 15,
+						'body'    => (string) wp_json_encode( $body ),
+					)
+				);
+			if ( is_wp_error( $response ) ) {
+				return new WP_Error( 'linker_genie_connection', 'Could not reach Genie.', array( 'status' => 503 ) );
+			}
+			$raw  = wp_remote_retrieve_body( $response );
+			$code = (int) wp_remote_retrieve_response_code( $response );
+			if ( $code >= 400 ) {
+				$error = json_decode( $raw, true );
+				return self::job_error( $code, (string) ( $error['code'] ?? ( is_string( $error['detail'] ?? null ) ? $error['detail'] : '' ) ) );
+			}
+		}
+		$state = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		return is_array( $state ) && isset( $state['status'] ) ? $state : self::job_error( 502 );
 	}
 
 	/**
