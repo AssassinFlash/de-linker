@@ -226,7 +226,8 @@ for (const lang of ['en', 'de'] as const) {
 				name: words.enterDetails,
 				exact: true,
 			});
-			await expect(details).toBeInViewport();
+			await expect(workspace.locator('.sc-scene-grid')).toBeInViewport();
+			await expect(details).toBeVisible();
 			await screen(page, 'known-project-entry');
 			await details.click();
 			await expect(page).toHaveURL(/#sc-project$/);
