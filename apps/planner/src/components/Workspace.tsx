@@ -750,8 +750,8 @@ export function Workspace({
 					<InquiryStages current={entryHints?.roof ? 2 : 1} />
 				)}
 			<div className={firstVisitComparison ? undefined : "sc-main"}>
-				<div>
-					{projectIndex ? null : savedSource !== null ? (
+				<div hidden={projectIndex}>
+					{projectIndex && !creationPending ? null : savedSource !== null ? (
 						<SavedSolutionStart
 							directComparison
 							solutionId={savedSource}
