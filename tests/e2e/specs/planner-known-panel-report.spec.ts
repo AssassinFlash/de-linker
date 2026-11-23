@@ -151,8 +151,12 @@ for (const lang of ['en', 'de'] as const)
 					.click({ timeout: 120_000 });
 				await button(workspace, t.review).click();
 				await expect(button(workspace, t.generate)).toHaveCount(0);
-				await expect(workspace.locator('.sc-export-strip')).toBeVisible();
-				await expect(workspace.locator('form.linker-inquiry-form')).toBeVisible();
+				await expect(
+					workspace.locator('.sc-export-strip')
+				).toBeVisible();
+				await expect(
+					workspace.locator('form.linker-inquiry-form')
+				).toBeVisible();
 				const csvButton = button(workspace, t.csv);
 				await expect(csvButton).toBeEnabled({ timeout: 120_000 });
 				const csv = await file(page, csvButton);
