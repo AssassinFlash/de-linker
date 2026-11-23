@@ -1197,8 +1197,15 @@ def report_sources(
                     "installation instances differ from the selected equipment assessment scope"
                 )
 
-    if not sources and installation is None:
-        raise InvalidInput("select at least one completed analysis for the report")
+    brief = project.inputs.get("brief")
+    if (
+        not sources
+        and installation is None
+        and not (isinstance(brief, dict) and brief.get("system_scope"))
+    ):
+        raise InvalidInput(
+            "choose a project direction or a completed analysis for the report"
+        )
     if isinstance(assessment, dict) and isinstance(
         assessment.get("pv_electrical"), dict
     ):
