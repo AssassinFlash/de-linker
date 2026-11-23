@@ -3,6 +3,11 @@
 from __future__ import annotations
 
 TEXT = {
+    "planned_system": ("Planned system", "Geplantes System"),
+    "scope_new_pv_storage": ("Solar and storage", "Photovoltaik und Speicher"),
+    "scope_storage_addition": ("Storage for existing PV", "PV-Speicher nachrüsten"),
+    "scope_pv_only": ("Solar", "Photovoltaik"),
+    "scope_storage_only": ("Storage", "Speicher"),
     "plant_backup_runtime": (
         "Whole-site backup",
         "Ersatzstrom für den gesamten Standort",

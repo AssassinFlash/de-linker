@@ -2019,6 +2019,16 @@ async function compareEntryRetrofit(t, view) {
 			);
 		await until(scene);
 		await act(async () => scene().click());
+		const known = document.querySelector('button[aria-label="Known PV size"]');
+		await act(async () => known.click());
+		assert.equal(known.getAttribute("aria-pressed"), "true");
+		assert.ok(!document.querySelector("#sc-direction-keep"));
+		assert.equal(
+			JSON.parse(window.sessionStorage.getItem("linker-comparison-draft"))
+				.scene,
+			"known",
+		);
+		await act(async () => scene().click());
 	} else {
 		const selector = 'select[name="system_scope"]';
 		await until(() => document.querySelector(selector));

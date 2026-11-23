@@ -5,8 +5,12 @@ import pytest
 
 from linker_engine.models import Report, ReportSection, ReportTable
 from linker_engine.planning.canonical import Object
-from linker_engine.planning.project_materials import material_list, materials_csv
-from linker_engine.planning.report_model import separate_panel_lists
+from linker_engine.planning.project_materials import (
+    material_list,
+    materials_csv,
+    project_materials,
+)
+from linker_engine.planning.report_model import build_report, separate_panel_lists
 
 
 @pytest.mark.parametrize("locale", ["en", "de"])
@@ -66,3 +70,34 @@ def test_project_panels_are_outside_the_offer_in_both_downloads(locale: str) -> 
     assert expected in export[2]
     assert export[1][-1] == material_list(sale, locale)
     assert export[2][-1] == material_list(panel, locale) != export[1][-1]
+
+
+@pytest.mark.parametrize(
+    ("locale", "direction"),
+    [("en", "Storage for existing PV"), ("de", "PV-Speicher nachrüsten")],
+)
+def test_direction_only_exports_the_selected_scope_without_equipment(
+    locale: str, direction: str
+) -> None:
+    source: Object = {
+        "locale": locale,
+        "title": "Bonn",
+        "project_id": "bonn",
+        "revision": 2,
+        "generated_at": "2026-11-23T00:00:00Z",
+        "source_runs": [],
+        "input_sha256": "a" * 64,
+        "brief": {"site": {}, "system_scope": "storage_addition"},
+    }
+    report = build_report(source)
+    assert direction in [
+        row.value for section in report.sections for row in section.rows
+    ]
+    materials = project_materials(source)
+    assert materials["lines"] == []
+    csv_rows = list(
+        csv.reader(
+            io.StringIO(materials_csv(materials, "a" * 64, locale).decode("utf-8-sig"))
+        )
+    )
+    assert csv_rows[1] == ["bonn", "2", direction]

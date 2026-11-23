@@ -17892,3 +17892,7 @@ msgstr "Diese Adresse mit Google Maps suchen"
 #: ../../apps/planner/src/components/configurator/SolarInstallation.tsx build/planner/assets/planner.js
 msgid "The address could not be located. Enter the coordinates to position the map."
 msgstr "Die Adresse wurde nicht gefunden. Geben Sie die Koordinaten ein, um die Karte auszurichten."
+
+#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
+msgid "Adjust the quantities you want to request. The system design stays the same."
+msgstr "Passen Sie die Mengen für Ihre Anfrage an. Die Auslegung der Anlage bleibt unverändert."

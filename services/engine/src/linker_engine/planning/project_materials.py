@@ -547,8 +547,11 @@ def project_materials(source: Object) -> Object:
                         **({"unit_name": scope["name"]} if "name" in scope else {}),
                     }
                 )
+    brief = source.get("brief")
+    direction = brief.get("system_scope") if isinstance(brief, dict) else None
     return {
         "schema_version": 3,
+        **({"system_scope": direction} if direction else {}),
         "kind": "project_materials_v3",
         "project_id": source["project_id"],
         "revision": source["revision"],
@@ -969,6 +972,19 @@ def material_list(line: Object, locale: str) -> str:
 def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
+    direction = materials.get("system_scope")
+    if not materials["lines"] and direction:
+        writer.writerow(
+            text(key, locale) for key in ("project_id", "revision", "planned_system")
+        )
+        writer.writerow(
+            [
+                _cell(materials["project_id"]),
+                materials["revision"],
+                text(f"scope_{direction}", locale),
+            ]
+        )
+        return output.getvalue().encode("utf-8-sig")
     writer.writerow(
         [
             text(key, locale)

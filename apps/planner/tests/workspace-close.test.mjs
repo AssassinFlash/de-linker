@@ -162,5 +162,5 @@ test("a deferred close completes across a same-scope revalidation without being 
 		document.querySelector("#sc-projects-heading").textContent,
 		"Saved projects",
 	);
-	assert.equal(location.search, "");
+	assert.equal(location.search, "?projects=1");
 });

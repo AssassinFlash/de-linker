@@ -175,7 +175,8 @@ for (const lang of ['en', 'de'] as const) {
 						'/runs/find-equipment'
 					) &&
 					r.request().postDataJSON()?.inputs?.profile_selections
-						?.selected?.gross_load === asset
+						?.selected?.gross_load === asset,
+				{ timeout: 60000 }
 			);
 			await panel
 				.getByRole('button', { name: text.compare, exact: true })

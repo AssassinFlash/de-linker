@@ -152,6 +152,9 @@ export function NewProject({
 		draftEntry ? readComparisonDraft(session.query_scope, source) : null,
 	);
 	const draftId = useRef(restored?.id);
+	const [scene, setScene] = useState<NonNullable<
+		ComparisonDraft["scene"]
+	> | null>(restored?.scene ?? null);
 	const savedDraft = useRef<ComparisonDraft | null>(null);
 	const [draftUnavailable, setDraftUnavailable] = useState(false);
 	const [languageIssue, setLanguageIssue] = useState<LanguageIssue | null>(
@@ -305,6 +308,7 @@ export function NewProject({
 					id: (draftId.current ??= crypto.randomUUID()),
 					scope: session.query_scope,
 					source,
+					scene,
 					title,
 					inputs: directComparison ? currentInputs() : draft,
 					useHints,
@@ -360,6 +364,7 @@ export function NewProject({
 		document.addEventListener("click", handoff, true);
 		return () => document.removeEventListener("click", handoff, true);
 	}, [
+		scene,
 		draftEntry,
 		compareOnLoad,
 		directComparison,
@@ -992,6 +997,8 @@ export function NewProject({
 			return (
 				<section className="sc-main sc-direction-entry">
 					<ProjectDirections
+						selectedScene={scene}
+						changeScene={setScene}
 						inputs={inputs}
 						title={title}
 						changeTitle={setTitle}

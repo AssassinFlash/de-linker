@@ -1,6 +1,7 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import type { Configuration } from "../../data/config.ts";
 import type { JsonObject } from "../../data/protocol.ts";
+import type { ComparisonDraft } from "../../data/comparisonDraft.ts";
 import { readBrief } from "../../domain/brief.ts";
 import { equipmentDraft } from "../../domain/equipment.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
@@ -17,9 +18,11 @@ import {
 import { changeHomepagePvPower } from "./HomepagePvReference.tsx";
 
 const scenes = ["new", "known", "retrofit", "commercial"] as const;
-type Scene = (typeof scenes)[number];
+type Scene = NonNullable<ComparisonDraft["scene"]>;
 
 export function ProjectDirections({
+	selectedScene,
+	changeScene,
 	inputs,
 	config,
 	disabled,
@@ -31,6 +34,8 @@ export function ProjectDirections({
 	compare,
 	details,
 }: {
+	selectedScene: Scene | null;
+	changeScene: (scene: Scene) => void;
 	inputs: JsonObject;
 	config: Pick<Configuration, "countries" | "locale">;
 	disabled: boolean;
@@ -49,16 +54,18 @@ export function ProjectDirections({
 		(valid: boolean) => validity("pv", valid),
 		[validity],
 	);
-	const [scene, setScene] = useState<Scene | null>(() => {
-		if (brief.system_scope === "storage_addition") return "retrofit";
-		if (
-			brief.project_use === "commercial" ||
-			brief.project_use === "industrial"
-		)
-			return "commercial";
-		if (typeof pv === "number") return "known";
-		return brief.system_scope === "new_pv_storage" ? "new" : null;
-	});
+	const scene =
+		selectedScene ??
+		(() => {
+			if (brief.system_scope === "storage_addition") return "retrofit";
+			if (
+				brief.project_use === "commercial" ||
+				brief.project_use === "industrial"
+			)
+				return "commercial";
+			if (typeof pv === "number") return "known";
+			return brief.system_scope === "new_pv_storage" ? "new" : null;
+		})();
 	const labels = {
 		new: __("New PV + storage", "linker-tools"),
 		known: __("Known PV size", "linker-tools"),
@@ -94,18 +101,14 @@ export function ProjectDirections({
 				brief: {
 					...source,
 					system_scope:
-						selected === "retrofit"
-							? "storage_addition"
-							: selected === "new"
-								? "new_pv_storage"
-								: (source.system_scope ?? "new_pv_storage"),
+						selected === "retrofit" ? "storage_addition" : "new_pv_storage",
 					project_use:
 						selected === "commercial" ? "commercial" : source.project_use,
 				},
 			};
 		});
 		if (applied) {
-			setScene(selected);
+			changeScene(selected);
 			if (selected === "known")
 				fields.current
 					?.querySelector<HTMLInputElement>('[name="site_pv_kw"]')
