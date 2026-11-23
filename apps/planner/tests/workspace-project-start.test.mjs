@@ -792,6 +792,8 @@ test("visitors with project data can open setup from the comparison and keep the
 				.click(),
 		);
 		assert.equal(location.hash, "");
+		assert.equal(new URL(location.href).searchParams.get("projects"), "1");
+		assert.equal(document.querySelector(".sc-saved-projects").hidden, false);
 	} finally {
 		await act(async () => createResponse.resolve());
 	}
