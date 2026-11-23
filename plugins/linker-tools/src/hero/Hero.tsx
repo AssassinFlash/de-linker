@@ -1089,6 +1089,9 @@ export function HeroConversation( {
 	const [ view, setView ] = useState< string >();
 	const wide = view === 'expanded';
 	const side = view === 'side';
+	const expandLabel = wide
+		? __( 'Return to side dock', 'linker-tools' )
+		: __( 'Expand full view', 'linker-tools' );
 	useEffect( () => {
 		const read = () =>
 			setView(
@@ -1129,32 +1132,12 @@ export function HeroConversation( {
 				<button
 					type="button"
 					className="linker-genie-hero__continue"
-					title={
-						side
-							? __( 'Expand full view', 'linker-tools' )
-							: undefined
-					}
+					title={ side ? expandLabel : undefined }
 					onClick={ onExpand }
-					aria-label={
-						wide
-							? __( 'Return to side dock', 'linker-tools' )
-							: side
-								? __( 'Expand full view', 'linker-tools' )
-								: undefined
-					}
+					aria-label={ expandLabel }
 				>
-					{ wide ? (
-						<>
-							<ExpandIcon inward />
-							<span>
-								{ __( 'Return to side dock', 'linker-tools' ) }
-							</span>
-						</>
-					) : side ? (
-						<ExpandIcon />
-					) : (
-						__( 'Expand full view', 'linker-tools' )
-					) }
+					{ ( wide || side ) && <ExpandIcon inward={ wide } /> }
+					{ ! side && <span>{ expandLabel }</span> }
 				</button>
 			) : null }
 			{ ! view ? (
