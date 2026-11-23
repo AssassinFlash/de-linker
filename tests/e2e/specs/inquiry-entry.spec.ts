@@ -46,7 +46,9 @@ for (const locale of ['en', 'de'] as const) {
 				.locator('.woocommerce-cart-form input.qty')
 				.first()
 				.fill('3');
-			await page.locator('.wc-proceed-to-checkout a').click();
+			await page
+				.locator('.wc-proceed-to-checkout button[name=proceed]')
+				.click();
 			await expect(
 				page.locator('.linker-inquiry-line input.qty')
 			).toHaveValue('3');
@@ -78,3 +80,66 @@ for (const locale of ['en', 'de'] as const) {
 		});
 	}
 }
+
+test.describe('native draft continuation', () => {
+	test.use({ javaScriptEnabled: false });
+	for (const lang of ['en', 'de'] as const) {
+		test(
+			lang +
+				': the draft continues with its edited quantity before page scripts load',
+			async ({ page }) => {
+				const de = lang === 'de',
+					base = instance().url,
+					cart = de ? '/de/loesungsentwurf/' : '/cart/',
+					inquiry = de
+						? '/de/proforma-anfrage/'
+						: '/proforma-request/';
+				await page.goto(
+					base +
+						(de
+							? '/de/produkt/saj-bu2-5-0-hv1/'
+							: '/product/saj-bu2-5-0-hv1/')
+				);
+				await page
+					.locator('a[href*="add-to-cart="]:visible')
+					.first()
+					.click();
+				const field = page
+					.locator('.woocommerce-cart-form input.qty')
+					.first();
+				await expect(field).toHaveValue('1');
+				const next = page.locator(
+					'.wc-proceed-to-checkout button[name=proceed]'
+				);
+				await field.fill('-1');
+				await next.click();
+				await expect(page).toHaveURL(base + cart);
+				await expect(field).toHaveValue('-1');
+				await field.fill('2');
+				const request = page.waitForRequest(
+					(r) =>
+						new URL(r.url()).pathname === cart &&
+						r.method() === 'POST'
+				);
+				await next.click();
+				const body = new URLSearchParams((await request).postData()!);
+				expect(body.get('proceed')).toBe('1');
+				expect(body.get('woocommerce-cart-nonce')).toBeTruthy();
+				expect(
+					[...body.entries()].some(
+						([name, value]) =>
+							name.startsWith('cart[') && value === '2'
+					)
+				).toBe(true);
+				await expect(page).toHaveURL(base + inquiry);
+				await expect(
+					page.locator('.linker-inquiry-line input.qty')
+				).toHaveValue('2');
+				await page.locator('.linker-inquiry-remove').click();
+				await expect(
+					page.locator('.linker-inquiry-empty')
+				).toBeVisible();
+			}
+		);
+	}
+});

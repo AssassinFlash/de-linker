@@ -26,7 +26,7 @@
 		if ( send ) {
 			send.disabled = busy;
 		}
-		draftSurface?.querySelectorAll( '.wc-proceed-to-checkout a' ).forEach( ( link ) => {
+		draftSurface?.querySelectorAll( '.wc-proceed-to-checkout button[name="proceed"]' ).forEach( ( link ) => {
 			link.setAttribute( 'aria-disabled', String( busy ) );
 		} );
 		if ( ! continuation ) {
@@ -123,10 +123,14 @@
 				input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 				return;
 			}
-			const link = event.target.closest( '.wc-proceed-to-checkout a' );
+			const link = event.target.closest( '.wc-proceed-to-checkout button[name="proceed"]' );
 			if ( link && event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey ) {
 				carryRetry( link, new URLSearchParams( window.location.search ).get( retryField ) );
-				saveBeforeContinuing( event, () => window.location.assign( link.href ) );
+				const resume = () => window.location.assign( link.dataset.inquiryUrl );
+				if ( ! saveBeforeContinuing( event, resume ) ) {
+					event.preventDefault();
+					resume();
+				}
 			}
 		} );
 		syncDraftState();
@@ -137,10 +141,11 @@
 		if ( ! retry || ! /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test( retry ) ) {
 			return;
 		}
-		const target = new URL( link.href );
+		const target = new URL( link.dataset.inquiryUrl ?? link.href, window.location.href );
 		if ( target.origin === window.location.origin ) {
 			target.searchParams.set( retryField, retry );
-			link.href = target.href;
+			if ( link.dataset.inquiryUrl !== undefined ) link.dataset.inquiryUrl = target.href;
+			else link.href = target.href;
 		}
 	};
 	if ( inquiry ) {
@@ -229,7 +234,7 @@
 		const retry = new URLSearchParams( window.location.search ).get( retryField );
 		if ( retry ) {
 			document.addEventListener( 'click', ( event ) => {
-				const link = event.target.closest( '.wc-proceed-to-checkout a, a[lang], a[hreflang]' );
+				const link = event.target.closest( 'a[lang], a[hreflang]' );
 				if ( link && ! event.defaultPrevented ) {
 					carryRetry( link, retry );
 				}

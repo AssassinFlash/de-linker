@@ -70,7 +70,7 @@ final class DraftSummaryTest extends TestCase {
 		( new DraftSummary( $this->approved_state(), new PriceDisplay( $this->approved_state() ) ) )->guest_totals();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Send inquiry</a>', $html );
+		$this->assertStringContainsString( 'data-inquiry-url="https://example.test/proforma-request/">Send inquiry</button>', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">Create account</a>', $html );
 	}
 
@@ -90,7 +90,7 @@ final class DraftSummaryTest extends TestCase {
 		ob_start();
 		( new DraftSummary( new CommerceState( new Approval() ), new PriceDisplay( new CommerceState( new Approval() ) ) ) )->guest_totals();
 		$html = (string) ob_get_clean();
-		$this->assertStringContainsString( 'Send inquiry</a>', $html );
+		$this->assertStringContainsString( 'Send inquiry</button>', $html );
 		$this->assertStringNotContainsString( '/register/', $html );
 	}
 

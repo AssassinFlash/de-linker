@@ -101,7 +101,9 @@ for (const role of ['pending', 'approved']) {
 								.first();
 							await quantity.fill('3');
 							await page
-								.locator('.wc-proceed-to-checkout a:visible')
+								.locator(
+									'.wc-proceed-to-checkout button[name=proceed]:visible'
+								)
 								.first()
 								.click();
 						}

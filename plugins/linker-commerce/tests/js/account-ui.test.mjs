@@ -212,11 +212,11 @@ test('a valid edit submits the native update once, then sends the inquiry once a
 test('standalone continuation validates the field and follows the original link after Woo removes the last row', async () => {
  const dom = new JSDOM(`<div id="tv-storefront-cart"><p data-inquiry-draft-pending hidden></p>
   <form class="woocommerce-cart-form"><input class="qty" type="number" min="0" max="5" step="1" name="cart[line][qty]" value="1"><button type="submit" name="update_cart">Update</button></form>
-  <div class="wc-proceed-to-checkout"><a href="#inquiry">Continue</a></div></div>`, {runScripts:'outside-only', url:'https://example.test/cart/'});
+  <div class="wc-proceed-to-checkout"><button type="submit" name="proceed" data-inquiry-url="#inquiry">Continue</button></div></div>`, {runScripts:'outside-only', url:'https://example.test/cart/'});
  const win = dom.window;
  win.sessionStorage.setItem('linker-inquiry-edit', 'kept');
  win.eval(script);
- const form = win.document.querySelector('form'), qty = form.querySelector('.qty'), link = win.document.querySelector('a');
+ const form = win.document.querySelector('form'), qty = form.querySelector('.qty'), link = win.document.querySelector('[name=proceed]');
  let updates = 0;
  form.addEventListener('submit', event => { event.preventDefault(); updates++; form.classList.add('processing'); });
  for (const value of ['', '-1', '1.5', '6']) {
@@ -369,12 +369,12 @@ test('a failed preliminary inquiry carries only its opaque recovery handle when 
   assert.equal(new URL(link.href).search,`?linker_inquiry_retry=${retry}`);
  }
  win.close();
- const cart=new JSDOM('<div id="tv-storefront-cart"><div class="wc-proceed-to-checkout"><a href="/proforma-request/">Send inquiry</a></div></div>',{runScripts:'outside-only',url:`https://example.test/cart/?linker_inquiry_retry=${retry}`});
- const link=cart.window.document.querySelector('a');
+ const cart=new JSDOM('<div id="tv-storefront-cart"><div class="wc-proceed-to-checkout"><button type="submit" name="proceed" data-inquiry-url="/proforma-request/">Send inquiry</button></div></div>',{runScripts:'outside-only',url:`https://example.test/cart/?linker_inquiry_retry=${retry}`});
+ const link=cart.window.document.querySelector('[name=proceed]');
  cart.window.eval(script);
  cart.window.document.addEventListener('click',event=>event.preventDefault());
  link.click();
- assert.equal(new URL(link.href).search,`?linker_inquiry_retry=${retry}`);
+ assert.equal(new URL(link.dataset.inquiryUrl,cart.window.location.href).search,`?linker_inquiry_retry=${retry}`);
  cart.window.close();
 });
 

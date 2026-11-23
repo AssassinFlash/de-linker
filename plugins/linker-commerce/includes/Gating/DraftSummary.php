@@ -55,12 +55,50 @@ final class DraftSummary {
 		echo strtr(
 			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/draft-summary.html' ),
 			array(
-				'{{message}}'     => esc_html( $message ),
-				'{{inquiry-url}}' => esc_url( wc_get_checkout_url() ),
-				'{{inquiry}}'     => esc_html__( 'Send inquiry', 'linker-commerce' ),
-				'{{create}}'      => AccountLinks::create(),
+				'{{message}}' => esc_html( $message ),
+				'{{proceed}}' => $this->proceed_button(),
+				'{{create}}'  => AccountLinks::create(),
 			)
 		);
+	}
+
+	/**
+	 * Associate the summary's submit button with Woo's native cart fields and nonce.
+	 *
+	 * @param string $output Rendered shortcode.
+	 * @param string $tag Shortcode name.
+	 */
+	public function identify_cart_form( string $output, string $tag ): string {
+		if ( 'woocommerce_cart' !== $tag ) {
+			return $output;
+		}
+		$tags = new \WP_HTML_Tag_Processor( $output );
+		if ( $tags->next_tag(
+			array(
+				'tag_name'   => 'FORM',
+				'class_name' => 'woocommerce-cart-form',
+			)
+		) ) {
+			$tags->set_attribute( 'id', 'linker-woo-cart-form' );
+		}
+		return $tags->get_updated_html();
+	}
+
+	/** Primary action in the priced and unpriced summaries. */
+	private function proceed_button(): string {
+		return strtr(
+			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/draft-proceed.html' ),
+			array(
+				'{{inquiry-url}}' => esc_url( wc_get_checkout_url() ),
+				'{{inquiry}}'     => esc_html__( 'Send inquiry', 'linker-commerce' ),
+			)
+		);
+	}
+
+	/** Woo's priced cart summary. */
+	public function proceed(): void {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped LC fragment.
+		echo $this->proceed_button();
 	}
 
 	/**

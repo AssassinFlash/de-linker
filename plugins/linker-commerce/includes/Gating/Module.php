@@ -60,6 +60,9 @@ final class Module {
 		add_filter( 'woocommerce_get_order_item_totals', array( $this->display, 'order_totals' ), 10, 2 );
 		add_filter( 'woocommerce_hidden_order_itemmeta', array( $this->display, 'hidden_item_meta' ) );
 		add_action( 'woocommerce_cart_collaterals', array( $this->summary, 'guest_totals' ), 5 );
+		add_filter( 'do_shortcode_tag', array( $this->summary, 'identify_cart_form' ), 10, 2 );
+		remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20 );
+		add_action( 'woocommerce_proceed_to_checkout', array( $this->summary, 'proceed' ), 20 );
 		add_action( 'woocommerce_cart_totals_after_order_total', array( $this->summary, 'unpriced_note' ) );
 		add_action( 'woocommerce_review_order_after_order_total', array( $this->summary, 'unpriced_note' ) );
 		add_action( 'woocommerce_order_details_after_order_table', array( $this->summary, 'inquiry_note' ), 1 );
