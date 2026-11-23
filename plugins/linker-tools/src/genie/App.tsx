@@ -1014,6 +1014,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		draftContext.panelEditor,
 		{ adoptFailure, commitFailure, placeChips },
 		{
+			verified: () => resolveEntryRecovery.current(),
 			wait: ( messages, job ) => {
 				sending.current = true;
 				show( job.conversation_id );

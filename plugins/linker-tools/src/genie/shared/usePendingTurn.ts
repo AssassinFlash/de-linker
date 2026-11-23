@@ -22,6 +22,7 @@ import type { useFailure } from './useFailure';
 type Stored = Awaited< ReturnType< typeof readThread > >;
 type Failure = ReturnType< typeof useFailure >;
 interface View {
+	verified?: () => void;
 	wait: ( messages: TurnMessage[], job: PendingJob ) => void;
 	stage: ( stage: TurnStage ) => void;
 	complete: ( messages: TurnMessage[], answer: Turn ) => void;
@@ -78,6 +79,9 @@ export function usePendingTurn(
 				);
 				if ( ! owns() ) {
 					return;
+				}
+				if ( journal?.unchanged() ) {
+					current.current.view.verified?.();
 				}
 				const matched =
 					journal?.unchanged() &&

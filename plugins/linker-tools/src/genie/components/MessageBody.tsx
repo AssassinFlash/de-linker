@@ -27,9 +27,19 @@ export function MessageBody( {
 		const document = new DOMParser().parseFromString(
 			markdown.render(
 				text.replace(
-					/(^|[^#\n])(###)(?!#)[ \t]*(?=\S)/gm,
-					( _match, prefix: string ) =>
-						( prefix ? prefix.trimEnd() + '\n' : '' ) + '### '
+					/(^|[^#\n])(#{3,6})(?!#)[ \t]*/gm,
+					(
+						match,
+						prefix: string,
+						marks: string,
+						offset: number
+					) => {
+						const next = text[ offset + match.length ];
+						return (
+							( prefix ? prefix.trimEnd() + '\n' : '' ) +
+							( next && next !== '\n' ? marks + ' ' : '' )
+						);
+					}
 				)
 			),
 			'text/html'

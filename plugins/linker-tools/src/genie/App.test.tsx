@@ -4099,3 +4099,40 @@ test( 'retry after an interrupted poll reopens the accepted job without posting 
 		id
 	);
 } );
+
+test( 'an interrupted cold pending turn can be retried by its restored owner', async () => {
+	const job = {
+		job_id: '3ab5a4d7-80d2-4378-bef3-b4feb7217771',
+		conversation_id: 15,
+		stage: 'checking_catalog' as const,
+		started_at: Date.now() / 1000,
+		user_message: 'Do these match?',
+		operation_id: '08e08739-3302-4801-a00a-b0dc95d7e17a',
+	};
+	seedOwnedFailure( {
+		text: job.user_message,
+		question: job.user_message,
+		conversationId: 15,
+		operationId: job.operation_id,
+		kind: null,
+	} );
+	vi.mocked( readThread ).mockResolvedValue( {
+		conversationId: 15,
+		messages: [],
+		turn: null,
+		pendingJob: job,
+	} );
+	vi.mocked( resumeTurn )
+		.mockRejectedValueOnce( new TypeError( 'offline' ) )
+		.mockResolvedValueOnce( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Checked pairing', refs: [] } ],
+		} );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
+	const retry = await screen.findByRole( 'button', { name: 'Try again' } );
+	await act( async () => fireEvent.click( retry ) );
+	expect( await screen.findByText( 'Checked pairing' ) ).toBeVisible();
+	expect( sendTurn ).not.toHaveBeenCalled();
+} );

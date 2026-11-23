@@ -48,7 +48,7 @@ test( 'historical inline and compact headings render as headings', () => {
 	const { container } = render(
 		<MessageBody
 			text={
-				'Comparison. ###Features\nCheck the rating.\n###More details'
+				'Comparison. ###Features\nCheck the rating.\n###More details\nEnd. ###'
 			}
 		/>
 	);
