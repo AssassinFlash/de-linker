@@ -516,7 +516,8 @@ export default function ProjectWorkbench({
 						(source) =>
 							readObject(source).kind ===
 								RUN_OPERATIONS["runs/check-equipment"] ||
-							readObject(source).kind === SEARCH_TASK,
+							readObject(source).kind === SEARCH_TASK ||
+							isEnergyTask(readObject(source).kind),
 					)
 				);
 			}
@@ -1169,9 +1170,24 @@ export default function ProjectWorkbench({
 			if (sharedDcReportRun(saved.inputs) && !sources.energy_run_id)
 				throw new ApiError(409, "report_inputs_changed");
 			const wiring = hasReportWiring(saved.inputs);
-			const manualEquipment =
-				!saved.inputs.equipment_candidate && hasSelectedEquipment(saved.inputs);
-			if ((wiring || manualEquipment) && !sources.equipment_run_id) {
+			let checkManualEquipment =
+				!saved.inputs.equipment_candidate &&
+				hasSelectedEquipment(saved.inputs) &&
+				!sources.equipment_run_id;
+			if (checkManualEquipment && !wiring && sources.energy_run_id) {
+				const energy = readRun(
+					await client.query(
+						"runs/read",
+						{ schema_version: 1, run_id: sources.energy_run_id },
+						session.query_scope,
+						request.signal,
+					),
+					project.id,
+					sources.energy_run_id,
+				);
+				checkManualEquipment = !energy.result?.equipment_binding;
+			}
+			if ((wiring || checkManualEquipment) && !sources.equipment_run_id) {
 				const readCheck = async (id: string) =>
 					readRun(
 						await client.query(
