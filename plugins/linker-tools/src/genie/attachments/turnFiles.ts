@@ -6,6 +6,7 @@ interface FileRef {
 	name: string;
 }
 interface Snapshot {
+	text?: string;
 	id: string;
 	uploads: Upload[];
 	expires?: number;
@@ -75,27 +76,29 @@ async function write( snapshot: Snapshot ): Promise< boolean > {
 	}
 }
 
-async function read( id: string ): Promise< Upload[] > {
+async function read( id: string ): Promise< Snapshot | undefined > {
 	if ( typeof indexedDB === 'undefined' ) {
-		return [];
+		return undefined;
 	}
 	try {
 		const db = await database();
-		return await new Promise< Upload[] >( ( resolve, reject ) => {
-			const request = db
-				.transaction( 'snapshots' )
-				.objectStore( 'snapshots' )
-				.get( id );
-			request.onsuccess = () =>
-				resolve(
-					request.result && request.result.expires > Date.now()
-						? request.result.uploads
-						: []
-				);
-			request.onerror = () => reject( request.error );
-		} );
+		return await new Promise< Snapshot | undefined >(
+			( resolve, reject ) => {
+				const request = db
+					.transaction( 'snapshots' )
+					.objectStore( 'snapshots' )
+					.get( id );
+				request.onsuccess = () =>
+					resolve(
+						request.result && request.result.expires > Date.now()
+							? request.result
+							: undefined
+					);
+				request.onerror = () => reject( request.error );
+			}
+		);
 	} catch {
-		return [];
+		return undefined;
 	}
 }
 
@@ -113,6 +116,9 @@ export async function removeFiles( id: string ): Promise< void > {
 }
 
 export async function keepPickedFile( scope: string, upload: Upload ) {
+	if ( fileKey( scope, upload ) ) {
+		return;
+	}
 	const id = scope + ':' + crypto.randomUUID();
 	// The browser claim and its conversation expire together (Genie Retention).
 	if (
@@ -208,7 +214,7 @@ export async function restorePickedFiles( scope: string ) {
 			if ( loaded.has( ref.file ) ) {
 				return;
 			}
-			const [ upload ] = await read( ref.file );
+			const upload = ( await read( ref.file ) )?.uploads[ 0 ];
 			if ( upload ) {
 				loaded.set( ref.file, upload );
 			}
@@ -244,10 +250,11 @@ export function releasePickedFiles( uploads: Upload[], scope?: string ) {
 export async function keepJobFiles(
 	jobId: string,
 	uploads: Upload[],
-	until: number
+	until: number,
+	text: string
 ) {
 	if ( uploads.length ) {
-		await write( { id: jobId, uploads, expires: until } );
+		await write( { id: jobId, uploads, expires: until, text } );
 	}
 }
-export const readJobFiles = read;
+export const readJobDraft = read;

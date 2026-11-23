@@ -1,3 +1,4 @@
+import { buildQuestion } from '../shared/conversation';
 import { keepJobFiles, removeFiles } from '../attachments/turnFiles';
 /**
  * One turn through the REST proxy: POST, then read the service's SSE events
@@ -630,10 +631,19 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 				typeof body.job_id === 'string' &&
 				body.conversation_id > 0
 			) {
+				const question = messages.at( -1 )?.content ?? '';
+				const files = buildQuestion( '', uploads );
+				let originalText = question;
+				if ( question === files ) {
+					originalText = '';
+				} else if ( files && question.endsWith( '\n' + files ) ) {
+					originalText = question.slice( 0, -files.length - 1 );
+				}
 				await keepJobFiles(
 					body.job_id,
 					uploads,
-					Date.now() + TURN_TIMEOUT_MS
+					Date.now() + TURN_TIMEOUT_MS,
+					originalText
 				);
 				request.onStarted?.( body.conversation_id );
 				const answer = await pollTurn( request, body, signal );

@@ -1,5 +1,6 @@
 import {
-	readJobFiles,
+	readJobDraft,
+	keepPickedFile,
 	removeFiles,
 	releasePickedFiles,
 } from '../attachments/turnFiles';
@@ -90,7 +91,8 @@ export function usePendingTurn(
 					journal.record.operationId === job.operation_id
 						? journal.record
 						: null;
-				const uploads = await readJobFiles( job.job_id );
+				const carried = await readJobDraft( job.job_id );
+				const uploads = carried?.uploads ?? [];
 				if ( ! owns() ) {
 					return;
 				}
@@ -102,7 +104,7 @@ export function usePendingTurn(
 								: {} ),
 						}
 					: {
-							text: job.user_message,
+							text: carried?.text ?? job.user_message,
 							question: job.user_message,
 							conversationId: job.conversation_id,
 							operationId: job.operation_id,
@@ -160,6 +162,14 @@ export function usePendingTurn(
 						return;
 					}
 					if ( ! matched ) {
+						await Promise.all(
+							draft.uploads.map( ( upload ) =>
+								keepPickedFile( lease.scope, upload )
+							)
+						);
+						if ( ! owns() ) {
+							return;
+						}
 						current.current.failure.commitFailure( {
 							type: 'send',
 							draft,
