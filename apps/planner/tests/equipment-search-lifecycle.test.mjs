@@ -516,24 +516,26 @@ async function equipmentApp(
 			else delete globalThis[name];
 		}
 	});
-	await act(async () =>
-		root.render(
-			React.createElement(
-				React.StrictMode,
-				null,
-				React.createElement(SessionBoundary, { client }, (value, recheck) =>
-					React.createElement(Workspace, {
-						key: value.query_scope,
-						session: value,
-						client,
-						store,
-						config,
-						recheck,
-					}),
+	const mount = () =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					React.StrictMode,
+					null,
+					React.createElement(SessionBoundary, { client }, (value, recheck) =>
+						React.createElement(Workspace, {
+							key: value.query_scope,
+							session: value,
+							client,
+							store,
+							config,
+							recheck,
+						}),
+					),
 				),
 			),
-		),
-	);
+		);
+	await mount();
 	const button = (text) =>
 		[...document.querySelectorAll("button")].find(
 			(node) =>
@@ -581,6 +583,10 @@ async function equipmentApp(
 	}
 
 	return {
+		async reopen() {
+			await act(async () => root.render(null));
+			await mount();
+		},
 		async switchScope() {
 			nextScope = "9".repeat(64);
 			await act(async () => window.dispatchEvent(new window.Event("focus")));
@@ -1396,6 +1402,118 @@ test("a comparison dispatches once, polls in the background, and renders partial
 	}
 });
 
+test("a historical report opened from a guided review keeps its original run on reopening", async (t) => {
+	const current = structuredClone(nativePreparation.geometric_pv.report_run);
+	const previous = JSON.parse(
+		JSON.stringify(nativePreparation.direct_beam.report_run).replaceAll(
+			nativePreparation.direct_beam.report_run.project_id,
+			current.project_id,
+		),
+	);
+	const app = await equipmentApp(t, {
+		projectId: current.project_id,
+		projectRevision: current.revision,
+		reports: [current, previous],
+		guided: true,
+		locale: "de",
+		hash: "#sc-review",
+		inputs: {},
+	});
+	const history = () => document.querySelector(".sc-report-history");
+	const version = () =>
+		[...(history()?.querySelectorAll("button") ?? [])].find((b) =>
+			b.textContent.startsWith("Revision " + previous.revision),
+		);
+	await until(() => version());
+	await act(async () => version().click());
+	await until(
+		() =>
+			history()?.querySelector("h3")?.textContent ===
+			previous.result.report.title,
+	);
+	assert.equal(new URL(location.href).searchParams.get("run"), previous.id);
+	await app.reopen();
+	await until(
+		() =>
+			history()?.querySelector("h3")?.textContent ===
+			previous.result.report.title,
+	);
+	await act(async () => app.button("Close").click());
+	await until(
+		() =>
+			document.querySelector(".sc-export-strip") &&
+			new URL(location.href).searchParams.get("run") === current.id,
+	);
+});
+test("a failed later report leaves the successful report in the same language available", async (t) => {
+	const ready = structuredClone(nativePreparation.direct_beam.report_run);
+	const failed = {
+		...ready,
+		id: "f".repeat(32),
+		state: "failed",
+		result: null,
+		result_sha256: null,
+	};
+	const app = await equipmentApp(t, {
+		projectId: ready.project_id,
+		projectRevision: ready.revision,
+		reports: [failed, ready],
+		hash: "#sc-review",
+		inputs: {},
+	});
+	await until(() => app.button("Download PDF")?.matches(":enabled"));
+	assert.equal(
+		app.requests.filter(({ path }) => path === "runs/report").length,
+		0,
+	);
+	assert.ok(
+		app.reads.some(
+			({ path, body }) => path === "runs/read" && body.run_id === ready.id,
+		),
+	);
+});
+test("a saved battery without an inverter requests a project report without a system assessment", async (t) => {
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const app = await equipmentApp(t, {
+		projectId: "9".repeat(32),
+		hash: "#sc-preliminary-review",
+		inputs: {
+			brief: emptyBrief(),
+			equipment_setup: {
+				...emptySetup,
+				battery_product_id: 201,
+				modules_per_stack: 3,
+				parallel_stacks: 1,
+			},
+		},
+	});
+	await until(() => app.requests.some(({ path }) => path === "runs/report"));
+	assert.equal(location.hash, "#sc-review");
+	assert.equal(
+		app.requests.some(({ path }) => path === "runs/check-equipment"),
+		false,
+	);
+	assert.equal(
+		app.requests.find(({ path }) => path === "runs/report").body.options
+			.equipment_run_id,
+		null,
+	);
+});
+test("an energy report without equipment evidence does not cover a saved manual inverter", async (t) => {
+	const old = structuredClone(nativePreparation.direct_beam.report_run);
+	old.result.source_runs[0].kind = "plant_shared_dc_energy_replay_v1";
+	const app = await equipmentApp(t, {
+		projectId: old.project_id,
+		projectRevision: old.revision,
+		reports: [old],
+		hash: "#sc-review",
+		inputs: { equipment_setup: { ...savedSetup, inverter_product_id: 101 } },
+	});
+	await until(() =>
+		app.requests.some(({ path }) => path === "runs/check-equipment"),
+	);
+	assert.equal(app.button("Download PDF").disabled, true);
+});
 for (const hasGermanReport of [false, true]) {
 	test(`German review ${hasGermanReport ? "reuses its saved report behind a newer English report" : "prepares its own report after an English calculation"}`, async (t) => {
 		const english = structuredClone(nativePreparation.direct_beam.report_run);

@@ -1390,6 +1390,7 @@ for (const scenario of [
 	"changed energy and equipment",
 	"automatic wiring check",
 	"single manually selected equipment",
+	"pending manually selected equipment",
 	"plant manually selected equipment",
 	"single-system wiring entered in Solar",
 	"multi-system wiring entered in Solar",
@@ -1643,7 +1644,11 @@ for (const scenario of [
 				result: null,
 				result_sha256: null,
 			};
-			if (scenario === "pending wiring check") runs.unshift(queuedCheck);
+			if (
+				scenario === "pending wiring check" ||
+				scenario === "pending manually selected equipment"
+			)
+				runs.unshift(queuedCheck);
 			if (scenario === "completed wiring check") runs.unshift(wiringCheck);
 			desired.equipment_run_id = wiringCheck.id;
 		}
@@ -2067,7 +2072,7 @@ for (const scenario of [
 				editWiring
 					? ["projects/revise", "runs/check-equipment", "runs/report"]
 					: scenario === "automatic wiring check" ||
-						  manual ||
+						  (manual && scenario !== "pending manually selected equipment") ||
 						  scenario === "changed energy and equipment"
 						? ["runs/check-equipment", "runs/report"]
 						: ["runs/report"],

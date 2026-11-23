@@ -32,7 +32,7 @@ import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
-import { hasSelectedEquipment } from "../domain/currentCalculation.ts";
+import { projectEquipmentScope } from "../domain/currentCalculation.ts";
 import { needsPreliminaryComparison } from "./configurator/HomepageDemand.tsx";
 import { NewProject } from "./NewProject.tsx";
 import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
@@ -349,7 +349,7 @@ export function Workspace({
 		route === "sc-preliminary-review" &&
 		inquiryRevision === null &&
 		selectedInputs &&
-		hasSelectedEquipment(selectedInputs),
+		projectEquipmentScope(selectedInputs) !== "none",
 	);
 	useEffect(() => {
 		if (reviewEquipment) select(selected, "sc-review");

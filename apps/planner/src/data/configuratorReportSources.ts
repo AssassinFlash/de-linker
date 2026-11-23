@@ -143,7 +143,7 @@ export async function configuratorReportSources({
 		ReportOptions,
 		"energy_run_id" | "pv_run_id" | "equipment_run_id"
 	>;
-	pendingWiringCheck: string | null;
+	pendingEquipmentCheck: string | null;
 }> {
 	const inputs = project.inputs;
 	const hasWiring = hasReportWiring(inputs);
@@ -284,7 +284,7 @@ export async function configuratorReportSources({
 	let energyRun: string | null = null,
 		energyPv: unknown = null,
 		equipmentRun: string | null = null,
-		pendingWiringCheck: string | null = null;
+		pendingEquipmentCheck: string | null = null;
 	let cursor: { before_created_at: number | null; before_id: string | null } = {
 		before_created_at: null,
 		before_id: null,
@@ -305,14 +305,13 @@ export async function configuratorReportSources({
 		for (const row of page.items) {
 			const kind = row.task_kind;
 			if (
-				hasWiring &&
 				needsEquipment &&
-				!pendingWiringCheck &&
+				!pendingEquipmentCheck &&
 				kind === checkEquipment &&
 				row.revision === project.revision &&
 				runPending(row.state)
 			)
-				pendingWiringCheck = row.id;
+				pendingEquipmentCheck = row.id;
 			if (row.state !== "succeeded" || row.revision > project.revision)
 				continue;
 			if (
@@ -450,6 +449,6 @@ export async function configuratorReportSources({
 			pv_run_id: energyRun && energyPv !== pvAsset ? null : pvRun,
 			equipment_run_id: equipmentRun,
 		},
-		pendingWiringCheck,
+		pendingEquipmentCheck,
 	};
 }

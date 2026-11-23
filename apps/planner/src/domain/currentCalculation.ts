@@ -7,24 +7,33 @@ import { hasPlant, readPlantDraft } from "./equipmentPlant.ts";
 const isObject = (value: unknown): value is JsonObject =>
 	value !== null && typeof value === "object" && !Array.isArray(value);
 
-/** Product choices can be saved before their first equipment check. */
-export function hasSelectedEquipment(inputs: JsonObject): boolean {
+/** The equipment check requires an inverter and operating mode in every system. */
+export function projectEquipmentScope(
+	inputs: JsonObject,
+): "none" | "products" | "system" {
+	if (inputs.equipment_candidate) return "system";
 	const plant = hasPlant(inputs) ? readPlantDraft(inputs) : null;
-	return Boolean(
-		inputs.equipment_candidate ||
+	const systems = (plant?.units.map((unit) => unit.inputs) ?? [inputs]).map(
+		equipmentDraft,
+	);
+	const selected =
 		plant?.parallel_groups.some(
-			(group) => group.controller_product_id !== null,
+			(group) => group.controller_product_id != null,
 		) ||
-		(plant?.units.map((unit) => unit.inputs) ?? [inputs]).some((unit) => {
-			const setup = equipmentDraft(unit);
-			return (
+		systems.some(
+			(setup) =>
 				setup.inverter_product_id != null ||
 				setup.battery_product_id != null ||
 				(Array.isArray(setup.accessory_product_ids) &&
-					setup.accessory_product_ids.length > 0)
-			);
-		}),
-	);
+					setup.accessory_product_ids.length > 0),
+		);
+	if (!selected) return "none";
+	return systems.every(
+		(setup) =>
+			setup.inverter_product_id != null && setup.operating_mode != null,
+	)
+		? "system"
+		: "products";
 }
 
 function withoutBatteryBinding(value: JsonObject): JsonObject {

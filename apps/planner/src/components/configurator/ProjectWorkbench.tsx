@@ -45,7 +45,11 @@ import {
 	type RunPage,
 	type TaskKind,
 } from "../../data/planningProtocol.ts";
-import { REPORT_TASK, type ReportOptions } from "../../data/planningReport.ts";
+import {
+	REPORT_TASK,
+	reportFromRun,
+	type ReportOptions,
+} from "../../data/planningReport.ts";
 import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
 import { DC_PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
 import { readObject } from "../../data/readProtocol.ts";
@@ -67,7 +71,7 @@ import {
 import {
 	authoredCalculationInputs,
 	authoredDiscoveryInputs,
-	hasSelectedEquipment,
+	projectEquipmentScope,
 	needsComparisonModels,
 	restoreComparisonModels,
 	sameEquipmentDemand,
@@ -363,7 +367,9 @@ export default function ProjectWorkbench({
 	);
 	const [viewedReport, setViewedReport] = useState(() => {
 		const params = new URL(location.href).searchParams;
-		return !guided && step === "review" && params.get("project") === project.id
+		return (!guided || params.get("energy_view") === "reports") &&
+			step === "review" &&
+			params.get("project") === project.id
 			? params.get("run")
 			: null;
 	});
@@ -487,6 +493,7 @@ export default function ProjectWorkbench({
 	const requestedReport = params.get("run");
 	const guidedReportId =
 		guided &&
+		viewedReport === null &&
 		step === "review" &&
 		requestedReport &&
 		/^[a-f0-9]{32}$/.test(requestedReport)
@@ -508,18 +515,17 @@ export default function ProjectWorkbench({
 			if (readObject(cached.result.report).locale !== reportLocale)
 				return false;
 			const saved = draft?.baseline.inputs;
-			if (saved && !saved.equipment_candidate && hasSelectedEquipment(saved)) {
-				const sources = cached.result.source_runs;
-				return (
-					Array.isArray(sources) &&
-					sources.some(
-						(source) =>
-							readObject(source).kind ===
-								RUN_OPERATIONS["runs/check-equipment"] ||
-							readObject(source).kind === SEARCH_TASK ||
-							isEnergyTask(readObject(source).kind),
-					)
-				);
+			if (saved && !saved.equipment_candidate) {
+				const equipment = projectEquipmentScope(saved);
+				if (equipment !== "none") {
+					const requiredSection =
+						equipment === "products"
+							? "customer-selected-equipment"
+							: "equipment";
+					return reportFromRun(cached).sections.some(
+						(section) => section.id === requiredSection,
+					);
+				}
 			}
 			return true;
 		}
@@ -541,9 +547,30 @@ export default function ProjectWorkbench({
 			.filter((item) => item.revision === draft?.baseline.revision)
 			.map((item) => item.id),
 	];
+	const eligibleReports = candidateIds.filter((id): id is string =>
+		Boolean(id && matchesReview(id)),
+	);
+	const historyTail = olderHistory.data?.pages.at(-1) ?? history.data;
+	const moreCurrentReports = Boolean(
+		draft &&
+		historyTail?.next &&
+		historyTail.items.some((item) => item.revision >= draft.baseline.revision),
+	);
 	const reportId =
 		retryReport ??
-		candidateIds.find((id) => id && matchesReview(id)) ??
+		eligibleReports.find((id) => {
+			const cached = cache.getQueryData<PlanningRun>([
+				session.query_scope,
+				"configurator-result",
+				project.id,
+				REPORT_TASK,
+				id,
+			]);
+			const status =
+				cached?.state ?? reportRuns.find((row) => row.id === id)?.state;
+			return status !== "failed" && status !== "cancelled";
+		}) ??
+		(moreCurrentReports ? null : eligibleReports[0]) ??
 		(viewedReport ? reportRuns[0]?.id : null) ??
 		null;
 	const report = useProjectResult(
@@ -612,7 +639,11 @@ export default function ProjectWorkbench({
 		if (id === null) url.searchParams.delete("run");
 		else url.searchParams.set("run", id);
 		url.searchParams.delete("compare");
-		url.searchParams.delete("energy_view");
+		if (guided && id) {
+			url.searchParams.set("energy_view", "reports");
+			url.searchParams.delete("retry_revision");
+			url.searchParams.delete("linker_inquiry_retry");
+		} else url.searchParams.delete("energy_view");
 		replacePlannerLocation(url);
 	}
 	const searchRun =
@@ -622,6 +653,7 @@ export default function ProjectWorkbench({
 		reportRun = report.data ?? null;
 	const reviewedReportId =
 		guided &&
+		viewedReport === null &&
 		step === "review" &&
 		draft &&
 		reportRun?.state === "succeeded" &&
@@ -930,6 +962,7 @@ export default function ProjectWorkbench({
 		if (previous === "#sc-review" && next !== "review") {
 			setViewedReport(null);
 			url.searchParams.delete("run");
+			url.searchParams.delete("energy_view");
 			url.searchParams.delete("retry_revision");
 			url.searchParams.delete("linker_inquiry_retry");
 		}
@@ -1158,7 +1191,7 @@ export default function ProjectWorkbench({
 		try {
 			let saved = await controller.save();
 			if (!saved || !current()) return;
-			const { options: sources, pendingWiringCheck } =
+			const { options: sources, pendingEquipmentCheck } =
 				await configuratorReportSources({
 					project: saved,
 					pageSize: session.runtime.limits.max_page_size,
@@ -1170,9 +1203,10 @@ export default function ProjectWorkbench({
 			if (sharedDcReportRun(saved.inputs) && !sources.energy_run_id)
 				throw new ApiError(409, "report_inputs_changed");
 			const wiring = hasReportWiring(saved.inputs);
+			const equipment = projectEquipmentScope(saved.inputs);
 			let checkManualEquipment =
 				!saved.inputs.equipment_candidate &&
-				hasSelectedEquipment(saved.inputs) &&
+				equipment === "system" &&
 				!sources.equipment_run_id;
 			if (checkManualEquipment && !wiring && sources.energy_run_id) {
 				const energy = readRun(
@@ -1187,7 +1221,10 @@ export default function ProjectWorkbench({
 				);
 				checkManualEquipment = !energy.result?.equipment_binding;
 			}
-			if ((wiring || checkManualEquipment) && !sources.equipment_run_id) {
+			if (
+				((wiring && equipment !== "products") || checkManualEquipment) &&
+				!sources.equipment_run_id
+			) {
 				const readCheck = async (id: string) =>
 					readRun(
 						await client.query(
@@ -1201,8 +1238,8 @@ export default function ProjectWorkbench({
 						RUN_OPERATIONS["runs/check-equipment"],
 					);
 				let run: PlanningRun;
-				if (pendingWiringCheck) {
-					run = await readCheck(pendingWiringCheck);
+				if (pendingEquipmentCheck) {
+					run = await readCheck(pendingEquipmentCheck);
 				} else {
 					const checked = await operations.start("runs/check-equipment", {
 						expected_revision: saved.revision,
@@ -1235,7 +1272,7 @@ export default function ProjectWorkbench({
 			}
 			if (
 				!readObject(saved.inputs.brief ?? {}).system_scope &&
-				!saved.inputs.equipment_candidate &&
+				equipment === "none" &&
 				!sources.energy_run_id &&
 				!sources.pv_run_id &&
 				!sources.equipment_run_id
@@ -1307,12 +1344,7 @@ export default function ProjectWorkbench({
 			reviewAttempt.current === reportLocale + ":" + reviewRevision
 		)
 			return;
-		const lastPage = olderHistory.data?.pages.at(-1) ?? history.data;
-		if (
-			!isDirty(draft) &&
-			lastPage?.next &&
-			lastPage.items.some((item) => item.revision >= reviewRevision)
-		) {
+		if (!isDirty(draft) && moreCurrentReports) {
 			if (!olderHistory.isFetching && !olderHistory.isError)
 				void olderHistory.fetchNextPage();
 			return;
@@ -1324,7 +1356,7 @@ export default function ProjectWorkbench({
 		viewedReport,
 		reviewRevision,
 		reportLocale,
-		olderHistory.data,
+		moreCurrentReports,
 		olderHistory.isFetching,
 		olderHistory.isError,
 		history.data,
