@@ -46,7 +46,10 @@ test("review shows the report's actual BOM and supports generation before a repo
 	const solarSection = [...document.querySelectorAll(".sc-card")].find(
 		(section) => section.querySelector("h2")?.textContent === solarTitle,
 	);
-	assert.match(solarSection.querySelector("table").textContent, /Generisches 460-W-PV-Modul/);
+	assert.match(
+		solarSection.querySelector("table").textContent,
+		/Generisches 460-W-PV-Modul/,
+	);
 	assert.ok(document.querySelector("details"));
 	assert.ok(button("Generate report in English"));
 	assert.equal(
