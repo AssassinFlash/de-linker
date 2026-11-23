@@ -6355,3 +6355,31 @@ msgstr ""
 #: includes/Protection/Login.php
 msgid "Too many failed sign-in attempts. Please try again later."
 msgstr ""
+
+#: includes/Contact/Form.php:256
+msgid "Sales and technical support"
+msgstr ""
+
+#: includes/Inquiry/Form.php:338
+msgid "Already a Linker partner? Sign in"
+msgstr ""
+
+#: includes/Inquiry/Form.php:325
+msgid "Project message"
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/Inquiry/Form.php:381
+#, php-format
+msgid "Decrease quantity for %s"
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/Inquiry/Form.php:382
+#, php-format
+msgid "Increase quantity for %s"
+msgstr ""
+
+#: includes/Inquiry/Form.php
+msgid "Work email"
+msgstr ""

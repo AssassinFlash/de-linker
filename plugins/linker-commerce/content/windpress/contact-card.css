@@ -1,41 +1,3 @@
-/*
- * The /contact/ card — [linker_contact_form].
- *
- * The composition is the live page's, read off the 2026-10-12/13 captures
- * (.scratch/freshdiff-rerun/captures/contact-en-1440-live.png,
- * .scratch/de-parity/captures/contact-de-1440-live.png, contact-en-390-live.png
- * and contact-de-390-live.png; the 2026-10-14 recheck shots of the same pages
- * no longer print it): one card across the form column — eyebrow, heading,
- * lead, "Your question", "This is about", a rule, "Where can we reply?" with
- * Name and Reply email beside each other and Company under them, the note,
- * the consent row, the submit bar and its footnote — and, under the card, the
- * two side cards "Prefer email?" and "Still exploring?".
- *
- * Geometry, measured on contact-en-1440-live.png and its stylesheet (the
- * page's own `contact-journal.css`, re-fetched 2026-10-15): the card is
- * x682–1391 and its content box starts at x714 — 32px, the padding the page's
- * stylesheet gives that box and what this file uses (--proto-space-6); the
- * blocks run on a 24px rhythm; the rule above the reply block sits 24px above
- * it; Name and Reply email share a row with 16px between them and collapse to
- * one column at 800px and below; the two side cards start 20px under the card,
- * split the same 710px in half with 16px between them and collapse the same
- * way. The card's radius is 26px there and the side cards' 20px: this file
- * takes the site's panel and card radii (--proto-radius-panel,
- * --proto-radius-card) instead, like every other surface.
- *
- * Two things of the live card are deliberately not here. Its palette: the
- * site's current tokens are the ruling (AGENTS.md §2, 2026-10-11 — the old
- * card's mint and its self-hosted shell are not part of the design system the
- * rebuilt pages follow). And its JavaScript: the live card was arranged at
- * runtime — a two-step flow below 801px with 01/02 tabs and a Continue button,
- * the side cards collapsed into one-line disclosures, the extra fields per
- * topic — by the page's own script over a runtime that is retired (Module's
- * own docblock; that script is stored in the page and still runs, but looks
- * for that runtime's markup). This form is server-rendered and works without
- * JavaScript (ticket #68), so the card is one column of blocks at every width
- * and the side cards stack.
- */
-
 /* German headings keep words intact within their existing authored lines. */
 html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	hyphens: manual;
@@ -145,14 +107,6 @@ html[lang^="de"] #tv-contact-v1 p {
 #contact-form .linker-contact-head {
 	display: grid;
 	gap: var(--proto-space-3);
-}
-
-#contact-form .linker-contact-card .linker-contact-form .linker-form-input {
-	border-radius: var(--proto-input-radius);
-}
-
-#contact-form .linker-contact-card .linker-contact-form :is(input, select).linker-form-input {
-	min-height: var(--proto-control-height);
 }
 
 #contact-form .linker-contact-overline {
@@ -533,4 +487,35 @@ html[lang^="de"] #contact-form [data-linker-contact-draft-error] p {
 	.linker-contact-selection--excluded
 	.linker-contact-selection__excluded {
 	display: block;
+}
+
+
+/* The authored stories follow the native contact workspace. */
+#tv-contact-v1:has(.cp-contact-heading) {
+	display: block;
+	background: var(--proto-canvas-white);
+}
+#tv-contact-v1 .cp-contact-heading, #tv-contact-v1:has(.cp-contact-heading) .cp-form-region {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: var(--proto-form-max-width);
+	margin-inline: auto;
+	padding-inline: var(--proto-space-5);
+}
+#tv-contact-v1 .cp-contact-heading { padding-block: var(--proto-space-7) var(--proto-space-5); }
+#tv-contact-v1 .cp-contact-heading h1 { margin: 0; color: var(--proto-ink-deep); font-family: var(--proto-font-sans); font-size: var(--proto-size-3xl); line-height: var(--proto-leading-display); }
+#tv-contact-v1:has(.cp-contact-heading) .cp-form-region { padding-block: 0 var(--proto-space-7); }
+#contact-form .linker-contact-card { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; gap: var(--proto-space-5); }
+#contact-form .linker-contact-card > .linker-contact-form { grid-column: 2; grid-row: 1; min-width: 0; padding: var(--proto-space-6); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-panel); background: var(--proto-canvas-white); }
+#contact-form .linker-contact-card > .linker-contact-rail { grid-column: 1; grid-row: 1; grid-template-columns: 1fr; gap: var(--proto-space-4); margin: 0; }
+#contact-form .linker-contact-rail-card { min-width: 0; padding: var(--proto-space-6); background: var(--proto-neutral-50); }
+#contact-form .linker-form-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--proto-space-4); }
+#contact-form .linker-contact-card .linker-form-primary { justify-self: start; justify-content: center; min-height: var(--proto-form-control-height); }
+@media (max-width: 760px) {
+	#tv-contact-v1 .cp-contact-heading, #tv-contact-v1:has(.cp-contact-heading) .cp-form-region { padding-inline: var(--proto-space-4); }
+	#contact-form .linker-contact-card { grid-template-columns: minmax(0, 1fr); }
+	#contact-form .linker-contact-card > :is(.linker-contact-form, .linker-contact-rail) { grid-column: 1; grid-row: auto; }
+	#contact-form .linker-contact-card > .linker-contact-form { padding: var(--proto-space-5); }
+	#contact-form .linker-form-fields { grid-template-columns: minmax(0, 1fr); }
+	#contact-form .linker-contact-card .linker-form-primary { width: 100%; }
 }

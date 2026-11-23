@@ -55,7 +55,7 @@ final class ContactFormMountTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'linker-contact-head', $html );
 		$this->assertStringContainsString( 'What can we help with?', $html );
 		$this->assertStringContainsString( 'linker-contact-rail', $html );
-		$this->assertStringContainsString( 'Prefer email?', $html );
+		$this->assertStringContainsString( 'Sales and technical support', $html );
 		$this->assertStringContainsString( 'Send message', $html );
 		$this->assertStringNotContainsString( '[' . Form::SHORTCODE . ']', $html, 'the shortcode is expanded, not left as text' );
 		$this->assertStringNotContainsString( 'cp-contact-fallback', $html );

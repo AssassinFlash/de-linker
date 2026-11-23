@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import re
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -19,6 +20,7 @@ import reviewed_page_pair as wp
 
 PAGES = {
     "about": (862, 6865),
+    "contact": (28, 6907),
     "services": (2748, 6700),
     "utility": (1755, 6917),
     "privacy": (1673, 6827),
@@ -40,8 +42,32 @@ def source(name: str) -> Any:
     return module
 
 
+def contact_workspace(content: str, title: str) -> str:
+    """Keep the native form mount, deep links and authored sections beneath it."""
+    heading = f'<header class="cp-contact-heading"><h1 id="cp-page-title">{title}</h1></header>'
+    if heading in content and 'data-site-js="contact-page.js"' not in content:
+        return content
+    content, hero = re.subn(
+        r'<section\b[^>]*class="cp-hero"[^>]*>.*?</section>\s*(<div class="cp-paper">)\s*<section\b[^>]*class="cp-intro"[^>]*>.*?</section>',
+        lambda match: heading + match[1],
+        content,
+        flags=re.S,
+    )
+    content, script = re.subn(
+        r'<script data-site-js="contact-page\.js">.*?</script>', "", content, flags=re.S
+    )
+    if (hero, script) != (1, 1) or "data-linker-contact-mount" not in content:
+        raise ValueError("Contact form workspace differs from the reviewed layout")
+    return content
+
+
 def planned(page: str, snapshot: dict[str, Any]) -> dict[str, str]:
     ids, pages = PAGES[page], snapshot["pages"]
+    if page == "contact":
+        return {
+            str(post): contact_workspace(pages[str(post)], title)
+            for post, title in zip(ids, ("Contact Linker", "Kontakt"), strict=True)
+        }
     if page in {"privacy", "capability", "epc", "installer"}:
         payload = source("quotation-page-copy").plan_pair(
             ids, snapshot, require_current=False

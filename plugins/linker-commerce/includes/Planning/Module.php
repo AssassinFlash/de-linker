@@ -81,11 +81,12 @@ final class Module {
 			}
 		} else {
 			$active = Context::active();
-			foreach ( WC()->cart->get_cart() as $line ) {
+			foreach ( WC()->cart->get_cart() as $key => $line ) {
 				$source  = $line[ DraftTransfer::LINE_META ] ?? '';
 				$lines[] = array(
 					'product_id'    => (int) $line['product_id'],
 					'label'         => $line['data']->get_name(),
+					'cart_key'      => '' === $source ? $key : null,
 					'quantity'      => $line['quantity'],
 					'project_id'    => $active[ $source ]['snapshot']['project_id'] ?? null,
 					'project_title' => $active[ $source ]['snapshot']['title'] ?? null,
@@ -106,6 +107,11 @@ final class Module {
 		return array(
 			'schema_version'          => 1,
 			'inquiry_form_html'       => ( new \Linker\Commerce\Inquiry\Form() )->planning( $language, $project, $bound, $handoff, $retry ),
+			'inquiry_draft_edit'      => array_filter( array_column( $lines, 'cart_key' ) ) ? array(
+				'url'        => rest_url( 'wc/store/v1/cart/update-item' ),
+				'nonce'      => wp_create_nonce( 'wc_store_api' ),
+				'rest_nonce' => wp_create_nonce( 'wp_rest' ),
+			) : null,
 			'inquiry_lines'           => array_map( $with_details, $lines ),
 			'inquiry_project_facts'   => $facts,
 			'inquiry_changes'         => array_map( $with_details, $changes ),
@@ -143,7 +149,7 @@ final class Module {
 					$id                = $post->ID;
 					$translated[ $id ] = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $id, $lang ) : $id;
 				}
-				return array_values( array_unique( array_merge( array_keys( $translated ), array_values( $translated ) ) ) );
+				return array_values( array_unique( array_merge( array_keys( $translated ), array_values( $translated ), array_map( array( Publication::class, 'canonical_id' ), array_keys( $translated ) ) ) ) );
 			}
 		);
 		$public     = array();
@@ -158,17 +164,20 @@ final class Module {
 		$locale->to( ProductText::locale( $lang ) );
 		try {
 			foreach ( $translated as $id => $twin ) {
-				if ( ! isset( $public[ $id ], $public[ $twin ] ) ) {
+				$source = Publication::canonical_id( $id );
+				if ( ! isset( $public[ $source ], $public[ $id ], $public[ $twin ] ) ) {
 					continue;
 				}
 				$product      = $public[ $twin ];
 				$fact         = Materials::card_facts( $product, 1 )[0] ?? null;
 				$cards[ $id ] = array_filter(
 					array(
-						'label'       => $product->get_name(),
-						'product_url' => (string) get_permalink( $twin ),
-						'image_url'   => (string) wp_get_attachment_image_url( (int) $product->get_image_id(), 'woocommerce_thumbnail' ),
-						'highlight'   => $fact ? $fact['label'] . ' · ' . $fact['value'] : wp_strip_all_tags( $product->get_short_description(), true ),
+						'sku'          => (string) $public[ $source ]->get_sku(),
+						'availability' => $public[ $source ]->is_in_stock() ? 'in-stock' : 'unavailable',
+						'label'        => $product->get_name(),
+						'product_url'  => (string) get_permalink( $twin ),
+						'image_url'    => (string) wp_get_attachment_image_url( (int) $product->get_image_id(), 'woocommerce_thumbnail' ),
+						'highlight'    => $fact ? $fact['label'] . ' · ' . $fact['value'] : wp_strip_all_tags( $product->get_short_description(), true ),
 					)
 				);
 			}

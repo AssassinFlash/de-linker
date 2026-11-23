@@ -213,6 +213,12 @@ export function readInquiryForm(value: unknown) {
 			fail();
 		return {
 			...inquiryProduct(line),
+			sku: typeof line.sku === "string" ? line.sku : null,
+			availability:
+				line.availability === "in-stock" || line.availability === "unavailable"
+					? line.availability
+					: null,
+			cartKey: typeof line.cart_key === "string" ? line.cart_key : null,
 			productId: line.product_id,
 			projectId: line.project_id,
 			label: line.label,
@@ -229,8 +235,18 @@ export function readInquiryForm(value: unknown) {
 		if (!Array.isArray(raw)) fail();
 		return raw.map((value) => read(readObject(value)));
 	};
+	const edit = row.inquiry_draft_edit
+		? readObject(row.inquiry_draft_edit)
+		: null;
 	return {
 		lines,
+		draftEdit:
+			edit &&
+			typeof edit.url === "string" &&
+			typeof edit.nonce === "string" &&
+			typeof edit.rest_nonce === "string"
+				? { url: edit.url, nonce: edit.nonce, restNonce: edit.rest_nonce }
+				: null,
 		form: row.inquiry_form_html,
 		facts: readRows(
 			"inquiry_project_facts",

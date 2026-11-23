@@ -8,7 +8,6 @@
 			<p class="linker-inquiry-error" role="alert">{{error}}</p>
 			[linker_inquiry_project_notes]
 			{{inquiry-fields}}
-			<div class="linker-inquiry-guest" {{guest-hide}}><a href="{{login-url}}">[linker_inquiry_text key="partner"]</a> [linker_create_account]</div>
 		</form>
 		<aside class="linker-inquiry-draft"><form class="woocommerce-cart-form" method="post" action="{{draft-action}}"><input type="hidden" name="proceed" value="1" /><div class="linker-inquiry-draft-head"><h2>[linker_inquiry_text key="draft"]</h2><a data-inquiry-edit href="{{draft-url}}" {{draft-empty}}>[linker_inquiry_text key="edit"]</a></div><div class="linker-inquiry-lines woocommerce-cart-form__contents">[linker_inquiry_lines]</div>[linker_inquiry_draft_nonce]<button class="linker-inquiry-update" type="submit" name="update_cart" value="1" {{draft-empty}}>[linker_inquiry_text key="update"]</button></form></aside>
 	</div>

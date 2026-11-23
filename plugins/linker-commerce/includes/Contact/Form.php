@@ -129,7 +129,7 @@ final class Form {
 	private function form( string $state ): string {
 		$previous = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
 		$field    = 'linker-form-input';
-		$label    = 'linker-form-label';
+		$label    = 'lk-field linker-form-label';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
 		$query    = wp_unslash( $_GET );
 		$raw      = $previous[ SelectionContext::FIELD ] ?? ( is_string( $query[ SelectionContext::FIELD ] ?? null ) ? $query[ SelectionContext::FIELD ] : '' );
@@ -162,28 +162,18 @@ final class Form {
 
 		$html .= SelectionView::form( $context, $raw, $included );
 
-		$html .= '<div class="linker-contact-question">';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-message"><span>' . esc_html__( 'Your question', 'linker-commerce' ) . '</span>'
-			. '<textarea class="' . esc_attr( $field ) . '" id="linker-contact-message" name="message" rows="4" maxlength="' . esc_attr( (string) Submission::MAX_MESSAGE ) . '" placeholder="' . esc_attr__( 'What would you like to know?', 'linker-commerce' ) . '" required></textarea></label>';
-		$html .= '</div>';
-
-		$html .= '<div class="linker-contact-topic">';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-intent"><span>' . esc_html__( 'This is about', 'linker-commerce' ) . '</span>'
+		$html .= '<div class="linker-form-fields">';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-name"><span class="lk-field-heading">' . esc_html__( 'Name', 'linker-commerce' ) . '<span class="lk-required" aria-hidden="true"> *</span></span>'
+			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-name" type="text" name="name" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="name" required /></label>';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-email"><span class="lk-field-heading">' . esc_html__( 'Email address', 'linker-commerce' ) . '<span class="lk-required" aria-hidden="true"> *</span></span>'
+			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-email" type="email" name="email" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="email" required /></label>';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-company"><span class="lk-field-heading">' . esc_html__( 'Company', 'linker-commerce' ) . ' <small class="linker-form-optional">' . esc_html__( 'optional', 'linker-commerce' ) . '</small></span>'
+			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-company" type="text" name="company" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="organization" /></label>';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-intent"><span class="lk-field-heading">' . esc_html__( 'This is about', 'linker-commerce' ) . '</span>'
 			. '<select class="' . esc_attr( $field ) . '" id="linker-contact-intent" name="' . esc_attr( Submission::INTENT_FIELD ) . '">' . $this->intent_options() . '</select></label>';
 		$html .= '</div>';
-
-		$html .= '<div class="linker-contact-reply">';
-		$html .= '<h3>' . esc_html__( 'Your contact details', 'linker-commerce' ) . '</h3>';
-		$html .= '<div class="linker-form-fields">';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-name"><span>' . esc_html__( 'Name', 'linker-commerce' ) . '</span>'
-			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-name" type="text" name="name" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="name" required /></label>';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-email"><span>' . esc_html__( 'Email address', 'linker-commerce' ) . '</span>'
-			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-email" type="email" name="email" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="email" required /></label>';
-		$html .= '</div>';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-company"><span>' . esc_html__( 'Company', 'linker-commerce' ) . ' <small class="linker-form-optional">' . esc_html__( 'optional', 'linker-commerce' ) . '</small></span>'
-			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-company" type="text" name="company" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="organization" /></label>';
-		$html .= '<p class="linker-form-note">' . esc_html__( 'No account or Project is needed to ask a question.', 'linker-commerce' ) . '</p>';
-		$html .= '</div>';
+		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-message"><span class="lk-field-heading">' . esc_html__( 'Your question', 'linker-commerce' ) . '<span class="lk-required" aria-hidden="true"> *</span></span>'
+			. '<textarea class="' . esc_attr( $field ) . '" id="linker-contact-message" name="message" rows="4" maxlength="' . esc_attr( (string) Submission::MAX_MESSAGE ) . '" placeholder="' . esc_attr__( 'What would you like to know?', 'linker-commerce' ) . '" required></textarea></label>';
 
 		$html   .= '<div class="linker-contact-end">';
 		$privacy = get_privacy_policy_url();
@@ -195,7 +185,7 @@ final class Form {
 		$html .= '</span></label>';
 		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '' );
 		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
-			. '<p class="linker-form-note">' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p></div>';
+			. '</div>';
 		$html .= '</div>';
 
 		$html .= '</form>';
@@ -263,9 +253,9 @@ final class Form {
 		$email = ( new Options() )->team_mailbox();
 		$html  = '<aside class="linker-contact-rail">';
 		$html .= '<div class="linker-contact-rail-card linker-contact-email">';
-		$html .= '<span class="linker-contact-overline">' . esc_html__( 'Prefer email?', 'linker-commerce' ) . '</span>';
+		$html .= '<span class="linker-contact-overline">' . esc_html__( 'Sales and technical support', 'linker-commerce' ) . '</span>';
 		$html .= '<a class="linker-contact-address" href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a>';
-		$html .= '<p>' . esc_html__( 'Send your question directly to our team. Opening your email app does not send a message.', 'linker-commerce' ) . '</p>';
+		$html .= '<p>' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-rail-card linker-contact-explore">';
 		$html .= '<span class="linker-contact-overline">' . esc_html__( 'Still exploring?', 'linker-commerce' ) . '</span>';

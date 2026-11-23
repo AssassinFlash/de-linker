@@ -37,7 +37,7 @@ const REQUESTS = {
 	en: {
 		path: '/proforma-request/',
 		title: 'Send an inquiry',
-		signIn: 'Have an approved account? Log in for net prices and saved details.',
+		signIn: 'Sign in',
 		create: 'Create account',
 		account: '/my-account/',
 		register: '/my-account/register/',
@@ -45,7 +45,7 @@ const REQUESTS = {
 	de: {
 		path: '/de/proforma-anfrage/',
 		title: 'Anfrage senden',
-		signIn: 'Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden.',
+		signIn: 'Anmelden',
 		create: 'Konto erstellen',
 		account: '/de/mein-konto/',
 		register: '/de/mein-konto/registrieren/',
@@ -103,6 +103,7 @@ for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
 		await expect(page.locator('.linker-inquiry-form')).toBeVisible();
 		await expect(page.locator('h1')).toHaveText(pageCopy.title);
 		const entries = page.locator('.linker-inquiry-guest');
+		await entries.locator('summary').click();
 		await expect(
 			entries.getByRole('link', { name: pageCopy.signIn, exact: true })
 		).toHaveAttribute('href', instance().url + pageCopy.account);
