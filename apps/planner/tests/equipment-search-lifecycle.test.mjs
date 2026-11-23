@@ -553,15 +553,17 @@ async function equipmentApp(
 					".sc-project-navigation button,.sc-refinement-tabs button",
 				),
 			].find((node) => node.textContent.replace(/^\d+/, "").trim() === name);
+		async function activate(name) {
+			await untilRun(() => find(name)?.matches(":enabled"));
+			await act(async () => find(name).click());
+		}
 		if (
 			!find(label) &&
 			["Roof & PV", "Energy profile & CSV", "Matched equipment"].includes(label)
 		) {
-			await act(async () => find("Fine-tune (optional)").click());
+			await activate("Fine-tune (optional)");
 		}
-		const item = find(label);
-		assert.ok(item, `Expected the ${label} step`);
-		await act(async () => item.click());
+		await activate(label);
 	}
 
 	return {
