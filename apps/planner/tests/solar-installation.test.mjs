@@ -1323,24 +1323,38 @@ test("measure the plan without changing the roof, then save and reopen an exclus
 	const editing = [];
 	const app = await mount(
 		t,
-		{ brief: emptyBrief(), geometry },
-		null,
+		{
+			brief: {
+				...emptyBrief(),
+				site: {
+					...emptyBrief().site,
+					country_code: "NL",
+					location_label: "Amsterdam",
+					latitude: 52.36,
+					longitude: 4.88,
+				},
+			},
+			geometry,
+		},
+		aerial,
 		null,
 		"en",
 		{},
 		{ initialPlan: true, onEditing: (value) => editing.push(value) },
 	);
-	const svg = document.querySelector('svg[aria-label="Editable roof plan"]');
-	svg.getScreenCTM = () => ({ inverse: () => ({}) });
-	svg.createSVGPoint = () => ({
-		x: 0,
-		y: 0,
-		matrixTransform() {
-			return this;
-		},
-	});
-	const corner = (x, y) =>
-		act(async () =>
+
+	const corner = (x, y) => {
+		const svg = document.querySelector('svg[aria-label="Editable roof plan"]');
+		assert.ok(svg, "The tool opens the measured roof plane");
+		svg.getScreenCTM = () => ({ inverse: () => ({}) });
+		svg.createSVGPoint = () => ({
+			x: 0,
+			y: 0,
+			matrixTransform() {
+				return this;
+			},
+		});
+		return act(async () =>
 			svg.dispatchEvent(
 				new window.MouseEvent("click", {
 					bubbles: true,
@@ -1349,6 +1363,7 @@ test("measure the plan without changing the roof, then save and reopen an exclus
 				}),
 			),
 		);
+	};
 	await click("Measure");
 	await corner(1, 2);
 	await corner(4, 6);
@@ -1358,7 +1373,35 @@ test("measure the plan without changing the roof, then save and reopen an exclus
 	);
 	assert.deepEqual(app.inputs.geometry, geometry);
 	assert.equal(editing.at(-1), false);
-	await click("Keep-out");
+	for (const tool of [
+		"Draw polygon",
+		"Obstacle",
+		"Place modules",
+		"Keep-out",
+	]) {
+		await click("Aerial map");
+		await until(() => document.querySelector('[data-map-status="ready"]'));
+		assert.equal(button("Select plane").getAttribute("aria-pressed"), "true");
+		await click(tool);
+		assert.equal(
+			button("Plan view").getAttribute("aria-pressed"),
+			"true",
+			tool,
+		);
+		if (tool === "Obstacle") {
+			await enter(input("Obstacle height above roof"), "0.5");
+			await corner(4, 4);
+			await corner(5, 4);
+			await corner(4, 5);
+			await click("Finish outline");
+			assert.deepEqual(app.inputs.geometry.obstacles.at(-1).footprint_uv, [
+				[4, 4],
+				[5, 4],
+				[4, 5],
+			]);
+		}
+	}
+
 	for (const [x, y] of [
 		[1, 1],
 		[3, 1],

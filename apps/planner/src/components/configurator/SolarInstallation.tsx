@@ -1025,25 +1025,26 @@ export function SolarInstallation({
 				height_m: numeric("obstacleHeight"),
 				extrusion_axis_enu: [0, 0, 1] as const,
 			};
-			const command: GeometryCommand = points
-				? newMapShapeCommand(
-						geometry,
-						{ kind: "obstacle", value },
-						mapPolygon(points),
-					)
-				: {
-						type: "put_obstacle",
-						before: null,
-						value: {
-							...value,
-							footprint_uv: [
-								[u, v],
-								[u + width, v],
-								[u + width, v + depth],
-								[u, v + depth],
-							],
-						},
-					};
+			const command: GeometryCommand =
+				map && points
+					? newMapShapeCommand(
+							geometry,
+							{ kind: "obstacle", value },
+							mapPolygon(points),
+						)
+					: {
+							type: "put_obstacle",
+							before: null,
+							value: {
+								...value,
+								footprint_uv: points ?? [
+									[u, v],
+									[u + width, v],
+									[u + width, v + depth],
+									[u, v + depth],
+								],
+							},
+						};
 			if (commit(command)) {
 				select(value.id);
 				setTool("select");
@@ -1204,7 +1205,11 @@ export function SolarInstallation({
 		setVertices([]);
 		setDrawingKey(crypto.randomUUID());
 		setError("");
-		if (value === "measure") setView("plan");
+		if (
+			value === "measure" ||
+			(map && roof && !mapReferenced && value !== "select")
+		)
+			setView("plan");
 		else if (
 			(value === "roof" || value === "obstacle") &&
 			mapReferenced &&
@@ -2002,9 +2007,13 @@ export function SolarInstallation({
 										onClick={(e) => {
 											if (
 												blocked ||
-												!["roof", "keepout", "measure", "modules"].includes(
-													tool,
-												)
+												![
+													"roof",
+													"keepout",
+													"obstacle",
+													"measure",
+													"modules",
+												].includes(tool)
 											)
 												return;
 											const point = planPoint(
@@ -2120,7 +2129,10 @@ export function SolarInstallation({
 									</svg>
 								)}
 								{(interaction ||
-									(!map && (tool === "roof" || tool === "keepout"))) &&
+									(!map &&
+										(tool === "roof" ||
+											tool === "keepout" ||
+											tool === "obstacle"))) &&
 									vertices.length >= 3 && (
 										<button
 											type="button"
@@ -2222,7 +2234,11 @@ export function SolarInstallation({
 											}
 											onClick={() => {
 												setView(value);
-												if (value === "scene" || tool === "measure")
+												if (
+													value === "scene" ||
+													tool === "measure" ||
+													(value === "map" && roof && !mapReferenced)
+												)
 													startTool("select");
 											}}
 										>
