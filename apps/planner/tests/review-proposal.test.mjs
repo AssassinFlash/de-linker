@@ -587,4 +587,24 @@ test("the first PDF download after picking a logo uses the new branded file", as
 	await act(async () => button("Download PDF").click());
 	assert.deepEqual(logos, ["data:image/png;base64,bWFyaw=="]);
 	assert.deepEqual(downloads, [branded.result.prepared_asset.id]);
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, {
+				...value,
+				run: branded,
+				inquiry: React.createElement("form"),
+				prepareExport: async (logo) => {
+					logos.push(logo);
+					return value.run;
+				},
+			}),
+		),
+	);
+	await act(async () => button("Remove logo").click());
+	await act(async () => button("Download PDF").click());
+	assert.deepEqual(logos, ["data:image/png;base64,bWFyaw==", null]);
+	assert.deepEqual(downloads, [
+		branded.result.prepared_asset.id,
+		value.run.result.prepared_asset.id,
+	]);
 });

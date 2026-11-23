@@ -58,16 +58,23 @@ export function InquiryExportBar({
 		const lang = locale.startsWith("de") ? "de" : "en";
 		try {
 			const cached = saved.current;
-			let source =
-				cached?.logo === logo &&
+			const cachedReview =
+				cached &&
+				cached.run.project_id === project.id &&
 				cached.run.revision === project.revision &&
-				(!run || cached.run.id === run.id)
+				reportFromRun(cached.run).locale === lang &&
+				(!run || cached.run.id === run.id);
+			const original =
+				run?.revision === project.revision &&
+				!logo &&
+				reportFromRun(run).locale === lang
+					? run
+					: null;
+			let source = cachedReview
+				? cached.logo === logo
 					? cached.run
-					: !logo &&
-						  run?.revision === project.revision &&
-						  reportFromRun(run).locale === lang
-						? run
-						: null;
+					: null
+				: original;
 			const prepared = !source;
 			if (!source) source = (await prepare?.(logo)) ?? null;
 			if (
