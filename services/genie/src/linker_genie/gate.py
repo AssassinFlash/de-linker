@@ -45,7 +45,12 @@ class Gate:
         self.limit = limit
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http" or scope.get("method") != "POST":
+        private_read = scope.get("method") == "GET" and scope.get(
+            "path", ""
+        ).startswith(("/turn/", "/assistant/turn/"))
+        if scope["type"] != "http" or (
+            scope.get("method") != "POST" and not private_read
+        ):
             await self.app(scope, receive, send)
             return
         headers = {
@@ -70,6 +75,9 @@ class Gate:
                 scope["path"],
             )
             await _answer(send, 401, "unauthorized")
+            return
+        if private_read:
+            await self.app(scope, receive, send)
             return
         declared = headers.get("content-length", "")
         if declared.isdigit() and int(declared) > self.limit:

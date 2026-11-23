@@ -680,3 +680,20 @@ def test_customer_words_are_read_through_one_list() -> None:
     prompt = _user_prompt(request, None, prepared)
     assert "markerphrase" in prompt
     assert "ASSISTANTONLYTOKEN" not in prompt
+
+
+@pytest.mark.parametrize(
+    ("answer", "expected"),
+    [
+        ("No backup", "none"),
+        ("Built-in backup", "needed"),
+        ("Backup with an accessory", "needed_accessory_ok"),
+        ("Kein Ersatzstrom", "none"),
+        ("Integrierter Ersatzstrom", "needed"),
+        ("Ersatzstrom mit Zubehör", "needed_accessory_ok"),
+        ("needed_accessory_ok", "needed_accessory_ok"),
+        ("benötigt, Zubehör akzeptiert", "needed_accessory_ok"),
+    ],
+)
+def test_stated_backup_choice_roundtrips(answer: str, expected: str) -> None:
+    assert stated_size_hint(answer) == {"backup": expected}

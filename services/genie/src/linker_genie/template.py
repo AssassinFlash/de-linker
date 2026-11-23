@@ -75,6 +75,7 @@ from linker_genie.facts import (
 from linker_genie.failure import FailureClass
 from linker_genie.figures import chunk_of, is_code
 from linker_genie.hydrate import PLACEHOLDER, hydrate
+from linker_genie.prefill import BACKUP_CHOICES
 from linker_genie.route import (
     SEARCH_LIMIT,
     ModelLookup,
@@ -1455,7 +1456,7 @@ def _ask_options(field: str, language: str) -> list[str]:
         "application": ["home", "commercial"],
         "pv_kwp": [],
         "kwh": [],
-        "backup": ["none", "needed", "needed_accessory_ok"],
+        "backup": list(BACKUP_CHOICES["en"].values()),
         "brand": [],
         "voltage": ["48 V", "HV"],
     }
@@ -1464,7 +1465,7 @@ def _ask_options(field: str, language: str) -> list[str]:
         "application": ["Wohngebäude", "Gewerbe"],
         "pv_kwp": [],
         "kwh": [],
-        "backup": ["ohne", "benötigt", "benötigt, Zubehör akzeptiert"],
+        "backup": list(BACKUP_CHOICES["de"].values()),
         "brand": [],
         "voltage": ["48 V", "HV"],
     }

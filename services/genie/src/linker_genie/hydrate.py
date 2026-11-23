@@ -486,6 +486,17 @@ def fill(
                 seen.add(key)
                 used.append(note)
         after = match.group(2)
+        if fact.id == "compat.verdict" or fact.id.startswith("compat.verdict."):
+            labels = {
+                "released_with_accessory": (
+                    "approved with an accessory",
+                    "mit Zubehör freigegeben",
+                ),
+                "not_released": ("not approved", "nicht freigegeben"),
+                "released": ("approved", "freigegeben"),
+            }
+            if fact.value in labels:
+                return labels[fact.value][int(locale.startswith("de"))] + after
         # A figure of a document chunk, of the customer's page (page.py, #234), of
         # their saved solution (solution.py, #496) or of a file the customer
         # attached (attachments.py, #236) carries its own unit, as the text

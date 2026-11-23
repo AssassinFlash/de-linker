@@ -1489,6 +1489,14 @@ def _no_amount_from_attachments(output: TurnOutput, facts: TurnFacts) -> list[st
 def _domain_words(output: TurnOutput) -> list[str]:
     failures: list[str] = []
     for text in _model_texts(output):
+        if re.search(
+            r"\b(?:released_with_accessory|not_released|needed_accessory_ok)\b", text
+        ) or re.search(
+            r"(?:^|\bbackup\s*[:=]\s*)`?(?:none|needed)`?[.!]?\s*$", text.strip(), re.I
+        ):
+            failures.append(
+                "Describe backup needs and compatibility in customer language."
+            )
         found = BANNED_WORDS.findall(PLACEHOLDER.sub("", text))
         if found:
             failures.append(

@@ -382,6 +382,7 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
         tools: Abilities,
         *,
         get_vocabulary: Callable[[], Vocabulary] | None = None,
+        on_stage: Callable[[str], None] | None = None,
     ) -> Prepared:
         assert get_vocabulary is not None
         seen.append(tools)

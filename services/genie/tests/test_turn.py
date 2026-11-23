@@ -1140,3 +1140,57 @@ def test_forget_purges_the_rows_a_file_parts_list_read(log: TurnLog) -> None:
     assert block["rows"][0]["purged"] is True
     # The customer's own message stays; it names the file, not its rows.
     assert row[1] == "Attached: list.csv"
+
+
+def test_async_turn_holds_capacity_and_only_releases_the_checked_stream(
+    log: TurnLog, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from threading import Event
+    from time import monotonic, sleep
+    from uuid import UUID
+
+    started, finish = Event(), Event()
+
+    def generate(body: TurnRequest, retry: str | None) -> tuple[TurnOutput, TurnFacts]:
+        started.set()
+        assert finish.wait(10)
+        return _generate(body, retry)
+
+    monkeypatch.setenv("LINKER_GENIE_WORK_MODE", "enforce")
+    monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "private/work.sqlite"))
+    monkeypatch.setattr(app.state, "generate", generate, raising=False)
+    headers = {**SHELL, "X-Linker-Resource-Subject": "1" * 64}
+    client = TestClient(app, headers=headers)
+    body = {
+        "conversation_id": "async-test",
+        "messages": [{"role": "user", "content": "10 kWp three-phase"}],
+        "locale": "en",
+    }
+    response = client.post("/assistant/turn/start", json=body)
+    try:
+        assert response.status_code == 202
+        data = response.json()
+        assert UUID(data["job_id"]).version == 4
+        assert data["stage"] == "understanding" and "stream" not in data
+        assert started.wait(3)
+        job = "/turn/" + data["job_id"]
+        assert TestClient(app).get(job).status_code == 401
+        assert (
+            client.get(job, headers={"X-Linker-Resource-Subject": "2" * 64}).status_code
+            == 404
+        )
+        progress = client.get(job).json()
+        assert progress["stage"] == "writing_answer" and "stream" not in progress
+        assert client.post("/turn/start", json=body).status_code == 429
+        assert client.post("/assistant/turn", json=body).status_code == 429
+    finally:
+        finish.set()
+    until = monotonic() + 5
+    while (data := client.get(job).json())[
+        "status"
+    ] == "running" and monotonic() < until:
+        sleep(0.01)
+    assert data["status"] == "completed"
+    assert "10 kW" in data["stream"] and "event: done" in data["stream"]
+    assert client.get("/assistant" + job).json() == data
+    assert client.post("/turn", json=body).status_code == 200
