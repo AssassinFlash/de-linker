@@ -11,6 +11,8 @@ from linker_genie.gate import Gate, Message
 POSTS = {
     "/budget/take",
     "/turn",
+    "/turn/start",
+    "/assistant/turn/start",
     "/assistant/turn",
     "/assistant/turn/{turn_id}/vote",
     "/turn/{turn_id}/vote",

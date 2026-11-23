@@ -20,7 +20,10 @@ export function resourceAction(
 		parsed.searchParams.get( 'rest_route' ) ??
 		parsed.pathname.replace( /^.*\/wp-json/i, '' )
 	).toLowerCase();
-	if ( route === '/linker-ai/v1/genie/turn' ) {
+	if (
+		route === '/linker-ai/v1/genie/turn' ||
+		route === '/linker-ai/v1/genie/turn/start'
+	) {
 		return 'genie';
 	}
 	if ( route === '/linker-ai/v1/genie/solution' ) {

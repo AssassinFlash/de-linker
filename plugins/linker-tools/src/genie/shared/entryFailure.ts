@@ -1,3 +1,4 @@
+import { restorePickedFiles } from '../attachments/turnFiles';
 /** The single verified failed-draft selector used by both surfaces and their controller. */
 import type { GenieConfig } from '../config';
 import type { DraftEditor } from './draftContext';
@@ -62,6 +63,7 @@ export async function verifiedEntryFailure(
 		if ( legacyReadable && store.getItem( FAILURE_KEY ) !== legacyRaw ) {
 			return null;
 		}
+		await restorePickedFiles( identity.scope );
 		const journal = new FailureJournal( store, identity );
 		// An old reader can invalidate its surface, but cannot migrate/select the next owner's record.
 		const selected =

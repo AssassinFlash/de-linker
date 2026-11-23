@@ -22,11 +22,12 @@ import asyncio
 import json
 import logging
 import os
+import sqlite3
 import time
 from collections.abc import AsyncIterator, Iterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
-from threading import Lock
+from threading import Lock, Thread
 from typing import Any, Literal
 from uuid import UUID
 
@@ -61,6 +62,7 @@ from linker_genie.facts import TurnFacts
 from linker_genie.failure import from_log, is_row
 from linker_genie.gate import Gate
 from linker_genie.inquiry_assessment import AssessmentInput, assess
+from linker_genie.jobs import Jobs, expire_results
 from linker_genie.knowledge import SEARCH
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
@@ -68,6 +70,7 @@ from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup, fill
 from linker_genie.publication import (
     PublicationChanged,
+    PublicationClient,
     PublicationUnavailable,
     Snapshot,
     current,
@@ -97,7 +100,13 @@ from linker_genie.template import (
 )
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
-from linker_genie.work import WorkError, hold
+from linker_genie.work import (
+    WorkError,
+    acquire,
+    configured_slots,
+    hold,
+    require_subject,
+)
 
 
 async def refresh_vocabulary(stop: asyncio.Event) -> None:
@@ -122,11 +131,14 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         name="genie-log-retention",
     )
     prewarm = asyncio.create_task(refresh_vocabulary(stop), name="genie-vocabulary")
+    expiration = asyncio.create_task(
+        expire_results(stop), name="genie-result-retention"
+    )
     try:
         yield
     finally:
         stop.set()
-        await asyncio.gather(task, prewarm)
+        await asyncio.gather(task, prewarm, expiration)
 
 
 app = FastAPI(
@@ -267,22 +279,18 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
 
 
 def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
-    """Establish and recheck current authority around the complete computation.
+    authority, snapshot = _start_permission(body, request)
+    return StreamingResponse(
+        _execute_turn(body, request, authority, snapshot),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache"},
+    )
 
-    A historical assistant message is a snapshot, never a fresh source. User
-    messages still carry project inputs; attached readings are re-identified in
-    Understander before any of their technical content enters the model.
-    """
-    authority = getattr(request.app.state, "publication", None) or current()
+
+@contextmanager
+def _publication_errors() -> Iterator[None]:
     try:
-        snapshot = authority.snapshot()
-        snapshot.require_products(list(product_ids(body.page_context.model_dump())))
-        clean = body.model_copy(
-            update={"messages": [m for m in body.messages if m.role == "user"]}
-        )
-        response = _compute_turn(clean, request, snapshot)
-        authority.validate(snapshot)
-        return response
+        yield
     except PublicationChanged as error:
         logger.warning("publication changed during turn")
         raise HTTPException(status_code=409, detail="publication_changed") from error
@@ -293,6 +301,105 @@ def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         ) from error
 
 
+def _start_permission(
+    body: TurnRequest, request: Request
+) -> tuple[PublicationClient, Snapshot]:
+    authority = getattr(request.app.state, "publication", None) or current()
+    with _publication_errors():
+        snapshot = authority.snapshot()
+        snapshot.require_products(list(product_ids(body.page_context.model_dump())))
+    return authority, snapshot
+
+
+def _execute_turn(
+    body: TurnRequest,
+    request: Request,
+    authority: PublicationClient,
+    snapshot: Snapshot,
+    on_stage: timing.Stage | None = None,
+) -> Iterator[str]:
+    clean = body.model_copy(
+        update={"messages": [m for m in body.messages if m.role == "user"]}
+    )
+    with _publication_errors():
+        events = _compute_turn(clean, request, snapshot, on_stage)
+        authority.validate(snapshot)
+    return events
+
+
+@app.post("/assistant/turn/start", status_code=202)
+@app.post("/turn/start", status_code=202)
+def start_turn(body: TurnRequest, request: Request) -> JSONResponse:
+    started = time.monotonic()
+    subject = request.headers.get("x-linker-resource-subject", "")
+    slots = configured_slots()
+    slot = acquire(slots, subject)
+    jobs = Jobs(slots)
+    stage = "reading_attachments" if body.attachments else "understanding"
+    try:
+        authority, snapshot = _start_permission(body, request)
+        created = jobs.begin(slot, body.conversation_id, subject, stage)
+
+        def execute() -> None:
+            try:
+                stream = "".join(
+                    _execute_turn(
+                        body,
+                        request,
+                        authority,
+                        snapshot,
+                        lambda value: jobs.stage(slot, value),
+                    )
+                )
+                if not jobs.finish(slot, stream):
+                    turn_log().forget(body.conversation_id)
+            except HTTPException as error:
+                jobs.fail(slot, error.status_code, str(error.detail), str(error.detail))
+            except (BudgetError, WorkError) as error:
+                jobs.fail(slot, error.status, str(error), str(error))
+            except Exception:
+                logger.exception("background Genie turn failed")
+                jobs.fail(slot, 503, "genie_turn_failed", "genie_turn_failed")
+            finally:
+                slots.release(slot)
+
+        try:
+            Thread(target=execute, name="genie-turn", daemon=True).start()
+        except RuntimeError:
+            jobs.fail(slot, 503, "genie_turn_failed", "genie_turn_failed")
+            raise WorkError("unavailable") from None
+    except Exception:
+        slots.release(slot)
+        raise
+    return JSONResponse(
+        status_code=202,
+        content={
+            "job_id": slot,
+            "status": "running",
+            "stage": stage,
+            "started_at": created,
+        },
+        headers={
+            "Cache-Control": "private, no-store",
+            "Server-Timing": f"genie;dur={(time.monotonic() - started) * 1000:.1f}",
+        },
+    )
+
+
+@app.get("/assistant/turn/{job_id}")
+@app.get("/turn/{job_id}")
+def read_turn(job_id: str, request: Request) -> dict[str, Any]:
+    subject = request.headers.get("x-linker-resource-subject", "")
+    require_subject(subject)
+    try:
+        state = Jobs(configured_slots()).read(job_id, subject)
+    except (OSError, sqlite3.Error) as error:
+        raise WorkError("storage") from error
+    if state is None:
+        raise HTTPException(404, "unknown_turn")
+    return state
+
+
 @app.post("/knowledge/loaded")
 def knowledge_loaded() -> dict[str, object]:
     """Actually open the current release; workers acknowledge this process's version."""
@@ -300,13 +407,16 @@ def knowledge_loaded() -> dict[str, object]:
 
 
 def _compute_turn(
-    body: TurnRequest, request: Request, original_permission: Snapshot
-) -> StreamingResponse:
+    body: TurnRequest,
+    request: Request,
+    original_permission: Snapshot,
+    on_stage: timing.Stage | None = None,
+) -> Iterator[str]:
     """One conversation turn, grounded and hydrated, as SSE."""
     started = time.monotonic()
     # The turn's passive phase timings (#336, timing.py): measurement only, no
     # decision reads them.
-    clock = timing.Timing()
+    clock = timing.Timing(on_stage)
     # A start row before any wait: a model hang or a killed process leaves it
     # behind, so the unfinished turns the p95 tail must not silently omit are
     # countable (TurnLog.start; ops/turn_latency.py reports them).
@@ -322,6 +432,7 @@ def _compute_turn(
                     body,
                     abilities,
                     get_vocabulary=lambda: store_vocabulary().get(original_permission),
+                    on_stage=on_stage,
                 )
             )
     except PublicationChanged as error:
@@ -418,6 +529,8 @@ def _compute_turn(
     # answered by the service alone: no model ran (model-routing audits read
     # provider/model). The four model channels are unchanged; these routes are
     # sentences, not channels.
+    if on_stage is not None:
+        on_stage("verifying_answer")
     try:
         _check_shipped_publication(shipped, result.facts, original_permission)
     except PublicationChanged as error:
@@ -459,11 +572,7 @@ def _compute_turn(
             timing=clock.as_log(complete=False),
         )
         turn_log().finish(start_token)
-    return StreamingResponse(
-        _sse(result, shipped, turn_id, prepared, clock),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache"},
-    )
+    return _sse(result, shipped, turn_id, prepared, clock)
 
 
 def _check_shipped_publication(
@@ -571,6 +680,8 @@ def conversation_summary(
 def forget(conversation_id: str) -> dict[str, int]:
     """The customer deleted the conversation, or Retention did: the reading text of
     its files leaves the turn log too (log.TurnLog.forget, #236)."""
+    if os.environ.get("LINKER_GENIE_WORK_PATH"):
+        Jobs(configured_slots()).forget(conversation_id)
     return {"purged": turn_log().forget(conversation_id)}
 
 

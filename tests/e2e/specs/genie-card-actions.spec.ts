@@ -152,7 +152,7 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 	await page.route('**/wp-json/linker/v1/publication/product/*', (route) =>
 		route.fulfill({ json: {} })
 	);
-	await page.route('**/wp-json/linker-ai/v1/genie/turn', (route) =>
+	await page.route('**/wp-json/linker-ai/v1/genie/turn/start', (route) =>
 		route.fulfill({ json: { conversation_id: 223, stream } })
 	);
 	await page.route('**/wp-json/wc/store/v1/products?*', (route) =>

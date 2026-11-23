@@ -176,7 +176,7 @@ for (const lang of ['en', 'de'] as const) {
 				JSON.stringify(handoff) +
 				'\n\nevent: done\ndata: {"ok":true}\n\n';
 			await page.route(
-				'**/wp-json/linker-ai/v1/genie/turn',
+				'**/wp-json/linker-ai/v1/genie/turn/start',
 				(route) => route.fulfill({ json: { stream } }),
 				{ times: 1 }
 			);

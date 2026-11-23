@@ -149,3 +149,35 @@ def test_skipped_phases_are_absent_never_null(
 def test_without_a_clock_the_phase_seam_runs_untimed() -> None:
     with phase(None, timing.MODEL):  # the seam every caller may leave out
         pass
+
+
+def test_progress_observes_entered_work_only() -> None:
+    stages: list[str] = []
+    clock = timing.Timing(stages.append)
+    for key in (
+        timing.VOCABULARY,
+        timing.ATTACHMENTS,
+        timing.JEV,
+        timing.call_key("linker/get-product"),
+        timing.call_key("linker/search-knowledge"),
+        timing.MODEL,
+        timing.tool_key("linker/check-compatibility"),
+        timing.tool_key("linker/search-knowledge"),
+        timing.GROUND,
+        timing.HYDRATE,
+        timing.LOG,
+    ):
+        with timing.phase(clock, key):
+            pass
+    assert stages == [
+        "understanding",
+        "reading_attachments",
+        "understanding",
+        "checking_catalog",
+        "searching_documents",
+        "writing_answer",
+        "checking_catalog",
+        "searching_documents",
+        "verifying_answer",
+        "verifying_answer",
+    ]

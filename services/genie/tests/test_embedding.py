@@ -1,19 +1,15 @@
 """Embedding models: request formats and vector packing, without network or weights."""
 
-import http.client
-import io
 import json
 import pathlib
 import struct
 import sys
 import time
 import types
-import urllib.error
-from collections.abc import Iterator
-from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 
 from linker_genie import embedding
@@ -39,20 +35,17 @@ class FakeApi:
     def __init__(self) -> None:
         self.requests: list[dict[str, Any]] = []
 
-    @contextmanager
-    def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
-        body = json.loads(request.data)
+    def __call__(self, request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
         self.requests.append(
-            {"url": request.full_url, "auth": request.headers["Authorization"], **body}
+            {"url": str(request.url), "auth": request.headers["Authorization"], **body}
         )
         data = [
             {"index": i, "embedding": [float(i), 1.0]}
             for i in range(len(body["input"]))
         ]
-        yield io.BytesIO(
-            json.dumps(
-                {"data": list(reversed(data)), "usage": {"total_tokens": 7}}
-            ).encode()
+        return httpx.Response(
+            200, json={"data": list(reversed(data)), "usage": {"total_tokens": 7}}
         )
 
 
@@ -62,7 +55,11 @@ def test_pack_writes_float32_little_endian() -> None:
 
 def test_gemini_documents_carry_title_and_text_and_go_in_batches_of_100() -> None:
     api = FakeApi()
-    gemini = GeminiEmbedder("secret", "https://aihubmix.example/", urlopen=api)
+    gemini = GeminiEmbedder(
+        "secret",
+        "https://aihubmix.example/",
+        client=httpx.Client(transport=httpx.MockTransport(api)),
+    )
     passages = [
         Passage(title="ET datasheet", text=f"chunk {i}")
         for i in range(GEMINI_BATCH + 1)
@@ -82,9 +79,11 @@ def test_gemini_documents_carry_title_and_text_and_go_in_batches_of_100() -> Non
 def test_gemini_queries_carry_the_question_answering_task() -> None:
     api = FakeApi()
 
-    GeminiEmbedder("secret", "https://aihubmix.example", urlopen=api).embed_query(
-        "Wie schwer ist der GW10K-ET?"
-    )
+    GeminiEmbedder(
+        "secret",
+        "https://aihubmix.example",
+        client=httpx.Client(transport=httpx.MockTransport(api)),
+    ).embed_query("Wie schwer ist der GW10K-ET?")
 
     assert api.requests[0]["input"] == [
         "task: question answering | query: Wie schwer ist der GW10K-ET?"
@@ -94,35 +93,36 @@ def test_gemini_queries_carry_the_question_answering_task() -> None:
 def test_a_document_without_title_is_marked_none() -> None:
     api = FakeApi()
 
-    GeminiEmbedder("k", "https://a.example", urlopen=api).embed_documents(
-        [Passage(title="", text="t")]
-    )
+    GeminiEmbedder(
+        "k",
+        "https://a.example",
+        client=httpx.Client(transport=httpx.MockTransport(api)),
+    ).embed_documents([Passage(title="", text="t")])
 
     assert api.requests[0]["input"] == ["title: none | text: t"]
 
 
 class FailingApi:
-    """Fails every request with `error`; counts the requests and their timeouts."""
-
-    def __init__(self, error: Exception) -> None:
+    def __init__(self, error: httpx.TransportError | int) -> None:
         self.error = error
         self.timeouts: list[float] = []
 
-    @contextmanager
-    def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
-        self.timeouts.append(timeout)
+    def __call__(self, request: httpx.Request) -> httpx.Response:
+        self.timeouts.append(request.extensions["timeout"]["read"])
+        if isinstance(self.error, int):
+            return httpx.Response(self.error)
         raise self.error
-        yield io.BytesIO()  # pragma: no cover - never reached
-
-
-def _http_error(code: int) -> urllib.error.HTTPError:
-    return urllib.error.HTTPError("https://a.example", code, "x", {}, None)  # type: ignore[arg-type]
 
 
 def test_a_query_that_never_encodes_raises_after_its_attempts() -> None:
-    api = FailingApi(urllib.error.URLError("proxy 503"))
+    api = FailingApi(httpx.ConnectError("proxy 503"))
     waits: list[float] = []
-    encoder = GeminiEmbedder("k", "https://a.example", urlopen=api, sleep=waits.append)
+    encoder = GeminiEmbedder(
+        "k",
+        "https://a.example",
+        client=httpx.Client(transport=httpx.MockTransport(api)),
+        sleep=waits.append,
+    )
 
     with pytest.raises(EmbeddingError, match=f"after {QUERY_ATTEMPTS} attempts"):
         encoder.embed_query("How many MPPT?")
@@ -134,11 +134,14 @@ def test_a_query_that_never_encodes_raises_after_its_attempts() -> None:
 
 @pytest.mark.parametrize("code", [429, 502, 503])
 def test_a_throttled_or_failing_endpoint_is_tried_again(code: int) -> None:
-    api = FailingApi(_http_error(code))
+    api = FailingApi(code)
 
     with pytest.raises(EmbeddingError, match=f"HTTP {code}"):
         GeminiEmbedder(
-            "k", "https://a.example", urlopen=api, sleep=lambda _: None
+            "k",
+            "https://a.example",
+            client=httpx.Client(transport=httpx.MockTransport(api)),
+            sleep=lambda _: None,
         ).embed_query("q")
 
     assert len(api.timeouts) == QUERY_ATTEMPTS
@@ -146,11 +149,14 @@ def test_a_throttled_or_failing_endpoint_is_tried_again(code: int) -> None:
 
 @pytest.mark.parametrize("code", [400, 401, 404])
 def test_a_refused_request_fails_at_once(code: int) -> None:
-    api = FailingApi(_http_error(code))
+    api = FailingApi(code)
 
     with pytest.raises(EmbeddingError, match=f"HTTP {code} on attempt 1"):
         GeminiEmbedder(
-            "k", "https://a.example", urlopen=api, sleep=lambda _: None
+            "k",
+            "https://a.example",
+            client=httpx.Client(transport=httpx.MockTransport(api)),
+            sleep=lambda _: None,
         ).embed_query("q")
 
     assert len(api.timeouts) == 1
@@ -160,39 +166,47 @@ def test_an_answer_without_vectors_fails_at_once() -> None:
     class EmptyApi:
         calls = 0
 
-        @contextmanager
-        def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
+        def __call__(self, request: httpx.Request) -> httpx.Response:
             EmptyApi.calls += 1
-            yield io.BytesIO(json.dumps({"error": "no data"}).encode())
+            return httpx.Response(200, json={"error": "no data"})
 
     with pytest.raises(EmbeddingError, match="unexpected response"):
-        GeminiEmbedder("k", "https://a.example", urlopen=EmptyApi()).embed_query("q")
+        GeminiEmbedder(
+            "k",
+            "https://a.example",
+            client=httpx.Client(transport=httpx.MockTransport(EmptyApi())),
+        ).embed_query("q")
 
     assert EmptyApi.calls == 1
 
 
 @pytest.mark.parametrize(
     "error",
-    [urllib.error.URLError("proxy 503"), http.client.IncompleteRead(b"partial")],
+    [
+        httpx.ConnectError("proxy 503"),
+        httpx.RemoteProtocolError("incomplete chunked body"),
+    ],
 )
 def test_gemini_retries_once_on_a_transport_error(error: Exception) -> None:
     class FlakyApi:
         def __init__(self) -> None:
             self.calls = 0
 
-        @contextmanager
-        def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
+        def __call__(self, request: httpx.Request) -> httpx.Response:
             self.calls += 1
             if self.calls == 1:
                 raise error
-            yield io.BytesIO(
-                json.dumps({"data": [{"index": 0, "embedding": [1.0]}]}).encode()
+            return httpx.Response(
+                200, json={"data": [{"index": 0, "embedding": [1.0]}]}
             )
 
     api = FlakyApi()
 
     vector = GeminiEmbedder(
-        "k", "https://a.example", urlopen=api, sleep=lambda _: None
+        "k",
+        "https://a.example",
+        client=httpx.Client(transport=httpx.MockTransport(api)),
+        sleep=lambda _: None,
     ).embed_query("q")
 
     assert api.calls == 2
@@ -368,9 +382,11 @@ def test_an_unknown_model_has_no_query_encoder() -> None:
 def test_an_openrouter_base_already_carries_v1() -> None:
     api = FakeApi()
 
-    GeminiEmbedder("k", "https://openrouter.example/api/v1/", urlopen=api).embed_query(
-        "q"
-    )
+    GeminiEmbedder(
+        "k",
+        "https://openrouter.example/api/v1/",
+        client=httpx.Client(transport=httpx.MockTransport(api)),
+    ).embed_query("q")
 
     assert api.requests[0]["url"] == "https://openrouter.example/api/v1/embeddings"
 
@@ -403,10 +419,67 @@ def test_repeated_queries_reuse_only_successful_vectors_until_expiry(
     now = [1.0]
     monkeypatch.setattr(time, "monotonic", lambda: now[0])
     api = FakeApi()
-    encoder = GeminiEmbedder("key", "https://example.test", urlopen=api)
+    encoder = GeminiEmbedder(
+        "key",
+        "https://example.test",
+        client=httpx.Client(transport=httpx.MockTransport(api)),
+    )
     first = encoder.embed_query("same question")
     assert encoder.embed_query("same question") == first
     assert len(api.requests) == 1
     now[0] += embedding.QUERY_CACHE_SECONDS + 1
     assert encoder.embed_query("same question") == first
     assert len(api.requests) == 2
+
+
+def test_default_embedding_connections_are_reused_and_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from threading import Event, Thread
+
+    ports: list[int] = []
+    closed = Event()
+
+    class Endpoint(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def do_POST(self) -> None:
+            ports.append(self.client_address[1])
+            assert self.path == "/v1/embeddings"
+            assert self.headers["Authorization"] == "Bearer fixture"
+            body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            assert body["input"][0].startswith("task: question answering | query: ")
+            self.send_response(200)
+            self.send_header("Transfer-Encoding", "chunked")
+            self.end_headers()
+            content = b'{"data":[{"index":0,"embedding":[1.0]}]}'
+            if self.headers.get("Connection", "").lower() == "close":
+                self.wfile.write(b"29\r\n" + content[:8])
+                self.close_connection = True
+            else:
+                self.wfile.write(
+                    f"{len(content):x}\r\n".encode() + content + b"\r\n0\r\n\r\n"
+                )
+
+        def finish(self) -> None:
+            super().finish()
+            closed.set()
+
+    monkeypatch.setenv("NO_PROXY", "127.0.0.1")
+    monkeypatch.setenv("no_proxy", "127.0.0.1")
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Endpoint)
+    thread = Thread(target=server.serve_forever)
+    thread.start()
+    try:
+        enc = GeminiEmbedder(
+            "fixture", f"http://127.0.0.1:{server.server_port}", sleep=lambda _: None
+        )
+        assert enc.embed_query("first") == enc.embed_query("second") == pack([1.0])
+        assert len(ports) == 2 and ports[1] == ports[0]
+        embedding.close_embedding_http()
+        assert closed.wait(2)
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(2)

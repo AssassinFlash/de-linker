@@ -9,6 +9,7 @@
 import type { Block } from '../api/turn';
 import type { GenieConfig } from '../config';
 import { ActionView } from './ActionView';
+import { MessageBody } from './MessageBody';
 import { Ask } from './Ask';
 import { DocumentLink } from './DocumentLink';
 import { PartsCard, type PartsActions } from './PartsCard';
@@ -39,7 +40,7 @@ export function BlockView( {
 		return <Ask block={ block } onAsk={ onAsk } />;
 	}
 	if ( block.type === 'text' ) {
-		return <p className="linker-genie-app__text">{ block.text }</p>;
+		return <MessageBody text={ block.text } />;
 	}
 	if ( block.type === 'action' ) {
 		return (

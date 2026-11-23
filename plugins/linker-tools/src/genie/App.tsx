@@ -1,3 +1,25 @@
+import { usePendingTurn } from './shared/usePendingTurn';
+import { HistoricalComparisons } from './components/HistoricalComparisons';
+import {
+	resumeTurn,
+	type TurnStage,
+	assistantMessage,
+	deleteConversation,
+	emailConversation,
+	listConversations,
+	readThread,
+	selectConversation,
+	sendTurn,
+	turnConflictText,
+	type ContactBlock,
+	type ConversationSummary,
+	type SentContact,
+	type SentInquiryCard,
+	type EmailOutcome,
+	type PageContext,
+	type Turn,
+	type TurnMessage,
+} from './api/turn';
 /**
  * The Genie panel: one thread, the blocks of the current turn, and the
  * actions the customer can run on a card (docs/specs/13-genie.md). The pieces
@@ -55,24 +77,6 @@ import {
 	type RequestWitness,
 } from './shared/completedRequest';
 import { startDictation, type DictationSession } from './shared/dictation';
-import {
-	assistantMessage,
-	deleteConversation,
-	emailConversation,
-	listConversations,
-	readThread,
-	selectConversation,
-	sendTurn,
-	turnConflictText,
-	type ContactBlock,
-	type ConversationSummary,
-	type SentContact,
-	type SentInquiryCard,
-	type EmailOutcome,
-	type PageContext,
-	type Turn,
-	type TurnMessage,
-} from './api/turn';
 import { ACCEPT } from './attachments/prepare';
 import { useAttachments } from './attachments/useAttachments';
 import { AttachmentCard } from './components/AttachmentCard';
@@ -392,6 +396,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// there, whatever is asked after it.
 	const turnAt = useRef( -1 );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
+	const [ stage, setStage ] = useState< TurnStage >();
 	const { begin: beginTurn, cancel: cancelTurn } = useTurnOwner();
 	// The request still returns one complete answer. This index only opts the
 	// newly received answer into a short local reveal; stored history is instant.
@@ -506,6 +511,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		omitted,
 		setOmitted,
 		commitFailure,
+		rememberOperation,
 		captureFailure,
 		abandonCaptured,
 		placeChips,
@@ -637,6 +643,39 @@ export function App( { config }: { config: GenieConfig } ) {
 			setCurrentId( id );
 		},
 		[ draftContext ]
+	);
+
+	const trackTurn = useCallback(
+		(
+			lease: DraftLease,
+			submitted: Omit< RequestWitness, 'operationId' >
+		) => ( {
+			onOperation: ( operationId: string ) => {
+				if ( draftContext.owns( lease ) ) {
+					rememberOperation( { operationId } );
+					requestWitness.current = {
+						...submitted,
+						epoch: historyEpoch,
+						operationId,
+					};
+				}
+			},
+			onStarted: ( id: number ) => {
+				if ( draftContext.owns( lease ) ) {
+					show( id );
+					rememberOperation( { conversationId: id } );
+					if ( requestWitness.current ) {
+						requestWitness.current.conversationId = id;
+					}
+				}
+			},
+			onStage: ( value: TurnStage ) => {
+				if ( draftContext.owns( lease ) ) {
+					setStage( value );
+				}
+			},
+		} ),
+		[ draftContext, rememberOperation, show ]
 	);
 
 	const store = useMemo(
@@ -970,6 +1009,42 @@ export function App( { config }: { config: GenieConfig } ) {
 		setPhase( 'error' );
 	};
 
+	const followPending = usePendingTurn(
+		config,
+		draftContext.panelEditor,
+		{ adoptFailure, commitFailure, placeChips },
+		{
+			verified: () => resolveEntryRecovery.current(),
+			wait: ( messages, job ) => {
+				sending.current = true;
+				show( job.conversation_id );
+				setThread( messages );
+				setStage( job.stage );
+				setPhase( 'waiting' );
+			},
+			stage: setStage,
+			complete: ( messages, answer ) => {
+				sending.current = false;
+				currentThread.current = messages;
+				setThread( messages );
+				turnAt.current = messages.length - 1;
+				setTurn( answer );
+				if ( ! draftContext.panelEditor.owner ) {
+					filesRef.current.clear();
+				}
+				setPhase( 'ask' );
+				void refreshHistory();
+			},
+			failed: ( draft ) => {
+				sending.current = false;
+				setInput( draft.text );
+				placeChips( draft.uploads );
+				setThread( currentThread.current );
+				setPhase( 'error' );
+			},
+		}
+	);
+
 	const showStored = useCallback(
 		async ( allowExistingOwnerBootstrap = false ) => {
 			await draftContext.verify();
@@ -988,10 +1063,16 @@ export function App( { config }: { config: GenieConfig } ) {
 			turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
 			setContacts( stored.contacts ?? [] );
 			setInquiries( stored.inquiries ?? [] );
-			await applyRecord( stored.messages, stored.conversationId, true );
+			if ( ! followPending( stored ) ) {
+				await applyRecord(
+					stored.messages,
+					stored.conversationId,
+					true
+				);
+			}
 			setMail( 'idle' );
 		},
-		[ loadThread, applyRecord, draftContext ]
+		[ loadThread, applyRecord, draftContext, followPending ]
 	);
 
 	const refreshSavedSource = useCallback( async () => {
@@ -1274,6 +1355,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			sending.current = true;
 			setOpen( true );
 			setDockHistory( false );
+			setStage( undefined );
 			setPhase( 'waiting' );
 			setThread( [
 				...currentThread.current,
@@ -1325,6 +1407,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				settle: () => draftContext.settle( lease ),
 				valid: () => draftContext.valid( lease ),
 			} );
+			setStage( undefined );
 			setPhase( 'waiting' );
 			setRevealingAt( null );
 			setInput( '' );
@@ -1391,6 +1474,13 @@ export function App( { config }: { config: GenieConfig } ) {
 					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
 						owner: turnOwner,
+						...trackTurn( lease, {
+							conversationId: stored.conversationId ?? 0,
+							locale: config.locale,
+							page: pageWitness,
+							messages: next,
+							uploads,
+						} ),
 						turnUrl: config.turnUrl,
 						nonce: config.restNonce,
 						locale: config.locale,
@@ -1400,22 +1490,6 @@ export function App( { config }: { config: GenieConfig } ) {
 							? plannerNonce.current
 							: undefined,
 						uploads,
-						onOperation: ( operationId ) => {
-							if ( ! draftContext.owns( lease ) ) {
-								return;
-							}
-							requestWitness.current = stored.conversationId
-								? {
-										conversationId: stored.conversationId,
-										operationId,
-										epoch: historyEpoch,
-										messages: next,
-										uploads,
-										locale: config.locale,
-										page: pageWitness,
-									}
-								: null;
-						},
 					} );
 					if ( ! ( await draftContext.settle( lease ) ) ) {
 						retainUnverifiedTurn( lease, draft );
@@ -1474,6 +1548,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			commitFailure,
 			onTurnError,
 			retainUnverifiedTurn,
+			trackTurn,
 			clearDeferred,
 			beginTurn,
 		]
@@ -1499,6 +1574,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			settle: () => draftContext.settle( lease ),
 			valid: () => draftContext.valid( lease ),
 		} );
+		setStage( undefined );
 		setPhase( 'waiting' );
 		setRevealingAt( null );
 		setInput( '' );
@@ -1574,8 +1650,15 @@ export function App( { config }: { config: GenieConfig } ) {
 					planning_run_ids: pageRef.current.planning_run_ids?.slice(),
 				};
 				const pageWitness = JSON.stringify( postedPage );
-				const answer = await sendTurn( {
+				const request = {
 					owner: turnOwner,
+					...trackTurn( lease, {
+						conversationId: stored.conversationId ?? 0,
+						locale: config.locale,
+						page: pageWitness,
+						messages: next,
+						uploads: payload.uploads,
+					} ),
 					turnUrl: config.turnUrl,
 					nonce: config.restNonce,
 					locale: config.locale,
@@ -1585,23 +1668,17 @@ export function App( { config }: { config: GenieConfig } ) {
 						? plannerNonce.current
 						: undefined,
 					uploads: payload.uploads,
-					onOperation: ( operationId ) => {
-						if ( ! draftContext.owns( lease ) ) {
-							return;
-						}
-						requestWitness.current = stored.conversationId
-							? {
-									conversationId: stored.conversationId,
-									operationId,
-									epoch: historyEpoch,
-									messages: next,
-									uploads: payload!.uploads,
-									locale: config.locale,
-									page: pageWitness,
-								}
-							: null;
-					},
-				} );
+				};
+				const answer =
+					stored.pendingJob &&
+					draft.operationId &&
+					stored.pendingJob.operation_id === draft.operationId
+						? await resumeTurn(
+								request,
+								stored.pendingJob,
+								turnOwner.signal
+							)
+						: await sendTurn( request );
 				if ( ! ( await draftContext.settle( lease ) ) ) {
 					retainUnverifiedTurn( lease, draft );
 					sending.current = false;
@@ -1655,6 +1732,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		payloadOrRestore,
 		draftContext,
 		retainUnverifiedTurn,
+		trackTurn,
 		clearDeferred,
 		beginTurn,
 	] );
@@ -1725,6 +1803,15 @@ export function App( { config }: { config: GenieConfig } ) {
 					setTurn( stored.turn );
 				}
 			}
+			if (
+				'pendingJob' in stored &&
+				followPending(
+					stored as Awaited< ReturnType< typeof readThread > >
+				)
+			) {
+				restored = true;
+				return;
+			}
 			await applyRecord(
 				stored.messages,
 				'conversationId' in stored ? stored.conversationId : undefined
@@ -1770,6 +1857,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		draftContext,
 		standalone,
 		refreshSavedSource,
+		followPending,
 	] );
 
 	const continueConversation = useCallback(
@@ -2535,7 +2623,8 @@ export function App( { config }: { config: GenieConfig } ) {
 					</div>
 					{ expanded ? (
 						<div className="linker-genie-app__bar-actions">
-							{ phase !== 'waiting' && config.workspaceUrl ? (
+							{ ( phase !== 'waiting' || stage ) &&
+							config.workspaceUrl ? (
 								<a
 									className="linker-genie-workspace-link"
 									href={ config.workspaceUrl }
@@ -2848,6 +2937,14 @@ export function App( { config }: { config: GenieConfig } ) {
 												</div>
 											) : null }
 											{ index !== turnAt.current &&
+											message.comparisons ? (
+												<HistoricalComparisons
+													message={ message }
+													config={ config }
+													store={ store }
+												/>
+											) : null }
+											{ index !== turnAt.current &&
 											message.planning_sources ? (
 												<PlanningSourcesCard
 													block={
@@ -2949,7 +3046,10 @@ export function App( { config }: { config: GenieConfig } ) {
 										</li>
 									) ) }
 									{ 'waiting' === phase ? (
-										<TurnProgress skeleton />
+										<TurnProgress
+											skeleton
+											stage={ stage }
+										/>
 									) : null }
 								</ol>
 								{ /* Reply text and handoff summaries belong to their message.

@@ -181,7 +181,7 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 	await page.route('**/wp-json/linker-ai/v1/genie/conversations', (route) =>
 		route.fulfill({ json: { current_id: 0, conversations: [] } })
 	);
-	await page.route('**/wp-json/linker-ai/v1/genie/turn', (route) => {
+	await page.route('**/wp-json/linker-ai/v1/genie/turn/start', (route) => {
 		turns.push(route.request().postDataJSON());
 		if (fail)
 			return route.fulfill({

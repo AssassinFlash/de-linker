@@ -59,7 +59,7 @@ from __future__ import annotations
 
 import threading
 import time
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 
 # Three decimals — the resolution the Jev reading already logs (jev.py
@@ -99,6 +99,33 @@ def tool_key(ability: str) -> str:
     return f"{MODEL}.tool.{ability}"
 
 
+Stage = Callable[[str], None]
+
+
+def customer_stage(key: str) -> str | None:
+    if key in (VOCABULARY, JEV):
+        return "understanding"
+    if key == ATTACHMENTS:
+        return "reading_attachments"
+    if key == MODEL:
+        return "writing_answer"
+    if key in (GROUND, HYDRATE):
+        return "verifying_answer"
+    if key.startswith((CALL + ".", MODEL + ".tool.")):
+        ability = key.rsplit(".", 1)[1].removeprefix("linker/")
+        if ability == "search-knowledge":
+            return "searching_documents"
+        if ability in {
+            "search-products",
+            "check-compatibility",
+            "compare-products",
+            "get-product",
+            "size-hint",
+        }:
+            return "checking_catalog"
+    return None
+
+
 class Timing:
     """One turn's phase durations, accumulated from any thread.
 
@@ -107,7 +134,8 @@ class Timing:
     model attempt, grounding after each) accumulates instead of overwriting.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, on_stage: Stage | None = None) -> None:
+        self.on_stage = on_stage
         self._start = time.monotonic()
         self._lock = threading.Lock()
         self._phases: dict[str, float] = {}
@@ -115,6 +143,8 @@ class Timing:
 
     @contextmanager
     def phase(self, key: str) -> Iterator[None]:
+        if self.on_stage is not None and (stage := customer_stage(key)) is not None:
+            self.on_stage(stage)
         started = time.monotonic()
         try:
             yield

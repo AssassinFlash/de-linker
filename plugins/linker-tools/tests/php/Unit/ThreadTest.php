@@ -295,6 +295,32 @@ final class ThreadTest extends TestCase {
 		$this->assertSame( $answer + array( 'turnId' => 42 ), $history[3] );
 	}
 
+	/** A later turn keeps all earlier comparisons, without live action credentials. */
+	public function test_comparison_blocks_stay_with_their_answer_after_a_later_turn(): void {
+		$this->remember_meta();
+		$thread = new Thread();
+		$first  = array(
+			'role'    => 'user',
+			'content' => 'Compare the units',
+		);
+		$stream = str_replace( 'event: done', "event: block\ndata: {\"type\":\"compare\",\"product_ids\":[18,20],\"draft_proofs\":{\"18\":\"unused\"}}\n\nevent: block\ndata: {\"type\":\"compare\",\"product_ids\":[21,22]}\n\nevent: done", $this->stream( 'See both comparisons.' ) );
+		$this->assertTrue( $thread->record( 51, array( $first ), $stream ) );
+		$second = array(
+			$first,
+			array(
+				'role'                => 'assistant',
+				'content'             => 'See both comparisons.',
+				'compare_product_ids' => array( array( 999 ) ),
+			),
+			array(
+				'role'    => 'user',
+				'content' => 'Which card?',
+			),
+		);
+		$this->assertTrue( $thread->record( 51, $second, $this->stream( 'This one.' ) ) );
+		$this->assertSame( array( array( 18, 20 ), array( 21, 22 ) ), $thread->read( 51 )['messages'][1]['compare_product_ids'] ?? null );
+	}
+
 	/** Server-recorded source cards stay with their answers when a later turn is committed. */
 	public function test_prior_planning_source_stays_with_its_answer(): void {
 		$source   = array(

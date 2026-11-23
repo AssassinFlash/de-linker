@@ -51,10 +51,13 @@ for (const locale of ['en', 'de'] as const) {
 			)
 			.join('');
 		let turns = 0;
-		await page.route('**/wp-json/linker-ai/v1/genie/turn', (route) => {
-			turns++;
-			return route.abort();
-		});
+		await page.route(
+			'**/wp-json/linker-ai/v1/genie/turn/start',
+			(route) => {
+				turns++;
+				return route.abort();
+			}
+		);
 		// The app asks /genie/conversation?locale=..; anchor on the query
 		// (a trailing glob does not match it).
 		await page.route(

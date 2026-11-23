@@ -77,7 +77,21 @@ final class ProxyTest extends TestCase {
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn( $thing ): bool => $thing instanceof WP_Error ) );
 		WP_Mock::userFunction(
 			'get_post_type',
-			array( 'return' => static fn( int $id ): string => 51 === $id || 52 === $id ? Conversations::POST_TYPE : 'post' )
+			array( 'return' => static fn( int $id ): string => in_array( $id, array( 51, 52, 53 ), true ) ? Conversations::POST_TYPE : 'post' )
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 52, \Linker\Tools\Genie\PendingTurns::PENDING, true ),
+				'return' => '',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 53, \Linker\Tools\Genie\PendingTurns::PENDING, true ),
+				'return' => array( 'job_id' => 'pending-test-job' ),
+			)
 		);
 		$calls  = array();
 		$thread = new RecordingThread();
@@ -93,6 +107,7 @@ final class ProxyTest extends TestCase {
 		$proxy->forget( 52 );
 		$this->assertSame( array(), $calls, 'no readings, no call' );
 
+		$proxy->forget( 53 );
 		$thread->kept_readings = array(
 			array(
 				'id'   => 'att1',
@@ -103,7 +118,7 @@ final class ProxyTest extends TestCase {
 		$proxy->forget( 51 );
 
 		$this->assertSame(
-			array( array( 'http://127.0.0.1:8890/assistant/conversation/51/forget', array( Proxy::TOKEN_HEADER => 'token' ) ) ),
+			array( array( 'http://127.0.0.1:8890/assistant/conversation/53/forget', array( Proxy::TOKEN_HEADER => 'token' ) ), array( 'http://127.0.0.1:8890/assistant/conversation/51/forget', array( Proxy::TOKEN_HEADER => 'token' ) ) ),
 			$calls
 		);
 	}
@@ -1095,10 +1110,43 @@ final class ProxyTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** An owner can retain history after losing price access; the HTTP stream strips its old net amount.
+	 *
+	 * @dataProvider history_price_permissions
+	 * @param bool $approved Current Woo authority.
+	 */
+	public function test_history_price_lines_respect_the_current_approval( bool $approved ): void {
+		$this->price_rule_says( $approved );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Native wire fixture.
+		$stream = "event: block\ndata: " . '{"type":"cards","product_ids":[11,12],"prices":[{"product_id":11,"text":"€497.00","reason":null},{"product_id":12,"text":"Project request","reason":"project"}]}' . "\n\nevent: done\ndata: {}\n\n";
+		$result = \Linker\Tools\Genie\PublicationGuard::history_prices( $stream );
+		$this->assertSame( $approved, str_contains( $result, '497.00' ) );
+		$this->assertStringContainsString( 'Project request', $result );
+		$this->assertStringContainsString( '"product_ids":[11,12]', $result );
+	}
+
+	/** Current account states.
+	 *
+	 * @return array<string,array{bool}>
+	 */
+	public static function history_price_permissions(): array {
+		return array(
+			'still approved'     => array( true ),
+			'approval withdrawn' => array( false ),
+		);
+	}
+
 	/**
 	 * The conversation route hands the stored thread back.
 	 */
 	public function test_conversation_returns_the_stored_thread(): void {
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 51, \Linker\Tools\Genie\PendingTurns::PENDING, true ),
+				'return' => '',
+			)
+		);
 		$this->wp_functions();
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Native wire fixture.
 		$thread         = new RecordingThread();

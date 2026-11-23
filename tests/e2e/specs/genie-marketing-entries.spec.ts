@@ -92,47 +92,53 @@ async function prepare(
 		locale: string;
 	}> = [];
 	let fail = false;
-	await page.route('**/wp-json/linker-ai/v1/genie/turn', async (route) => {
-		requests.push(route.request().postDataJSON());
-		if (fail) {
-			fail = false;
-			return route.fulfill({
-				status: 502,
-				json: { code: 'upstream', message: 'fixture upstream failure' },
-			});
+	await page.route(
+		'**/wp-json/linker-ai/v1/genie/turn/start',
+		async (route) => {
+			requests.push(route.request().postDataJSON());
+			if (fail) {
+				fail = false;
+				return route.fulfill({
+					status: 502,
+					json: {
+						code: 'upstream',
+						message: 'fixture upstream failure',
+					},
+				});
+			}
+			const stream = [
+				[
+					'meta',
+					{
+						turn_id: requests.length,
+						grounded: true,
+						fallback: false,
+						attempts: 1,
+						failures: [],
+						language: locale,
+					},
+				],
+				[
+					'block',
+					{
+						type: 'text',
+						text:
+							locale === 'de'
+								? 'Die passende Batterie wird mit dem Wechselrichter abgeglichen.'
+								: 'The battery is checked against the inverter.',
+						refs: [],
+					},
+				],
+				['done', { ok: true }],
+			]
+				.map(
+					([event, data]) =>
+						`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`
+				)
+				.join('');
+			return route.fulfill({ json: { conversation_id: 1, stream } });
 		}
-		const stream = [
-			[
-				'meta',
-				{
-					turn_id: requests.length,
-					grounded: true,
-					fallback: false,
-					attempts: 1,
-					failures: [],
-					language: locale,
-				},
-			],
-			[
-				'block',
-				{
-					type: 'text',
-					text:
-						locale === 'de'
-							? 'Die passende Batterie wird mit dem Wechselrichter abgeglichen.'
-							: 'The battery is checked against the inverter.',
-					refs: [],
-				},
-			],
-			['done', { ok: true }],
-		]
-			.map(
-				([event, data]) =>
-					`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`
-			)
-			.join('');
-		return route.fulfill({ json: { conversation_id: 1, stream } });
-	});
+	);
 	await page.route('**/wp-json/linker-ai/v1/genie/conversation', (route) =>
 		route.fulfill({ json: { messages: [], stream: '' } })
 	);

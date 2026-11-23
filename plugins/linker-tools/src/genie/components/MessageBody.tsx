@@ -25,7 +25,23 @@ export function MessageBody( {
 } ) {
 	const complete = useMemo( () => {
 		const document = new DOMParser().parseFromString(
-			markdown.render( text ),
+			markdown.render(
+				text.replace(
+					/(^|[^#\n])(#{3,6})(?!#)[ \t]*/gm,
+					(
+						match,
+						prefix: string,
+						marks: string,
+						offset: number
+					) => {
+						const next = text[ offset + match.length ];
+						return (
+							( prefix ? prefix.trimEnd() + '\n' : '' ) +
+							( next && next !== '\n' ? marks + ' ' : '' )
+						);
+					}
+				)
+			),
 			'text/html'
 		);
 		// #223 owner typography correction: only long unformatted prose is

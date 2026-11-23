@@ -189,12 +189,22 @@ function PublishedComparison( {
 		},
 		{
 			name: __( 'Battery storage', 'linker-tools' ),
-			columns: columns.filter( ( c ) =>
-				[
-					'home-storage',
-					'battery-systems',
-					'all-in-one-systems',
-				].includes( c.facts.device_class )
+			columns: columns.filter(
+				( c ) =>
+					[ 'home-storage', 'battery-systems' ].includes(
+						c.facts.device_class
+					) ||
+					( c.facts.device_class === 'all-in-one-systems' &&
+						rows.some(
+							( row ) =>
+								[
+									'usable_kwh',
+									'nominal_kwh',
+									'kwh_range',
+								].includes( row.field ) &&
+								row.values[ c.product_id ] !== undefined &&
+								row.values[ c.product_id ] !== 'unknown'
+						) )
 			),
 			keys: [ 'application', 'usable_kwh', 'nominal_kwh', 'kwh_range' ],
 			storage: false,

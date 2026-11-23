@@ -104,7 +104,7 @@ for (const locale of ['en', 'de'] as const) {
 					{ role: 'user', content: originalQuestion },
 				];
 				await page.route(
-					'**/wp-json/linker-ai/v1/genie/turn',
+					'**/wp-json/linker-ai/v1/genie/turn/start',
 					(route) => {
 						turns++;
 						savedMessages = route.request().postDataJSON().messages;

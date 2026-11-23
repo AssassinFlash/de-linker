@@ -1701,3 +1701,64 @@ def test_product_search_reads_only_its_current_passage_proofs(
         assert all(1 in ids for ids in loaded)
     finally:
         index.close()
+
+
+@pytest.mark.parametrize("when", ["before", "during"])
+def test_async_turn_keeps_publication_refusal_and_releases_slot(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    when: str,
+) -> None:
+    from time import monotonic, sleep
+
+    from conftest import SHELL
+    from fastapi.testclient import TestClient
+
+    import linker_genie.app as service
+    from linker_genie.work import Slots
+
+    path = tmp_path / "private/work.sqlite"
+    monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(path))
+    monkeypatch.setenv("LINKER_GENIE_WORK_MODE", "enforce")
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("manifest"):
+            return httpx.Response(200, json=manifest())
+        return httpx.Response(200, json={"valid": False})
+
+    authority = PublicationClient("https://site.test", httpx.MockTransport(handle))
+    monkeypatch.setattr(service.app.state, "publication", authority, raising=False)
+    monkeypatch.setattr(
+        service, "_compute_turn", lambda *_: iter(["unreleased evidence"])
+    )
+    subject = "a" * 64
+    client = TestClient(
+        service.app, headers={**SHELL, "X-Linker-Resource-Subject": subject}
+    )
+    body: dict[str, Any] = {
+        "conversation_id": "withdrawn",
+        "messages": [{"role": "user", "content": "Compare these devices"}],
+    }
+    if when == "before":
+        body["page_context"] = {"product_id": 999999}
+    start = client.post("/turn/start", json=body)
+    if when == "before":
+        assert (
+            start.status_code == 409 and start.json()["detail"] == "publication_changed"
+        )
+    else:
+        assert start.status_code == 202
+        url = "/turn/" + start.json()["job_id"]
+        until = monotonic() + 5
+        while (answer := client.get(url).json())[
+            "status"
+        ] == "running" and monotonic() < until:
+            sleep(0.01)
+        assert (
+            answer["status"] == "failed"
+            and answer["http_status"] == 409
+            and answer["code"] == "publication_changed"
+        )
+        assert "stream" not in answer
+    assert Slots(path).acquire(subject)
+    authority.close()

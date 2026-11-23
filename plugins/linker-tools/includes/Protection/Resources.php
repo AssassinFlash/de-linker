@@ -40,6 +40,7 @@ final class Resources {
 		add_filter( 'rest_dispatch_request', array( $this, 'dispatch' ), 10, 4 );
 		add_filter( 'linker_commerce_public_business_context', array( $this, 'context' ) );
 		add_action( 'init', array( $this->replies, 'register' ) );
+		add_action( 'linker_tools_expire_genie_turn', array( \Linker\Tools\Genie\PendingTurns::class, 'expire' ), 10, 2 );
 		add_action( 'linker_tools_reply_cleanup', array( $this->replies, 'expire' ) );
 		add_action( 'wp_print_footer_scripts', array( $this, 'assets' ), 0 );
 		if ( ! wp_next_scheduled( 'linker_tools_reply_cleanup' ) ) {
@@ -90,7 +91,7 @@ final class Resources {
 			$binding = (string) $previous['binding'];
 		}
 		$reply = $replies->read( $outcome, $binding );
-		return ! is_wp_error( $reply ) && $reply->get_status() < 400;
+		return ! is_wp_error( $reply ) && 200 === $reply->get_status();
 	}
 
 	/**
@@ -134,7 +135,7 @@ final class Resources {
 		if ( null !== $result || '' === $action ) {
 			return $result;
 		}
-		$operation = strtolower( (string) $request->get_header( 'X-Linker-Operation' ) );
+		$operation = strtolower( (string) ( $request->get_header( 'X-Linker-Operation' ) ?? $request->get_header( 'X-Linker-Operation-Id' ) ) );
 		if ( ! wp_is_uuid( $operation, 4 ) || '' !== (string) $request->get_param( 'website' ) ) {
 			return self::error( 'input', 400 );
 		}
@@ -151,6 +152,22 @@ final class Resources {
 			if ( ! is_array( $files ) || count( $files ) > Attachments::MAX_FILES ) {
 				return self::error( 'files', 400 );
 			}
+		}
+		if ( 'genie' === $action && is_array( $request->get_param( 'messages' ) ) ) {
+			// Restored display blocks are not customer input to the model or its operation fingerprint.
+			$request->set_param(
+				'messages',
+				array_map(
+					static fn( $message ) => is_array( $message ) ? array_intersect_key(
+						$message,
+						array(
+							'role'    => true,
+							'content' => true,
+						)
+					) : $message,
+					$request->get_param( 'messages' )
+				)
+			);
 		}
 		$payload = $request->get_params();
 		foreach ( array( 'website', 'started', 'started_nonce', '_wpnonce' ) as $field ) {

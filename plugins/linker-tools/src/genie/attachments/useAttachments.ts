@@ -1,3 +1,4 @@
+import { keepPickedFile, releasePickedFiles } from './turnFiles';
 /**
  * The files picked for the next turn (#236): each is prepared as it is
  * picked (prepare.ts), shown over the composer, and sent with the turn.
@@ -105,6 +106,9 @@ export function useAttachments( composer?: DraftEditor ): Attachments {
 						{ key, name: file.name, state: 'preparing' },
 					] );
 					void prepare( file ).then( async ( result ) => {
+						if ( result.ok && lease ) {
+							await keepPickedFile( lease.scope, result.upload );
+						}
 						if (
 							context &&
 							! ( await context.whenVerified( lease ?? null ) )
@@ -141,10 +145,15 @@ export function useAttachments( composer?: DraftEditor ): Attachments {
 	);
 
 	const remove = useCallback(
-		( key: number ) =>
+		( key: number ) => {
+			const target = current.current.find( ( item ) => item.key === key );
+			if ( target?.upload ) {
+				releasePickedFiles( [ target.upload ] );
+			}
 			update( ( items ) =>
 				withTurnLimit( items.filter( ( item ) => item.key !== key ) )
-			),
+			);
+		},
 		[ update ]
 	);
 	const clear = useCallback( () => update( () => [] ), [ update ] );

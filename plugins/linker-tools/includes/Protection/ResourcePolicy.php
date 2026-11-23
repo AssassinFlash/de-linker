@@ -25,7 +25,7 @@ final class ResourcePolicy {
 		// WP_REST_Server matches registered paths with the i modifier.
 		$route = strtolower( $route );
 		return match ( true ) {
-			'/linker-ai/v1/genie/turn' === $route => 'genie',
+			in_array( $route, array( '/linker-ai/v1/genie/turn', '/linker-ai/v1/genie/turn/start' ), true ) => 'genie',
 			'/linker-ai/v1/genie/solution' === $route => 'solution_save',
 			'/linker-ai/v1/genie/conversations' === $route => $select ? '' : 'conversation_create',
 			default => '',

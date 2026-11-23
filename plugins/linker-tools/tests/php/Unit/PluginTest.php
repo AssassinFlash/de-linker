@@ -158,6 +158,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'rest_dispatch_request', array( $resources, 'dispatch' ), 10, 4 );
 		WP_Mock::expectFilterAdded( 'linker_commerce_public_business_context', array( $resources, 'context' ) );
 		WP_Mock::expectActionAdded( 'init', array( $replies, 'register' ) );
+		WP_Mock::expectActionAdded( 'linker_tools_expire_genie_turn', array( \Linker\Tools\Genie\PendingTurns::class, 'expire' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'linker_tools_reply_cleanup', array( $replies, 'expire' ) );
 		WP_Mock::expectActionAdded( 'wp_print_footer_scripts', array( $resources, 'assets' ), 0 );
 		WP_Mock::userFunction( 'wp_next_scheduled', array( 'return' => 1 ) );

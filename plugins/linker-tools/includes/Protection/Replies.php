@@ -93,8 +93,9 @@ final class Replies {
 	 *
 	 * @param int              $id Native placeholder ID.
 	 * @param WP_REST_Response $reply Native response, PDF bytes encoded as JSON.
+	 * @param string|null      $release_locale Language of an unsigned Genie result recovered from its thread.
 	 */
-	public function finish( int $id, WP_REST_Response $reply ): int {
+	public function finish( int $id, WP_REST_Response $reply, ?string $release_locale = null ): int {
 		if ( self::TYPE !== get_post_type( $id ) || '' === (string) get_post_meta( $id, '_linker_binding', true ) ) {
 			return 0;
 		}
@@ -104,6 +105,7 @@ final class Replies {
 			'headers'          => $reply->get_headers(),
 			'publication'      => EnginePublication::dependencies( $reply ),
 			'publication_kind' => EnginePublication::kind( $reply ),
+			...( null !== $release_locale ? array( 'genie_release_locale' => $release_locale ) : array() ),
 			'binary'           => is_string( $data ),
 			'data'             => is_string( $data ) ? base64_encode( $data ) : $data, // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Binary PDF bytes inside a native JSON receipt.
 		);
@@ -135,6 +137,14 @@ final class Replies {
 		if ( ! is_array( $stored ) || ! isset( $stored['status'], $stored['headers'] ) || ! array_key_exists( 'data', $stored ) ) {
 			return new WP_Error( 'linker_resource_result', 'The saved result is unavailable.', array( 'status' => 409 ) );
 		}
+		if ( is_array( $stored['data'] ) && isset( $stored['data']['job_id'], $stored['data']['conversation_id'] ) ) {
+			if ( ! ( new \Linker\Tools\Genie\Conversations() )->may_use( (int) $stored['data']['conversation_id'] ) ) {
+				return new WP_Error( 'linker_genie_job', 'Unknown turn.', array( 'status' => 404 ) );
+			}
+			if ( get_post_meta( $id, '_linker_genie_priced', true ) && ! \Linker\Tools\Genie\PublicationGuard::sees_prices() ) {
+				return \Linker\Tools\Genie\PublicationGuard::refused();
+			}
+		}
 		$dependencies = is_array( $stored['publication'] ?? null ) ? $stored['publication'] : array();
 		$kind         = 'genie' === ( $stored['publication_kind'] ?? null ) ? 'genie' : 'engineering';
 		if ( array() !== $dependencies ) {
@@ -142,6 +152,13 @@ final class Replies {
 			if ( is_wp_error( $valid ) ) {
 				return $valid;
 			}
+		}
+		if ( isset( $stored['genie_release_locale'] ) ) {
+			$stream = ( new \Linker\Tools\Genie\PublicationGuard() )->release( $stored['data']['stream'], $dependencies, $stored['genie_release_locale'] );
+			if ( is_wp_error( $stream ) ) {
+				return $stream;
+			}
+			$stored['data']['stream'] = $stream;
 		}
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Restore the authenticated private PDF response, never executable code.
 		$reply = new WP_REST_Response( ! empty( $stored['binary'] ) ? base64_decode( (string) $stored['data'], true ) : $stored['data'], (int) $stored['status'], (array) $stored['headers'] );

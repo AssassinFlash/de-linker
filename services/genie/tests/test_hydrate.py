@@ -594,3 +594,34 @@ def test_a_qualified_chunk_text_is_not_a_backdoor_to_untagged_values() -> None:
     facts = collect("linker/search-knowledge", {"hits": [_qualified_etr()]})
 
     assert fill("{fact:etr-p2.text}", facts) == "unavailable"
+
+
+def test_compatibility_evidence_uses_customer_words_after_hydration() -> None:
+    facts = TurnFacts()
+    facts.add(
+        Fact(
+            id="compat.verdict",
+            value="released_with_accessory",
+            source="check-compatibility",
+        )
+    )
+    for locale, expected in (
+        ("en", "approved with an accessory"),
+        ("de", "mit Zubehör freigegeben"),
+    ):
+        answer = TurnOutput.model_validate(
+            {
+                "language": locale,
+                "blocks": [{"type": "text", "text": "{fact:compat.verdict}"}],
+            }
+        )
+        block = hydrate(answer, facts).blocks[0]
+        assert isinstance(block, TextBlock) and block.text == expected
+
+
+def test_model_text_normalizes_inline_and_unspaced_headings() -> None:
+    assert (
+        TextBlock(text="Overview ###Model\nDetails").text
+        == "Overview\n\n### Model\nDetails"
+    )
+    assert TextBlock(text="###Modell\nAngaben").text == "### Modell\nAngaben"

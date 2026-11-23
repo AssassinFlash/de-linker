@@ -75,13 +75,16 @@ for (const lang of ['en', 'de'] as const) {
 
 			// The first turn never leaves the browser; every later one passes.
 			let refused = true;
-			await page.route('**/wp-json/linker-ai/v1/genie/turn', (route) => {
-				if (refused && 'POST' === route.request().method()) {
-					refused = false;
-					return route.abort();
+			await page.route(
+				'**/wp-json/linker-ai/v1/genie/turn/start',
+				(route) => {
+					if (refused && 'POST' === route.request().method()) {
+						refused = false;
+						return route.abort();
+					}
+					return route.continue();
 				}
-				return route.continue();
-			});
+			);
 
 			await page.fill('.hero-prompt', WORDS[lang].question);
 			await page.press('.hero-prompt', 'Enter');

@@ -6,9 +6,10 @@ in after the run (hydration). Illegal structure is refused by Pydantic.
 
 from __future__ import annotations
 
+import re
 from typing import Annotated, Any, Literal, get_args
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from pydantic.json_schema import SkipJsonSchema
 
 Locale = Literal["en", "de"]
@@ -59,6 +60,16 @@ class TextBlock(Strict):
     type: Literal["text"] = "text"
     text: str
     refs: list[str] = Field(default_factory=list)
+
+    @field_validator("text")
+    @classmethod
+    def separate_headings(cls, text: str) -> str:
+        """Put heading markers on their own line before rendering Markdown."""
+        return (
+            re.sub(r"(?<!#)[ \t]*###(?!#)[ \t]*(?=\S)", "\n\n### ", text).strip()
+            if "###" in text
+            else text
+        )
 
 
 class AskBlock(Strict):

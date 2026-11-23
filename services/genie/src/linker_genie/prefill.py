@@ -216,6 +216,36 @@ _SPLIT = re.compile(r"([?!;\n]|\.(?!\d)|(?<!\d),(?!\d))")
 _Polarity = Literal["pos", "neg", "unsure"]
 
 
+BACKUP_CHOICES = {
+    "en": {
+        "none": "No backup",
+        "needed": "Built-in backup",
+        "needed_accessory_ok": "Backup with an accessory if needed",
+    },
+    "de": {
+        "none": "Kein Ersatzstrom",
+        "needed": "Integrierter Ersatzstrom",
+        "needed_accessory_ok": "Ersatzstrom, bei Bedarf mit Zubehör",
+    },
+}
+
+_BACKUP_ANSWERS = {
+    label.casefold(): value
+    for options in BACKUP_CHOICES.values()
+    for value, label in options.items()
+}
+_BACKUP_ANSWERS.update({key: key for key in BACKUP_CHOICES["en"]})
+_BACKUP_ANSWERS.update(
+    {
+        "backup with an accessory": "needed_accessory_ok",
+        "ersatzstrom mit zubehör": "needed_accessory_ok",
+        "ohne": "none",
+        "benötigt": "needed",
+        "benötigt, zubehör akzeptiert": "needed_accessory_ok",
+    }
+)
+
+
 def stated_size_hint(message: str | Sequence[str]) -> dict[str, Any]:
     """The size-hint object a configurator URL may be built from (#365).
 
@@ -256,6 +286,9 @@ def _read_message(message: str, found: dict[str, Any]) -> None:
     is not a second sentence, and a question still carries the kWp the
     customer gave.
     """
+    if (choice := _BACKUP_ANSWERS.get(message.strip().casefold())) is not None:
+        found["backup"] = choice
+        return
     for clause, interrogative in _clauses(message):
         if interrogative:
             continue

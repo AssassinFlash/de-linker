@@ -16,6 +16,46 @@ use WP_REST_Response;
 
 /** History remains a snapshot; a replayed turn is a new current read. */
 class PublicationGuard {
+	/** Current Woo account price permission for the service input and any later release. */
+	public static function sees_prices(): bool {
+		/**
+		 * Whether the visitor sees prices: linker-commerce answers with its
+		 * one price rule (CommerceState::visitor_sees_prices, #242); without
+		 * it the default stands and nobody is a partner.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param bool $sees False unless the price rule says otherwise.
+		 */
+		return true === apply_filters( 'linker_commerce_visitor_sees_prices', false ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- linker-commerce's filter, read here; not this plugin's own hook.
+	}
+
+	/** Current Woo permission also applies to a stored card read on a different day.
+	 *
+	 * @param string $stream Historical reply, unsigned.
+	 */
+	public static function history_prices( string $stream ): string {
+		if ( ! str_contains( $stream, '"prices"' ) || self::sees_prices() ) {
+			return $stream;
+		}
+		$events = explode( "\n\n", $stream );
+		foreach ( $events as $index => $event ) {
+			if ( ! str_starts_with( $event, "event: block\ndata: " ) ) {
+				continue;
+			}
+			$block = json_decode( substr( $event, strlen( "event: block\ndata: " ) ), true );
+			if ( 'cards' === ( $block['type'] ?? '' ) && is_array( $block['prices'] ?? null ) ) {
+				// Non-price notices (login, pending, unpriced…) stay with their cards.
+				$notices = array_values( array_filter( $block['prices'], static fn( $line ) => ! empty( $line['reason'] ) ) );
+				if ( $notices !== $block['prices'] ) {
+					$block['prices']  = $notices;
+					$events[ $index ] = "event: block\ndata: " . wp_json_encode( $block );
+				}
+			}
+		}
+		return implode( "\n\n", $events );
+	}
+
 	/**
 	 * Real current source readers or explicit fixture transports.
 	 *

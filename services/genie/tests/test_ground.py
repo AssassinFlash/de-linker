@@ -1,5 +1,7 @@
 """Five anchoring checks: injected failures are all refused."""
 
+import pytest
+
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.ground import Citation, bare_numbers, catalogue_name_phrases, check
 from linker_genie.jev import Reading
@@ -676,3 +678,13 @@ def test_an_applied_extreme_is_the_only_card_beside_other_named_models() -> None
     assert any(
         "not searched" in failure for failure in check(winner, facts, route).failures
     )
+
+
+@pytest.mark.parametrize(
+    "token", ["needed_accessory_ok", "released_with_accessory", "not_released"]
+)
+def test_internal_state_in_customer_prose_needs_repair(token: str) -> None:
+    answer = TurnOutput(
+        language="en", blocks=[TextBlock(text=f"Compatibility: {token}")]
+    )
+    assert not check(answer, TurnFacts()).ok

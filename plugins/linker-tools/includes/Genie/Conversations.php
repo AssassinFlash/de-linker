@@ -234,6 +234,23 @@ class Conversations {
 		}
 	}
 
+	/** Bind the provisional first turn to this visitor before returning its job. */
+	public function select_pending_guest(): void {
+		if ( $this->unanswered_guest > 0 ) {
+			$this->select_new( $this->unanswered_guest, $this->ensure_browser_key() );
+		}
+	}
+
+	/** Adopt the provisional post for finalization in a later, owner-checked poll.
+	 *
+	 * @param int $id Conversation belonging to the pending turn.
+	 */
+	public function resume_pending_guest( int $id ): void {
+		if ( 'auto-draft' === get_post_status( $id ) ) {
+			$this->unanswered_guest = $id;
+		}
+	}
+
 	/** Make the first answer available to this browser and its history rail.
 	 *
 	 * @param int $id Post the service answered.
@@ -252,7 +269,9 @@ class Conversations {
 		if ( is_wp_error( $updated ) ) {
 			return false;
 		}
-		$this->select_new( $id, $this->ensure_browser_key() );
+		if ( ! get_post_meta( $id, self::BROWSER_META, true ) ) {
+			$this->select_new( $id, $this->ensure_browser_key() );
+		}
 		$this->unanswered_guest = 0;
 		return true;
 	}

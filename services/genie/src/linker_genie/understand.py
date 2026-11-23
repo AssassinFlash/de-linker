@@ -160,6 +160,7 @@ class Understander:
         client: Abilities,
         *,
         get_vocabulary: Callable[[], Vocabulary] | None = None,
+        on_stage: timing.Stage | None = None,
     ) -> Prepared:
         request = without_upload_footer(request)
         messages = customer_messages(request)
@@ -170,7 +171,7 @@ class Understander:
         log: dict[str, Any] = {}
         # The layer's own clock (#336, timing.py): measurement only; it travels
         # with the Prepared, and the app adopts it into the turn's record.
-        clock = timing.Timing()
+        clock = timing.Timing(on_stage)
         phrase = contact.asks_for_person(message)
         if phrase is not None:
             # A request for a person is answered in code, before Jev and the model
@@ -187,15 +188,15 @@ class Understander:
         ]
         subject = _subject(request, matches, vocabulary)
         # This turn's files are read first (#236): a nameplate decides the route.
-        with timing.phase(clock, timing.ATTACHMENTS):
-            fresh = [
-                with_known_brand(item, vocabulary)
-                for item in (
-                    attachments.read(request.attachments, request.readings, self._see)
-                    if request.attachments
-                    else []
-                )
-            ]
+        fresh: list[AttachmentReading] = []
+        if request.attachments:
+            with timing.phase(clock, timing.ATTACHMENTS):
+                fresh = [
+                    with_known_brand(item, vocabulary)
+                    for item in attachments.read(
+                        request.attachments, request.readings, self._see
+                    )
+                ]
         if self._publication and request.readings:
             # Empty documents retained by the proxy reserve their IDs but supply no facts.
             request = request.model_copy(

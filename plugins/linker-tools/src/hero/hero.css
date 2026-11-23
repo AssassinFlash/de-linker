@@ -391,6 +391,28 @@
 	margin: 0;
 	padding-inline: 16px;
 }
+#home-a
+	.hero-cinematic.linker-genie-hero--open
+	.hero-dialog[data-genie-view="side"]
+	.hero-prompt {
+	height: calc(2lh + 12px);
+}
+#home-a
+	.linker-genie-hero--open
+	.hero-dialog[data-genie-view="side"]
+	.hero-dialog-footer {
+	flex-wrap: wrap;
+}
+#home-a
+	.hero-dialog[data-genie-view="side"]
+	.linker-genie-hero__view-actions
+	button {
+	display: inline-grid;
+	width: 44px;
+	height: 44px;
+	place-items: center;
+	padding: 0;
+}
 #home-a .hero-dialog[data-genie-view="side"]::backdrop {
 	background: transparent;
 }

@@ -65,7 +65,7 @@ for (const locale of ['en', 'de'] as const) {
 						})
 				);
 				await page.route(
-					'**/wp-json/linker-ai/v1/genie/turn',
+					'**/wp-json/linker-ai/v1/genie/turn/start',
 					async (route) => {
 						posted = route.request().postDataJSON();
 						await held;
@@ -279,14 +279,17 @@ test('reduced-motion: waiting stays static and a received answer appears immedia
 		release = resolve;
 	});
 	releases.set(page, release);
-	await page.route('**/wp-json/linker-ai/v1/genie/turn', async (route) => {
-		await held;
-		await route.fulfill({
-			json: {
-				stream: 'event: block\ndata: {"type":"text","text":"A complete answer.","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n',
-			},
-		});
-	});
+	await page.route(
+		'**/wp-json/linker-ai/v1/genie/turn/start',
+		async (route) => {
+			await held;
+			await route.fulfill({
+				json: {
+					stream: 'event: block\ndata: {"type":"text","text":"A complete answer.","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n',
+				},
+			});
+		}
+	);
 	await page.goto(instance().url + '/genie/');
 	await page.locator('.linker-genie-app__input').fill('Which product fits?');
 	await page.locator('.linker-genie-app__send').click();
