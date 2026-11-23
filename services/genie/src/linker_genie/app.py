@@ -279,7 +279,8 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
 
 
 def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
-    authority, snapshot = _start_permission(body, request)
+    authority = getattr(request.app.state, "publication", None) or current()
+    snapshot = _start_permission(body, authority)
     return StreamingResponse(
         _execute_turn(body, request, authority, snapshot),
         media_type="text/event-stream",
@@ -301,14 +302,11 @@ def _publication_errors() -> Iterator[None]:
         ) from error
 
 
-def _start_permission(
-    body: TurnRequest, request: Request
-) -> tuple[PublicationClient, Snapshot]:
-    authority = getattr(request.app.state, "publication", None) or current()
+def _start_permission(body: TurnRequest, authority: PublicationClient) -> Snapshot:
     with _publication_errors():
         snapshot = authority.snapshot()
         snapshot.require_products(list(product_ids(body.page_context.model_dump())))
-    return authority, snapshot
+    return snapshot
 
 
 def _execute_turn(
@@ -337,11 +335,12 @@ def start_turn(body: TurnRequest, request: Request) -> JSONResponse:
     jobs = Jobs(slots)
     stage = "reading_attachments" if body.attachments else "understanding"
     try:
-        authority, snapshot = _start_permission(body, request)
+        authority = getattr(request.app.state, "publication", None) or current()
         created = jobs.begin(slot, body.conversation_id, subject, stage)
 
         def execute() -> None:
             try:
+                snapshot = _start_permission(body, authority)
                 stream = "".join(
                     _execute_turn(
                         body,

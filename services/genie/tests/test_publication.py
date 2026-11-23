@@ -1703,13 +1703,25 @@ def test_product_search_reads_only_its_current_passage_proofs(
         index.close()
 
 
-@pytest.mark.parametrize("when", ["before", "during"])
+@pytest.mark.parametrize(
+    ("refusal", "status", "code"),
+    [
+        ("withdrawn_product", 409, "publication_changed"),
+        ("manifest_outage", 503, "publication_unavailable"),
+        ("withdrawn_before_release", 409, "publication_changed"),
+    ],
+)
 def test_async_turn_keeps_publication_refusal_and_releases_slot(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
-    when: str,
+    refusal: str,
+    status: int,
+    code: str,
 ) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
     from time import monotonic, sleep
+    from unittest.mock import Mock
 
     from conftest import SHELL
     from fastapi.testclient import TestClient
@@ -1720,17 +1732,20 @@ def test_async_turn_keeps_publication_refusal_and_releases_slot(
     path = tmp_path / "private/work.sqlite"
     monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(path))
     monkeypatch.setenv("LINKER_GENIE_WORK_MODE", "enforce")
+    release_manifest = Event()
 
     def handle(request: httpx.Request) -> httpx.Response:
         if request.url.path.endswith("manifest"):
+            assert release_manifest.wait(10)
+            if refusal == "manifest_outage":
+                return httpx.Response(503)
             return httpx.Response(200, json=manifest())
         return httpx.Response(200, json={"valid": False})
 
     authority = PublicationClient("https://site.test", httpx.MockTransport(handle))
     monkeypatch.setattr(service.app.state, "publication", authority, raising=False)
-    monkeypatch.setattr(
-        service, "_compute_turn", lambda *_: iter(["unreleased evidence"])
-    )
+    compute = Mock(return_value=iter(["unreleased evidence"]))
+    monkeypatch.setattr(service, "_compute_turn", compute)
     subject = "a" * 64
     client = TestClient(
         service.app, headers={**SHELL, "X-Linker-Resource-Subject": subject}
@@ -1739,26 +1754,30 @@ def test_async_turn_keeps_publication_refusal_and_releases_slot(
         "conversation_id": "withdrawn",
         "messages": [{"role": "user", "content": "Compare these devices"}],
     }
-    if when == "before":
+    if refusal == "withdrawn_product":
         body["page_context"] = {"product_id": 999999}
-    start = client.post("/turn/start", json=body)
-    if when == "before":
-        assert (
-            start.status_code == 409 and start.json()["detail"] == "publication_changed"
-        )
-    else:
-        assert start.status_code == 202
-        url = "/turn/" + start.json()["job_id"]
-        until = monotonic() + 5
-        while (answer := client.get(url).json())[
-            "status"
-        ] == "running" and monotonic() < until:
-            sleep(0.01)
-        assert (
-            answer["status"] == "failed"
-            and answer["http_status"] == 409
-            and answer["code"] == "publication_changed"
-        )
-        assert "stream" not in answer
-    assert Slots(path).acquire(subject)
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        pending = pool.submit(client.post, "/turn/start", json=body)
+        try:
+            start = pending.result(timeout=3)
+            assert start.status_code == 202
+            url = "/turn/" + start.json()["job_id"]
+            progress = client.get(url).json()
+            assert progress["status"] == "running" and "stream" not in progress
+            compute.assert_not_called()
+        finally:
+            release_manifest.set()
+
+    until = monotonic() + 5
+    while (answer := client.get(url).json())["status"] == "running":
+        assert monotonic() < until
+        sleep(0.01)
+    assert answer["status"] == "failed"
+    assert answer["http_status"] == status and answer["code"] == code
+    assert "stream" not in answer
+    assert compute.call_count == (1 if refusal == "withdrawn_before_release" else 0)
+    while Slots(path).acquire(subject) is None:
+        assert monotonic() < until
+        sleep(0.01)
     authority.close()
