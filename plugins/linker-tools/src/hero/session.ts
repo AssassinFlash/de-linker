@@ -21,6 +21,9 @@ import {
 	type Turn,
 	type TurnMessage,
 	type TurnOwner,
+	type PendingJob,
+	type TurnStage,
+	resumeTurn,
 } from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
 import {
@@ -45,6 +48,7 @@ export interface HeroSessionConfig {
 
 /** The stored thread, in the shapes the rest of the app uses. */
 export interface HeroStoredThread {
+	pendingJob?: PendingJob;
 	conversationId?: number;
 	messages: TurnMessage[];
 	turn: Turn | null;
@@ -60,6 +64,10 @@ export type HeroReadThread = typeof readThread;
 export type HeroSendTurn = typeof sendTurn;
 
 export interface HeroTurnGuard {
+	onStage?: ( stage: TurnStage ) => void;
+	onOperation?: ( operationId: string ) => void;
+	onStarted?: ( id: number ) => void;
+	resumeOperation?: string;
 	owner?: TurnOwner;
 	authorize: () => Promise< boolean >;
 	settle: () => Promise< boolean >;
@@ -77,6 +85,7 @@ export class HeroSession {
 	}
 	private requestWitness: RequestWitness | null = null;
 	private operationId?: string;
+	private pendingJob?: PendingJob;
 
 	/** A new native principal/thread cannot reuse a completed load from the prior context. */
 	invalidate(): void {
@@ -89,6 +98,7 @@ export class HeroSession {
 		this.conversationId = undefined;
 		this.requestWitness = null;
 		this.operationId = undefined;
+		this.pendingJob = undefined;
 	}
 
 	/**
@@ -162,6 +172,7 @@ export class HeroSession {
 			}
 			this.conversationId = stored.conversationId;
 			this.operationId = stored.operationId;
+			this.pendingJob = stored.pendingJob;
 			this.messagesValue = stored.messages;
 			this.turnValue = stored.turn;
 			this.contactsValue = stored.contacts ?? [];
@@ -173,6 +184,7 @@ export class HeroSession {
 	private snapshot(): HeroStoredThread {
 		return {
 			conversationId: this.conversationId,
+			...( this.pendingJob ? { pendingJob: this.pendingJob } : {} ),
 			messages: this.messagesValue,
 			turn: this.turnValue,
 			contacts: this.contactsValue,
@@ -310,7 +322,7 @@ export class HeroSession {
 		}
 		this.requestWitness = null;
 		const page = this.config.page;
-		const answer = await this.send( {
+		const request = {
 			...( current?.owner ? { owner: current.owner } : {} ),
 			turnUrl: this.config.turnUrl,
 			nonce: this.config.nonce,
@@ -318,22 +330,41 @@ export class HeroSession {
 			messages: next,
 			page,
 			uploads,
-			onOperation: ( operationId ) => {
+			onStage: current?.onStage,
+			onStarted: ( id: number ) => {
+				if ( this.generation === generation ) {
+					this.conversationId = id;
+					current?.onStarted?.( id );
+					if ( this.requestWitness ) {
+						this.requestWitness.conversationId = id;
+					}
+				}
+			},
+			onOperation: ( operationId: string ) => {
+				current?.onOperation?.( operationId );
 				if ( generation !== this.generation ) {
 					return;
 				}
-				this.requestWitness = this.conversationId
-					? {
-							conversationId: this.conversationId,
-							operationId,
-							messages: next,
-							uploads,
-							locale: this.config.locale,
-							page: JSON.stringify( page ),
-						}
-					: null;
+				this.requestWitness = {
+					conversationId: this.conversationId ?? 0,
+					operationId,
+					messages: next,
+					uploads,
+					locale: this.config.locale,
+					page: JSON.stringify( page ),
+				};
 			},
-		} );
+		};
+		const answer =
+			this.pendingJob &&
+			current?.resumeOperation &&
+			current.resumeOperation === this.pendingJob.operation_id
+				? await resumeTurn(
+						request,
+						this.pendingJob,
+						current.owner?.signal
+					)
+				: await this.send( request );
 		if ( current && ! ( await current.settle() ) ) {
 			throw new EntryScopeError( true );
 		}
@@ -343,6 +374,7 @@ export class HeroSession {
 		this.messagesValue = next.concat( assistantMessage( answer ) );
 		this.requestWitness = null;
 		this.turnValue = answer;
+		this.pendingJob = undefined;
 		return {
 			...this.snapshot(),
 			answer,

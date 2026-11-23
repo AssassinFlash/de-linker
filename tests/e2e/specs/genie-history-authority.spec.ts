@@ -121,7 +121,7 @@ async function serveHistory(page: Page, lang: Lang): Promise<void> {
 				`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`
 		)
 		.join('');
-	await page.route('**/wp-json/linker-ai/v1/genie/turn', (route) =>
+	await page.route('**/wp-json/linker-ai/v1/genie/turn/start', (route) =>
 		route.fulfill({
 			status: 500,
 			contentType: 'application/json',

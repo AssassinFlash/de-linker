@@ -92,7 +92,7 @@ async function prepare(
 		locale: string;
 	}> = [];
 	let fail = false;
-	await page.route('**/wp-json/linker-ai/v1/genie/turn', async (route) => {
+	await page.route('**/wp-json/linker-ai/v1/genie/turn/start', async (route) => {
 		requests.push(route.request().postDataJSON());
 		if (fail) {
 			fail = false;

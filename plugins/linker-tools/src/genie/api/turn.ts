@@ -1,3 +1,4 @@
+import { keepJobFiles, removeFiles } from '../attachments/turnFiles';
 /**
  * One turn through the REST proxy: POST, then read the service's SSE events
  * from the answer (docs/specs/13-genie.md).
@@ -314,6 +315,7 @@ export function turnConflictText(): string {
 
 export interface TurnMessage {
 	planning_sources?: PlanningSourcesBlock;
+	comparisons?: ( CompareBlock | CardsBlock )[];
 	role: 'user' | 'assistant';
 	content: string;
 	/** The logged turn this assistant message came from. */
@@ -388,6 +390,8 @@ export interface ConversationList {
 export interface TurnRequest {
 	/** Current mounted surface, pre-dispatch cancellation and actual transport stage. */
 	owner?: TurnOwner;
+	onStage?: ( stage: TurnStage ) => void;
+	onStarted?: ( conversationId: number ) => void;
 	/** Existing planner guest CSRF proof; never part of page data or logs. */
 	plannerNonce?: string;
 	/** Proxy route URL. */
@@ -419,71 +423,188 @@ export interface TurnOwner {
 	onDispatch: () => void;
 }
 
+export type TurnStage =
+	| 'reading_attachments'
+	| 'understanding'
+	| 'checking_catalog'
+	| 'searching_documents'
+	| 'writing_answer'
+	| 'verifying_answer';
+
+export interface PendingJob {
+	job_id: string;
+	conversation_id: number;
+	stage: TurnStage;
+	started_at: number;
+	user_message: string;
+	operation_id?: string;
+}
+
+type TurnTransport = Pick<
+	TurnRequest,
+	'turnUrl' | 'nonce' | 'plannerNonce' | 'fetcher' | 'onStage' | 'timeoutMs'
+>;
+
+function turnRoute( url: string, suffix: string ): string {
+	if ( ! url.includes( '?' ) ) {
+		return url.replace( /\/$/, '' ) + '/' + suffix;
+	}
+	const parsed = new URL( url, window.location.href );
+	const route = parsed.searchParams.get( 'rest_route' );
+	if ( route ) {
+		parsed.searchParams.set(
+			'rest_route',
+			route.replace( /\/$/, '' ) + '/' + suffix
+		);
+	} else {
+		parsed.pathname = parsed.pathname.replace( /\/$/, '' ) + '/' + suffix;
+	}
+	return parsed.toString();
+}
+
 /**
- * Sends one message and parses the SSE answer.
- *
- * @param request The turn, and the test seams.
+ * One deadline covers the start, each poll, and reading the final body.
+ * @param budget
+ * @param external
+ * @param attempt
  */
-export async function sendTurn( request: TurnRequest ): Promise< Turn > {
+async function withinTurn< T >(
+	budget: number,
+	external: AbortSignal | undefined,
+	attempt: ( signal: AbortSignal ) => Promise< T >
+): Promise< T > {
+	const controller = new AbortController();
+	const cancel = () => controller.abort( external?.reason );
+	const aborted = new Promise< never >( ( _, reject ) =>
+		controller.signal.addEventListener(
+			'abort',
+			() => reject( controller.signal.reason ),
+			{ once: true }
+		)
+	);
+	if ( external?.aborted ) {
+		cancel();
+	} else {
+		external?.addEventListener( 'abort', cancel, { once: true } );
+	}
+	// The deadline also covers reading the response body.
+	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+	const timeout = setTimeout(
+		() =>
+			controller.abort(
+				new DOMException( 'The turn timed out.', 'AbortError' )
+			),
+		Math.max( 0, budget )
+	);
+	try {
+		return await Promise.race( [ aborted, attempt( controller.signal ) ] );
+	} finally {
+		clearTimeout( timeout );
+		external?.removeEventListener( 'abort', cancel );
+	}
+}
+
+async function replyBody( response: Response ) {
+	if ( ! response.ok ) {
+		const refusal = await response.json().catch( () => ( {} ) );
+		throw new TurnError(
+			response.status,
+			typeof refusal?.code === 'string' ? refusal.code : ''
+		);
+	}
+	return response.json();
+}
+
+async function pollTurn(
+	request: TurnTransport,
+	job: Pick< PendingJob, 'job_id' | 'conversation_id' | 'stage' >,
+	signal: AbortSignal
+): Promise< Turn > {
+	const fetcher = request.fetcher ?? fetch;
+	let stage = job.stage;
+	request.onStage?.( stage );
+	for (;;) {
+		signal.throwIfAborted();
+		await new Promise< void >( ( resolve ) => setTimeout( resolve, 600 ) );
+		signal.throwIfAborted();
+		const response = await fetcher(
+			turnRoute( request.turnUrl, job.job_id ),
+			{
+				credentials: 'same-origin',
+				cache: 'no-store',
+				signal,
+				headers: {
+					'X-WP-Nonce': request.nonce,
+					...( request.plannerNonce
+						? { 'X-Linker-Planner-Nonce': request.plannerNonce }
+						: {} ),
+				},
+			}
+		);
+		const body = await replyBody( response );
+		if (
+			body.job_id !== job.job_id ||
+			body.conversation_id !== job.conversation_id
+		) {
+			throw new UnfinishedStreamError();
+		}
+		if ( body.status === 'completed' ) {
+			return parseStream( body.stream );
+		}
+		if ( body.status !== 'running' ) {
+			throw new TurnError( body.http_status ?? 503, body.code ?? '' );
+		}
+		if ( body.stage !== stage ) {
+			stage = body.stage;
+			request.onStage?.( stage );
+		}
+	}
+}
+
+export function resumeTurn(
+	request: TurnTransport,
+	job: PendingJob,
+	signal?: AbortSignal
+): Promise< Turn > {
+	const remaining =
+		job.started_at * 1000 +
+		( request.timeoutMs ?? TURN_TIMEOUT_MS ) -
+		Date.now();
+	return withinTurn( remaining, signal, ( active ) =>
+		pollTurn( request, job, active )
+	);
+}
+
+/**
+ * Submit the pending question once; subsequent requests only read that job.
+ * @param request
+ */
+export function sendTurn( request: TurnRequest ): Promise< Turn > {
 	const {
-		turnUrl,
 		nonce,
 		locale,
 		messages,
 		page,
 		uploads = [],
 		fetcher = ( ...args ) => fetch( ...args ),
-		timeoutMs = TURN_TIMEOUT_MS,
 	} = request;
-	const controller = new AbortController();
-	let timer: ReturnType< typeof setTimeout > | undefined;
-	let won = false;
-	const timeoutError = new DOMException(
-		'The turn timed out.',
-		'AbortError'
-	);
-	const timedOut = new Promise< never >( ( _resolve, reject ) => {
-		controller.signal.addEventListener(
-			'abort',
-			() => reject( controller.signal.reason ?? timeoutError ),
-			{ once: true }
-		);
-	} );
-	const external = request.owner?.signal;
-	const cancel = () =>
-		controller.abort(
-			external?.reason ?? new Error( 'verification_cancelled' )
-		);
-	if ( external?.aborted ) {
-		cancel();
-	} else {
-		external?.addEventListener( 'abort', cancel, { once: true } );
-	}
-	const restartDeadline = ( duration = timeoutMs ) => {
-		if ( timer !== undefined ) {
-			clearTimeout( timer );
-		}
-		timer = setTimeout( () => controller.abort( timeoutError ), duration );
-	};
-	restartDeadline();
-	// `fetcher` is called inside the promise. A throw before the request
-	// leaves is a rejection, so the timer below is cleared with every other
-	// failure. Promise.resolve(fetcher()) would let that throw escape first.
-	const attempt = Promise.resolve()
-		.then( () =>
-			resourceFetch(
+	return withinTurn(
+		request.timeoutMs ?? TURN_TIMEOUT_MS,
+		request.owner?.signal,
+		async ( signal ) => {
+			const response = await resourceFetch(
 				async ( ...args ) => {
-					controller.signal.throwIfAborted();
+					signal.throwIfAborted();
 					await request.owner?.beforeDispatch();
-					controller.signal.throwIfAborted();
+					signal.throwIfAborted();
 					request.owner?.onDispatch();
-
 					return fetcher( ...args );
 				},
-				turnUrl,
+				turnRoute( request.turnUrl, 'start' ),
 				{
 					method: 'POST',
 					credentials: 'same-origin',
+					signal,
 					headers: {
 						'Content-Type': 'application/json',
 						'X-WP-Nonce': nonce,
@@ -498,69 +619,32 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 							content,
 						} ) ),
 						page,
-						...( uploads.length > 0
-							? { attachments: uploads }
-							: {} ),
+						...( uploads.length ? { attachments: uploads } : {} ),
 					} ),
-					signal: controller.signal,
 				},
 				request.onOperation
-			)
-		)
-		.then(
-			( response ) => response,
-			( error: unknown ) => {
-				if ( won ) {
-					return new Promise< Response >( () => undefined );
+			);
+			const body = await replyBody( response );
+			if (
+				body.status === 'running' &&
+				typeof body.job_id === 'string' &&
+				body.conversation_id > 0
+			) {
+				await keepJobFiles(
+					body.job_id,
+					uploads,
+					Date.now() + TURN_TIMEOUT_MS
+				);
+				request.onStarted?.( body.conversation_id );
+				const answer = await pollTurn( request, body, signal );
+				if ( uploads.length ) {
+					await removeFiles( body.job_id ).catch( () => undefined );
 				}
-				throw error;
+				return answer;
 			}
-		);
-	// The timer stays armed until the body is parsed: headers alone are not an
-	// answer. A proxy that sends its headers and then stalls would otherwise
-	// wait past TURN_TIMEOUT_MS.
-	const deadline = < T >( work: Promise< T > ): Promise< T > =>
-		Promise.race( [ work, timedOut ] );
-	let response: Response;
-	try {
-		response = await deadline( attempt );
-		won = true;
-		if ( ! response.ok ) {
-			let code = '';
-			try {
-				const refusal = ( await deadline( response.json() ) ) as {
-					code?: unknown;
-				};
-				code = typeof refusal.code === 'string' ? refusal.code : '';
-			} catch {
-				// The deadline is the turn's failure, not an empty refusal.
-				// An aborted body read is the same timeout.
-				if ( controller.signal.aborted ) {
-					throw timeoutError;
-				}
-				code = '';
-			}
-			throw new TurnError( response.status, code );
+			return parseStream( body.stream ?? '' );
 		}
-		const body = ( await deadline( response.json() ) ) as {
-			stream: string;
-		};
-		const turn = parseStream( body.stream ?? '' );
-		// A complete valid SSE answer is already committed server-side. End
-		// its connection deadline before optional metadata presentation; that
-		// read has its own short budget and must not turn success into retry.
-		if ( timer !== undefined ) {
-			clearTimeout( timer );
-			timer = undefined;
-		}
-		return turn;
-	} finally {
-		external?.removeEventListener( 'abort', cancel );
-		won = true;
-		if ( timer !== undefined ) {
-			clearTimeout( timer );
-		}
-	}
+	);
 }
 
 /**
@@ -574,6 +658,18 @@ export function assistantMessage( turn: Turn ): TurnMessage {
 	);
 	return {
 		...( source ? { planning_sources: source } : {} ),
+		...( turn.blocks.some( ( b ) => b.type === 'compare' )
+			? {
+					comparisons: turn.blocks
+						.filter(
+							( b ): b is CompareBlock => b.type === 'compare'
+						)
+						.map( ( block ) => ( {
+							type: 'compare' as const,
+							product_ids: block.product_ids,
+						} ) ),
+				}
+			: {} ),
 		role: 'assistant',
 		content: turn.blocks
 			.filter(
@@ -622,6 +718,7 @@ export async function readThread(
 	conversationId?: number;
 	/** Trusted completed operation returned by the owned Thread, never inferred. */
 	operationId?: string;
+	pendingJob?: PendingJob;
 	/** Always set here; optional for the callers' own stand-ins. */
 	contacts?: SentContact[];
 	/** Always set here; optional for the callers' own stand-ins. */
@@ -649,7 +746,8 @@ export async function readThread(
 		const stored = ( await response.json() ) as {
 			conversation_id?: number;
 			operation_id?: string;
-			messages?: TurnMessage[];
+			pending_job?: PendingJob;
+			messages?: ( TurnMessage & { compare_product_ids?: number[][] } )[];
 			stream?: string;
 			contacts?: Array< Partial< SentContact > >;
 			inquiries?: Array< Partial< SentInquiryCard > >;
@@ -662,7 +760,18 @@ export async function readThread(
 						message.role === 'assistant' ) &&
 					typeof message.content === 'string'
 			)
-			.map( ( message ) => ( {
+			.map( ( message ): TurnMessage => ( {
+				...( message.role === 'assistant' &&
+				message.compare_product_ids?.length
+					? {
+							comparisons: message.compare_product_ids.map(
+								( ids ) => ( {
+									type: 'compare',
+									product_ids: ids,
+								} )
+							),
+						}
+					: {} ),
 				role: message.role,
 				content: message.content,
 				...( message.role === 'assistant' &&
@@ -676,10 +785,21 @@ export async function readThread(
 					? { planning_sources: message.planning_sources }
 					: {} ),
 			} ) );
-		const identity =
+		const identity: { conversationId?: number; pendingJob?: PendingJob } =
 			Number.isInteger( stored.conversation_id ) &&
 			( stored.conversation_id ?? 0 ) > 0
-				? { conversationId: stored.conversation_id }
+				? {
+						conversationId: stored.conversation_id,
+						...( stored.pending_job
+							? {
+									pendingJob: {
+										...stored.pending_job,
+										conversation_id:
+											stored.conversation_id!,
+									},
+								}
+							: {} ),
+					}
 				: {};
 		if ( messages.length === 0 ) {
 			return { ...empty, ...identity };
@@ -761,8 +881,35 @@ export async function readThread(
 				// Refusal leaves the verified-unavailable hint and original words.
 			}
 		}
-		if ( turn && artifacts ) {
-			turn = await restoreArtifacts( turn, artifacts, nonce, fetcher );
+		const historical = messages.flatMap( ( m ) => m.comparisons ?? [] );
+		if ( artifacts && ( turn || historical.length ) ) {
+			const latestCount = turn?.blocks.length ?? 0;
+			const restored = await restoreArtifacts(
+				{
+					meta: turn?.meta ?? null,
+					blocks: [ ...( turn?.blocks ?? [] ), ...historical ],
+				},
+				artifacts,
+				nonce,
+				fetcher
+			);
+			if ( turn ) {
+				turn = {
+					...turn,
+					blocks: restored.blocks.slice( 0, latestCount ),
+				};
+			}
+			let offset = latestCount;
+			for ( const msg of messages ) {
+				if ( ! msg.comparisons ) {
+					continue;
+				}
+				msg.comparisons = restored.blocks.slice(
+					offset,
+					offset + msg.comparisons.length
+				) as ( CardsBlock | CompareBlock )[];
+				offset += msg.comparisons.length;
+			}
 		}
 		return {
 			...identity,

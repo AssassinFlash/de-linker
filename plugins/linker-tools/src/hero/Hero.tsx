@@ -1,3 +1,16 @@
+import { usePendingTurn } from '../genie/shared/usePendingTurn';
+import { HistoricalComparisons } from '../genie/components/HistoricalComparisons';
+import {
+	type TurnStage,
+	assistantMessage,
+	turnConflictText,
+	type Block,
+	type ContactBlock,
+	type SentContact,
+	type SentInquiryCard,
+	type Turn,
+	type TurnMessage,
+} from '../genie/api/turn';
 /**
  * The conversation the home hero unfolds in place (ticket #232, variant B):
  * the header the owner specified, the shared thread (session.ts), the #236
@@ -28,16 +41,6 @@ import { __ } from '@wordpress/i18n';
 import { storeClient } from '../configurator/api/store';
 import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { SentInquiry } from '../genie/api/inquiry';
-import {
-	assistantMessage,
-	turnConflictText,
-	type Block,
-	type ContactBlock,
-	type SentContact,
-	type SentInquiryCard,
-	type Turn,
-	type TurnMessage,
-} from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
 import { useAttachments } from '../genie/attachments/useAttachments';
 import { AttachmentCard } from '../genie/components/AttachmentCard';
@@ -156,6 +159,7 @@ export function HeroConversation( {
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
+	const [ stage, setStage ] = useState< TurnStage >();
 	const { begin: beginTurn } = useTurnOwner();
 	const [ refused, setRefused ] = useState( '' );
 	const [ recoveryBlocked, setRecoveryBlocked ] = useState( false );
@@ -222,6 +226,7 @@ export function HeroConversation( {
 		omitted,
 		setOmitted,
 		commitFailure,
+		rememberOperation,
 		placeChips,
 		openRetry,
 		payloadOrRestore,
@@ -279,6 +284,41 @@ export function HeroConversation( {
 	} );
 	const locale = config.locale;
 
+	const followPending = usePendingTurn(
+		config,
+		draftContext.homeEditor,
+		{ adoptFailure, commitFailure, placeChips },
+		{
+			wait: ( messages, job ) => {
+				sending.current = true;
+				setThread( messages );
+				setOpening( '' );
+				setStage( job.stage );
+				setPhase( 'waiting' );
+				setHydrated( true );
+				recoveryPending.current = false;
+			},
+			stage: setStage,
+			complete: ( messages, answer ) => {
+				sending.current = false;
+				setThread( messages );
+				turnAt.current = messages.length - 1;
+				setTurn( answer );
+				if ( ! draftContext.homeEditor.owner ) {
+					filesRef.current.clear();
+				}
+				setPhase( 'ask' );
+			},
+			failed: ( draft ) => {
+				sending.current = false;
+				setPrompt( draft.text );
+				placeChips( draft.uploads );
+				setThread( session.messages );
+				setPhase( 'error' );
+			},
+		}
+	);
+
 	// The conversation the browser already has: the dock's thread, or what
 	// the hero itself asked before it was folded and unfolded again.
 	useEffect( () => {
@@ -306,6 +346,9 @@ export function HeroConversation( {
 				setContacts( stored.contacts ?? [] );
 				setInquiries( stored.inquiries ?? [] );
 				turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+				if ( followPending( stored ) ) {
+					return;
+				}
 				const checked = await verifiedEntryFailure(
 					config,
 					pageFailureStore(),
@@ -417,6 +460,7 @@ export function HeroConversation( {
 		readPrompt,
 		draftContext,
 		draftContext.identity?.scope,
+		followPending,
 		adoptFailure,
 		deferFailure,
 		exchangeFailure,
@@ -703,6 +747,7 @@ export function HeroConversation( {
 				settle: () => draftContext.settle( lease ),
 				valid: () => draftContext.valid( lease ),
 			} );
+			setStage( undefined );
 			setPhase( 'waiting' );
 			setPrompt( '' );
 			setThread( [
@@ -718,6 +763,11 @@ export function HeroConversation( {
 					lease.scope,
 					{
 						owner: turnOwner,
+						onStage: setStage,
+						onOperation: ( operationId ) =>
+							rememberOperation( { operationId } ),
+						onStarted: ( conversationId ) =>
+							rememberOperation( { conversationId } ),
 						authorize: () => draftContext.authorize( lease ),
 						settle: () => draftContext.settle( lease ),
 					}
@@ -769,6 +819,7 @@ export function HeroConversation( {
 			placeChips,
 			draftContext,
 			retainUnverifiedTurn,
+			rememberOperation,
 			beginTurn,
 			clearDeferred,
 		]
@@ -791,6 +842,7 @@ export function HeroConversation( {
 		setRefused( '' );
 		setConflict( '' );
 		setLive( '' );
+		setStage( undefined );
 		setPhase( 'waiting' );
 		setPrompt( '' );
 		let payload: { question: string; uploads: Upload[] } | null = null;
@@ -812,6 +864,12 @@ export function HeroConversation( {
 				lease.scope,
 				{
 					owner: turnOwner,
+					onStage: setStage,
+					onOperation: ( operationId ) =>
+						rememberOperation( { operationId } ),
+					onStarted: ( conversationId ) =>
+						rememberOperation( { conversationId } ),
+					resumeOperation: draft.operationId,
 					authorize: () => draftContext.authorize( lease ),
 					settle: () => draftContext.settle( lease ),
 				}
@@ -871,6 +929,7 @@ export function HeroConversation( {
 		placeChips,
 		draftContext,
 		retainUnverifiedTurn,
+		rememberOperation,
 		beginTurn,
 		clearDeferred,
 	] );
@@ -1050,7 +1109,10 @@ export function HeroConversation( {
 	);
 	const viewActions = (
 		<div className="linker-genie-hero__view-actions">
-			{ wide && ! opening && phase === 'ask' && config.workspaceUrl ? (
+			{ wide &&
+			! opening &&
+			( phase !== 'waiting' || stage ) &&
+			config.workspaceUrl ? (
 				<a
 					className="linker-genie-workspace-link"
 					href={ config.workspaceUrl }
@@ -1140,7 +1202,7 @@ export function HeroConversation( {
 							{ opening }
 						</li>
 					</ol>
-					<TurnProgress />
+					<TurnProgress stage={ stage } />
 				</Transcript>
 			) : null }
 			{ ! opening &&
@@ -1189,6 +1251,14 @@ export function HeroConversation( {
 									message.content
 								) }
 								{ index !== turnAt.current &&
+								message.comparisons ? (
+									<HistoricalComparisons
+										message={ message }
+										config={ config }
+										store={ store }
+									/>
+								) : null }
+								{ index !== turnAt.current &&
 								message.planning_sources ? (
 									<PlanningSourcesCard
 										block={ message.planning_sources }
@@ -1230,7 +1300,9 @@ export function HeroConversation( {
 									: null }
 							</li>
 						) ) }
-						{ 'waiting' === phase ? <TurnProgress /> : null }
+						{ 'waiting' === phase ? (
+							<TurnProgress stage={ stage } />
+						) : null }
 					</ol>
 					{ conflict ? (
 						<p role="alert" className="linker-genie-app__error">

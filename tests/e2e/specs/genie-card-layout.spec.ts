@@ -51,7 +51,7 @@ for (const locale of ['en', 'de'] as const) {
 			)
 			.join('');
 		let turns = 0;
-		await page.route('**/wp-json/linker-ai/v1/genie/turn', (route) => {
+		await page.route('**/wp-json/linker-ai/v1/genie/turn/start', (route) => {
 			turns++;
 			return route.abort();
 		});

@@ -27,6 +27,7 @@
 /**
  * WordPress dependencies
  */
+import { compactFiles, expandFiles } from '../attachments/turnFiles';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -55,6 +56,7 @@ export interface FailureDraft {
 	/** Independent native owner. Marketing provenance remains separate. */
 	owner?: FailureOwner;
 	conversationId?: number;
+	operationId?: string;
 	/** Accepted editor content, never presented as a failed model turn. */
 	editing?: boolean;
 	/** Marketing ownership retained through retry/reload. */
@@ -542,6 +544,9 @@ export function reconcile(
 		...( stored.entryId
 			? { entryId: stored.entryId, entryScope: stored.entryScope }
 			: {} ),
+		...( typeof stored.operationId === 'string'
+			? { operationId: stored.operationId }
+			: {} ),
 		...( typeof stored.conversationId === 'number'
 			? { conversationId: stored.conversationId }
 			: {} ),
@@ -673,8 +678,24 @@ export function browserStore( storage: FailureStore ): FailureStore {
  */
 export function pageFailureStore(): FailureStore {
 	return {
-		getItem: ( key ) => window.sessionStorage.getItem( key ),
-		setItem: ( key, value ) => window.sessionStorage.setItem( key, value ),
+		getItem: ( key ) =>
+			expandFiles( key, window.sessionStorage.getItem( key ) ),
+		setItem: ( key, value ) => {
+			try {
+				window.sessionStorage.setItem( key, value );
+			} catch ( error ) {
+				if (
+					! ( error instanceof DOMException ) ||
+					error.name !== 'QuotaExceededError'
+				) {
+					throw error;
+				}
+				window.sessionStorage.setItem(
+					key,
+					compactFiles( key, value )
+				);
+			}
+		},
 		removeItem: ( key ) => window.sessionStorage.removeItem( key ),
 		keys: () => Object.keys( window.sessionStorage ),
 	};
@@ -744,6 +765,9 @@ export function parseFailure( value: unknown ): StoredFailure | null {
 			? { entryId: record.entryId, entryScope: record.entryScope }
 			: {} ),
 		...( record.editing === true ? { editing: true } : {} ),
+		...( typeof record.operationId === 'string'
+			? { operationId: record.operationId }
+			: {} ),
 		...( typeof record.conversationId === 'number'
 			? { conversationId: record.conversationId }
 			: {} ),
@@ -792,6 +816,9 @@ export function recordOf( state: FailureState ): StoredFailure {
 			? { entryId: draft.entryId, entryScope: draft.entryScope }
 			: {} ),
 		...( draft.editing ? { editing: true } : {} ),
+		...( typeof draft.operationId === 'string'
+			? { operationId: draft.operationId }
+			: {} ),
 		...( typeof draft.conversationId === 'number'
 			? { conversationId: draft.conversationId }
 			: {} ),

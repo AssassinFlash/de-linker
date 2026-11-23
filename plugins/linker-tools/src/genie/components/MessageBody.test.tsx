@@ -43,3 +43,19 @@ test( 'long plain prose has reading paragraphs without rewriting any words', () 
 		original
 	);
 } );
+
+test( 'historical inline and compact headings render as headings', () => {
+	const { container } = render(
+		<MessageBody
+			text={
+				'Comparison. ###Features\nCheck the rating.\n###More details'
+			}
+		/>
+	);
+	expect(
+		screen
+			.getAllByRole( 'heading', { level: 3 } )
+			.map( ( h ) => h.textContent )
+	).toEqual( [ 'Features', 'More details' ] );
+	expect( container ).not.toHaveTextContent( '###' );
+} );

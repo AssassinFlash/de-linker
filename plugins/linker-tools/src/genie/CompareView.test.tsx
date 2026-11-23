@@ -176,3 +176,54 @@ test( 'a withdrawn comparison needs no retry and sends no incomplete product req
 	expect( screen.queryByRole( 'button', { name: 'Try again' } ) ).toBeNull();
 	expect( fetcher ).not.toHaveBeenCalled();
 } );
+
+test.each( [
+	[ 'unknown', 1 ],
+	[ 50, 2 ],
+] )(
+	'all-in-one units with energy %s render %s equipment tables',
+	async ( energy, tables ) => {
+		const products = [ 31, 51 ].map( ( id ) => ( {
+			product_id: id,
+			title: 'SAJ CHS2-' + id,
+			url: '/product/' + id,
+			facts: { device_class: 'all-in-one-systems' },
+			presentation: { model: 'CHS2-' + id, storage: [], in_stock: true },
+		} ) );
+		vi.stubGlobal(
+			'fetch',
+			vi.fn( async () =>
+				Response.json( {
+					products,
+					rows: [
+						{
+							field: 'usable_kwh',
+							label: 'Usable energy',
+							values: { 31: energy },
+						},
+						{
+							field: 'ac_power_kw',
+							label: 'Rated power',
+							values: { 31: 30, 51: 50 },
+						},
+					],
+				} )
+			)
+		);
+		render(
+			<Compare
+				products={ [ 31, 51 ] }
+				locale="en"
+				restUrl="/wp-json/"
+				nonce="test"
+				proofs={ {} }
+				quantities={ {} }
+				statusFor={ () => ( { state: 'idle', text: '' } ) }
+				onAdd={ vi.fn() }
+			/>
+		);
+		expect( await screen.findAllByRole( 'table' ) ).toHaveLength(
+			tables as number
+		);
+	}
+);

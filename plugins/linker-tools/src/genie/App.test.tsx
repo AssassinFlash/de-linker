@@ -48,6 +48,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		deleteConversation: vi.fn(),
 		emailConversation: vi.fn(),
 		sendTurn: vi.fn(),
+		resumeTurn: vi.fn(),
 		sendVote: vi.fn( async () => true ),
 		TurnError: actual.TurnError,
 		UnfinishedStreamError: actual.UnfinishedStreamError,
@@ -92,6 +93,7 @@ import {
 	emailConversation,
 	listConversations,
 	readThread,
+	resumeTurn,
 	selectConversation,
 	sendTurn,
 	sendVote,
@@ -1075,6 +1077,8 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
+		onStage: expect.any( Function ),
+		onStarted: expect.any( Function ),
 		nonce: 'n',
 		locale: 'en',
 		messages: [
@@ -1669,6 +1673,8 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
+		onStage: expect.any( Function ),
+		onStarted: expect.any( Function ),
 		nonce: 'n',
 		locale: 'en',
 		messages: [ ...server, { role: 'user', content: 'EV chargers' } ],
@@ -3261,6 +3267,8 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 	expect( sendTurn ).toHaveBeenLastCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
+		onStage: expect.any( Function ),
+		onStarted: expect.any( Function ),
 		nonce: 'n',
 		locale: 'en',
 		messages: [
@@ -4007,4 +4015,87 @@ test( 'workspace reads the history list once while the current thread is still l
 		await act( async () => finish( { messages: [], turn: null } ) );
 		view.unmount();
 	}
+} );
+
+test( 'a cold workspace continues the owned job and shows its verified answer without dispatching a second turn', async () => {
+	const job = {
+		job_id: '116742ed-228d-4c9f-8311-35a4309a8aae',
+		conversation_id: 12,
+		stage: 'searching_documents' as const,
+		started_at: Date.now() / 1000,
+		user_message: 'Compare manuals',
+		operation_id: 'c5637827-ae0c-4e24-a40f-e413118363b9',
+	};
+	vi.mocked( readThread ).mockResolvedValue( {
+		conversationId: 12,
+		messages: [],
+		turn: null,
+		pendingJob: job,
+	} );
+	let finish!: () => void;
+	vi.mocked( resumeTurn ).mockImplementation( async ( { onStage } ) => {
+		await new Promise< void >( ( resolve ) => {
+			finish = resolve;
+		} );
+		onStage?.( 'verifying_answer' );
+		return {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Checked manuals', refs: [] } ],
+		};
+	} );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
+	expect(
+		await screen.findByText( 'Searching manufacturer manuals…' )
+	).toBeVisible();
+	expect( await screen.findByText( 'Compare manuals' ) ).toBeVisible();
+	await waitFor( () => expect( resumeTurn ).toHaveBeenCalledTimes( 1 ) );
+	await act( async () => {
+		finish();
+	} );
+	expect( await screen.findByText( 'Checked manuals' ) ).toBeVisible();
+	expect( sendTurn ).not.toHaveBeenCalled();
+} );
+
+test( 'retry after an interrupted poll reopens the accepted job without posting the question again', async () => {
+	const id = '4cfe85cb-4fbd-4015-b8cf-47d10d3e914b';
+	const operation = 'a81d1bf6-3e41-4589-a073-13a727abf66a';
+	vi.mocked( sendTurn ).mockImplementationOnce( async ( req ) => {
+		req.onOperation?.( operation );
+		req.onStarted?.( 37 );
+		req.onStage?.( 'searching_documents' );
+		throw new TypeError( 'connection lost' );
+	} );
+	await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) )
+	);
+	expect( await screen.findByRole( 'alert' ) ).toBeVisible();
+	vi.mocked( readThread ).mockResolvedValue( {
+		conversationId: 37,
+		turn: null,
+		messages: [],
+		pendingJob: {
+			job_id: id,
+			conversation_id: 37,
+			operation_id: operation,
+			stage: 'verifying_answer',
+			started_at: Date.now() / 1000,
+			user_message: 'Ask Genie',
+		},
+	} );
+	vi.mocked( resumeTurn ).mockResolvedValueOnce( {
+		meta: null,
+		blocks: [ { type: 'text', text: 'Verified answer', refs: [] } ],
+	} );
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
+	);
+	expect( await screen.findByText( 'Verified answer' ) ).toBeVisible();
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+	expect( vi.mocked( resumeTurn ).mock.calls.at( -1 )?.[ 1 ].job_id ).toBe(
+		id
+	);
 } );

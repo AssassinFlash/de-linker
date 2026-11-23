@@ -1,3 +1,4 @@
+import { releasePickedFiles } from '../attachments/turnFiles';
 /**
  * The failed-turn record for both Genie surfaces (ticket #411).
  *
@@ -161,10 +162,32 @@ export function useFailure( files: FailureFiles, composer: DraftEditor ) {
 			const reduced = failureReducer( previous, event );
 			const stored = persist( reduced, event.type === 'send' );
 			failureState.current = stored;
+			if (
+				stored.phase === 'clear' &&
+				previous.draft?.owner &&
+				( event.type === 'answered' || event.type === 'abandon' )
+			) {
+				releasePickedFiles(
+					previous.draft.uploads,
+					previous.draft.owner.scope
+				);
+			}
 			setOmitted(
 				'failed' === stored.phase ? ( stored.draft?.omitted ?? [] ) : []
 			);
 			return stored;
+		},
+		[ persist ]
+	);
+	const rememberOperation = useCallback(
+		( identity: { operationId?: string; conversationId?: number } ) => {
+			const state = failureState.current;
+			if ( state.phase === 'pending' && state.draft ) {
+				failureState.current = persist( {
+					...state,
+					draft: { ...state.draft, ...identity },
+				} );
+			}
 		},
 		[ persist ]
 	);
@@ -733,6 +756,7 @@ export function useFailure( files: FailureFiles, composer: DraftEditor ) {
 		omitted,
 		setOmitted,
 		commitFailure,
+		rememberOperation,
 		captureFailure,
 		abandonCaptured,
 		placeChips,

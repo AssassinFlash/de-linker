@@ -747,3 +747,40 @@ test( 'a failed historical permission read lets the live comparison retry with n
 	);
 	expect( restored.blocks ).toEqual( [ { ...original, draft_proofs: {} } ] );
 } );
+
+test( 'a cold multi-turn history restores each comparison against the same current publication', async () => {
+	const standard = fetchWith();
+	const fetcher = vi.fn(
+		async ( url: RequestInfo | URL, options?: RequestInit ) => {
+			if ( isThreadRequest( url, options ) ) {
+				return Response.json( {
+					conversation_id: 14,
+					messages: [
+						{ role: 'user', content: 'Compare' },
+						{
+							role: 'assistant',
+							content: 'Two comparisons',
+							compare_product_ids: [
+								[ 1, 2 ],
+								[ 99, 3573 ],
+							],
+						},
+						{ role: 'user', content: 'More' },
+					],
+					stream,
+				} );
+			}
+			return standard( url, options );
+		}
+	);
+	const restored = await readThread( '/thread', 'n', fetcher, context );
+	expect( restored.messages[ 1 ].comparisons ).toMatchObject( [
+		{ type: 'compare', product_ids: [ 1, 2 ] },
+		{ type: 'cards', product_ids: [ 3573 ] },
+	] );
+	expect(
+		fetcher.mock.calls.filter( ( [ url ] ) =>
+			String( url ).endsWith( 'publication/manifest' )
+		)
+	).toHaveLength( 1 );
+} );

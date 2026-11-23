@@ -724,7 +724,7 @@ test( 'a complete answer near its connection deadline uses the verified stream w
 		.join( '' );
 	let release!: () => void;
 	const fetcher = vi.fn( async ( url: RequestInfo | URL ) => {
-		if ( String( url ) === '/turn' ) {
+		if ( String( url ) === '/turn/start' ) {
 			return {
 				ok: true,
 				json: () =>
@@ -756,6 +756,76 @@ test( 'a complete answer near its connection deadline uses the verified stream w
 		} );
 		expect( fetcher ).toHaveBeenCalledTimes( 1 );
 		expect( vi.getTimerCount() ).toBe( 0 );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
+
+test( 'a started turn polls the same job at 600ms and releases only the verified stream', async () => {
+	vi.useFakeTimers();
+	try {
+		const id = 'aa21e940-4d9c-4426-844b-6527cedd68de';
+		const fetcher = vi
+			.fn()
+			.mockResolvedValueOnce(
+				Response.json(
+					{
+						status: 'running',
+						job_id: id,
+						conversation_id: 18,
+						stage: 'understanding',
+					},
+					{ status: 202 }
+				)
+			)
+			.mockResolvedValueOnce(
+				Response.json( {
+					status: 'running',
+					job_id: id,
+					conversation_id: 18,
+					stage: 'searching_documents',
+				} )
+			)
+			.mockResolvedValueOnce(
+				Response.json( {
+					status: 'completed',
+					job_id: id,
+					conversation_id: 18,
+					stream: 'event: block\ndata: {"type":"text","text":"Checked","refs":[]}\n\nevent: done\ndata: {}\n\n',
+				} )
+			);
+		const onStage = vi.fn();
+		const answer = sendTurn( {
+			turnUrl: '/turn',
+			nonce: 'n',
+			locale: 'en',
+			messages: [ { role: 'user', content: 'Question' } ],
+			page: { type: 'home' },
+			fetcher,
+			onStage,
+		} );
+		await vi.advanceTimersByTimeAsync( 599 );
+		expect( fetcher.mock.calls.map( ( c ) => c[ 0 ] ) ).toEqual( [
+			'/turn/start',
+		] );
+		await vi.advanceTimersByTimeAsync( 600 );
+		expect( fetcher.mock.calls.map( ( c ) => c[ 0 ] ) ).toEqual( [
+			'/turn/start',
+			'/turn/' + id,
+		] );
+		await vi.advanceTimersByTimeAsync( 1 );
+		expect( ( await answer ).blocks[ 0 ] ).toMatchObject( {
+			text: 'Checked',
+		} );
+		expect( onStage.mock.calls.map( ( c ) => c[ 0 ] ) ).toEqual( [
+			'understanding',
+			'searching_documents',
+		] );
+		expect( fetcher.mock.calls[ 1 ][ 1 ] ).toMatchObject( {
+			cache: 'no-store',
+			credentials: 'same-origin',
+			headers: { 'X-WP-Nonce': 'n' },
+		} );
 	} finally {
 		vi.useRealTimers();
 	}
