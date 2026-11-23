@@ -127,7 +127,10 @@ class Proxy {
 	 */
 	private readonly string $token;
 
-	/** Service start duration for the current short REST request. */
+	/** Service start duration for the current short REST request.
+	 *
+	 * @var float|null
+	 */
 	private ?float $service_start_ms = null;
 
 	/**

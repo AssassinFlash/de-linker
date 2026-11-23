@@ -42,11 +42,8 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 		$cookies = $_COOKIE;
 		$user    = get_current_user_id();
 		wp_set_current_user( 0 );
-		$account        = 0;
-		$approval       = (object) array( 'status' => 'approved' );
-		$account_status = static function ( $value, $id, $key ) use ( &$account, $approval ) {
-			return $account > 0 && $id === $account && \Linker\Commerce\Registration\Approval::STATUS_META === $key ? $approval->status : $value;
-		};
+		$account  = 0;
+		$approval = (object) array( 'status' => 'approved' );
 		if ( 'approval-withdrawn' === $outcome ) {
 			$account = (int) get_users(
 				array(
@@ -56,6 +53,9 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				)
 			)[0];
 			wp_set_current_user( $account );
+		}
+		$account_status = static fn( $value, $id, $key ) => $id === $account && 'linker_approval_status' === $key ? $approval->status : $value;
+		if ( $account > 0 ) {
 			add_filter( 'get_user_metadata', $account_status, 10, 3 );
 		}
 		$_COOKIE   = array( Identity::COOKIE => bin2hex( random_bytes( 16 ) ) );
