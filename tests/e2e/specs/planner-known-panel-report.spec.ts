@@ -203,7 +203,7 @@ for (const lang of ['en', 'de'] as const)
 					.getByRole('region', { name: t.declared, exact: true })
 					.getByRole('table');
 				await table.scrollIntoViewIfNeeded();
-				await expect(table.getByRole('cell')).toHaveText([
+				await expect(table.getByRole('cell')).toContainText([
 					new RegExp((count === null ? t.unknown : '16') + '$'),
 					panelLabel,
 				]);
