@@ -50,6 +50,16 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_get_order_item_totals', array( $display, 'order_totals' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_hidden_order_itemmeta', array( $display, 'hidden_item_meta' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_cart_collaterals', array( $summary, 'guest_totals' ), 5 );
+		WP_Mock::expectFilterAdded( 'do_shortcode_tag', array( $summary, 'identify_cart_form' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_update_cart_action_cart_updated', array( $summary, 'carry_checkout_retry' ) );
+		WP_Mock::userFunction(
+			'remove_action',
+			array(
+				'args'  => array( 'woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20 ),
+				'times' => 1,
+			)
+		);
+		WP_Mock::expectActionAdded( 'woocommerce_proceed_to_checkout', array( $summary, 'proceed' ), 20 );
 		WP_Mock::expectActionAdded( 'woocommerce_cart_totals_after_order_total', array( $summary, 'unpriced_note' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_review_order_after_order_total', array( $summary, 'unpriced_note' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_order_details_after_order_table', array( $summary, 'inquiry_note' ), 1 );

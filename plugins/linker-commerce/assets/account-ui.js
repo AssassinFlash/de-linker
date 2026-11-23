@@ -26,7 +26,8 @@
 		if ( send ) {
 			send.disabled = busy;
 		}
-		draftSurface?.querySelectorAll( '.wc-proceed-to-checkout a' ).forEach( ( link ) => {
+		draftSurface?.querySelectorAll( '.wc-proceed-to-checkout button[name="proceed"]' ).forEach( ( link ) => {
+			link.disabled = busy;
 			link.setAttribute( 'aria-disabled', String( busy ) );
 		} );
 		if ( ! continuation ) {
@@ -123,11 +124,7 @@
 				input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 				return;
 			}
-			const link = event.target.closest( '.wc-proceed-to-checkout a' );
-			if ( link && event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey ) {
-				carryRetry( link, new URLSearchParams( window.location.search ).get( retryField ) );
-				saveBeforeContinuing( event, () => window.location.assign( link.href ) );
-			}
+
 		} );
 		syncDraftState();
 	}
@@ -229,7 +226,7 @@
 		const retry = new URLSearchParams( window.location.search ).get( retryField );
 		if ( retry ) {
 			document.addEventListener( 'click', ( event ) => {
-				const link = event.target.closest( '.wc-proceed-to-checkout a, a[lang], a[hreflang]' );
+				const link = event.target.closest( 'a[lang], a[hreflang]' );
 				if ( link && ! event.defaultPrevented ) {
 					carryRetry( link, retry );
 				}

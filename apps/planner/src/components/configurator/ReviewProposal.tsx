@@ -504,6 +504,7 @@ export function ReviewProposal({
 	current,
 	generate,
 	prepareExport,
+	runLogo,
 	acceptExport,
 	askGenie,
 	recheck,
@@ -521,6 +522,7 @@ export function ReviewProposal({
 	transferBlocked?: boolean;
 	current: boolean;
 	generate: (logo: string | null) => void;
+	runLogo?: string | null | undefined;
 	prepareExport?: (logo: string | null) => Promise<PlanningRun | undefined>;
 	acceptExport?: (run: PlanningRun) => void;
 	askGenie: (run: PlanningRun) => void;
@@ -533,6 +535,7 @@ export function ReviewProposal({
 	const earlierReport = earlierRun?.result ? reportFromRun(earlierRun) : null;
 	const { logo, logoField, logoPending } = useReportLogo(
 		blocked || operations.busy,
+		runLogo,
 	);
 	const waiting = Boolean(
 		run && ["queued", "running", "retry_wait"].includes(run.state),
@@ -762,6 +765,7 @@ export function ReviewProposal({
 							locale={locale}
 							run={run}
 							prepare={prepareExport}
+							runLogo={runLogo}
 							accept={acceptExport}
 							blocked={blocked || logoPending}
 							logo={logo?.data ?? null}

@@ -58,7 +58,9 @@ for (const lang of ['en', 'de'] as const) {
 						calls,
 						'view product, add, edit, remove and restore'
 					).toEqual([]);
-					await page.locator('.wc-proceed-to-checkout a').click();
+					await page
+						.locator('.wc-proceed-to-checkout button[name=proceed]')
+						.click();
 				} else {
 					await page.goto(base + path.contact);
 				}

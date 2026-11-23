@@ -603,7 +603,37 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$handle = $matches[1] ?? '';
 		$this->assertNotSame( $uuid, $handle );
 		$this->assertStringNotContainsString( 'Keep this reply with my project.', $form->render() );
+		$previous_post = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Restore the test request.
+		$checkout_hook = isset( $GLOBALS['wp_filter']['woocommerce_get_checkout_url'] ) ? clone $GLOBALS['wp_filter']['woocommerce_get_checkout_url'] : null;
+		$this->later(
+			static function () use ( $previous_post, $checkout_hook ): void {
+				$_POST = $previous_post;
+				if ( null === $checkout_hook ) {
+					unset( $GLOBALS['wp_filter']['woocommerce_get_checkout_url'] );
+				} else {
+					$GLOBALS['wp_filter']['woocommerce_get_checkout_url'] = $checkout_hook;
+				}
+			}
+		);
+		$state                        = new \Linker\Commerce\Gating\CommerceState( new \Linker\Commerce\Registration\Approval() );
+		$draft                        = new \Linker\Commerce\Gating\DraftSummary( $state, new \Linker\Commerce\Gating\PriceDisplay( $state ) );
 		$_GET['linker_inquiry_retry'] = $handle;
+		ob_start();
+		$draft->proceed();
+		$button = (string) ob_get_clean();
+		$this->assertStringContainsString( 'form="linker-woo-cart-form" name="linker_inquiry_retry" value="' . $handle . '"', $button );
+		$_POST = array(
+			'proceed'              => '1',
+			'linker_inquiry_retry' => wp_generate_uuid4(),
+		);
+		$draft->carry_checkout_retry( true );
+		$this->assertStringNotContainsString( 'linker_inquiry_retry', wc_get_checkout_url() );
+		$_POST['linker_inquiry_retry'] = $handle;
+		$this->assertFalse( $draft->carry_checkout_retry( false ) );
+		$redirect = wc_get_checkout_url();
+		wp_parse_str( (string) wp_parse_url( $redirect, PHP_URL_QUERY ), $query );
+		$this->assertSame( $handle, $query['linker_inquiry_retry'] ?? null );
+		$_GET['linker_inquiry_retry'] = $query['linker_inquiry_retry'];
 		$retry                        = $form->render();
 		$this->assertStringContainsString( 'Keep this reply with my project.', $retry );
 		$this->assertStringContainsString( 'name="linker_preliminary_project" value="' . $project . ':5"', $retry );

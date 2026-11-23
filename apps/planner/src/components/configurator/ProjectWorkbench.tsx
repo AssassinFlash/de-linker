@@ -337,9 +337,11 @@ export default function ProjectWorkbench({
 	const [error, setError] = useState<unknown>(null);
 	const [selecting, setSelecting] = useState(false);
 	const reportPreparation = useRef<AbortController | null>(null);
-	const reportLogo = useRef<{ project: string; data: string | null } | null>(
-		null,
-	);
+	const reportLogo = useRef<{
+		project: string;
+		runId: string;
+		data: string | null;
+	} | null>(null);
 	const [preparingReport, setPreparingReport] = useState(false);
 	const [replacedSearch, setReplacedSearch] = useState<string | null>(null);
 	const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
@@ -1162,7 +1164,11 @@ export default function ProjectWorkbench({
 				},
 			});
 			if (reply?.path === "runs/report" && current()) {
-				reportLogo.current = { project: project.id, data: logo };
+				reportLogo.current = {
+					project: project.id,
+					runId: reply.run.id,
+					data: logo,
+				};
 				if (showResult) {
 					accepted(reply.run);
 					navigate("review");
@@ -2102,6 +2108,11 @@ export default function ProjectWorkbench({
 							current={currentReport}
 							generate={(logo) => void generate(logo)}
 							prepareExport={(logo) => generate(logo, false)}
+							runLogo={
+								reportLogo.current && reportLogo.current.runId === reportRun?.id
+									? reportLogo.current.data
+									: undefined
+							}
 							acceptExport={accepted}
 							askGenie={(run) => setGenieReportId(run.id)}
 							recheck={recheck}
