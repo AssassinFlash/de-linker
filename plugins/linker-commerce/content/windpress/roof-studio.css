@@ -80,8 +80,8 @@
     .sc-roof-studio .sc-roof-layout { grid-template-columns: minmax(0,1fr); }
   }
   @media (max-width: 580px) {
-    .sc-configurator .sc-studio-tools { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 4px; padding: 8px; }
-    .sc-configurator .sc-studio-tools button { font-size: 12px; padding-inline: 2px; }
+    .sc-configurator .sc-studio-tools { gap: 4px; padding: 8px; }
+    .sc-configurator .sc-studio-tools button { flex: 1 1 auto; font-size: 12px; padding-inline: 2px; }
     .sc-configurator .sc-roof-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
     .sc-studio-canvas .sc-roof-tools { padding-inline: 8px; }
     .sc-configurator .sc-roof-inspector .sc-roof-props { padding-inline: 12px; }
