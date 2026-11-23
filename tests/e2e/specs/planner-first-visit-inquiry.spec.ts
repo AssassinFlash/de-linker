@@ -223,7 +223,7 @@ for (const lang of ['en', 'de'] as const) {
 			expect(formBox).not.toBeNull();
 			expect(summaryBox).not.toBeNull();
 			if (width === 1440) expect(formBox!.x).toBeLessThan(summaryBox!.x);
-			else expect(summaryBox!.y).toBeLessThan(formBox!.y);
+			else expect(formBox!.y).toBeLessThan(summaryBox!.y);
 			await screenshot(page, `review-and-inquire-${lang}-${width}`);
 			const email =
 				(inquiryEmail = `e2e-preliminary-${Date.now()}@example.test`);

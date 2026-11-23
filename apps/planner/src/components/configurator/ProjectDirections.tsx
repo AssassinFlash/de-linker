@@ -65,6 +65,21 @@ export function ProjectDirections({
 		retrofit: __("Storage retrofit", "linker-tools"),
 		commercial: __("Commercial & large-scale", "linker-tools"),
 	};
+	const descriptions = {
+		new: __(
+			"Plan panels, an inverter and a battery for a new site.",
+			"linker-tools",
+		),
+		known: __("Start with the solar capacity in kWp.", "linker-tools"),
+		retrofit: __(
+			"Add a battery to the panels already on site.",
+			"linker-tools",
+		),
+		commercial: __(
+			"Compare equipment for a business or multi-system site.",
+			"linker-tools",
+		),
+	};
 	const icons = {
 		new: "solar",
 		known: "overview",
@@ -107,11 +122,13 @@ export function ProjectDirections({
 							key={key}
 							type="button"
 							className="sc-scene"
+							aria-label={labels[key]}
 							aria-pressed={key === scene}
 							onClick={() => pick(key)}
 						>
 							<Icon name={icons[key]} />
 							<span>{labels[key]}</span>
+							<small>{descriptions[key]}</small>
 						</button>
 					))}
 				</div>

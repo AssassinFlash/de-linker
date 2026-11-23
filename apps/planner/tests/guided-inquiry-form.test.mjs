@@ -111,8 +111,8 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 	assert.match(cable?.textContent ?? "", /Existing draft cable/);
 	assert.equal(
 		cable
-			.closest("article")
-			.querySelector(".linker-product-card__qty")
+			.closest(".linker-inquiry-line")
+			.querySelector(".linker-inquiry-line-controls")
 			.textContent.trim(),
 		"× 2",
 	);
@@ -120,7 +120,7 @@ test("a selected report shows the quantities to send in the only inquiry form", 
 		cable.querySelector("img")?.getAttribute("src"),
 		"https://fixture.invalid/uploads/cable.png",
 	);
-	assert.match(fixture.element.textContent, /Outdoor DC cable/);
+	assert.equal(cable.title, "Outdoor DC cable");
 	assert.match(
 		fixture.element.querySelector("aside .sc-review-choice").textContent,
 		/Keep the existing inverter/,

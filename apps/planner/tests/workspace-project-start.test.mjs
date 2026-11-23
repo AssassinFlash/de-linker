@@ -2010,7 +2010,10 @@ async function compareEntryRetrofit(t, view) {
 	if (!view) {
 		const scene = () =>
 			[...document.querySelectorAll("button")].find(
-				(b) => b.textContent === "Storage retrofit" && !b.disabled,
+				(b) =>
+					b.getAttribute("aria-label") === "Storage retrofit" &&
+					b.matches(":enabled") &&
+					!b.closest("fieldset:disabled"),
 			);
 		await until(scene);
 		await act(async () => scene().click());

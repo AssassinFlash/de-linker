@@ -743,3 +743,6 @@
   .sc-configurator .sc-option-products .linker-product-card__copy { min-width: 0; }
   .sc-configurator .sc-option-products .linker-product-card__copy strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
+@layer components {
+  .sc-configurator .sc-scene small { color: var(--proto-ink-muted-deep); font-weight: 400; line-height: 1.45; }
+}
