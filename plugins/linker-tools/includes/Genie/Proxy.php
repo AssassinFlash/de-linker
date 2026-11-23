@@ -11,6 +11,7 @@ namespace Linker\Tools\Genie;
 
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Protection\Identity;
+use Linker\Tools\Cache\DynamicHtml;
 use Linker\Tools\Protection\Replies;
 use Linker\Tools\Protection\Resources;
 use WP_Error;
@@ -495,9 +496,14 @@ class Proxy {
 	 */
 	public function turn_headers( WP_REST_Response $response, $server, WP_REST_Request $request ): WP_REST_Response {
 		unset( $server );
-		$route = strtolower( $request->get_route() );
+		$route = rtrim( strtolower( $request->get_route() ), '/' );
 		$base  = '/' . self::NAMESPACE . self::ROUTE;
 		if ( $route === $base || $route === $base . '/start' || ( str_starts_with( $route, $base . '/' ) && wp_is_uuid( substr( $route, strlen( $base ) + 1 ), 4 ) ) ) {
+			// LiteSpeed can serve an earlier poll before WordPress or the ownership check runs.
+			if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+				DynamicHtml::forbid( 'private Genie turn' );
+			}
+			$response->header( 'X-LiteSpeed-Cache-Control', 'no-cache' );
 			$response->header( 'Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0' );
 			if ( isset( $_SERVER['REQUEST_TIME_FLOAT'] ) ) {
 				$timing = 'php;dur=' . number_format( ( microtime( true ) - (float) $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000, 2, '.', '' );
