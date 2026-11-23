@@ -78,7 +78,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				)
 			)
 		);
-		$id   = 0;
+		$id   = $account > 0 ? ( new Conversations() )->open() : 0;
 		$poll = new WP_REST_Request( 'GET', '/linker-ai/v1/genie/turn/' . $job );
 		$poll->set_url_params( array( 'job_id' => $job ) );
 		$scope  = '';
