@@ -28,9 +28,10 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 	/** The same native receipt follows a guest from preparation through checked output or a recoverable refusal.
 	 *
 	 * @dataProvider async_outcomes
-	 * @param string $outcome Terminal scenario.
+	 * @param string $outcome Terminal scenario or worker error code.
+	 * @param int    $worker_status HTTP status recorded by a failed job.
 	 */
-	public function test_async_turn_uses_the_owned_receipt_until_completion( string $outcome ): void {
+	public function test_async_turn_uses_the_owned_receipt_until_completion( string $outcome, int $worker_status = 0 ): void {
 		global $wp_filter;
 		$hooks = array();
 		foreach ( array( Conversations::COOKIE_ACTION, Conversations::BROWSER_ACTION ) as $hook ) {
@@ -81,11 +82,14 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 		$id   = $account > 0 ? ( new Conversations() )->open() : 0;
 		$poll = new WP_REST_Request( 'GET', '/linker-ai/v1/genie/turn/' . $job );
 		$poll->set_url_params( array( 'job_id' => $job ) );
+		$permission_failure = in_array( $outcome, array( 'publication_changed', 'publication_unavailable' ), true );
+
+		$stage  = $permission_failure ? 'understanding' : 'searching_documents';
 		$scope  = '';
 		$starts = 0;
 		$reads  = 0;
 		$stream = "event: reading\ndata: {\"id\":\"att1\",\"text\":\"private extraction\"}\n\nevent: block\ndata: {\"type\":\"text\",\"text\":\"Look at the AC output.\",\"refs\":[]}\n\nevent: done\ndata: {}\n\n";
-		$fetch  = function ( string $url, array $body, array $headers ) use ( $job, &$scope, &$starts, &$reads, $stream, $outcome, &$id ) {
+		$fetch  = function ( string $url, array $body, array $headers ) use ( &$job, &$scope, &$starts, &$reads, $stage, $stream, $outcome, $worker_status, &$id ) {
 			if ( str_ends_with( $url, '/start' ) ) {
 				++$starts;
 				$scope = $headers['X-Linker-Resource-Subject'];
@@ -104,19 +108,30 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			if ( 'owner-deleted' === $outcome && 2 === $reads ) {
 				$this->assertTrue( ( new Conversations() )->delete( $id ) );
 			}
-			return (string) wp_json_encode(
-				1 === $reads ? array(
-					'status' => 'running',
-					'stage'  => 'searching_documents',
-				)
-					: ( 'failed' === $outcome ? array(
+			if ( 1 === $reads ) {
+				return (string) wp_json_encode(
+					array(
+						'status' => 'running',
+						'stage'  => $stage,
+					)
+				);
+			}
+			if ( $worker_status && 1 === $starts ) {
+				return (string) wp_json_encode(
+					array(
+						'job_id'      => $job,
 						'status'      => 'failed',
-						'http_status' => 503,
-						'code'        => 'genie_job_failed',
-					) : array(
-						'status' => 'completed',
-						'stream' => $stream,
-					) )
+						'http_status' => $worker_status,
+						'code'        => $outcome,
+						'detail'      => $outcome,
+					)
+				);
+			}
+			return (string) wp_json_encode(
+				array(
+					'status' => 'completed',
+					'stream' => $stream,
+				)
 			);
 		};
 		try {
@@ -157,8 +172,8 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$_COOKIE = $owner;
 			$running = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_REST_Response::class, $running );
-			$this->assertSame( 'searching_documents', $running->get_data()['stage'] );
-			$this->assertSame( 'searching_documents', $proxy->conversation()->get_data()['pending_job']['stage'] );
+			$this->assertSame( $stage, $running->get_data()['stage'] );
+			$this->assertSame( $stage, $proxy->conversation()->get_data()['pending_job']['stage'] );
 			if ( 'expired' === $outcome ) {
 				$input               = \Linker\Tools\Genie\PendingTurns::current( $id );
 				$input['started_at'] = time() - Proxy::TURN_BUDGET - 1;
@@ -213,11 +228,27 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			}
 			if ( ! $recover && ! in_array( $outcome, array( 'completed', 'approval-withdrawn' ), true ) ) {
 				$this->assertInstanceOf( WP_Error::class, $final );
-				$this->assertSame( 'revoked' === $outcome ? 409 : 503, $final->get_error_data()['status'] );
+				$this->assertSame( in_array( $outcome, array( 'revoked', 'publication_changed' ), true ) ? 409 : 503, $final->get_error_data()['status'] );
 				$this->assertTrue( $final->get_error_data()['unrecorded'] );
 				$this->assertNull( get_post( $id ) );
 				$this->assertFalse( Resources::completed_genie_operation( $operation, $fingerprint ) );
 				$this->assertSame( 0, ( new Replies() )->operation( $operation ) );
+				if ( $permission_failure ) {
+					$this->assertSame( 'linker_genie_' . $outcome, $final->get_error_code() );
+					$this->assertArrayNotHasKey( 'stream', $final->get_error_data() );
+					$this->assertSame( array(), \Linker\Tools\Genie\PendingTurns::current( $id ) );
+					$job   = wp_generate_uuid4();
+					$retry = $gate->dispatch( null, $request, '', $handler );
+					$this->assertSame( 202, $retry->get_status() );
+					$id = $retry->get_data()['conversation_id'];
+					$this->assertSame( $job, $retry->get_data()['job_id'] );
+					$poll->set_url_params( array( 'job_id' => $job ) );
+					$answer = $proxy->poll( $poll );
+					$this->assertInstanceOf( WP_REST_Response::class, $answer );
+					$this->assertSame( 'completed', $answer->get_data()['status'] );
+					$this->assertTrue( Resources::completed_genie_operation( $operation, $fingerprint ) );
+					$this->assertSame( $question, $proxy->conversation()->get_data()['messages'][0]['content'] );
+				}
 				return;
 			}
 			$this->assertInstanceOf( WP_REST_Response::class, $final );
@@ -268,7 +299,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 
 	/** Terminal states of a real WordPress receipt.
 	 *
-	 * @return array<string,array{string}>
+	 * @return array<string,array{0:string,1?:int}>
 	 */
 	public static function async_outcomes(): array {
 		return array(
@@ -278,7 +309,9 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			'cron recovers unsigned receipt'  => array( 'receipt-cron' ),
 			'checked'                         => array( 'completed' ),
 			'publication withdrawn'           => array( 'revoked' ),
-			'worker failed'                   => array( 'failed' ),
+			'worker failed'                   => array( 'genie_job_failed', 503 ),
+			'worker starts after withdrawal'  => array( 'publication_changed', 409 ),
+			'worker authority unavailable'    => array( 'publication_unavailable', 503 ),
 			'deadline'                        => array( 'expired' ),
 		);
 	}

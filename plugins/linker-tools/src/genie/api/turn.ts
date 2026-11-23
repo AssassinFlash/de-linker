@@ -522,11 +522,14 @@ async function pollTurn(
 	signal: AbortSignal
 ): Promise< Turn > {
 	const fetcher = request.fetcher ?? fetch;
+	const initialPollDelays = [ 600, 600, 900, 900, 900 ];
 	let stage = job.stage;
 	request.onStage?.( stage );
-	for (;;) {
+	for ( let poll = 0; ; poll++ ) {
 		signal.throwIfAborted();
-		await new Promise< void >( ( resolve ) => setTimeout( resolve, 600 ) );
+		await new Promise< void >( ( resolve ) =>
+			setTimeout( resolve, initialPollDelays[ poll ] ?? 1200 )
+		);
 		signal.throwIfAborted();
 		const response = await fetcher(
 			turnRoute( request.turnUrl, job.job_id ),
