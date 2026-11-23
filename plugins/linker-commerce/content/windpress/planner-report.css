@@ -126,11 +126,11 @@
   }
 }
 @layer components {
-  .sc-report-workspace .sc-export-strip { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: var(--proto-space-6); }
-  .sc-report-workspace .sc-export-strip > .sc-actions { display: flex; justify-content: end; flex-wrap: wrap; gap: 8px; }
-  .sc-report-workspace .sc-export-strip button { text-decoration: none; }
+  .sc-configurator .sc-export-strip { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: var(--proto-space-6); }
+  .sc-configurator .sc-export-strip > .sc-actions { display: flex; justify-content: end; flex-wrap: wrap; gap: 8px; }
+  .sc-configurator .sc-export-strip button { text-decoration: none; }
   @media (max-width: 760px) {
-    .sc-report-workspace .sc-export-strip { grid-template-columns: minmax(0,1fr); }
-    .sc-report-workspace .sc-export-strip > .sc-actions { justify-content: start; }
+    .sc-configurator .sc-export-strip { grid-template-columns: minmax(0,1fr); }
+    .sc-configurator .sc-export-strip > .sc-actions { justify-content: start; }
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { DraftStore } from "../../data/DraftStore.ts";
+import type { ReportOptions } from "../../data/planningReport.ts";
 import type { Project, Session } from "../../data/protocol.ts";
 import { pendingInquiry } from "../../data/inquiryRecovery.ts";
 import { useProjectDraft } from "../../data/useProjectDraft.ts";
@@ -51,8 +52,11 @@ function PreliminaryExports({
 					expected_revision: project.revision,
 					options: {
 						locale: locale.startsWith("de") ? "de" : "en",
+						energy_run_id: null,
+						pv_run_id: null,
+						equipment_run_id: null,
 						logo: branding,
-					},
+					} satisfies ReportOptions,
 				});
 				return prepared?.path === "runs/report" ? prepared.run : undefined;
 			}}
