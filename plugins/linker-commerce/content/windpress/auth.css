@@ -1427,7 +1427,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	}
 }
 
-.linker-auth-inner:has(.linker-auth-register) { max-width: var(--proto-form-max-width); }
+.woocommerce-register #container-content-account, .linker-auth-inner:has(.linker-auth-register) { max-width: var(--proto-form-max-width); }
 @media (min-width: 1080px) {
 	.linker-auth-unit:has(.linker-auth-register) { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
 }
@@ -1438,4 +1438,17 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 .linker-auth-register .form-row .optional { float: inline-end; white-space: nowrap; }
 @media (max-width: 600px) {
 	.linker-auth-register .linker-auth-fields { grid-template-columns: minmax(0, 1fr); }
+}
+
+.linker-account .linker-auth-register .form-row > label { margin-bottom: var(--proto-space-2); }
+.linker-account .linker-auth-register .form-row :is(.input-text, .linker-country-select, .select2-selection--single) {
+	height: var(--proto-form-control-height);
+	min-height: var(--proto-form-control-height);
+}
+.linker-account .linker-auth-register .form-row :is(.input-text, .linker-country-select):focus:not([aria-invalid="true"]),
+.linker-account .linker-auth-register .select2-container--focus .select2-selection--single,
+.linker-account .linker-auth-register .select2-container--open .select2-selection--single {
+	background-color: var(--proto-neutral-0);
+	border-color: var(--proto-input-line-focus);
+	box-shadow: var(--proto-form-focus-ring);
 }
