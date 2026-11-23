@@ -27,6 +27,7 @@
 			send.disabled = busy;
 		}
 		draftSurface?.querySelectorAll( '.wc-proceed-to-checkout button[name="proceed"]' ).forEach( ( link ) => {
+			link.disabled = busy;
 			link.setAttribute( 'aria-disabled', String( busy ) );
 		} );
 		if ( ! continuation ) {
@@ -123,15 +124,7 @@
 				input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 				return;
 			}
-			const link = event.target.closest( '.wc-proceed-to-checkout button[name="proceed"]' );
-			if ( link && event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey ) {
-				carryRetry( link, new URLSearchParams( window.location.search ).get( retryField ) );
-				const resume = () => window.location.assign( link.dataset.inquiryUrl );
-				if ( ! saveBeforeContinuing( event, resume ) ) {
-					event.preventDefault();
-					resume();
-				}
-			}
+
 		} );
 		syncDraftState();
 	}
@@ -141,11 +134,10 @@
 		if ( ! retry || ! /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test( retry ) ) {
 			return;
 		}
-		const target = new URL( link.dataset.inquiryUrl ?? link.href, window.location.href );
+		const target = new URL( link.href );
 		if ( target.origin === window.location.origin ) {
 			target.searchParams.set( retryField, retry );
-			if ( link.dataset.inquiryUrl !== undefined ) link.dataset.inquiryUrl = target.href;
-			else link.href = target.href;
+			link.href = target.href;
 		}
 	};
 	if ( inquiry ) {

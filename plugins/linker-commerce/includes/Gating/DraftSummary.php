@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Gating;
 
+use Linker\Commerce\Inquiry\CheckoutRetry;
 use Linker\Commerce\Presentation\AccountLinks;
 use Linker\Commerce\Presentation\Tokens;
 use WC_Order;
@@ -80,17 +81,44 @@ final class DraftSummary {
 			)
 		) ) {
 			$tags->set_attribute( 'id', 'linker-woo-cart-form' );
+			while ( $tags->next_tag(
+				array(
+					'tag_name'   => 'INPUT',
+					'class_name' => 'qty',
+				)
+			) ) {
+				if ( str_starts_with( (string) $tags->get_attribute( 'name' ), 'cart[' ) ) {
+					$tags->set_attribute( 'required', true );
+				}
+			}
 		}
 		return $tags->get_updated_html();
 	}
 
+	/**
+	 * Preserve the original recovery context on Woo's verified proceed redirect.
+	 *
+	 * @param bool $updated Whether Woo changed the cart.
+	 */
+	public function carry_checkout_retry( bool $updated ): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Woo dispatches this filter after verifying the cart nonce.
+		$handle = isset( $_POST['proceed'], $_POST[ CheckoutRetry::HANDLE ] ) && is_string( $_POST[ CheckoutRetry::HANDLE ] ) ? sanitize_text_field( wp_unslash( $_POST[ CheckoutRetry::HANDLE ] ) ) : '';
+		if ( '' !== $handle && null !== CheckoutRetry::read( $handle ) ) {
+			add_filter( 'woocommerce_get_checkout_url', static fn ( string $url ): string => add_query_arg( CheckoutRetry::HANDLE, $handle, $url ) );
+		}
+		return $updated;
+	}
+
 	/** Primary action in the priced and unpriced summaries. */
 	private function proceed_button(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This handle is only used on the submitting visitor's validated session.
+		$handle = isset( $_GET[ CheckoutRetry::HANDLE ] ) && is_string( $_GET[ CheckoutRetry::HANDLE ] ) ? sanitize_text_field( wp_unslash( $_GET[ CheckoutRetry::HANDLE ] ) ) : '';
+		$retry  = '' !== $handle && wp_is_uuid( $handle, 4 ) ? sprintf( '<input type="hidden" form="linker-woo-cart-form" name="%s" value="%s" />', esc_attr( CheckoutRetry::HANDLE ), esc_attr( $handle ) ) : '';
 		return strtr(
 			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/draft-proceed.html' ),
 			array(
-				'{{inquiry-url}}' => esc_url( wc_get_checkout_url() ),
-				'{{inquiry}}'     => esc_html__( 'Send inquiry', 'linker-commerce' ),
+				'{{retry}}'   => $retry,
+				'{{inquiry}}' => esc_html__( 'Send inquiry', 'linker-commerce' ),
 			)
 		);
 	}

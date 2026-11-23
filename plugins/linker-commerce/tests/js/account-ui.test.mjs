@@ -209,34 +209,17 @@ test('a valid edit submits the native update once, then sends the inquiry once a
  win.close();
 });
 
-test('standalone continuation validates the field and follows the original link after Woo removes the last row', async () => {
- const dom = new JSDOM(`<div id="tv-storefront-cart"><p data-inquiry-draft-pending hidden></p>
-  <form class="woocommerce-cart-form"><input class="qty" type="number" min="0" max="5" step="1" name="cart[line][qty]" value="1"><button type="submit" name="update_cart">Update</button></form>
-  <div class="wc-proceed-to-checkout"><button type="submit" name="proceed" data-inquiry-url="#inquiry">Continue</button></div></div>`, {runScripts:'outside-only', url:'https://example.test/cart/'});
- const win = dom.window;
- win.sessionStorage.setItem('linker-inquiry-edit', 'kept');
+test('the native continue button is available except while a Woo draft update is in flight', async () => {
+ const dom=new JSDOM('<div id="tv-storefront-cart"><form id="cart" class="woocommerce-cart-form"><input class="qty" name="cart[item][qty]" type="number" value="1"></form><div class="wc-proceed-to-checkout"><button form="cart" type="submit" name="proceed" value="1">Continue</button></div></div>',{runScripts:'outside-only'});
+ const win=dom.window,form=win.document.querySelector('form'),button=win.document.querySelector('[name=proceed]');
  win.eval(script);
- const form = win.document.querySelector('form'), qty = form.querySelector('.qty'), link = win.document.querySelector('[name=proceed]');
- let updates = 0;
- form.addEventListener('submit', event => { event.preventDefault(); updates++; form.classList.add('processing'); });
- for (const value of ['', '-1', '1.5', '6']) {
-  qty.value = value;
-  link.click();
-  assert.equal(win.document.activeElement, qty);
-  assert.equal(updates, 0);
-  assert.equal(win.location.hash, '');
- }
- qty.value = '0';
- link.click();
- link.click();
- assert.equal(updates, 1);
- assert.equal(win.location.hash, '');
- form.outerHTML = '<section class="wc-empty-cart-message"></section>';
- link.remove();
- await Promise.resolve();
- assert.equal(win.location.hash, '#inquiry');
- assert.equal(win.sessionStorage.getItem('linker-inquiry-edit'), 'kept');
- win.close();
+ const submitted=[];
+ form.addEventListener('submit',event=>{event.preventDefault();submitted.push(new win.FormData(form,event.submitter).get('proceed'));});
+ form.classList.add('processing');await Promise.resolve();
+ assert.equal(button.disabled,true);
+ form.classList.remove('processing');await Promise.resolve();
+ button.click();
+ assert.deepEqual(submitted,['1']);win.close();
 });
 
 test('Woo rejection retains the edit and inquiry entries for a retry from Send', async () => {
@@ -369,13 +352,6 @@ test('a failed preliminary inquiry carries only its opaque recovery handle when 
   assert.equal(new URL(link.href).search,`?linker_inquiry_retry=${retry}`);
  }
  win.close();
- const cart=new JSDOM('<div id="tv-storefront-cart"><div class="wc-proceed-to-checkout"><button type="submit" name="proceed" data-inquiry-url="/proforma-request/">Send inquiry</button></div></div>',{runScripts:'outside-only',url:`https://example.test/cart/?linker_inquiry_retry=${retry}`});
- const link=cart.window.document.querySelector('[name=proceed]');
- cart.window.eval(script);
- cart.window.document.addEventListener('click',event=>event.preventDefault());
- link.click();
- assert.equal(new URL(link.dataset.inquiryUrl,cart.window.location.href).search,`?linker_inquiry_retry=${retry}`);
- cart.window.close();
 });
 
 // Public inquiries use the same in-flight submission protection as account forms.

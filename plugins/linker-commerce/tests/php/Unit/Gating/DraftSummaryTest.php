@@ -63,14 +63,13 @@ final class DraftSummaryTest extends TestCase {
 				'args'  => array( 'woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10 ),
 			)
 		);
-		WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
 		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
 
 		ob_start();
 		( new DraftSummary( $this->approved_state(), new PriceDisplay( $this->approved_state() ) ) )->guest_totals();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'data-inquiry-url="https://example.test/proforma-request/">Send inquiry</button>', $html );
+		$this->assertStringContainsString( 'form="linker-woo-cart-form" class="checkout-button button alt wc-forward">Send inquiry</button>', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">Create account</a>', $html );
 	}
 
@@ -85,7 +84,6 @@ final class DraftSummaryTest extends TestCase {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
 		$this->approval_meta( array() );
 		WP_Mock::userFunction( 'remove_action', array( 'return' => true ) );
-		WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
 		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
 		ob_start();
 		( new DraftSummary( new CommerceState( new Approval() ), new PriceDisplay( new CommerceState( new Approval() ) ) ) )->guest_totals();
@@ -129,8 +127,7 @@ final class DraftSummaryTest extends TestCase {
 					'args'  => array( 'woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10 ),
 				)
 			);
-			WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
-			$this->approval_meta( array( Approval::STATUS_META => $status ) );
+				$this->approval_meta( array( Approval::STATUS_META => $status ) );
 			$state = new CommerceState( new Approval() );
 
 			ob_start();

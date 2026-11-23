@@ -51,6 +51,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_hidden_order_itemmeta', array( $display, 'hidden_item_meta' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_cart_collaterals', array( $summary, 'guest_totals' ), 5 );
 		WP_Mock::expectFilterAdded( 'do_shortcode_tag', array( $summary, 'identify_cart_form' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_update_cart_action_cart_updated', array( $summary, 'carry_checkout_retry' ) );
 		WP_Mock::userFunction(
 			'remove_action',
 			array(
