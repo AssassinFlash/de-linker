@@ -7,12 +7,9 @@ string is not classified again, and a class name in the sentence is not a class.
 from __future__ import annotations
 
 import functools
-import io
 import json
 import sqlite3
-import urllib.error
-from collections.abc import Callable, Iterator, Sequence
-from contextlib import contextmanager
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, cast
 
@@ -98,54 +95,28 @@ _REQUIRED = (
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
 
 
-class _FailingApi:
-    """Raises `error` from every embeddings request."""
-
-    def __init__(self, error: Exception) -> None:
-        self.error = error
-
-    @contextmanager
-    def __call__(self, request: object, timeout: float) -> Iterator[io.BytesIO]:
-        del request, timeout
-        raise self.error
-        yield io.BytesIO()  # pragma: no cover - the raise ends the call
-
-
-class _Body:
-    """Returns one embeddings body and does not retry."""
-
-    def __init__(self, raw: bytes) -> None:
-        self.raw = raw
-
-    @contextmanager
-    def __call__(self, request: object, timeout: float) -> Iterator[io.BytesIO]:
-        del request, timeout
-        yield io.BytesIO(self.raw)
-
-
-def _http_error(code: int) -> urllib.error.HTTPError:
-    return urllib.error.HTTPError("https://a.example", code, "x", {}, None)  # type: ignore[arg-type]
-
-
 @functools.cache
 def _encoder(kind: str) -> EmbeddingError:
-    """The exception `GeminiEmbedder.embed_query` raises for `kind`."""
-    if kind == "http":
-        urlopen: Callable[..., Any] = _FailingApi(_http_error(502))
-    elif kind == "transport":
-        urlopen = _FailingApi(urllib.error.URLError("connection refused"))
-    elif kind == "unexpected":
-        urlopen = _Body(json.dumps({"error": "no data"}).encode())
-    elif kind == "count":
-        urlopen = _Body(json.dumps({"data": []}).encode())
-    else:
+    """The exception GeminiEmbedder.embed_query raises for a provider response."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if kind == "http":
+            return httpx.Response(502)
+        if kind == "transport":
+            raise httpx.ConnectError("connection refused")
+        if kind == "unexpected":
+            return httpx.Response(200, json={"error": "no data"})
+        if kind == "count":
+            return httpx.Response(200, json={"data": []})
         raise AssertionError(kind)
-    try:
-        GeminiEmbedder(
-            "k", "https://a.example", urlopen=urlopen, sleep=lambda _: None
-        ).embed_query("q")
-    except EmbeddingError as error:
-        return error
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        try:
+            GeminiEmbedder(
+                "k", "https://a.example", client=client, sleep=lambda _: None
+            ).embed_query("q")
+        except EmbeddingError as error:
+            return error
     raise AssertionError(kind)
 
 

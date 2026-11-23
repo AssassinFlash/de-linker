@@ -22,22 +22,21 @@ Vectors travel as float32 little-endian bytes, the form sqlite-vec stores.
 
 from __future__ import annotations
 
+import atexit
 import hashlib
-import http.client
 import json
 import os
 import struct
 import threading
 import time
-import urllib.error
-import urllib.request
 from collections import OrderedDict
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Protocol
 
+import httpx
 from linker_judges.budget import take
 
 ARCTIC_M = "Snowflake/snowflake-arctic-embed-m-v2.0"
@@ -276,7 +275,26 @@ class OnnxEmbedder:
         return self._vectors([self.spec.query_prefix + text])[0]
 
 
-UrlOpen = Callable[..., Any]
+_http: httpx.Client | None = None
+_http_lock = threading.Lock()
+
+
+def _embedding_http() -> httpx.Client:
+    """One provider connection pool for the worker, including concurrent document batches."""
+    global _http
+    with _http_lock:
+        if _http is None:
+            _http = httpx.Client()
+        return _http
+
+
+@atexit.register
+def close_embedding_http() -> None:
+    global _http
+    with _http_lock:
+        if _http is not None:
+            _http.close()
+            _http = None
 
 
 class EmbeddingError(RuntimeError):
@@ -374,7 +392,7 @@ class GeminiEmbedder:
         self,
         api_key: str,
         base_url: str,
-        urlopen: UrlOpen = urllib.request.urlopen,
+        client: httpx.Client | None = None,
         model: str = GEMINI,
         # The clock of the query retry backoff; injected so tests need no waiting.
         sleep: Callable[[float], None] = time.sleep,
@@ -384,7 +402,7 @@ class GeminiEmbedder:
         # Bases may carry their own /v1 (OpenRouter does); keep exactly one.
         stem = base_url.rstrip("/").removesuffix("/v1")
         self._url = stem + "/v1/embeddings"
-        self._urlopen = urlopen
+        self._client = client
         self._sleep = sleep
         self._lock = threading.Lock()
         self._queries: OrderedDict[str, tuple[float, bytes]] = OrderedDict()
@@ -403,36 +421,33 @@ class GeminiEmbedder:
         A transport error, a timeout, a 429 or a 5xx is tried again; any other HTTP
         error and an answer without the right vectors are final at once.
         """
-        request = urllib.request.Request(
-            self._url,
-            data=json.dumps({"model": self.model, "input": list(texts)}).encode(),
-            headers={
-                "Authorization": f"Bearer {self._api_key}",
-                "Content-Type": "application/json",
-            },
-        )
+        body = json.dumps({"model": self.model, "input": list(texts)}).encode()
+        headers = {
+            "Authorization": f"Bearer {self._api_key}",
+            "Content-Type": "application/json",
+        }
+        client = self._client or _embedding_http()
         for attempt in range(1, attempts + 1):
             if runtime:
                 take("embedding")
             try:
-                with self._urlopen(request, timeout=timeout) as response:
-                    payload = json.load(response)
+                response = client.post(
+                    self._url, headers=headers, content=body, timeout=timeout
+                )
+                response.raise_for_status()
+                payload = response.json()
                 rows = sorted(payload["data"], key=lambda row: int(row["index"]))
                 vectors = [
                     pack([float(value) for value in row["embedding"]]) for row in rows
                 ]
-            except urllib.error.HTTPError as error:
-                if (error.code != 429 and error.code < 500) or attempt == attempts:
+            except httpx.HTTPStatusError as error:
+                status = error.response.status_code
+                if (status != 429 and status < 500) or attempt == attempts:
                     raise EmbeddingError(
-                        f"{self.model}: {_HTTP_ON_ATTEMPT}{error.code}{_ON_ATTEMPT}"
+                        f"{self.model}: {_HTTP_ON_ATTEMPT}{status}{_ON_ATTEMPT}"
                         f"{attempt} of {attempts}"
                     ) from error
-            except (
-                urllib.error.URLError,
-                TimeoutError,
-                ConnectionError,
-                http.client.IncompleteRead,
-            ) as error:
+            except httpx.TransportError as error:
                 if attempt == attempts:
                     raise EmbeddingError(
                         f"{self.model}: {type(error).__name__}{_AFTER_ATTEMPTS}"
