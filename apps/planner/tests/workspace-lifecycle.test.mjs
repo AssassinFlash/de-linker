@@ -301,11 +301,12 @@ for (const hash of [
 		});
 		assert.equal(nav("Roof & PV").getAttribute("aria-current"), "page");
 		assert.equal(button("Aerial map").getAttribute("aria-pressed"), "true");
-		await until(() => button("Coordinate references"));
-		assert.match(
-			document.querySelector(".sc-solar").textContent,
-			/The map needs a geographic origin/,
-		);
+		await until(() => button("Enter map coordinates"));
+		await act(async () => button("Enter map coordinates").click());
+		const fields = document.querySelector(".sc-studio-location");
+		assert.ok(fields.querySelector('input[name="latitude"]'));
+		assert.ok(fields.querySelector('input[name="longitude"]'));
+		assert.equal(location.hash, hash);
 	});
 
 test("a storage-only project reaches Energy use, System and Review without a roof step", async (t) => {
