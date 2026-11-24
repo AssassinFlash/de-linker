@@ -173,7 +173,7 @@ final class ModuleTest extends TestCase {
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		WP_Mock::expectFilterAdded( 'wp_preload_resources', array( $module, 'preload_resources' ) );
-		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'trim_woo_assets' ), 30 );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'trim_woo_assets' ), 31 );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.before', WindPressPageStyles::class, 'before_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.after', WindPressPageStyles::class, 'after_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.before', WindPressPageStyles::class, 'before_cache' );
