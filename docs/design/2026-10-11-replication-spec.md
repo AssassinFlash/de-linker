@@ -16,15 +16,15 @@ EN and DE), 1440 and 390 wide.
 
 ## 1. Method and evidence
 
-- Measurement instrument: `.scratch/t16-closure/measure.mjs` — loads a page in
+- Measurement instrument: [measure.mjs](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/measure.mjs) — loads a page in
   chromium (same browser both sides), scrolls it so lazy images settle, and
   dumps per-element `rect` plus ~80 computed properties. Dumps:
-  `.scratch/t16-closure/truth/live-{shop,archive}-{en,de}-1440.json`,
+  [英德 1440px 归档与商店读回](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/truth),
   `live-pdp-de-{1440,390}.json`, `live-shop-en-390.json`,
   `live-pdp-1440.json` (EN battery page).
-- Paired captures: `.scratch/t16-closure/capture_pairs.mjs` — full-page
+- Paired captures: [capture_pairs.mjs](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/capture_pairs.mjs) — full-page
   screenshots, live|t16, same browser, same viewport, same wait protocol, into
-  `.scratch/t16-closure/pairs/`.
+  [pairs](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/pairs).
 - DOM anchors are the live class names (`tv-woo-b2b-catalog`, `sf-card`,
   `card-identity`, `card-facts`, `card-exact-article`, `tv-storefront-pdp`,
   `pdp-*`); they are the reconciliation handles between the two pages.
@@ -213,7 +213,7 @@ into the cache. It deliberately overlaps the copied `storefront.css` on the
 catalog and remain the open part of the replacement.
 
 **Round-1 review items, repaired (2026-10-11, measured live|t16 with
-`.scratch/t16-closure/review-facts.mjs`, `.scratch/t16-closure/verdict-probe.mjs`,
+[review-facts.mjs](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/review-facts.mjs), [verdict-probe.mjs](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/verdict-probe.mjs),
 `/tmp/detail-probe.mjs` and `/tmp/panel-probe.mjs`):** the layout's grid areas
 (the purchase column is row 1 only; the content spans all three), the gallery
 (the rounded soft box is the image: bg `#f0f4ef`, radius 26px; thumbnails fill
@@ -235,7 +235,7 @@ count 3 = live) and the ETA documents (`Multilingual` instead of `MUL`, 13
 cards = live's 13).
 
 **Round-2 review items, repaired (2026-10-11, measured with
-`.scratch/t16-closure/r2-facts.mjs` and `/tmp/{pair,detail,panel,deck,rows}-probe.mjs`):**
+[r2-facts.mjs](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/r2-facts.mjs) and `/tmp/{pair,detail,panel,deck,rows}-probe.mjs`):**
 the pairing card (image chip 88×100 with 12px padding on `#f0f4ef`, the status
 chip a soft pill `2px 8px` radius 999 at 11px, the image spanning four grid rows
 exactly as the live card does — card 280×229.2 and the same four row tracks);
@@ -262,7 +262,7 @@ The WindPress compile driver (`tools/windpress-compile.mjs`) now dismisses the
 review prompt whose fixed notification viewport intercepted the Generate click;
 `just windpress-compile t16` completed on the first run afterwards (28.3s).
 
-**Further measured gaps (2026-10-11, `.scratch/t16-closure/review-facts.mjs`
+**Further measured gaps (2026-10-11, [review-facts.mjs](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/review-facts.mjs)
 and `/tmp/deck-probe.mjs`, `/tmp/rows-probe.mjs`):** on the pages reviewed the
 battery (EN/DE, 1440/390) and the ETA (EN/DE, 1440/390) match live's deck
 counts exactly (the battery 2 tablists / 8 tabs / 3 panels / 7 discloses / 15
@@ -281,7 +281,7 @@ Application/Grid phases figures where live prints Communication / Weight /
 Ingress protection / Dimensions.
 
 **Measured gaps still open (2026-10-11, paired captures in
-`.scratch/t16-closure/pairs/`, pixel comparison of the overlap):**
+[pairs](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/pairs), pixel comparison of the overlap):**
 
 1. The catalog pages' styles are still the copied live stylesheet, not a fresh
    authoring; the shop and archive do not render at parity because of that and

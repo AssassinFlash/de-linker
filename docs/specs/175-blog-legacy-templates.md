@@ -19,7 +19,7 @@
 | （对照）博客单篇 | `/hybrid-…/` · `/de/hybrid…/` | `is_single_post` | 613 · 6877 | `content/livecanvas/blog_single.html` | `content/livecanvas/de/blog_single.html` | `content/windpress/blog.css` |
 
 收编方式：把六个模板的 `post_content` 原文（只读 WP-CLI 取出）逐字搬成仓库文件，
-**只做五类机械变换**（生成脚本与逐文件比对留在 `.scratch/175/`——它们是证据，不进插件、
+**只做五类机械变换**（生成脚本与逐文件比对留在 [175](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/175)——它们是证据，不进插件、
 不随插件发布；仓库提交的 52 MB 全页图同此属性）：
 
 1. 旧作者注释（含 "Deploy: LiveCanvas …" 与 `Target URL:`）换成仓库注释；
@@ -83,7 +83,7 @@ LiveCanvas 的模板查找是「按 meta 键取第一条 published」，就地�
 （`includes/Cli/PresentCommand.php:318`）**每次运行都在写入前无条件覆盖**该选项，
 取的是「那一刻」的 `post_content`。所以备份保证的是**自旧模板状态起第一次 `present`
 之前**的内容；第二次 `present` 之后备份里已经是收编后的内容，`rollback` 只会把收编内容
-再写一遍。旧模板全文另有仓库留档（`.scratch/175/dt-<id>.html` 六份），与实例备份无关。
+再写一遍。旧模板全文另有仓库留档（[六份旧模板 HTML 存档](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/175)），与实例备份无关。
 
 **重复键的边界（上线前检查，本票不执行线上动作）**：`existing_id()` 取 id 最小的一条
 （`Templates.php:817-818` 的 `orderby ID ASC`），而 LiveCanvas 自己的查找按
@@ -177,19 +177,24 @@ DIV.tv-blog-masthead-grid  backdrop-filter: 'blur(18px)' -> 'none'
 即：DE 的差异两处是那两条链接文字本身，1440 上还有一处是同一条 flex 行内被它挤动的
 引文换行；英文面零差异。
 
-自验命令（证据材料在 `.scratch/175/`——是证据，不进插件、不随插件发布）：
+从存档重跑上表第一行的 12 对首次收编截图。在仓库根目录执行：
 
 ```sh
-node .scratch/175/shots.mjs .scratch/175/shots-before     # 旧模板态
-just present blogs && just windpress-compile blogs && just present blogs
-node .scratch/175/shots.mjs .scratch/175/shots-after      # 收编后
-uv run --with numpy --with pillow python .scratch/175/pixel-diff.py \
-  .scratch/175/shots-before .scratch/175/shots-after .scratch/175/diff
-# 工具改名那处：改名前后各拍一次 /de/blog/（1440/390）与 /blog/（1440/390），同法逐像素比
+(
+  set -eu
+  archive_ref=48888e6576dd6b011875614ec6cd285f1f5676ac
+  work=$(mktemp -d)
+  trap 'rm -rf "$work"' EXIT
+  git archive "$archive_ref" .scratch/175/pixel-diff.py \
+    .scratch/175/shots-before-final2 .scratch/175/shots-after-final2 \
+    | tar -xf - -C "$work"
+  archive="$work/.scratch/175"
+  uv run --no-project --with numpy --with pillow python "$archive/pixel-diff.py" \
+    "$archive/shots-before-final2" "$archive/shots-after-final2"
+)
 ```
 
-复跑注意：**第二个 `present` 会把 `linker_commerce_present_backup` 刷成收编后的内容**
-（§3 的备份范围），要留旧模板的还原点必须在第一次 `present` 之后先做别的动作前取出。
+拍摄时的六个入口、视口和等待条件见 [原始拍摄脚本](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/175/shots.mjs)。
 
 **零旧实现门（`tools/checks/legacy-surfaces.py`）**：判据已随本票更新。
 旧模板的 id 仍是 LiveCanvas 的行号，而 `present` **就地复用**这些行，

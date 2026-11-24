@@ -142,8 +142,8 @@ overlay 样式（脚本 `/tmp/t16-proposals.mjs`，CSS 原文见每项的"试验
 - **判定**：**登记为裁定改名，非复刻失败；不改回 live 文案**。像素对照中该卡的差异
   （标题两行、卡高 +20.1px）为业主裁定豁免；若业主日后改回 "Send a Project to Linker"，
   改 .po 串 + rail-help 段即可复位。
-- **证据**：`.scratch/t16-verdict/final4/crops/sidebar-3way.png`（live | t16 三栏对照）、
-  `.scratch/t16-verdict/final4/analysis/landmarks.json`（live 卡 178.7px 与 t16 卡几何）。
+- **证据**：[sidebar-3way.png](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-verdict/final4/crops/sidebar-3way.png)（live | t16 三栏对照）、
+  [landmarks.json](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-verdict/final4/analysis/landmarks.json)（live 卡 178.7px 与 t16 卡几何）。
 
 ## 台账追加（五段后，2026-10-12）
 - **B rail-help 工具卡文案**：『Plan with the Solution Configurator / Open the Solution Configurator』为 #12 对抗评审定稿（docs/acceptance/2026-10-10/12/copy-review.md），卡高 +20.1px 为其结果——裁定改名豁免。

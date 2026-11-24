@@ -16,12 +16,12 @@ engine :8925，genie :8926）。
   `/tmp/cap-all-pairs.mjs`（本包可直接复跑，见 §7）。
 - 页型与参考页：shop（/products/、/de/produkte/）、archive（/product-category/inverters/、
   /de/produkt-kategorie/wechselrichter/）、PDP（电池页 goodwe-gw5-1-bat-d-g21…，EN+DE）。
-- 像素统计：`python3 .scratch/t16-closure/replica-diff.py <pairs> <out>`——逐像素
+- 像素统计：[当时使用的 replica-diff.py](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/replica-diff.py)——逐像素
   RGB 最大通道差 >0 即计差异（阈值 0，符合「1 像素都算」）；同时输出差异可视化图
   （红=差异，浅灰=相同）与 `summary.json`。
 - 区域口径：对每个被判项，先在该区域内搜索**全局最佳整数位移**（dx∈[-2,2]，
   dy∈[-140,140]），再统计残差像素——即评审所说的「最佳整数对齐」。脚本：
-  `/tmp/frac-probe.mjs`、`/tmp/levers-probe.mjs`、`.scratch/t16-closure/r2-facts.mjs`。
+  `/tmp/frac-probe.mjs`、`/tmp/levers-probe.mjs`、[r2-facts.mjs](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/r2-facts.mjs)。
 
 ## 2. 页级像素表（live|t16 成对全页）
 
@@ -54,7 +54,7 @@ engine :8925，genie :8926）。
 ### ① 兼容记录区块卡片级残差（评审：首卡 4.21%，标题区 697/19600）
 - 计数与内容已对齐：`<a class="pdp-pairing"`=11、名称 11 条逐字同（EN+DE）、chip 11=11。
 - 卡几何：卡 280×**229.23**、卡图盒 88×100（pad 12、bg `rgb(240,244,239)`）、chip 999px
-  bg `rgb(240,244,239)` —— 与 live 逐值相同（`.scratch/t16-closure/r2-facts.mjs` 输出）。
+  bg `rgb(240,244,239)` —— 与 live 逐值相同（[r2-facts.mjs](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-closure/r2-facts.mjs) 输出）。
 - 我方区域残差（本包 `pdp-en-1440` 成对图、最佳整数对齐）：首卡 **4.55%**
   （2954/64960）、整段 **2.20%**（23418/1066800，与评审 4.21%/同量级）。
 - 机制状态：**假说未验证**——唯一可量化的差异是纵向分数偏移（t16 卡 y=2861.45、
