@@ -34,6 +34,60 @@ use WP_Mock\Matcher\AnyInstance;
  */
 final class ModuleTest extends TestCase {
 
+	/**
+	 * Only the rendered main picture participates in responsive image preloading.
+	 *
+	 * @dataProvider gallery_preloads
+	 * @param bool                 $is_pdp  Whether Woo is rendering a product.
+	 * @param string               $gallery Actual LiveCanvas gallery markup.
+	 * @param array<string,string> $hint    The selected image resource, or no hint.
+	 */
+	public function test_preloads_only_the_rendered_main_image( bool $is_pdp, string $gallery, array $hint ): void {
+		WP_Mock::userFunction( 'plugins_url' )->andReturn( 'https://linker.test/fonts/' );
+		WP_Mock::userFunction( 'is_front_page' )->andReturn( false );
+		WP_Mock::userFunction( 'is_product' )->andReturn( $is_pdp );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- LiveCanvas's rendered dynamic template.
+		$GLOBALS['lc_main_html'] = '<img class="pdp-brand-logo" src="/logo.png">' . $gallery;
+		try {
+			$resources = ( new Module( new Shortcodes(), new LoginGate(), new WindPress() ) )->preload_resources( array() );
+			$images    = array_values( array_filter( $resources, static fn ( array $entry ): bool => 'image' === $entry['as'] ) );
+			$this->assertSame( $hint ? array( $hint ) : array(), $images );
+		} finally {
+			unset( $GLOBALS['lc_main_html'] );
+		}
+	}
+
+	/** WordPress attachment candidates, gallery fallback and empty galleries.
+	 *
+	 * @return array<string,array{bool,string,array<string,string>}>
+	 */
+	public static function gallery_preloads(): array {
+		return array(
+			'responsive featured image' => array(
+				true,
+				'<img class="pdp-gallery-main" src="/original.jpg" srcset="/small.jpg 300w, /original.jpg 800w" sizes="(max-width: 768px) 100vw, 667px">',
+				array(
+					'as'            => 'image',
+					'href'          => '/original.jpg',
+					'fetchpriority' => 'high',
+					'imagesrcset'   => '/small.jpg 300w, /original.jpg 800w',
+					'imagesizes'    => '(max-width: 768px) 100vw, 667px',
+				),
+			),
+			'first gallery attachment'  => array(
+				true,
+				'<img class="pdp-gallery-main" src="/gallery-only.jpg" sizes="100vw">',
+				array(
+					'as'            => 'image',
+					'href'          => '/gallery-only.jpg',
+					'fetchpriority' => 'high',
+				),
+			),
+			'empty product gallery'     => array( true, '<div class="pdp-gallery-empty">Photography in preparation</div>', array() ),
+			'other page'                => array( false, '<img class="pdp-gallery-main" src="/embedded.jpg">', array() ),
+		);
+	}
+
 	/** The standalone native draft also receives the saved-quantity guard. */
 	public function test_cart_loads_account_interactions(): void {
 		WP_Mock::userFunction( 'is_account_page' )->andReturn( false );

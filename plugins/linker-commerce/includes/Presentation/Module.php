@@ -92,6 +92,34 @@ final class Module {
 				);
 			}
 		}
+		if ( function_exists( 'is_product' ) && is_product() ) {
+			// LiveCanvas has already resolved gallery fallbacks and WordPress image candidates.
+			$gallery = new \WP_HTML_Tag_Processor( (string) ( $GLOBALS['lc_main_html'] ?? '' ) );
+			if ( $gallery->next_tag(
+				array(
+					'tag_name'   => 'IMG',
+					'class_name' => 'pdp-gallery-main',
+				)
+			) ) {
+				$src = $gallery->get_attribute( 'src' );
+				if ( is_string( $src ) && '' !== $src ) {
+					$image  = array(
+						'as'            => 'image',
+						'href'          => $src,
+						'fetchpriority' => 'high',
+					);
+					$srcset = $gallery->get_attribute( 'srcset' );
+					if ( is_string( $srcset ) && '' !== $srcset ) {
+						$image['imagesrcset'] = $srcset;
+						$sizes                = $gallery->get_attribute( 'sizes' );
+						if ( is_string( $sizes ) && '' !== $sizes ) {
+							$image['imagesizes'] = $sizes;
+						}
+					}
+					$resources[] = $image;
+				}
+			}
+		}
 		return $resources;
 	}
 
