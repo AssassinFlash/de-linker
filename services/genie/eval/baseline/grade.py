@@ -1021,6 +1021,8 @@ def check(
     row: dict[str, Any],
     turn: Turn,
     catalog: Mapping[str, str] | None = None,
+    *,
+    published: Mapping[int, str] | None = None,
 ) -> list[str]:
     """Why the row fails; empty when it passes. Judge/human-review rows still
     run the floors and any `expect` they carry — the verdict beyond that is the
@@ -1040,8 +1042,17 @@ def check(
         failures.append(
             f"missing published catalogue lookup for {expect['absent_model']}"
         )
-    for pid in sorted(shown.intersection(expect.get("excluded_products", []))):
-        failures.append(f"withdrawn product {pid} is shown")
+    excluded = expect.get("excluded_brands") or []
+    if excluded:
+        for pid in sorted(shown):
+            name = (published or {}).get(pid)
+            if name is None:
+                failures.append(f"unpublished or unverified product {pid} is shown")
+            elif any(
+                re.search(r"\b" + re.escape(brand) + r"\b", name, re.I)
+                for brand in excluded
+            ):
+                failures.append(f"withdrawn product {pid} ({name}) is shown")
     for product_id in expect.get("products", []):
         if int(product_id) not in shown:
             failures.append(f"product {product_id} is not in a cards or compare block")

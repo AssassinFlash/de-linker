@@ -109,7 +109,7 @@ def load_rows(
     return rows[:limit] if limit else rows
 
 
-def catalog_of(wp: str) -> dict[str, str]:
+def catalog_of(wp: str, *, published: dict[int, str] | None = None) -> dict[str, str]:
     """Model and SKU tokens of the target's own catalogue (the reader the
     understanding layer uses, Store API): the numbers inside a model code are
     traceable because the model is that product's name."""
@@ -124,6 +124,8 @@ def catalog_of(wp: str) -> dict[str, str]:
         with urllib.request.urlopen(url, timeout=30) as response:
             items = json.loads(response.read().decode())
         for item in items:
+            if published is not None:
+                published[int(item["id"])] = str(item["name"])
             for token in [item.get("sku"), item.get("name"), *model_terms(item)]:
                 if token:
                     tokens[str(token)] = str(item.get("name", ""))
@@ -554,7 +556,8 @@ def main(argv: list[str] | None = None) -> int:
     if not rows:
         print("no rows selected", file=sys.stderr)
         return 2
-    catalog = catalog_of(args.wp)
+    published: dict[int, str] = {}
+    catalog = catalog_of(args.wp, published=published)
     args.out.mkdir(parents=True, exist_ok=True)
     stamp = time.strftime("%Y%m%dT%H%M%S")
     path = args.out / f"baseline-{stamp}.jsonl"
@@ -572,7 +575,7 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 if args.turn_log:
                     attach_logged_evidence(TurnSource(args.turn_log), row, turn)
-                failures = check(row, turn, catalog)
+                failures = check(row, turn, catalog, published=published)
                 meta = turn.meta
                 judged: tuple[str, list[str]] | None = None
                 # The cascade only runs once the content assertions hold. A miss

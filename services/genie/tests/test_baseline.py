@@ -2153,11 +2153,21 @@ def test_retired_model_reference_does_not_authorize_a_card_or_a_rating() -> None
     false_card: dict[str, object] = {"type": "cards", "product_ids": [6483]}
     assert any(
         "withdrawn product" in f
-        for f in check(row, turn([missing, false_card]), FEED_TOKENS)
+        for f in check(
+            row,
+            turn([missing, false_card]),
+            FEED_TOKENS,
+            published={6483: "EcoFlow OCEAN 2"},
+        )
     )
     assert any(
         "42" in f
         for f in check(
             row, turn([missing, text("Rated at 42 kW."), next_step]), FEED_TOKENS
         )
+    )
+
+    assert any(
+        "unpublished" in f
+        for f in check(row, turn([missing, false_card]), FEED_TOKENS, published={})
     )
