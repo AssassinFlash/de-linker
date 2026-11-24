@@ -55,6 +55,7 @@ final class ModuleTest extends TestCase {
 		$pending = new AccountStatusNotice();
 		WP_Mock::expectActionAdded( 'woocommerce_account_content', array( $pending, 'render' ), 20 );
 		WP_Mock::expectActionAdded( 'woocommerce_account_content', array( $contact, 'render' ), 30 );
+		WP_Mock::expectActionAdded( 'woocommerce_my_account_my_orders_column_order-status', array( $inquiries, 'status_column' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_account_orders_columns', array( $inquiries, 'columns' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_actions', array( $inquiries, 'actions' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_order_item_totals', array( $inquiries, 'customer_totals' ), 20 );

@@ -44,7 +44,7 @@ final class QuotationIssuedEmailTest extends TestCase {
 		$this->options( array() );
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-issued_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
-		$order = Mockery::mock( WC_Order::class );
+		$order            = Mockery::mock( WC_Order::class );
 		$user             = new \WP_User();
 		$user->user_email = 'maria@example.test';
 		WP_Mock::userFunction( 'get_userdata', array( 'return' => $user ) );

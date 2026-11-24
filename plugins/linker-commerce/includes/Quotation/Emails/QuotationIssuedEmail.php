@@ -280,12 +280,6 @@ final class QuotationIssuedEmail extends CustomerOrderEmail {
 	/**
 	 * Number, validity and link for the template.
 	 *
-	 * An inquiry that reached "Quotation issued" without a number (no
-	 * bank account, an empty inquiry, a line without a price) must not render
-	 * the letter: issued meta 0 plus the 30-day term is 1970-01-30, and the
-	 * download answers 404. trigger() already refuses to send; this is the
-	 * same refusal for any other caller of the body.
-	 *
 	 * @return array<string, mixed>
 	 */
 	protected function template_args(): array {

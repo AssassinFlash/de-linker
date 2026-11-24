@@ -32,7 +32,7 @@ final class AdminBox {
 	/**
 	 * Name of the button that issues the Quotation.
 	 */
-	public const BUTTON = 'linker_issue_quotation';
+	public const BUTTON  = 'linker_issue_quotation';
 	private const REVISE = 'linker_revise_quotation';
 
 	/**

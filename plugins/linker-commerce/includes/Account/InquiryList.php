@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Account;
 
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Quotation\Issuer;
 
 use WC_Abstract_Order;
@@ -45,6 +46,15 @@ final class InquiryList {
 			'order-total'   => __( 'Amount', 'linker-commerce' ),
 			'order-actions' => __( 'Actions', 'linker-commerce' ),
 		);
+	}
+
+	/**
+	 * Document-aware status in WooCommerce's native account list.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public function status_column( WC_Order $order ): void {
+		echo esc_html( Statuses::customer_label( $order, wc_get_order_status_name( $order->get_status() ) ) );
 	}
 
 	/**

@@ -69,8 +69,11 @@ final class DocumentTest extends TestCase {
 		$line->allows( 'get_quantity' )->andReturn( 2 );
 		$line->allows( 'get_total' )->andReturn( '3360' );
 		$fee = Mockery::mock( WC_Order_Item_Fee::class );
-		$fee->allows( 'get_name' )->andReturn( 'Freight' );
-		$fee->allows( 'get_total' )->andReturn( '150' );
+		$fee->allows( 'get_name' )->andReturn( 'Packing' );
+		$freight = Mockery::mock( \WC_Order_Item_Shipping::class );
+		$freight->allows( 'get_name' )->andReturn( 'Freight' );
+		$freight->allows( 'get_total' )->andReturn( '125' );
+		$fee->allows( 'get_total' )->andReturn( '25' );
 		$tax                   = new \stdClass();
 		$tax->label            = 'MwSt. 19%';
 		$tax->formatted_amount = '€666.90';
@@ -79,6 +82,7 @@ final class DocumentTest extends TestCase {
 		$order->allows( 'get_currency' )->andReturn( 'EUR' );
 		$order->allows( 'get_items' )->andReturn( array( $line ) );
 		$order->allows( 'get_item_subtotal' )->with( $line, false, true )->andReturn( 1680.0 );
+		$order->allows( 'get_shipping_methods' )->andReturn( array( $freight ) );
 		$order->allows( 'get_fees' )->andReturn( array( $fee ) );
 		$order->allows( 'get_tax_totals' )->andReturn( array( 'DE-MWST' => $tax ) );
 		$order->allows( 'get_address' )->with( 'billing' )->andReturn(
@@ -129,8 +133,12 @@ final class DocumentTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
+					'name'  => 'Packing',
+					'total' => '€25.00',
+				),
+				array(
 					'name'  => 'Freight',
-					'total' => '€150.00',
+					'total' => '€125.00',
 				),
 			),
 			$data['fees']

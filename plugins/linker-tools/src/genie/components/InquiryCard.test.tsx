@@ -14,7 +14,7 @@ import { expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import type { InquiryState, SentInquiry } from '../api/inquiry';
-import { InquiryCard } from './InquiryCard';
+import { InquiryCard, InquirySent } from './InquiryCard';
 
 const URL = '/wp-json/linker-ai/v1/genie/inquiry';
 
@@ -55,6 +55,14 @@ const SENT: SentInquiry = {
 	email: 'maria@example.test',
 	url: 'https://de-linker.test/checkout/order-received/123/?key=abc',
 };
+
+test( 'the quotation stage names the document once it has been issued', () => {
+	const inquiry = { ...SENT, status: 'quotation-issued' };
+	const { rerender } = render( <InquirySent inquiry={ inquiry } /> );
+	expect( screen.getByText( /Quotation in preparation/ ) ).toBeVisible();
+	rerender( <InquirySent inquiry={ { ...inquiry, issued: true } } /> );
+	expect( screen.getByText( /Quotation issued/ ) ).toBeVisible();
+} );
 
 /**
  * The route's wire shape (InquiryRequest::state()): snake_case keys.

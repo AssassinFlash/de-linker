@@ -33,9 +33,9 @@ final class Issuer {
 	/**
 	 * Order meta of an issued Quotation.
 	 */
-	public const NUMBER_META = '_linker_quotation_number';
-	public const ISSUED_META = '_linker_quotation_issued';
-	public const FILE_META   = '_linker_quotation_file';
+	public const NUMBER_META  = '_linker_quotation_number';
+	public const ISSUED_META  = '_linker_quotation_issued';
+	public const FILE_META    = '_linker_quotation_file';
 	public const HISTORY_META = '_linker_quotation_history';
 	/** Durable source index is owned by Issuer even before WC's mailer is loaded. */
 	public const NOTICE_PENDING_META = '_linker_quotation_notice_pending';
@@ -75,12 +75,8 @@ final class Issuer {
 	/**
 	 * Issues the Quotation of an inquiry that has just been marked issued.
 	 *
-	 * WooCommerce's order screen can set the status without the Issue button.
-	 * The customer account then has a "Quotation issued" inquiry and
-	 * nothing to download, because the number and the PDF are written only
-	 * here. Called from the status transition, after the status is already
-	 * the new one, so the received-status check of issue() does not apply.
-	 * One number, one PDF: an inquiry that already has either is left as it is.
+	 * The status selector and the issue button share the same approval, pricing
+	 * and numbering rules. A transition never creates a revision.
 	 *
 	 * @param int $order_id Inquiry.
 	 */
@@ -120,7 +116,7 @@ final class Issuer {
 	 * @param WC_Order $order Inquiry.
 	 */
 	private function material_blocker( WC_Order $order ): string {
-		if ( $order->get_customer_id() > 0 && ! ( new Approval() )->sees_prices( $order->get_customer_id() ) ) {
+		if ( $order->get_customer_id() > 0 && ( ! ( new Approval() )->sees_prices( $order->get_customer_id() ) || ! get_userdata( $order->get_customer_id() ) ) ) {
 			return __( 'Approve this account before issuing its Quotation. The customer needs approval to download the PDF.', 'linker-commerce' );
 		}
 		if ( array() === $order->get_items() ) {
@@ -149,6 +145,7 @@ final class Issuer {
 	 *
 	 * @param WC_Order $order Inquiry.
 	 * @param string   $previous Number shown on the order screen.
+	 * @throws RuntimeException When the reviewed revision has no number.
 	 */
 	public function revise( WC_Order $order, string $previous ): string {
 		if ( '' === $previous ) {
@@ -184,8 +181,8 @@ final class Issuer {
 			}
 			if ( '' !== $previous && 'yes' === $order->get_meta( self::NOTICE_PENDING_META ) ) {
 				QuotationIssuedEmail::notify( $order->get_id() );
-				$order->read_meta_data( true );
-				if ( 'yes' === $order->get_meta( self::NOTICE_PENDING_META ) ) {
+				$order = wc_get_order( $order_id );
+				if ( ! $order instanceof WC_Order || 'yes' === $order->get_meta( self::NOTICE_PENDING_META ) ) {
 					throw new RuntimeException( __( 'The previous Quotation notification is still being queued. Please try again shortly.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				}
 			}
@@ -232,15 +229,15 @@ final class Issuer {
 
 		$issued = new DateTimeImmutable( 'now', wp_timezone() );
 		if ( '' !== $previous ) {
-			$history = $order->get_meta( self::HISTORY_META );
-			$history = is_array( $history ) ? $history : array();
+			$history   = $order->get_meta( self::HISTORY_META );
+			$history   = is_array( $history ) ? $history : array();
 			$history[] = array(
 				'number' => $previous,
 				'issued' => (string) $order->get_meta( self::ISSUED_META ),
 				'file'   => (string) $order->get_meta( self::FILE_META ),
 			);
-			$number = $history[0]['number'] . '-R' . ( count( $history ) + 1 );
-			$file   = $this->files->write( $order->get_id(), $number, $this->render( $order, $number, $issued ) );
+			$number    = $history[0]['number'] . '-R' . ( count( $history ) + 1 );
+			$file      = $this->files->write( $order->get_id(), $number, $this->render( $order, $number, $issued ) );
 			$order->update_meta_data( self::HISTORY_META, $history );
 		} else {
 			[ $number, $file ] = $this->first_document( $order, $issued );

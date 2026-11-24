@@ -55,7 +55,11 @@ final class IssuerTest extends TestCase {
 	 */
 	private int $competitors = 0;
 
-	/** @var array<int, WC_Order> Saved inquiries read under the issue lock. */
+	/**
+	 * Saved inquiries read under the issue lock.
+	 *
+	 * @var array<int, WC_Order>
+	 */
 	private array $orders = array();
 
 	/**
@@ -178,6 +182,7 @@ final class IssuerTest extends TestCase {
 	 * @param string $number Quotation number already issued.
 	 * @param bool   $priced Whether the line has a price.
 	 * @param int    $id     Inquiry id.
+	 * @param int    $owner  Linked customer ID.
 	 * @return WC_Order&\Mockery\MockInterface
 	 */
 	private function inquiry( string $status = Statuses::RECEIVED, string $number = '', bool $priced = true, int $id = 20, int $owner = 0 ) {
@@ -199,6 +204,7 @@ final class IssuerTest extends TestCase {
 		$order->allows( 'get_meta' )->with( '_billing_vat_id' )->andReturn( '' );
 		$order->allows( 'get_currency' )->andReturn( 'EUR' );
 		$order->allows( 'get_item_subtotal' )->andReturn( 1680.0 );
+		$order->allows( 'get_shipping_methods' )->andReturn( array() );
 		$order->allows( 'get_fees' )->andReturn( array() );
 		$order->allows( 'get_tax_totals' )->andReturn( array() );
 		$order->allows( 'get_address' )->andReturn( array() );
@@ -378,7 +384,6 @@ final class IssuerTest extends TestCase {
 		$order->expects( 'calculate_totals' )->never();
 		$order->expects( 'update_status' )->never();
 		$order->expects( 'save' )->never();
-
 
 		$this->issuer()->ensure_issued( 20 );
 
