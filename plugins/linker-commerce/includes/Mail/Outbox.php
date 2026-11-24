@@ -310,7 +310,7 @@ final class Outbox {
 			}
 			return false;
 		}
-		if ( QuotationIssuedEmail::ID === ( $message->origin['producer'] ?? '' ) && ! QuotationIssuedEmail::deliverable( $message ) ) {
+		if ( QuotationIssuedEmail::ID === ( $message->origin['producer'] ?? '' ) && ! QuotationIssuedEmail::deliverable( $message, $job_id ) ) {
 			$this->jobs->fail( $job_id, $attempts, 'Quotation is no longer available to this recipient.' );
 			return false;
 		}

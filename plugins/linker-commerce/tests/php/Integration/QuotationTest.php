@@ -178,13 +178,31 @@ final class QuotationTest extends IntegrationTestCase {
 		$job   = $store->load( $id );
 		self::assertNotNull( $job );
 		self::assertSame( $number, $job['message']->origin['number'] );
-		self::assertTrue( QuotationIssuedEmail::deliverable( $job['message'] ) );
+		self::assertTrue( QuotationIssuedEmail::deliverable( $job['message'], $id ) );
+		$message = $job['message'];
+		$legacy  = \Linker\Commerce\Mail\NativeOrigin::seal(
+			new \Linker\Commerce\Mail\Message(
+				$message->to,
+				$message->subject,
+				$message->body,
+				$message->headers,
+				$message->attachments,
+				$message->critical,
+				$message->category,
+				array(
+					'kind'     => 'transaction',
+					'producer' => QuotationIssuedEmail::ID,
+				)
+			)
+		);
+		self::assertTrue( QuotationIssuedEmail::deliverable( $legacy, $id ) );
 		if ( $reassign ) {
 			$order->set_customer_id( $other->get_id() );
 			$order->save();
 		} else {
 			update_user_meta( $owner->get_id(), Approval::STATUS_META, Approval::RESTRICTED );
 		}
+		self::assertFalse( QuotationIssuedEmail::deliverable( $legacy, $id ) );
 		/** This action is documented in Mail\Module::register(). */
 		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Native retry action.
 		self::assertSame( JobStore::FAILED_STATUS, get_post_status( $id ) );
