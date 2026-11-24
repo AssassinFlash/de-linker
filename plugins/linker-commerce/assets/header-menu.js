@@ -11,6 +11,71 @@
 	const frame = header.querySelector( '.tv-nav-frame' );
 	const nav = header.querySelector( '.tv-desktop-nav' );
 	const german = document.documentElement.lang.startsWith( 'de' );
+	const searchLink = header.querySelector( '[data-tv-header-search]' );
+	const dialog = header.querySelector( '#tv-site-search' );
+	if ( searchLink && typeof dialog?.showModal === 'function' ) {
+		const form = dialog.querySelector( 'form' );
+		const input = form.elements.s;
+		const matches = dialog.querySelector( '.tv-search-matches' );
+		const status = dialog.querySelector( '[role="status"]' );
+		let request;
+		let timer;
+		function resetMatches() {
+			clearTimeout( timer );
+			request?.abort();
+			matches.replaceChildren();
+			matches.hidden = true;
+			status.textContent = '';
+		}
+		searchLink.setAttribute( 'aria-haspopup', 'dialog' );
+		searchLink.setAttribute( 'aria-controls', dialog.id );
+		searchLink.addEventListener( 'click', event => {
+			if ( event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) return;
+			event.preventDefault();
+			dialog.showModal();
+			input.focus();
+		} );
+		dialog.querySelector( '[data-tv-search-close]' ).addEventListener( 'click', () => dialog.close() );
+		dialog.addEventListener( 'close', () => { resetMatches(); form.reset(); searchLink.focus(); } );
+		input.addEventListener( 'input', () => {
+			resetMatches();
+			const term = input.value.trim();
+			if ( term.length < Number( searchLink.dataset.searchMin ) ) return;
+			timer = setTimeout( async () => {
+				const controller = new AbortController();
+				request = controller;
+				const url = new URL( searchLink.dataset.searchUrl, document.baseURI );
+				url.searchParams.set( 'q', term );
+				url.searchParams.set( 'lang', german ? 'de' : 'en' );
+				try {
+					const response = await fetch( url, { signal: controller.signal } );
+					if ( ! response.ok ) throw new Error( String( response.status ) );
+					const { items } = await response.json();
+					if ( controller.signal.aborted ) return;
+					for ( const item of items ) {
+						const li = document.createElement( 'li' );
+						const link = document.createElement( 'a' );
+						const sku = document.createElement( 'small' );
+						link.href = item.url;
+						link.textContent = item.title;
+						sku.textContent = item.sku;
+						link.append( sku );
+						li.append( link );
+						matches.append( li );
+					}
+					matches.hidden = ! items.length;
+					status.textContent = items.length
+						? ( german ? 'Passende Modelle: ' : 'Matching models: ' ) + items.length
+						: ( german ? 'Kein passendes Modell. Suchen Sie auf der gesamten Website.' : 'No matching model. Search the whole site for more results.' );
+				} catch ( error ) {
+					if ( ! controller.signal.aborted ) status.textContent = german
+						? 'Modellvorschläge sind gerade nicht verfügbar. Sie können die Website durchsuchen.'
+						: 'Model suggestions are unavailable. You can still search the site.';
+				}
+			}, 180 );
+		} );
+	}
+
 	const disclosures = items.concat( account ? [ account ] : [] );
 	function buttonFor( item ) {
 		return item.querySelector( '.tv-nav-link, .tv-b2b-acct-btn' );

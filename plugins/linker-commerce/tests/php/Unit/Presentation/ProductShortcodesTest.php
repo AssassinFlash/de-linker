@@ -1973,7 +1973,7 @@ final class ProductShortcodesTest extends TestCase {
 	 * @runInSeparateProcess
 	 * @preserveGlobalState disabled
 	 */
-	public function test_brand_logo_carries_wordpress_sizes(): void {
+	public function test_brand_logo_selects_a_proportional_thumbnail(): void {
 		unset( $GLOBALS['product'] );
 		WP_Mock::userFunction(
 			'get_the_terms',
@@ -1991,16 +1991,15 @@ final class ProductShortcodesTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'get_posts', array( 'return' => array( 991 ) ) );
-		WP_Mock::userFunction( 'wp_get_attachment_image_src', array( 'return' => fn ( int $id ): array => 991 === $id ? array( 'http://linker.test/uploads/logo.png', 1480, 288, false ) : array( $this->pdp_image_url( $id ), 1024, 768, false ) ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_src', array( 'return' => fn ( int $id, $size ): array => 991 === $id && 'medium' === $size ? array( 'http://linker.test/uploads/logo-300.png', 300, 58, true ) : array( $this->pdp_image_url( $id ), 1024, 768, false ) ) );
 		WP_Mock::userFunction( 'wp_get_attachment_image_srcset', array( 'return' => fn ( int $id ): string => 991 === $id ? 'http://linker.test/uploads/logo-300.png 300w, http://linker.test/uploads/logo.png 1480w' : '' ) );
-		WP_Mock::userFunction( 'wp_get_attachment_image_sizes', array( 'return' => fn ( int $id ): string|false => 991 === $id ? '(max-width: 120px) 120px, 120px' : false ) );
 		$shortcodes = $this->pdp( true );
 
 		$html = $shortcodes->pdp_brand_logo();
 		$this->assertStringNotContainsString( 'fetchpriority="high"', $html );
 
 		$this->assertStringContainsString( 'srcset="http://linker.test/uploads/logo-300.png 300w, http://linker.test/uploads/logo.png 1480w"', $html );
-		$this->assertStringContainsString( ' sizes="(max-width: 120px) 120px, 120px"', $html );
+		$this->assertStringContainsString( ' sizes="135px" width="300" height="58"', $html );
 	}
 
 	/**

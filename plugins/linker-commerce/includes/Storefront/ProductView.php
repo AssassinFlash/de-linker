@@ -238,7 +238,7 @@ final class ProductView {
 	 * light), as the product page shows it; null when the library holds none.
 	 *
 	 * @param int $product_id The product.
-	 * @return array{src: string, srcset: string, sizes: string, alt: string}|null
+	 * @return array{src: string, srcset: string, sizes: string, width: int, height: int, alt: string}|null
 	 */
 	private function brand_logo( int $product_id ): ?array {
 		static $logos = array();
@@ -247,27 +247,8 @@ final class ProductView {
 			return null;
 		}
 		if ( ! \array_key_exists( $brand, $logos ) ) {
-			$attachment      = get_posts(
-				array(
-					'post_type'      => 'attachment',
-					'posts_per_page' => 1,
-					'fields'         => 'ids',
-					'no_found_rows'  => true,
-					'post_status'    => 'inherit',
-					'meta_key'       => '_wp_attached_file', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					's'              => 'our-brand-' . $brand . '-mono-light',
-				)
-			);
-			$id              = array() !== $attachment ? (int) reset( $attachment ) : 0;
-			$source          = $id ? wp_get_attachment_image_src( $id, 'full' ) : false;
-			$logos[ $brand ] = \is_array( $source )
-				? array(
-					'src'    => (string) $source[0],
-					'srcset' => (string) wp_get_attachment_image_srcset( $id, 'full' ),
-					'sizes'  => (string) wp_get_attachment_image_sizes( $id, 'full' ),
-					'alt'    => $this->term_name( $product_id, 'pa_brand' ),
-				)
-				: null;
+			$image           = \Linker\Commerce\Presentation\BrandLogo::image( $brand, 26 );
+			$logos[ $brand ] = null === $image ? null : $image + array( 'alt' => $this->term_name( $product_id, 'pa_brand' ) );
 		}
 		return $logos[ $brand ];
 	}

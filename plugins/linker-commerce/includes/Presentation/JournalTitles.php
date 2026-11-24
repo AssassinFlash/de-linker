@@ -22,6 +22,7 @@ final class JournalTitles {
 		$loop = tangible_loop();
 		if ( $loop instanceof \stdClass && isset( $loop->add_field_filter ) && is_callable( $loop->add_field_filter ) ) {
 			call_user_func( $loop->add_field_filter, 'post', array( self::class, 'field' ) );
+			call_user_func( $loop->add_field_filter, 'post', array( SearchResult::class, 'field' ) );
 		}
 	}
 

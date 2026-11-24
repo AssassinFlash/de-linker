@@ -111,7 +111,7 @@ final class LibraryPage {
 	 *
 	 * @var array{
 	 *   trade: list<array{id: string, name: string, count: int, questions: list<array{question: string, answer: string}>}>,
-	 *   brands: list<array{name: string, logo: string, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
+	 *   brands: list<array{name: string, logo: array{src:string,srcset:string,sizes:string,width:int,height:int}|null, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
 	 *   types: list<array{type: string, label: string, count: int}>,
 	 *   faq_total: int,
 	 *   document_total: int
@@ -333,7 +333,7 @@ final class LibraryPage {
 				$rows .= '<div class="linker-library-qa-a"><p>' . wp_kses_post( $answer ) . '</p></div>';
 				$rows .= '</details>';
 			}
-			$cards .= $this->card( $category['id'], 'trade', $category['name'], $category['count'], '', $rows, '' );
+			$cards .= $this->card( $category['id'], 'trade', $category['name'], $category['count'], null, $rows, '' );
 		}
 		$out = $this->zone( self::ZONE_TRADE, (string) __( 'Before your inquiry', 'linker-commerce' ), $cards );
 
@@ -462,18 +462,18 @@ final class LibraryPage {
 	 * count the search and the type chips update), its zone, and the rows
 	 * themselves.
 	 *
-	 * @param string $id    Anchor id.
-	 * @param string $kind  `trade`, `answer` or `document`.
-	 * @param string $title Card title.
-	 * @param int    $count Row count as printed now.
-	 * @param string $logo  Brand logo URL, '' for a card without one.
-	 * @param string $rows  The rows.
-	 * @param string $mark  Initials the logo falls back to, '' for no mark.
+	 * @param string                                                                 $id    Anchor id.
+	 * @param string                                                                 $kind  `trade`, `answer` or `document`.
+	 * @param string                                                                 $title Card title.
+	 * @param int                                                                    $count Row count as printed now.
+	 * @param array{src:string,srcset:string,sizes:string,width:int,height:int}|null $logo Brand image.
+	 * @param string                                                                 $rows  The rows.
+	 * @param string                                                                 $mark  Initials the logo falls back to, '' for no mark.
 	 */
-	private function card( string $id, string $kind, string $title, int $count, string $logo, string $rows, string $mark ): string {
+	private function card( string $id, string $kind, string $title, int $count, ?array $logo, string $rows, string $mark ): string {
 		$head = '<header class="linker-library-card-head">';
-		if ( '' !== $logo ) {
-			$head .= '<span class="linker-library-logo"><img src="' . esc_url( $logo ) . '" alt="' . esc_attr( $title ) . '" height="' . esc_attr( (string) self::LOGO_HEIGHT ) . '" loading="lazy" decoding="async"></span>';
+		if ( null !== $logo ) {
+			$head .= '<span class="linker-library-logo"><img src="' . esc_url( $logo['src'] ) . '" srcset="' . esc_attr( $logo['srcset'] ) . '" sizes="' . esc_attr( $logo['sizes'] ) . '" width="' . (int) $logo['width'] . '" height="' . (int) $logo['height'] . '" alt="' . esc_attr( $title ) . '" loading="lazy" decoding="async"></span>';
 		} elseif ( '' !== $mark ) {
 			$head .= '<span class="linker-library-mark" aria-hidden="true">' . esc_html( $mark ) . '</span>';
 		}
@@ -616,31 +616,14 @@ final class LibraryPage {
 
 	/**
 	 * The brand's light logo from the media library, the reading the product
-	 * page's own lockup uses (`our-brand-<slug>-mono-light`); '' when the
+	 * page's own lockup uses (`our-brand-<slug>-mono-light`); null when the
 	 * library holds none, and the card then shows its initials.
 	 *
 	 * @param string $brand Brand name.
+	 * @return array{src:string,srcset:string,sizes:string,width:int,height:int}|null
 	 */
-	private function logo( string $brand ): string {
-		$slug = sanitize_title( $brand );
-		if ( '' === $slug ) {
-			return '';
-		}
-		$attachment = get_posts(
-			array(
-				'post_type'      => 'attachment',
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'post_status'    => 'inherit',
-				'meta_key'       => '_wp_attached_file', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- the media library's own lookup.
-				's'              => 'our-brand-' . $slug . '-mono-light',
-			)
-		);
-		$id         = array() !== $attachment ? (int) reset( $attachment ) : 0;
-		$source     = $id > 0 ? wp_get_attachment_image_src( $id, 'full' ) : false;
-
-		return is_array( $source ) ? (string) $source[0] : '';
+	private function logo( string $brand ): ?array {
+		return BrandLogo::image( sanitize_title( $brand ), self::LOGO_HEIGHT );
 	}
 
 	/**
@@ -736,7 +719,7 @@ final class LibraryPage {
 	 *
 	 * @return array{
 	 *   trade: list<array{id: string, name: string, count: int, questions: list<array{question: string, answer: string}>}>,
-	 *   brands: list<array{name: string, logo: string, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
+	 *   brands: list<array{name: string, logo: array{src:string,srcset:string,sizes:string,width:int,height:int}|null, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
 	 *   types: list<array{type: string, label: string, count: int}>,
 	 *   faq_total: int,
 	 *   document_total: int

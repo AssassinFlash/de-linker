@@ -126,6 +126,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_pdp_scenes', array( $this, 'pdp_scenes' ) );
 		add_shortcode( 'linker_pdp_downloads', array( $this, 'pdp_downloads' ) );
 		add_shortcode( 'linker_pdp_pairings', array( $this, 'pdp_pairings' ) );
+		add_shortcode( 'linker_pdp_compatibility_check', array( $this, 'pdp_compatibility_check' ) );
 		add_shortcode( 'linker_pdp_disclosures', array( $this, 'pdp_disclosures' ) );
 		add_shortcode( 'linker_pdp_faq_side', array( $this, 'pdp_faq_side' ) );
 		add_shortcode( 'linker_pdp_features', array( $this, 'pdp_features' ) );
@@ -396,7 +397,8 @@ final class ProductShortcodes {
 	 * @param array<string, string|float> $selected   The request's selections.
 	 */
 	private function range_form( string $title, string $prefix, string $min_label, string $max_label, string $unit, array $selected ): string {
-		$html             = '<details class="filter-section fgroup" open>';
+		$active           = isset( $selected[ $prefix . '_min' ] ) || isset( $selected[ $prefix . '_max' ] );
+		$html             = '<details class="filter-section fgroup"' . ( $active ? ' open' : '' ) . '>';
 		$html            .= '<summary class="filter-title">' . esc_html( $title ) . '</summary>';
 		$html            .= '<div class="filter-options"><form class="frange" method="get" action="' . esc_url( $this->archive_root_url() ) . '">';
 		$selected['sort'] = $this->filters->requested_sort();
@@ -769,7 +771,7 @@ final class ProductShortcodes {
 					$html .= ' sizes="' . esc_attr( (string) $logo['sizes'] ) . '"';
 				}
 			}
-			return $html . ' alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" /></div>';
+			return $html . ' width="' . (int) $logo['width'] . '" height="' . (int) $logo['height'] . '" alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" /></div>';
 		}
 		if ( '' === (string) $view['brand'] ) {
 			return '';
@@ -1533,6 +1535,43 @@ final class ProductShortcodes {
 	}
 
 	/**
+	 * Help a customer check a storage pairing when the registry has no matching equipment.
+	 *
+	 * @param array<string,string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_compatibility_check( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( ! $view || array() !== $view['pairings'] ) {
+			return '';
+		}
+		$id      = (int) $view['id'];
+		$product = wc_get_product( $id );
+		if ( ! $product instanceof WC_Product ) {
+			return '';
+		}
+		$kind = Materials::contract_type( (string) Materials::identity( $product )['kind'] );
+		if ( ! in_array( $kind, array( 'battery', 'system' ), true ) ) {
+			return '';
+		}
+		$model = (string) $view['model'];
+		/* translators: %s: equipment model. */
+		$prompt = sprintf( __( 'Which inverters are compatible with %s? Please include the manufacturer documentation.', 'linker-commerce' ), $model );
+		$plan   = add_query_arg(
+			array(
+				'step'       => 'equipment',
+				'product_id' => Publication::canonical_id( $id ),
+			),
+			self::configurator_page_url()
+		);
+		return '<section class="pdp-block sf-container pdp-compatibility-check"><h2 class="pdp-section-title">' . esc_html__( 'Check inverter compatibility', 'linker-commerce' ) . '</h2>'
+			. '<p>' . esc_html( sprintf( /* translators: %s: equipment model. */ __( 'Find an inverter for %s or discuss your existing equipment with our team.', 'linker-commerce' ), $model ) ) . '</p><div class="pdp-compatibility-actions">'
+			. '<button type="button" class="pdp-btn pdp-btn-secondary" data-pdp-ask data-ask-message="' . esc_attr( $prompt ) . '">' . esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>'
+			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( $plan ) . '">' . esc_html__( 'Open configurator', 'linker-commerce' ) . '</a>'
+			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( (string) $view['ask_url'] ) . '">' . esc_html__( 'Contact our team', 'linker-commerce' ) . '</a></div></section>';
+	}
+
+	/**
 	 * The compatibility records: the pairing cards from the registry's
 	 * relationships, in the order of the paired products' names, and the
 	 * constraints the cited documents state.
@@ -2221,7 +2260,7 @@ final class ProductShortcodes {
 		$search_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
 		$cart_icon     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6L5 3H2"/></svg>';
 		$user_icon     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path stroke-linecap="round" d="M5.2 19.4a7 7 0 0 1 13.6 0"/></svg>';
-		$html          = '<a href="' . esc_url( $shop . '#search-box' ) . '" class="tv-header-utility tv-header-search" data-tv-header-search aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">' . $search_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Search', 'linker-commerce' ) . '</span></a>';
+		$html          = '<a href="' . esc_url( $shop . '#search-box' ) . '" class="tv-header-utility tv-header-search" data-tv-header-search data-search-min="' . \Linker\Commerce\Products\ProductSearch::MIN_LENGTH . '" data-search-url="' . esc_url( rest_url( 'linker/v1/catalog-search' ) ) . '" aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">' . $search_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Search', 'linker-commerce' ) . '</span></a>';
 		// The live header hides the badge at zero (its markup carries the
 		// counter with an inline display:none; an empty cart shows no pill).
 		$badge = $count > 0 ? '<span class="tv-b2b-acct-count">' . esc_html( (string) $count ) . '</span>' : '';

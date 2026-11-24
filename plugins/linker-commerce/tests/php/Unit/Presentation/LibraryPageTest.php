@@ -184,6 +184,7 @@ final class LibraryPageTest extends TestCase {
 				},
 			)
 		);
+		WP_Mock::userFunction( 'wp_get_attachment_image_srcset', array( 'return' => '' ) );
 		// The brand logo's media lookup: the library holds the GoodWe light
 		// lockup, and no other brand's.
 		WP_Mock::userFunction(
