@@ -225,16 +225,19 @@ def separate_panel_lists(report: Report, materials: Object) -> Report:
     lines = cast(list[Object], materials.get("lines", []))
     if not any(line["handling"] in ("pv_reference", "pv_declared") for line in lines):
         return report
+    revised = report.model_copy(deep=True)
+    materials_to_insert = _material_sections(lines, revised.locale)
     sections = []
-    for section in report.sections:
-        if section.id == "bom":
-            sections.extend(_material_sections(lines, report.locale))
+    for section in revised.sections:
+        if section.id in ("bom", "site-materials"):
+            sections.extend(materials_to_insert)
+            materials_to_insert = []
         elif not section.id.startswith("material-evidence-"):
             sections.append(section)
-    _panel_schedule(sections, lines, report.locale)
-    sections.sort(key=lambda section: section.tier == "appendix")
-    report.sections = sections
-    return report
+    sections.extend(materials_to_insert)
+    _panel_schedule(sections, lines, revised.locale)
+    revised.sections = sorted(sections, key=lambda section: section.tier == "appendix")
+    return revised
 
 
 def build_report(source: Object) -> Report:
