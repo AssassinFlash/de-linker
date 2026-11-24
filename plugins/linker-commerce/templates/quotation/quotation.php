@@ -19,6 +19,7 @@
  *     taxes: list<array{label: string, amount: string}>,
  *     total: string
  * } $quotation Document data.
+ * @var string $logo_file Absolute path to the bundled brand image.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -78,7 +79,7 @@ $linker_buyer  = $quotation['buyer'];
 			</table>
 		</td>
 		<td class="seller">
-			<img src="data:image/png;base64,<?php echo esc_attr( base64_encode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/quotation-logo.png' ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Bundled brand asset for offline PDF rendering. ?>" width="108" alt="Linker"><br>
+			<img src="data:image/png;base64,<?php echo esc_attr( base64_encode( (string) file_get_contents( $logo_file ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Bundled brand asset for offline PDF rendering. ?>" width="108" alt="Linker"><br>
 			<strong><?php echo esc_html( $linker_seller['name'] ); ?></strong><br>
 			<?php foreach ( $linker_seller['address'] as $linker_line ) : ?>
 				<?php echo esc_html( $linker_line ); ?><br>

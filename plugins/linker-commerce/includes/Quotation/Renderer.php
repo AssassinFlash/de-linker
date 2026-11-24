@@ -34,7 +34,16 @@ final class Renderer {
 	 * @param array<string, mixed> $data Document data (Document::data()).
 	 */
 	public function html( array $data ): string {
-		return wc_get_template_html( 'quotation/quotation.php', array( 'quotation' => $data ), '', plugin_dir_path( $this->plugin_file ) . 'templates/' );
+		$plugin = plugin_dir_path( $this->plugin_file );
+		return wc_get_template_html(
+			'quotation/quotation.php',
+			array(
+				'quotation' => $data,
+				'logo_file' => $plugin . 'assets/quotation-logo.png',
+			),
+			'',
+			$plugin . 'templates/'
+		);
 	}
 
 	/**

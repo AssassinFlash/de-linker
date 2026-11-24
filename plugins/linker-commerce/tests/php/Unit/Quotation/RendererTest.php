@@ -44,7 +44,15 @@ final class RendererTest extends TestCase {
 			'wc_get_template_html',
 			array(
 				'times'  => 1,
-				'args'   => array( 'quotation/quotation.php', array( 'quotation' => array( 'number' => 'PI-2026-0001' ) ), '', '/plugin/templates/' ),
+				'args'   => array(
+					'quotation/quotation.php',
+					array(
+						'quotation' => array( 'number' => 'PI-2026-0001' ),
+						'logo_file' => '/plugin/assets/quotation-logo.png',
+					),
+					'',
+					'/plugin/templates/',
+				),
 				'return' => '<html></html>',
 			)
 		);
