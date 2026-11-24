@@ -40,8 +40,9 @@ final class PlannerApplicationTest extends TestCase {
 		$app = new Application( dirname( __DIR__, 3 ) . '/linker-tools.php' );
 		$raw = $app->cache_rules( "RewriteEngine On\nRewriteRule . /index.php [L]" );
 		$this->assertStringContainsString( 'RewriteCond %{QUERY_STRING} !^$ [OR]', $raw );
-		$this->assertSame( 1, preg_match( '/^RewriteCond %\{HTTP_COOKIE\} (.+)$/m', $raw, $cookies ) );
-		$this->assertSame( 1, preg_match( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache\]$/m', $raw, $routes ) );
+		if ( 1 !== preg_match( '/^RewriteCond %\{HTTP_COOKIE\} (.+)$/m', $raw, $cookies ) || 1 !== preg_match( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache\]$/m', $raw, $routes ) ) {
+			$this->fail( 'The cache rules must include a cookie condition and a no-cache route.' );
+		}
 		foreach ( array( 'wp_woocommerce_session_site', 'woocommerce_items_in_cart', 'linker_planner_transition_id', 'wordpress_logged_in_site' ) as $name ) {
 			$this->assertMatchesRegularExpression( '~' . $cookies[1] . '~', 'ordinary=value; ' . $name . '=value' );
 		}
