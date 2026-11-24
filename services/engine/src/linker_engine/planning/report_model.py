@@ -48,6 +48,7 @@ def _material_table(
     lines: list[Object], section_id: str, title: str, locale: str
 ) -> ReportSection:
     material_documents: dict[tuple[str, int, str], ReportRow] = {}
+    rows: list[list[str]] = []
     for line in lines:
         origin = line.get("source")
         citation = origin.get("document") if isinstance(origin, dict) else None
@@ -65,6 +66,17 @@ def _material_table(
                 value=text(source_label, locale),
                 href=url,
             )
+            reference = f"{text('page', locale)} {page}"
+        else:
+            reference = material_reference(line)
+        rows.append(
+            [
+                material_quantity(line, locale),
+                material_name(line, locale),
+                reference,
+                material_scope(line, locale),
+            ]
+        )
     if all(line.get("basis") == "manufacturer_one_end_mapping" for line in lines):
         scope_key = "terminal_material_scope"
     elif all(
@@ -88,17 +100,58 @@ def _material_table(
                 text("material_handling", locale),
             ],
             column_weights=[0.6, 1.7, 1, 1.7],
-            rows=[
-                [
-                    material_quantity(line, locale),
-                    material_name(line, locale),
-                    material_reference(line),
-                    material_scope(line, locale),
-                ]
-                for line in lines
-            ],
+            rows=rows,
         ),
     )
+
+
+def _material_evidence(lines: list[Object], locale: str) -> list[ReportSection]:
+    sources: dict[tuple[str, str, str, str], ReportSection] = {}
+    for line in lines:
+        source = line.get("source")
+        document = source.get("document") if isinstance(source, dict) else None
+        if not isinstance(document, dict):
+            continue
+        url = str(document["url"])
+        document_id = str(document.get("document_id") or "")
+        revision = str(document.get("document_revision") or "")
+        file_hash = str(document.get("blob_sha256") or "")
+        key = (url, document_id, revision, file_hash)
+        section = sources.get(key)
+        if section is None:
+            section = ReportSection(
+                id=f"material-evidence-{len(sources) + 1}",
+                tier="appendix",
+                title="Quellen zur Materialliste"
+                if locale == "de"
+                else "Material list sources",
+                rows=[ReportRow(label=text("source", locale), value=url, href=url)],
+            )
+            sources[key] = section
+            for label, value in (
+                (
+                    "Dokumentreferenz" if locale == "de" else "Document reference",
+                    document_id,
+                ),
+                ("Dokumentstand" if locale == "de" else "Document revision", revision),
+                ("PDF · SHA-256", file_hash),
+            ):
+                if value:
+                    section.rows.append(ReportRow(label=label, value=value))
+        page = document["page"]
+        material = " · ".join(
+            filter(
+                None, (str(line.get("parent_label") or ""), material_name(line, locale))
+            )
+        )
+        quote = str(document.get("quote") or "")
+        if quote:
+            reference = ReportRow(
+                label=f"{material} · {text('page', locale)} {page}", value=quote
+            )
+            if reference not in section.rows:
+                section.rows.append(reference)
+    return list(sources.values())
 
 
 def _material_sections(lines: list[Object], locale: str) -> list[ReportSection]:
@@ -109,7 +162,10 @@ def _material_sections(lines: list[Object], locale: str) -> list[ReportSection]:
     if not any(
         line["handling"] in panel_types or "package_supply" in line for line in lines
     ):
-        return [_material_table(lines, "bom", text("bom", locale), locale)]
+        return [
+            _material_table(lines, "bom", text("bom", locale), locale),
+            *_material_evidence(lines, locale),
+        ]
     sections = []
     for section_id, key in (
         ("bom", "equipment_list"),
@@ -122,7 +178,7 @@ def _material_sections(lines: list[Object], locale: str) -> list[ReportSection]:
             sections.append(
                 _material_table(group, section_id, text(key, locale), locale)
             )
-    return sections
+    return [*sections, *_material_evidence(lines, locale)]
 
 
 def _panel_schedule(
@@ -173,9 +229,10 @@ def separate_panel_lists(report: Report, materials: Object) -> Report:
     for section in report.sections:
         if section.id == "bom":
             sections.extend(_material_sections(lines, report.locale))
-        else:
+        elif not section.id.startswith("material-evidence-"):
             sections.append(section)
     _panel_schedule(sections, lines, report.locale)
+    sections.sort(key=lambda section: section.tier == "appendix")
     report.sections = sections
     return report
 
@@ -1765,13 +1822,20 @@ def build_report(source: Object) -> Report:
                     rows=archives,
                 )
             )
+    material_urls = {
+        row.href
+        for section in report.sections
+        if section.id.startswith("material-evidence-")
+        for row in section.rows
+        if row.href
+    }
     source_links = list(
         dict.fromkeys(
             row.href
             for section in report.sections
             if section.tier == "commercial"
             for row in section.rows
-            if row.href
+            if row.href and row.href not in material_urls
         )
     )
     if source_links:

@@ -8,7 +8,7 @@ import io
 import json
 import math
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import pytest
 from pypdf import PdfReader
@@ -218,7 +218,9 @@ def test_batc_delivery_plan_multiplies_only_unconditional_contents() -> None:
             for page in PdfReader(io.BytesIO(document)).pages
         )
         assert name in content and "GW208.9-BAT-LC-G10" in content
-        assert "p. 35" in content and "8" in content
+        assert (
+            "Page 35" if locale == "en" else "Seite 35"
+        ) in content and "8" in content
 
 
 def test_installation_facts_become_distinct_sourced_material_rows() -> None:
@@ -384,7 +386,9 @@ def test_en_and_de_reports_and_csv_use_the_same_material_model() -> None:
         flat = " ".join(text.split())
         assert conductor in flat and customer in flat and site in flat
         assert condition in flat
-        assert "p. 12" in flat and "Recommended PV conductor" in flat
+        assert (
+            "Page 12" if locale == "en" else "Seite 12"
+        ) in flat and "Recommended PV conductor" in flat
         assert (
             package_source in flat
             and installation_source in flat
@@ -829,3 +833,90 @@ def test_customer_requested_quantity_is_separate_from_system_design() -> None:
     assert all(
         "inquiry_quantity" not in line for line in cast(list[Object], updated["lines"])
     )
+
+
+@pytest.mark.parametrize("locale,page", [("en", "Page 43"), ("de", "Seite 43")])
+@pytest.mark.parametrize("with_storage", [False, True])
+def test_saj_equipment_proposal_places_terminal_excerpts_only_in_the_appendix(
+    locale: str, page: str, with_storage: bool
+) -> None:
+    snapshots = Path(__file__).resolve().parents[4] / "tools/migrate"
+    saj = json.loads((snapshots / "548-installation-facts.json").read_text())[
+        "products"
+    ]["1179"]
+    documents = json.loads((snapshots / "548-page-excerpts.json").read_text())[
+        "documents"
+    ]
+    facts = saj["items"]
+    for item in facts:
+        origin = item["source"]
+        origin["url"] = documents[origin["document_id"]]["url"]
+    assert facts[0]["source"]["quote"].startswith("B MPPT1 PV input")
+    source = _source_data()
+    source["declared_pv_panels"] = {"count": 16, "stc_power_w": 500}
+    equipment = cast(dict[str, Any], source["equipment"])
+    equipment["selected_products"] = [
+        {
+            "product_id": 1179,
+            "model": saj["model"],
+            "sku": "DLK-SAJ-H225KT3",
+            "brand": "SAJ",
+            "product_revision": saj["product_revision"],
+            "installation_facts": {"status": "documented", "items": facts},
+        }
+    ]
+    equipment["provisional_bill_of_materials"] = [
+        {"product_id": 1179, "quantity": 1, "basis": "selected_converter"}
+    ]
+    if with_storage:
+        equipment["selected_products"].append(
+            {
+                "product_id": 2068,
+                "brand": "SAJ",
+                "model": "B2-15.0-HV1",
+                "sku": "DLK-SAJ-B2150HV1",
+            }
+        )
+        equipment["provisional_bill_of_materials"].append(
+            {"product_id": 2068, "quantity": 1, "basis": "selected_battery"}
+        )
+    material_source = cast(Object, source)
+    materials = project_materials(material_source)
+    report = build_report(
+        {**material_source, "title": "SAJ", "locale": locale, "materials": materials}
+    )
+    commercial = [s for s in report.sections if s.tier == "commercial"]
+    appendix = [s for s in report.sections if s.tier == "appendix"]
+    shown = str([s.model_dump() for s in commercial])
+    assert page in shown and ("DLK-SAJ-B2150HV1" in shown) == with_storage
+    site = next(s for s in commercial if s.id == "site-materials")
+    assert site.table and all(row[2] == page for row in site.table.rows)
+    evidence = str([s.model_dump() for s in appendix])
+    csv_rows = list(
+        csv.reader(
+            io.StringIO(materials_csv(materials, "0" * 64, locale).decode("utf-8-sig"))
+        )
+    )
+    pages = [p.extract_text() for p in PdfReader(io.BytesIO(pdf.render(report))).pages]
+    appendix_start = next(
+        i
+        for i, p in enumerate(pages)
+        if (
+            "Technischer & rechtlicher Anhang"
+            if locale == "de"
+            else "Technical & Compliance Appendix"
+        )
+        in p
+    )
+    for item in facts:
+        origin = item["source"]
+        assert origin["quote"] not in shown
+        assert origin["quote"] in evidence and origin["url"] in evidence
+        assert (
+            origin["document_revision"] in evidence
+            and origin["blob_sha256"] in evidence
+        )
+        assert any(origin["quote"] in row[4] for row in csv_rows)
+        normalized = "".join(origin["quote"].split())
+        assert normalized not in "".join("".join(pages[:appendix_start]).split())
+        assert normalized in "".join("".join(pages[appendix_start:]).split())
