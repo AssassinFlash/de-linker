@@ -7072,6 +7072,20 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nein"
 
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Which equipment is compatible with %s? Please include the manufacturer documentation."
+msgstr "Welche Geräte sind mit %s kompatibel? Nennen Sie bitte die Unterlagen des Herstellers."
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Check system compatibility"
+msgstr "Systemkompatibilität prüfen"
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Check which equipment works with %s in your project."
+msgstr "Prüfen Sie, welche Geräte in Ihrem Projekt mit %s zusammenarbeiten."
+
 #~ msgid "Update the solution draft before sending your inquiry."
 #~ msgstr ""
 #~ "Aktualisieren Sie den Lösungsentwurf, bevor Sie Ihre Anfrage senden."

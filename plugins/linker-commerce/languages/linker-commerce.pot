@@ -6542,3 +6542,17 @@ msgstr ""
 #: src/accounts/api.test.ts templates/emails/linker-genie-handoff.php includes/Vocabulary/Labels.php content/journal-titles.json src/accounts/style.css
 msgid "No"
 msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Which equipment is compatible with %s? Please include the manufacturer documentation."
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Check system compatibility"
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Check which equipment works with %s in your project."
+msgstr ""
