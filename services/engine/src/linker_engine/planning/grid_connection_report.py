@@ -468,10 +468,15 @@ def grid_connection_sections(value: Json, locale: str) -> list[ReportSection]:
     recorded_ids = {str(source["id"]) for source in recorded_sources}
     for source in recorded_sources:
         checks.rows.append(_source_row(source))
-    if is_bundled and review is None:
-        for source in bundled_country_sources(country_code):
-            if str(source["id"]) not in recorded_ids:
-                checks.rows.append(_source_row(source))
+    if review is not None and country_code == "GB":
+        sources = cast(list[Object], review["sources"])
+    elif is_bundled and review is None:
+        sources = bundled_country_sources(country_code)
+    else:
+        sources = []
+    for source in sources:
+        if str(source["id"]) not in recorded_ids:
+            checks.rows.append(_source_row(source))
     return [declarations, checks] + (_rule_sections(review, locale) if review else [])
 
 

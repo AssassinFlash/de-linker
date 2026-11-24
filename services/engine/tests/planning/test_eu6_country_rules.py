@@ -178,7 +178,12 @@ def test_national_thresholds_use_the_declared_quantity(
 ) -> None:
     result = assess(country, **values)
     assert result["checks"][0]["outcome"] == expected
-    assert result["checks"][0]["source_id"] == result["sources"][0]["id"]
+    expected_source = (
+        "gb_nged_g98_procedure"
+        if expected in {"gb_single_g98_notice", "gb_cluster_agreement"}
+        else result["sources"][0]["id"]
+    )
+    assert result["checks"][0]["source_id"] == expected_source
 
 
 @pytest.mark.parametrize("country", BASES)

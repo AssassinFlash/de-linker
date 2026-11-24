@@ -334,7 +334,12 @@ def review_country_rules(
                 if k not in {"schema_version", "basis", "rule_date"}
             }
         )
-        add(eu_rules.CHECKS[country], outcome, missing)
+        origin = (
+            str(eu_rules.GB_DNO_SOURCE["id"])
+            if outcome in {"gb_single_g98_notice", "gb_cluster_agreement"}
+            else source_id
+        )
+        add(eu_rules.CHECKS[country], outcome, missing, origin=origin)
     elif country == "FR":
         missing = [
             key

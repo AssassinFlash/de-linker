@@ -220,7 +220,7 @@ GB_DNO_SOURCE: Object = {
     "clause": "Single and multiple premises",
     "effective_from": None,
     "evidence_snapshot_date": "2026-11-24",
-    "text_sha256": "b29664ffe2d8657c32235fb3dfde3da710c4179cbe0b1cc004773975495de942",
+    "text_sha256": "296ed47887ab2639afd794749fa2e2b37647c2cce868e400367eeeac63d96fca",
 }
 
 FIELDS: dict[str, tuple[str, ...]] = {
