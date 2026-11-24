@@ -645,14 +645,9 @@ final class ProductShortcodes {
 		$html .= '<div class="sf-card-media card-media">';
 		$html .= '<a data-card-media-link href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $title ) . '">';
 		foreach ( \array_slice( (array) $card['gallery'], 0, 1 ) as $image_id ) {
-			// The live card image's own attribute set: the stylesheet sizes
-			// the box, and the family picker switches src/alt through
-			// `data-card-image` (WordPress strips data-* from
-			// wp_get_attachment_image's attributes, so the tag is printed
-			// here).
-			$image_src = wp_get_attachment_image_url( (int) $image_id, 'medium' );
-			if ( \is_string( $image_src ) && '' !== $image_src ) {
-				$html .= '<img data-card-image src="' . esc_url( $image_src ) . '" alt="' . esc_attr( (string) $card['title'] ) . '" loading="lazy">';
+			$image = wp_get_attachment_image_src( (int) $image_id, 'medium' );
+			if ( $image ) {
+				$html .= '<img data-card-image src="' . esc_url( $image[0] ) . '" width="' . (int) $image[1] . '" height="' . (int) $image[2] . '" alt="' . esc_attr( (string) $card['title'] ) . '" loading="lazy">';
 			}
 		}
 		$html .= '</a></div>';
@@ -2199,6 +2194,7 @@ final class ProductShortcodes {
 			foreach ( $facts as $fact ) {
 				$factshtml .= '<div><dt>' . esc_html( $fact['label'] ) . '</dt><dd>' . esc_html( $fact['value'] ) . '</dd></div>';
 			}
+			$image     = wp_get_attachment_image_src( (int) ( $card['gallery'][0] ?? 0 ), 'medium' );
 			$payload[] = array(
 				'id'           => (int) $id,
 				'compareId'    => Publication::canonical_id( (int) $id ),
@@ -2208,7 +2204,9 @@ final class ProductShortcodes {
 				'name'         => (string) $card['title'],
 				'model'        => (string) $card['model'],
 				'url'          => (string) get_permalink( (int) $id ),
-				'image'        => (string) wp_get_attachment_image_url( (int) ( $card['gallery'][0] ?? 0 ), 'medium' ),
+				'image'        => $image[0] ?? '',
+				'imageWidth'   => $image[1] ?? 0,
+				'imageHeight'  => $image[2] ?? 0,
 				'priceHtml'    => $gated
 					? '<a class="sf-card-price-login" href="' . esc_url( (string) $card['price']['url'] ) . '">' . esc_html( (string) $card['price']['html'] ) . '</a>'
 					: '<span class="sf-card-price-net">' . esc_html( wp_strip_all_tags( (string) $card['price']['html'] ) ) . '</span>',

@@ -56,6 +56,8 @@
 
 		var image = card.querySelector( '[data-card-image]' );
 		if ( image && member.image ) {
+			image.setAttribute( 'width', String( member.imageWidth ) );
+			image.setAttribute( 'height', String( member.imageHeight ) );
 			image.setAttribute( 'src', String( member.image ) );
 			if ( member.name ) {
 				image.setAttribute( 'alt', String( member.name ) );

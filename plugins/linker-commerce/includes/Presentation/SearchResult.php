@@ -24,6 +24,18 @@ final class SearchResult {
 		if ( ! $item instanceof \WP_Post ) {
 			return null;
 		}
+		if ( 'linker_search_image' === $field ) {
+			return wp_get_attachment_image(
+				(int) get_post_thumbnail_id( $item ),
+				'medium_large',
+				false,
+				array(
+					'alt'     => '',
+					'loading' => 'lazy',
+					'sizes'   => '(min-width: 1280px) 360px, (min-width: 800px) 45vw, 100vw',
+				)
+			);
+		}
 		if ( 'linker_search_sku' === $field ) {
 			return 'product' === $item->post_type ? esc_html( (string) get_post_meta( Publication::canonical_id( $item->ID ), '_sku', true ) ) : '';
 		}
