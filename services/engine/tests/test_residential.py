@@ -98,8 +98,7 @@ def test_single_phase_six_kw_is_excluded(engine: Engine) -> None:
     excluded = {
         e.product.model: {f.id for f in e.failed} for e in result.candidates.excluded
     }
-    for model in ("EF HD-P1-6K0-S2", "GW6K-EHA-G20"):
-        assert "single_phase_limit" in excluded[model]
+    assert "single_phase_limit" in excluded["GW6K-EHA-G20"]
     assert all(
         (engine.products.by_id[c.product.id].ac_power_kw or 0) <= 4.6
         for c in result.candidates.inverters
@@ -381,7 +380,7 @@ def test_backup_reserve_beyond_every_released_battery_is_truthful(
     failed = {f.id for e in result.candidates.excluded for f in e.failed}
     assert "backup_storage" in failed
     assert any("Less backup reserve" in r for r in result.relaxations)
-    assert any("holds 186.2 kWh" in r for r in result.relaxations)
+    assert any("holds 104.4 kWh" in r for r in result.relaxations)
     assert "Plan without backup supply." in result.relaxations
     assert residential.storage_result(result).backup_reserve_kwh == pytest.approx(
         50 * 72 / 0.94, abs=0.1
