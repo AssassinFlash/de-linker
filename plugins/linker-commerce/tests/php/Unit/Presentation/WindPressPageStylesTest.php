@@ -90,8 +90,8 @@ final class WindPressPageStylesTest extends TestCase {
 	 */
 	public static function pages(): array {
 		return array(
-			'home showcase'       => array( 'is_front_page', '[linker_configurator_showcase]', '<div id="configurator-showcase" data-linker-planner-entry>', array(), array( 'marketing-rhythm.css', 'homepage-focus.css', 'homepage-readability.css', 'home-configurator.css' ) ),
-			'custom showcase'     => array( '', '[linker_configurator_showcase]', '', array(), array( 'home-configurator.css' ) ),
+			'home showcase'       => array( 'is_front_page', '', '<section id="configurator-showcase"><a href="/solution-configurator/" data-linker-planner-entry>Plan</a></section>', array(), array( 'marketing-rhythm.css', 'homepage-focus.css', 'homepage-readability.css', 'home-configurator.css' ) ),
+			'custom showcase'     => array( '', '<section id="configurator-showcase">', '', array(), array( 'home-configurator.css' ) ),
 
 			'product category'    => array( 'is_product_taxonomy', '', '', array( 'products-mounts.css', 'products.css', 'storefront.css' ), array() ),
 			'translated FAQ'      => array( '', '', '<div id="linker-faq-page">', array( 'faq.css' ), array() ),

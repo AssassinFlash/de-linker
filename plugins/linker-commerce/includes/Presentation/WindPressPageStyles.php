@@ -145,7 +145,7 @@ final class WindPressPageStyles {
 			'services'   => $services,
 			'marketing'  => $home || $services || array() !== array_intersect( array_keys( $ids ), array( 'installer-journal', 'about-journal', 'tv-rs-page-v1', 'tv-cs-page-v1', 'tv-cp-page-v1', 'tv-solution-v1', 'tv-solutions-developers-v1', 'tv-utility-page-v1' ) ),
 			'home'       => $home,
-			'showcase'   => $home || isset( $ids['configurator-showcase'] ) || 1 === preg_match( '/(?<!\[)\[linker_configurator_showcase(?=[\s\/\]])/', $content ),
+			'showcase'   => $home || isset( $ids['configurator-showcase'] ),
 			'planner'    => 1 === preg_match( '/<(?:section|div)\b[^>]*\sdata-linker-planner(?=[\s=\/>])|(?<!\[)\[(?:linker_planner|linker_configurator)(?=[\s\/\]])/i', $content ),
 			'not_found'  => is_404() || isset( $ids['tv-404-v1'] ),
 		);
