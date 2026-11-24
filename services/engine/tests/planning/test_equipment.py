@@ -73,7 +73,7 @@ from .test_private_http import TOKEN, USER, headers
 
 @pytest.fixture
 def feed() -> FixtureObject:
-    raw = json.loads((FIXTURES / "feed.json").read_text())
+    raw = json.loads((FIXTURES / "scenario-feed-2026-10-09.json").read_text())
     # The source study identifies these five module-count columns. This
     # explicit synthetic maintenance field exercises the producer contract;
     # native Woo needs its own source-backed labels before qualification.

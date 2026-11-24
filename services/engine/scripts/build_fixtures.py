@@ -1,10 +1,9 @@
-"""Build the engine's test fixtures: an engineering feed and a compatibility file.
+"""Rebuild the October 2026 engineering scenario feed and compatibility fixtures.
 
-The real inputs (`GET /wp-json/linker/v1/engineering-feed` and
-`data/compatibility.json`) arrive with ticket #8. Until then the engine is
-developed and tested against fixtures in exactly the shape of
-`schemas/feed.schema.json` and `schemas/compatibility.schema.json`, built here
-from read-only sources:
+The historical selection and withdrawal scenarios use the catalogue from before
+#607. The current `tests/fixtures/feed.json` is captured from the native
+Woo engineering feed. The October fixtures are built from these read-only
+sources:
 
 - the published WooCommerce products of the live site, read with
   `GET /wp-json/wc/v3/products?status=publish` (attributes, categories and the
@@ -746,7 +745,10 @@ def main() -> None:
         compatibility,
     )
     args.out.mkdir(parents=True, exist_ok=True)
-    for name, data in (("feed.json", feed), ("compatibility.json", compatibility)):
+    for name, data in (
+        ("scenario-feed-2026-10-09.json", feed),
+        ("compatibility.json", compatibility),
+    ):
         (args.out / name).write_text(
             json.dumps(data, ensure_ascii=False, indent="\t") + "\n"
         )

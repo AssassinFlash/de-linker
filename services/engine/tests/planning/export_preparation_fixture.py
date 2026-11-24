@@ -200,7 +200,7 @@ def product_sources(directory: Path) -> ProductSources:
     feed_path.write_text(
         json.dumps(
             publication_feed(
-                json.loads((FIXTURES / "feed.json").read_text()),
+                json.loads((FIXTURES / "scenario-feed-2026-10-09.json").read_text()),
                 json.loads((FIXTURES / "compatibility.json").read_text()),
             )
         )

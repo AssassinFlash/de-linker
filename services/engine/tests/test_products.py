@@ -18,7 +18,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def test_every_published_product_is_in_the_feed(products: Products) -> None:
-    assert len(products.products) == 106
+    assert len(products.products) == 85
     assert {p.device_class for p in products.products} >= {
         "inverters",
         "home-storage",
@@ -34,12 +34,44 @@ def test_the_seven_selection_facts_follow_7(products: Products) -> None:
         10.0,
         20.0,
     )
-    # The 2026-10-09 rulings: EcoFlow application and phase filled, CHS2 at 29 999 W.
-    assert (products.by_id[6485].application, products.by_id[6485].phase) == ("home", 1)
-    assert products.by_id[6481].phase == 3
+    assert not any(p.brand == "EcoFlow" for p in products.products)
+    assert (products.by_id[6527].application, products.by_id[6527].phase) == ("home", 1)
+    assert products.by_id[6518].phase == 3
     assert products.by_id[1959].ac_power_kw == 29.999
     # ESA battery modules carry no phase: unknown, never guessed.
     assert products.by_id[6519].phase is None
+
+
+def test_commercial_storage_facts_keep_energy_scopes(products: Products) -> None:
+    cabinets = [products.by_id[i] for i in (1956, 1957, 1958, 4103, 4104, 4105, 4106)]
+    assert [p.usable_kwh for p in cabinets] == [
+        202.7,
+        200.7,
+        250.9,
+        51.5,
+        64.4,
+        77.3,
+        90.2,
+    ]
+    assert [p.nominal_kwh for p in cabinets] == [
+        208.9,
+        208.9,
+        261.2,
+        57.3,
+        71.6,
+        85.9,
+        100.3,
+    ]
+    for i in (1959, 1960, 1961):
+        variant = products.by_id[i]
+        assert variant.usable_kwh is None
+        assert [
+            c["value"] for c in variant.figures["system_usable_energy_kwh"].columns
+        ] == [51.5, 64.4, 77.3, 90.2]
+    l260 = products.by_id[2003]
+    assert (l260.nominal_kwh, l260.ac_power_kw, l260.usable_kwh) == (260, 125, None)
+    assert products.by_id[2092].usable_kwh is None
+    assert products.by_id[6321].model == "GW125/261-ESA-LCN-G10"
 
 
 def test_engineering_figures_are_read_per_mppt(products: Products) -> None:
@@ -80,7 +112,7 @@ def test_a_feed_that_carries_the_compatibility_contract_is_accepted() -> None:
     feed = json.loads((FIXTURES / "feed.json").read_text())
     feed["compatibility"] = json.loads((FIXTURES / "compatibility.json").read_text())
     products = Products.from_feed(feed)
-    assert len(products.products) == 106
+    assert len(products.products) == 85
 
 
 def test_publication_envelope_is_idempotent() -> None:
