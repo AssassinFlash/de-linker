@@ -71,9 +71,10 @@ final class Controller {
 		$body = self::json_object( $request->get_json_params() );
 		try {
 			if ( 'manifest' === $path ) {
-				$data = Publication::manifest();
+				$data                   = Publication::manifest();
+				$data['revision_check'] = 1;
 			} elseif ( 'validate' === $path ) {
-				$data = Publication::validate( $body );
+				$data = isset( $body['expected_revision'] ) ? Publication::current_revisions() : Publication::validate( $body );
 			} elseif ( 'identify' === $path ) {
 				$data = $this->identify( $body );
 			} elseif ( 'jobs/claim' === $path ) {

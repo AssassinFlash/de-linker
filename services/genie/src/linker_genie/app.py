@@ -431,6 +431,7 @@ def _compute_turn(
                     body,
                     abilities,
                     get_vocabulary=lambda: store_vocabulary().get(original_permission),
+                    permission=original_permission,
                     on_stage=on_stage,
                 )
             )

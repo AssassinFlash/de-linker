@@ -21,6 +21,7 @@ import re
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
+from functools import partial
 from typing import Any, Protocol
 
 from linker_genie import (
@@ -46,7 +47,7 @@ from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.language import turn_language, with_tool_lang
 from linker_genie.lexicon import Match, Vocabulary
 from linker_genie.nameplate import Identified, card, identify, with_known_brand
-from linker_genie.publication import PublicationClient
+from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.route import (
     Call,
     Route,
@@ -160,6 +161,7 @@ class Understander:
         client: Abilities,
         *,
         get_vocabulary: Callable[[], Vocabulary] | None = None,
+        permission: Snapshot | None = None,
         on_stage: timing.Stage | None = None,
     ) -> Prepared:
         request = without_upload_footer(request)
@@ -469,7 +471,10 @@ class Understander:
             prepared.card_quantities = parts.card_quantities(
                 message, matches, vocabulary
             )
-        _run_calls(prepared, request, client, self._search, self._pages, clock)
+        search = self._search
+        if isinstance(search, knowledge.KnowledgeSearch) and permission is not None:
+            search = partial(search.search, snapshot=permission)
+        _run_calls(prepared, request, client, search, self._pages, clock)
         # PDF parts rows are saved for list continuation. They do not provide
         # a manual's technical facts on a later, unrelated question.
         historical = [

@@ -264,6 +264,20 @@ final class Publication {
 	}
 
 	/**
+	 * Read the current public revision and the private model membership revision.
+	 * Readiness rows are worker progress and do not grant permission.
+	 *
+	 * @return array{source_revision:string,model_identity_revision:string}
+	 */
+	public static function current_revisions(): array {
+		$catalog = self::catalog();
+		return array(
+			'source_revision'         => $catalog['source_revision'],
+			'model_identity_revision' => self::model_identity_revision( self::model_statuses_in_current_read() ),
+		);
+	}
+
+	/**
 	 * Read fresh native product/term permissions and physical files at each boundary.
 	 *
 	 * @param bool $catalog_only Omit the private model inventory and preparation state.
