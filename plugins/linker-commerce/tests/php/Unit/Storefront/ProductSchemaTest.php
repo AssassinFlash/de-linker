@@ -57,6 +57,61 @@ final class ProductSchemaTest extends TestCase {
 	}
 
 	/**
+	 * Keep a manually edited description; otherwise use the product's public facts.
+	 *
+	 * @dataProvider meta_sources
+	 *
+	 * @param string $stored    Saved value.
+	 * @param bool   $generated Expect the public model summary.
+	 */
+	public function test_search_uses_the_native_or_generated_description( string $stored, bool $generated ): void {
+		$product = $this->product();
+		WP_Mock::userFunction(
+			'is_singular',
+			array(
+				'args'   => array( 'product' ),
+				'return' => true,
+			)
+		);
+		WP_Mock::userFunction( 'get_the_ID', array( 'return' => self::PRODUCT ) );
+		WP_Mock::userFunction(
+			'wc_get_product',
+			array(
+				'args'   => array( self::PRODUCT ),
+				'return' => $product,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( self::PRODUCT, '_seopress_titles_desc', true ),
+				'return' => $stored,
+			)
+		);
+		$schema = new ProductSchema();
+		$value  = $schema->description( 'Editor’s expanded description' );
+		if ( $generated ) {
+			$this->assertSame( $schema->data( $product )['description'], $value );
+			$this->assertGreaterThanOrEqual( 125, mb_strlen( $value ) );
+			$this->assertLessThanOrEqual( 155, mb_strlen( $value ) );
+		} else {
+			$this->assertSame( 'Editor’s expanded description', $value );
+		}
+	}
+
+	/**
+	 * Product meta sources.
+	 *
+	 * @return array<string,array{string,bool}>
+	 */
+	public static function meta_sources(): array {
+		return array(
+			'auto'   => array( '', true ),
+			'manual' => array( 'Editor’s own description', false ),
+		);
+	}
+
+	/**
 	 * Every fact the page shows about the product, under the name schema.org
 	 * gives it. The values are the ones the live page carries today.
 	 */
