@@ -2322,7 +2322,9 @@ def _seal_attachment_figures(
 
 def clearance_question(question: str) -> bool:
     folded = question.casefold()
-    return "clearance" in folded or "mindestabstand" in folded
+    return any(
+        word in folded for word in ("clearance", "mindestabstand", "mindestabstände")
+    )
 
 
 def _usable_question(question: str) -> bool:

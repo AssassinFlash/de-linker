@@ -1637,6 +1637,16 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
             ]
         )
         assert all(pair in prose for pair in directions), prose
+        if locale == "de":
+            plural = seal(
+                hydrated,
+                facts,
+                route,
+                f"Welche Mindestabstände gelten für den {model}?",
+                "other",
+                original=original,
+            )
+            assert all(pair in _text(plural) for pair in directions)
         assert (
             "1500 mm on the right" if locale == "en" else "rechts 1500 mm"
         ) not in prose
