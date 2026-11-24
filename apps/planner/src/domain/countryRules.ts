@@ -8,7 +8,13 @@ export type RuleBasis =
 	| "nl_storage_max_active"
 	| "de_pv_installed"
 	| "at_tor_typ_a_max_capacity"
-	| "se_rfg_maximum_capacity";
+	| "se_rfg_maximum_capacity"
+	| "it_lv_generation_spi"
+	| "es_self_consumption"
+	| "gb_lv_microgeneration"
+	| "pl_renewable_electric_installation"
+	| "be_small_plant_limits"
+	| "ch_lv_generation_control";
 
 export interface CountryRuleInputs extends JsonObject {
 	schema_version: 1;
@@ -31,6 +37,16 @@ export interface CountryRuleInputs extends JsonObject {
 		| null;
 	se_export_power_kw?: number | null;
 	se_existing_installation_change?: boolean | null;
+	gb_in_great_britain?: boolean | null;
+	current_per_phase_a?: number | null;
+	gb_type_tested?: boolean | null;
+	gb_multiple_premises?: boolean | null;
+	es_export_surplus?: boolean | null;
+	es_serviced_urban_land?: boolean | null;
+	be_three_phase?: boolean | null;
+	be_generation_kva?: number | null;
+	be_storage_kva?: number | null;
+	ch_new_installation?: boolean | null;
 }
 
 const validate = new Ajv2020({

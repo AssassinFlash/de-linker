@@ -478,9 +478,20 @@ def test_all_50_european_countries_report_official_sources_or_explicit_rule_gaps
         assert name in quick_text
         assert text("country_open", locale) not in str(report.sections)
         if code in BUNDLED_RULE_COUNTRIES:
+            source_rows = [
+                row
+                for section in report.sections
+                if section.id in {"grid-connection-evidence", "grid-source-register"}
+                for row in section.rows
+            ]
+            evidence_text = "\n".join(
+                row.label + " " + row.value for row in source_rows
+            )
             for source in bundled_country_sources(code):
-                assert str(source["title"]) in quick_text
-                assert str(source["source_url"]) in quick_text
+                assert str(source["title"]) in evidence_text
+                assert str(source["source_url"]) in evidence_text
+                if source.get("text_sha256"):
+                    assert str(source["text_sha256"]) in evidence_text
         elif code in expected_frameworks:
             assert expected_frameworks[code] in quick_text
 

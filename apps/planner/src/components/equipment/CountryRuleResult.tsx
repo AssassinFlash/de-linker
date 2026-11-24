@@ -1,4 +1,11 @@
 import type { JsonObject } from "../../data/protocol.ts";
+import {
+	euRuleFields,
+	euFieldUnits,
+	euRuleLabels,
+	isEuBasis,
+} from "../../domain/euCountryRules.ts";
+import type { RuleBasis } from "../../domain/countryRules.ts";
 import { __ } from "../../i18n.ts";
 import { formatDecimal } from "../../domain/decimal.ts";
 
@@ -10,6 +17,8 @@ export function CountryRuleResult({
 	locale: string;
 }) {
 	const inputs = review.inputs as JsonObject;
+	const euLabels: Record<string, string> = euRuleLabels();
+	const basis = inputs.basis as RuleBasis;
 	const labels: Record<string, string> = {
 		fr_generation_type: __("French generation-unit category", "linker-tools"),
 		nl_storage_type: __(
@@ -269,14 +278,34 @@ export function CountryRuleResult({
 					</dt>
 					<dd>{String(review.rule_date ?? "—")}</dd>
 				</div>
-				<div>
-					<dt>{__("Declared power", "linker-tools")}</dt>
-					<dd>
-						{typeof inputs.power_kw !== "number"
-							? "—"
-							: `${formatDecimal(inputs.power_kw, locale)} kW`}
-					</dd>
-				</div>
+				{isEuBasis(basis) ? (
+					euRuleFields[basis].map((field) => {
+						const v = inputs[field];
+						return (
+							<div key={field}>
+								<dt>{euLabels[field]}</dt>
+								<dd>
+									{typeof v === "boolean"
+										? v
+											? __("Yes", "linker-tools")
+											: __("No", "linker-tools")
+										: typeof v === "number"
+											? formatDecimal(v, locale) + " " + euFieldUnits[field]
+											: "—"}
+								</dd>
+							</div>
+						);
+					})
+				) : (
+					<div>
+						<dt>{__("Declared power", "linker-tools")}</dt>
+						<dd>
+							{typeof inputs.power_kw !== "number"
+								? "—"
+								: `${formatDecimal(inputs.power_kw, locale)} kW`}
+						</dd>
+					</div>
+				)}
 				{review.country_code === "SE" && (
 					<div>
 						<dt>
@@ -305,14 +334,17 @@ export function CountryRuleResult({
 			<ul>
 				{(review.checks as JsonObject[]).map((check) => (
 					<li key={String(check.id)}>
-						<strong>{labels[String(check.id)]}</strong>:{" "}
-						{outcomes[String(check.outcome)]}
+						<strong>
+							{labels[String(check.id)] ?? euLabels[String(check.id)]}
+						</strong>
+						:{" "}
+						{outcomes[String(check.outcome)] ?? euLabels[String(check.outcome)]}
 						{(check.missing_inputs as string[]).length > 0 && (
 							<>
 								{" "}
 								· {__("Information still missing", "linker-tools")}:{" "}
 								{(check.missing_inputs as string[])
-									.map((key) => missing[key])
+									.map((key) => missing[key] ?? euLabels[key])
 									.join(", ")}
 							</>
 						)}

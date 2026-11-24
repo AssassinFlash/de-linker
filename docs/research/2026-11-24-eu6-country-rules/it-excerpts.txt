@@ -1,0 +1,3 @@
+complessiva superiore a 11,08 kW;
+dispositivo integrato nell’apparato di conversione statica oppure un dispositivo dedicato
+fino a 11,08 kW.

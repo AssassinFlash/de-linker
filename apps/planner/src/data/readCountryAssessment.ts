@@ -1,3 +1,4 @@
+import { euRuleFields } from "../domain/euCountryRules.ts";
 import { ApiError, type JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { readCountryRuleInputs } from "../domain/countryRules.ts";
@@ -14,6 +15,53 @@ export const gridCheckIds = [
 ] as const;
 
 const ruleOutcomes: Record<string, readonly string[]> = {
+	ch_dso_interface: [
+		"ch_remote_disconnect",
+		"ch_power_reduction",
+		"ch_above_interface_scope",
+		"ch_existing",
+		"outside_lv_scope",
+		"missing_inputs",
+		"outside_version",
+	],
+	be_small_plant_power: [
+		"be_within_power_limits",
+		"be_above_power_limits",
+		"be_check_local_single_phase_limit",
+		"be_no_generating_units",
+		"outside_lv_scope",
+		"missing_inputs",
+		"outside_version",
+	],
+	pl_microinstallation_scope: [
+		"pl_microinstallation",
+		"pl_outside_microinstallation",
+		"missing_inputs",
+		"outside_version",
+	],
+	gb_connection_route: [
+		"gb_single_g98_notice",
+		"gb_cluster_agreement",
+		"gb_g99_application",
+		"gb_confirm_non_type_tested",
+		"outside_lv_scope",
+		"gb_other_territory",
+		"missing_inputs",
+		"outside_version",
+	],
+	es_generation_access: [
+		"es_generation_permit_exempt",
+		"es_generation_permits",
+		"missing_inputs",
+		"outside_version",
+	],
+	it_interface_protection: [
+		"it_integrated_or_dedicated",
+		"it_dedicated_relay",
+		"outside_lv_scope",
+		"missing_inputs",
+		"outside_version",
+	],
 	fr_generation_type: [
 		"type_a",
 		"type_b",
@@ -159,6 +207,12 @@ const ruleOutcomes: Record<string, readonly string[]> = {
 	],
 };
 const ruleIds: Record<string, readonly string[]> = {
+	CH: ["ch_dso_interface"],
+	BE: ["be_small_plant_power"],
+	PL: ["pl_microinstallation_scope"],
+	GB: ["gb_connection_route"],
+	ES: ["es_generation_access"],
+	IT: ["it_interface_protection"],
 	FR: ["fr_generation_type"],
 	NL: ["nl_storage_type", "nl_storage_lfsm"],
 	DE: ["de_eeg_control", "de_eeg_export"],
@@ -181,6 +235,12 @@ const ruleIds: Record<string, readonly string[]> = {
 	],
 };
 const ruleBasis: Record<string, string> = {
+	CH: "ch_lv_generation_control",
+	BE: "be_small_plant_limits",
+	PL: "pl_renewable_electric_installation",
+	GB: "gb_lv_microgeneration",
+	ES: "es_self_consumption",
+	IT: "it_lv_generation_spi",
 	FR: "fr_generation_pmax",
 	NL: "nl_storage_max_active",
 	DE: "de_pv_installed",
@@ -188,6 +248,12 @@ const ruleBasis: Record<string, string> = {
 	SE: "se_rfg_maximum_capacity",
 };
 const ruleSource: Record<string, string> = {
+	CH: "ch_vse_lv_control",
+	BE: "be_c1011_small_power",
+	PL: "pl_oze_art2_19",
+	GB: "gb_ena_g98",
+	ES: "es_rd244_generation_access",
+	IT: "it_cei_0_21_spi",
 	FR: "fr_arrete_article_35",
 	NL: "nl_systeemcode_article_2_9",
 	DE: "de_eeg_section_9",
@@ -200,6 +266,7 @@ const ruleSource: Record<string, string> = {
  * fixed per country, so a review cannot smuggle in a different citation.
  */
 const ruleExtraSources: Record<string, readonly string[]> = {
+	GB: ["gb_nged_g98_procedure"],
 	AT: ["at_elwg_2025", "at_tor_erzeuger_typ_a_1_4_conformity"],
 	SE: ["se_rfg_2016_631", "se_ellagen_1997_857"],
 };
@@ -214,6 +281,13 @@ const seCheckSource: Record<string, number> = {
 	se_connection_duty: 2,
 };
 const unresolvedOutcomes = [
+	"outside_lv_scope",
+	"gb_other_territory",
+	"gb_confirm_non_type_tested",
+	"ch_above_interface_scope",
+	"ch_existing",
+	"be_no_generating_units",
+	"be_check_local_single_phase_limit",
 	"missing_inputs",
 	"outside_version",
 	"below_range",
@@ -322,6 +396,17 @@ function readRuleReview(value: unknown, country: string): JsonObject {
 						"at_conformity_basis",
 						"se_export_power_kw",
 						"se_existing_installation_change",
+						"gb_in_great_britain",
+						"current_per_phase_a",
+						"gb_type_tested",
+						"gb_multiple_premises",
+						"es_export_surplus",
+						"es_serviced_urban_land",
+						"be_three_phase",
+						"be_generation_kva",
+						"be_storage_kva",
+						"ch_new_installation",
+						"voltage_level",
 					].includes(String(key)),
 			)
 		)
@@ -361,9 +446,13 @@ export function readCountryAssessment(value: unknown): JsonObject {
 		fail();
 	if (country.rule_gap !== undefined) {
 		const gap = readObject(country.rule_gap);
-		const bundled = ["DE", "FR", "NL", "AT", "SE"].includes(
-			String(country.country_code),
-		);
+		const code = String(country.country_code);
+		const historicalGap =
+			Object.hasOwn(euRuleFields, ruleBasis[code] ?? "") &&
+			gap.gap_code === "country_rule_pack_missing_" + code.toLowerCase() &&
+			country.rule_review === undefined &&
+			country.reason === "country_rules_not_available";
+		const bundled = Object.hasOwn(ruleBasis, code) && !historicalGap;
 		if (
 			Object.keys(gap).some(
 				(key) =>

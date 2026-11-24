@@ -115,7 +115,7 @@ def test_bundled_rule_countries_do_not_inherit_german_sources_and_report_bundled
     assert isinstance(rule_gap["framework"], str) and rule_gap["framework"]
 
 
-@pytest.mark.parametrize("country", ["GB", "IT", "ES", "CH", "PL", None])
+@pytest.mark.parametrize("country", ["PT", "IE", "CZ", "DK", "FI", None])
 def test_other_countries_do_not_inherit_german_sources(country: str | None) -> None:
     values = declared(country=country, complete=True)
     result = country_assessment(values)

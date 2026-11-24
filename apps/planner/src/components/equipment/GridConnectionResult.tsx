@@ -25,7 +25,7 @@ const COUNTRY_CATALOG: Record<string, CountryEntry> = {
 	BE: {
 		en: "Belgium",
 		de: "Belgien",
-		bundled: false,
+		bundled: true,
 		framework: "Synergrid C10/11 & regional DSO rules",
 	},
 	BG: { en: "Bulgaria", de: "Bulgarien", bundled: false, euRfg: true },
@@ -33,7 +33,7 @@ const COUNTRY_CATALOG: Record<string, CountryEntry> = {
 	CH: {
 		en: "Switzerland",
 		de: "Schweiz",
-		bundled: false,
+		bundled: true,
 		framework: "VSE NA/EEA-CH & ESTI / DSO rules",
 	},
 	CY: { en: "Cyprus", de: "Zypern", bundled: false, euRfg: true },
@@ -59,7 +59,7 @@ const COUNTRY_CATALOG: Record<string, CountryEntry> = {
 	ES: {
 		en: "Spain",
 		de: "Spanien",
-		bundled: false,
+		bundled: true,
 		framework: "RD 244/2019; RD 1183/2020; UNE 217002",
 	},
 	FI: {
@@ -78,7 +78,7 @@ const COUNTRY_CATALOG: Record<string, CountryEntry> = {
 	GB: {
 		en: "United Kingdom",
 		de: "Vereinigtes Königreich",
-		bundled: false,
+		bundled: true,
 		framework: "ENA ER G98 / G99 & DNO application",
 	},
 	GG: { en: "Guernsey", de: "Guernsey", bundled: false },
@@ -97,7 +97,7 @@ const COUNTRY_CATALOG: Record<string, CountryEntry> = {
 	IT: {
 		en: "Italy",
 		de: "Italien",
-		bundled: false,
+		bundled: true,
 		framework: "CEI 0-21 / CEI 0-16 & DSO TICA",
 	},
 	JE: { en: "Jersey", de: "Jersey", bundled: false },
@@ -124,7 +124,7 @@ const COUNTRY_CATALOG: Record<string, CountryEntry> = {
 	PL: {
 		en: "Poland",
 		de: "Polen",
-		bundled: false,
+		bundled: true,
 		framework: "EU 2016/631 (RfG) & PTPiREE IRiESD",
 	},
 	PT: {

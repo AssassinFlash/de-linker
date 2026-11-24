@@ -2,7 +2,261 @@
 
 from __future__ import annotations
 
+from .eu_connection_rules import CHECKS as EU_CHECK_IDS
+
 TEXT = {
+    "grid_bundled_scope_IT": (
+        "Compare the total generating power at the low-voltage grid connection with the CEI interface protection requirement.",
+        "Vergleichen Sie die Gesamterzeugungsleistung am Niederspannungsanschluss mit der CEI-Vorgabe zum Schnittstellenschutz.",
+    ),
+    "grid_bundled_scope_ES": (
+        "Check the permit route for generation supplying on-site consumption under Article 7 of RD 244/2019. For PV, use the installed power defined in Article 3(h).",
+        "Prüfen Sie das Genehmigungsverfahren für Erzeugungsanlagen zum Eigenverbrauch nach Artikel 7 des RD 244/2019. Verwenden Sie bei PV die installierte Leistung nach Artikel 3(h).",
+    ),
+    "grid_bundled_scope_GB": (
+        "Check the low-voltage connection route under ENA G98 for England, Scotland and Wales. Use the aggregate registered current per phase at nominal 230 V.",
+        "Prüfen Sie das Niederspannungs-Anschlussverfahren nach ENA G98 für England, Schottland und Wales. Verwenden Sie den registrierten Gesamtstrom je Phase bei 230 V Nennspannung.",
+    ),
+    "grid_bundled_scope_PL": (
+        "Check the statutory power and voltage limits for a renewable electricity microinstallation.",
+        "Prüfen Sie die gesetzlichen Leistungs- und Spannungsgrenzen für eine Mikroanlage zur Stromerzeugung aus erneuerbaren Energien.",
+    ),
+    "grid_bundled_scope_BE": (
+        "Check the standard AC power limits in Synergrid C10/11 for a small plant at a low-voltage connection. Count hybrid equipment under generation and separate storage under storage.",
+        "Prüfen Sie die regulären AC-Leistungsgrenzen aus Synergrid C10/11 für Kleinanlagen am Niederspannungsanschluss. Zählen Sie Hybridgeräte zur Erzeugung und separate Speicher zur Speicherleistung.",
+    ),
+    "grid_bundled_scope_CH": (
+        "Check the control interface for new generating installations up to 250 kW on the Swiss low-voltage network (NE7).",
+        "Prüfen Sie die Steuerschnittstelle für neue Erzeugungsanlagen bis 250 kW im Schweizer Niederspannungsnetz (NE7).",
+    ),
+    "country_rule_it_lv_generation_spi": (
+        "Italy · LV generator interface protection",
+        "Italien · Schnittstellenschutz am Niederspannungsnetz",
+    ),
+    "country_rule_es_self_consumption": (
+        "Spain · self-consumption connection permits",
+        "Spanien · Netzanschlussgenehmigungen für Eigenverbrauch",
+    ),
+    "country_rule_gb_lv_microgeneration": (
+        "Great Britain · LV generation connection route",
+        "Großbritannien · Verfahren für Erzeugungsanlagen am Niederspannungsnetz",
+    ),
+    "country_rule_pl_renewable_electric_installation": (
+        "Poland · renewable electricity microinstallation",
+        "Polen · Mikroanlage zur Stromerzeugung aus erneuerbaren Energien",
+    ),
+    "country_rule_be_small_plant_limits": (
+        "Belgium · small generating plant power limits",
+        "Belgien · Leistungsgrenzen für kleine Erzeugungsanlagen",
+    ),
+    "country_rule_ch_lv_generation_control": (
+        "Switzerland · LV generation control interface",
+        "Schweiz · Steuerschnittstelle am Niederspannungsnetz",
+    ),
+    "country_rule_it_interface_protection": (
+        "Interface protection at the LV connection",
+        "Schnittstellenschutz am Niederspannungsanschluss",
+    ),
+    "country_rule_es_generation_access": (
+        "Access and connection permits for generation",
+        "Zugangs- und Anschlussgenehmigungen für die Erzeugung",
+    ),
+    "country_rule_gb_connection_route": (
+        "Application to the distribution network operator",
+        "Anmeldung beim Verteilnetzbetreiber",
+    ),
+    "country_rule_pl_microinstallation_scope": (
+        "Statutory electrical microinstallation category",
+        "Gesetzliche Einstufung als elektrische Mikroanlage",
+    ),
+    "country_rule_be_small_plant_power": (
+        "Power criterion for a small generating plant",
+        "Leistungskriterium für eine kleine Erzeugungsanlage",
+    ),
+    "country_rule_ch_dso_interface": (
+        "Power control by the network operator",
+        "Leistungssteuerung durch den Netzbetreiber",
+    ),
+    "country_rule_outside_lv_scope": (
+        "This reading covers connections to the low-voltage network. Ask the operator for the procedure at your connection voltage.",
+        "Diese Auswertung gilt für Anschlüsse an das Niederspannungsnetz. Fragen Sie Ihren Netzbetreiber nach dem Verfahren für Ihre Anschlussspannung.",
+    ),
+    "country_rule_it_integrated_or_dedicated": (
+        "Up to 11.08 kW total generating power, CEI permits interface protection integrated in the converter or a dedicated protection relay. Confirm device conformity and the TICA connection procedure with your operator.",
+        "Bis einschließlich 11,08 kW Gesamterzeugungsleistung erlaubt CEI einen im Umrichter integrierten Schnittstellenschutz oder ein separates Schutzrelais. Klären Sie Gerätekonformität und TICA-Anschlussverfahren mit Ihrem Netzbetreiber.",
+    ),
+    "country_rule_it_dedicated_relay": (
+        "Above 11.08 kW total generating power, a dedicated interface protection relay is required. Confirm the relay and the TICA connection procedure with your operator.",
+        "Oberhalb von 11,08 kW Gesamterzeugungsleistung ist ein separates Schnittstellenschutzrelais erforderlich. Klären Sie das Relais und das TICA-Anschlussverfahren mit Ihrem Netzbetreiber.",
+    ),
+    "country_rule_es_generation_permit_exempt": (
+        "The declared generation is exempt from access and connection permits under Article 7. Check permits for the consumption connection and other local requirements separately.",
+        "Die angegebene Erzeugungsanlage ist nach Artikel 7 von der Zugangs- und Anschlussgenehmigung befreit. Prüfen Sie die Genehmigungen für den Verbrauchsanschluss und weitere örtliche Anforderungen gesondert.",
+    ),
+    "country_rule_es_generation_permits": (
+        "This surplus generation requires access and connection permits. Check the consumption connection separately.",
+        "Für diese Erzeugungsanlage mit Überschusseinspeisung sind Zugangs- und Anschlussgenehmigungen erforderlich. Prüfen Sie den Verbrauchsanschluss gesondert.",
+    ),
+    "country_rule_gb_single_g98_notice": (
+        "For this fully type-tested single-premises installation within the G98 current limit, notify the DNO within 28 days of commissioning. Confirm the installation and documentation requirements.",
+        "Melden Sie diese vollständig typgeprüfte Anlage an einem einzelnen Standort innerhalb der G98-Stromgrenze spätestens 28 Tage nach Inbetriebnahme beim Verteilnetzbetreiber. Prüfen Sie die Installations- und Dokumentationsanforderungen.",
+    ),
+    "country_rule_gb_cluster_agreement": (
+        "For installations at multiple premises in a close geographic region, obtain prior agreement from the DNO.",
+        "Holen Sie vor dem Anschluss mehrerer Anlagen an räumlich nahe beieinanderliegenden Standorten die Zustimmung des Verteilnetzbetreibers ein.",
+    ),
+    "country_rule_gb_g99_application": (
+        "The aggregate current exceeds the G98 limit. Apply to the DNO under G99 before connection.",
+        "Der Gesamtstrom übersteigt die G98-Grenze. Stellen Sie vor dem Anschluss einen G99-Antrag beim Verteilnetzbetreiber.",
+    ),
+    "country_rule_gb_confirm_non_type_tested": (
+        "The G98 route requires fully type-tested equipment. Agree the applicable procedure and tests with the DNO before connection.",
+        "Das G98-Verfahren setzt vollständig typgeprüfte Geräte voraus. Klären Sie Verfahren und Prüfungen vor dem Anschluss mit dem Verteilnetzbetreiber.",
+    ),
+    "country_rule_gb_other_territory": (
+        "This edition covers England, Scotland and Wales. Confirm the rules for the site with its network operator.",
+        "Diese Ausgabe gilt für England, Schottland und Wales. Klären Sie die Vorschriften am Standort mit dem zuständigen Netzbetreiber.",
+    ),
+    "country_rule_pl_microinstallation": (
+        "The renewable electricity installation meets the statutory microinstallation limits. Ask your operator to confirm the notification route and equipment evidence.",
+        "Die Anlage zur Stromerzeugung aus erneuerbaren Energien erfüllt die gesetzlichen Grenzen für eine Mikroanlage. Lassen Sie Meldeverfahren und Gerätenachweise vom Netzbetreiber bestätigen.",
+    ),
+    "country_rule_pl_outside_microinstallation": (
+        "This electrical installation is outside the microinstallation limits. Request the connection conditions from your network operator.",
+        "Diese elektrische Anlage liegt außerhalb der Grenzen für Mikroanlagen. Fordern Sie die Anschlussbedingungen beim Netzbetreiber an.",
+    ),
+    "country_rule_be_within_power_limits": (
+        "Both AC power totals are within the standard small-plant limits. Check separation protection, storage controls, special cases and regional DSO requirements before selecting the connection procedure.",
+        "Beide AC-Leistungssummen liegen innerhalb der regulären Grenzen für Kleinanlagen. Prüfen Sie Entkupplungsschutz, Speichersteuerung, Sonderfälle und regionale Netzbetreibervorgaben, bevor Sie das Anschlussverfahren wählen.",
+    ),
+    "country_rule_be_above_power_limits": (
+        "At least one AC power total exceeds the three-phase small-plant limit. Ask the DSO for the applicable connection procedure.",
+        "Mindestens eine AC-Leistungssumme übersteigt die dreiphasige Kleinanlagengrenze. Erfragen Sie das Anschlussverfahren beim Netzbetreiber.",
+    ),
+    "country_rule_be_check_local_single_phase_limit": (
+        "At least one AC power total exceeds 5 kVA. Check whether the regional DSO publishes a higher single-phase limit.",
+        "Mindestens eine AC-Leistungssumme übersteigt 5 kVA. Prüfen Sie, ob Ihr regionaler Netzbetreiber eine höhere einphasige Grenze veröffentlicht hat.",
+    ),
+    "country_rule_be_no_generating_units": (
+        "Enter the generating or storage equipment present at this connection.",
+        "Geben Sie die am Anschluss vorhandenen Erzeugungs- oder Speichereinheiten an.",
+    ),
+    "country_rule_ch_remote_disconnect": (
+        "For this new LV installation, provide the emergency interface for reducing feed-in to zero. Agree the implementation with the DSO.",
+        "Sehen Sie bei dieser neuen Niederspannungsanlage eine Schnittstelle zur Notabsenkung der Einspeisung auf null vor. Stimmen Sie die Ausführung mit dem Netzbetreiber ab.",
+    ),
+    "country_rule_ch_power_reduction": (
+        "In addition to emergency reduction to zero, provide a technical interface for the DSO to reduce active feed-in at any time.",
+        "Sehen Sie neben der Notabsenkung auf null eine technische Schnittstelle vor, mit der der Netzbetreiber die Wirkleistungseinspeisung jederzeit reduzieren kann.",
+    ),
+    "country_rule_ch_above_interface_scope": (
+        "Above 250 kW, confirm the interface under section 6.5.2 with the DSO.",
+        "Stimmen Sie die Schnittstelle oberhalb von 250 kW nach Abschnitt 6.5.2 mit Ihrem Netzbetreiber ab.",
+    ),
+    "country_rule_ch_existing": (
+        "For an existing installation, ask your DSO whether the new-installation provisions apply to the planned change.",
+        "Klären Sie bei einer Bestandsanlage mit dem Netzbetreiber, ob die Anforderungen an Neuanlagen für Ihre Änderung gelten.",
+    ),
+    "eu_rule_field_power_kw": (
+        "Total installed generating power",
+        "Installierte Gesamterzeugungsleistung",
+    ),
+    "eu_rule_field_connection_voltage_kv": (
+        "Nominal network voltage at the connection point",
+        "Netznennspannung am Anschlusspunkt",
+    ),
+    "eu_rule_field_apparent_power_kva": (
+        "Installed apparent power",
+        "Installierte Scheinleistung",
+    ),
+    "eu_rule_field_gb_in_great_britain": (
+        "Is the site in England, Scotland or Wales?",
+        "Liegt der Standort in England, Schottland oder Wales?",
+    ),
+    "eu_rule_field_current_per_phase_a": (
+        "Total registered generating current on the most heavily loaded phase",
+        "Registrierter Gesamterzeugungsstrom auf der am stärksten belasteten Phase",
+    ),
+    "eu_rule_field_gb_type_tested": (
+        "Is all generating equipment fully type-tested to G98?",
+        "Sind alle Erzeugungseinheiten vollständig nach G98 typgeprüft?",
+    ),
+    "eu_rule_field_gb_multiple_premises": (
+        "Does this project cover multiple premises in a close geographic region?",
+        "Umfasst dieses Projekt mehrere räumlich nahe beieinanderliegende Standorte?",
+    ),
+    "eu_rule_field_es_export_surplus": (
+        "Will this self-consumption installation export surplus electricity?",
+        "Wird diese Eigenverbrauchsanlage überschüssigen Strom einspeisen?",
+    ),
+    "eu_rule_field_es_serviced_urban_land": (
+        "Is the site on urbanised land with all legally required infrastructure and services?",
+        "Liegt die Anlage auf städtebaulich erschlossenem Land mit der gesetzlich erforderlichen Infrastruktur und Versorgung?",
+    ),
+    "eu_rule_field_be_three_phase": (
+        "Is this a three-phase connection?",
+        "Ist der Netzanschluss dreiphasig?",
+    ),
+    "eu_rule_field_be_generation_kva": (
+        "Maximum AC power of generating units including hybrids (enter 0 if none)",
+        "Maximale AC-Scheinleistung der Erzeugungseinheiten einschließlich Hybridgeräten (0, falls keine vorhanden)",
+    ),
+    "eu_rule_field_be_storage_kva": (
+        "Maximum AC power of separate storage units (enter 0 if none)",
+        "Maximale AC-Scheinleistung der separaten Speichereinheiten (0, falls keine vorhanden)",
+    ),
+    "eu_rule_field_ch_new_installation": (
+        "Is this a new generating installation?",
+        "Handelt es sich um eine neue Erzeugungsanlage?",
+    ),
+    "eu_rule_field_voltage_level": (
+        "Network voltage level at the site connection",
+        "Netzebene am Standortanschluss",
+    ),
+    "country_rule_input_gb_in_great_britain": (
+        "Is the site in England, Scotland or Wales?",
+        "Liegt der Standort in England, Schottland oder Wales?",
+    ),
+    "country_rule_input_current_per_phase_a": (
+        "Total registered generating current on the most heavily loaded phase",
+        "Registrierter Gesamterzeugungsstrom auf der am stärksten belasteten Phase",
+    ),
+    "country_rule_input_gb_type_tested": (
+        "Is all generating equipment fully type-tested to G98?",
+        "Sind alle Erzeugungseinheiten vollständig nach G98 typgeprüft?",
+    ),
+    "country_rule_input_gb_multiple_premises": (
+        "Does this project cover multiple premises in a close geographic region?",
+        "Umfasst dieses Projekt mehrere räumlich nahe beieinanderliegende Standorte?",
+    ),
+    "country_rule_input_es_export_surplus": (
+        "Will this self-consumption installation export surplus electricity?",
+        "Wird diese Eigenverbrauchsanlage überschüssigen Strom einspeisen?",
+    ),
+    "country_rule_input_es_serviced_urban_land": (
+        "Is the site on urbanised land with all legally required infrastructure and services?",
+        "Liegt die Anlage auf städtebaulich erschlossenem Land mit der gesetzlich erforderlichen Infrastruktur und Versorgung?",
+    ),
+    "country_rule_input_be_three_phase": (
+        "Is this a three-phase connection?",
+        "Ist der Netzanschluss dreiphasig?",
+    ),
+    "country_rule_input_be_generation_kva": (
+        "Maximum AC power of generating units including hybrids (enter 0 if none)",
+        "Maximale AC-Scheinleistung der Erzeugungseinheiten einschließlich Hybridgeräten (0, falls keine vorhanden)",
+    ),
+    "country_rule_input_be_storage_kva": (
+        "Maximum AC power of separate storage units (enter 0 if none)",
+        "Maximale AC-Scheinleistung der separaten Speichereinheiten (0, falls keine vorhanden)",
+    ),
+    "country_rule_input_ch_new_installation": (
+        "Is this a new generating installation?",
+        "Handelt es sich um eine neue Erzeugungsanlage?",
+    ),
+    "country_rule_input_voltage_level": (
+        "Network voltage level at the site connection",
+        "Netzebene am Standortanschluss",
+    ),
     "customer_selected_equipment": ("Your equipment selection", "Ihre Geräteauswahl"),
     "customer_selected_equipment_scope": (
         "You selected the equipment listed below. System compatibility still needs to be checked. Include any outstanding quantities in your inquiry message.",
@@ -2257,7 +2511,9 @@ CHECKS = {
 }
 
 
-BUNDLED_RULE_COUNTRIES: frozenset[str] = frozenset({"DE", "FR", "NL", "AT", "SE"})
+BUNDLED_RULE_COUNTRIES: frozenset[str] = frozenset(
+    {"DE", "FR", "NL", "AT", "SE", *EU_CHECK_IDS}
+)
 
 COUNTRY_NAMES: dict[str, tuple[str, str]] = {
     "AD": ("Andorra", "Andorra"),

@@ -17932,3 +17932,211 @@ msgstr "Angebot ausgestellt"
 #: includes/Genie/PageIndexing.php
 msgid "Ask Genie about inverter and battery compatibility, product specifications and manufacturer documents for your project."
 msgstr "Fragen Sie Genie nach passenden Wechselrichtern und Batterien, technischen Daten und Herstellerunterlagen für Ihr Projekt."
+
+#: build/planner/assets/planner.js:1
+msgid "Italy · LV generator interface protection"
+msgstr "Italien · Schnittstellenschutz am Niederspannungsnetz"
+
+#: build/planner/assets/planner.js:1
+msgid "Spain · self-consumption connection permits"
+msgstr "Spanien · Netzanschlussgenehmigungen für Eigenverbrauch"
+
+#: build/planner/assets/planner.js:1
+msgid "Great Britain · LV generation connection route"
+msgstr "Großbritannien · Verfahren für Erzeugungsanlagen am Niederspannungsnetz"
+
+#: build/planner/assets/planner.js:1
+msgid "Poland · renewable electricity microinstallation"
+msgstr "Polen · Mikroanlage zur Stromerzeugung aus erneuerbaren Energien"
+
+#: build/planner/assets/planner.js:1
+msgid "Belgium · small generating plant power limits"
+msgstr "Belgien · Leistungsgrenzen für kleine Erzeugungsanlagen"
+
+#: build/planner/assets/planner.js:1
+msgid "Switzerland · LV generation control interface"
+msgstr "Schweiz · Steuerschnittstelle am Niederspannungsnetz"
+
+#: build/planner/assets/planner.js:1
+msgid "Interface protection at the LV connection"
+msgstr "Schnittstellenschutz am Niederspannungsanschluss"
+
+#: build/planner/assets/planner.js:1
+msgid "Access and connection permits for generation"
+msgstr "Zugangs- und Anschlussgenehmigungen für die Erzeugung"
+
+#: build/planner/assets/planner.js:1
+msgid "Application to the distribution network operator"
+msgstr "Anmeldung beim Verteilnetzbetreiber"
+
+#: build/planner/assets/planner.js:1
+msgid "Statutory electrical microinstallation category"
+msgstr "Gesetzliche Einstufung als elektrische Mikroanlage"
+
+#: build/planner/assets/planner.js:1
+msgid "Power criterion for a small generating plant"
+msgstr "Leistungskriterium für eine kleine Erzeugungsanlage"
+
+#: build/planner/assets/planner.js:1
+msgid "Power control by the network operator"
+msgstr "Leistungssteuerung durch den Netzbetreiber"
+
+#: build/planner/assets/planner.js:1
+msgid "This reading covers connections to the low-voltage network. Ask the operator for the procedure at your connection voltage."
+msgstr "Diese Auswertung gilt für Anschlüsse an das Niederspannungsnetz. Fragen Sie Ihren Netzbetreiber nach dem Verfahren für Ihre Anschlussspannung."
+
+#: build/planner/assets/planner.js:1
+msgid "Up to 11.08 kW total generating power, CEI permits interface protection integrated in the converter or a dedicated protection relay. Confirm device conformity and the TICA connection procedure with your operator."
+msgstr "Bis einschließlich 11,08 kW Gesamterzeugungsleistung erlaubt CEI einen im Umrichter integrierten Schnittstellenschutz oder ein separates Schutzrelais. Klären Sie Gerätekonformität und TICA-Anschlussverfahren mit Ihrem Netzbetreiber."
+
+#: build/planner/assets/planner.js:1
+msgid "Above 11.08 kW total generating power, a dedicated interface protection relay is required. Confirm the relay and the TICA connection procedure with your operator."
+msgstr "Oberhalb von 11,08 kW Gesamterzeugungsleistung ist ein separates Schnittstellenschutzrelais erforderlich. Klären Sie das Relais und das TICA-Anschlussverfahren mit Ihrem Netzbetreiber."
+
+#: build/planner/assets/planner.js:1
+msgid "The declared generation is exempt from access and connection permits under Article 7. Check permits for the consumption connection and other local requirements separately."
+msgstr "Die angegebene Erzeugungsanlage ist nach Artikel 7 von der Zugangs- und Anschlussgenehmigung befreit. Prüfen Sie die Genehmigungen für den Verbrauchsanschluss und weitere örtliche Anforderungen gesondert."
+
+#: build/planner/assets/planner.js:1
+msgid "This surplus generation requires access and connection permits. Check the consumption connection separately."
+msgstr "Für diese Erzeugungsanlage mit Überschusseinspeisung sind Zugangs- und Anschlussgenehmigungen erforderlich. Prüfen Sie den Verbrauchsanschluss gesondert."
+
+#: build/planner/assets/planner.js:1
+msgid "For this fully type-tested single-premises installation within the G98 current limit, notify the DNO within 28 days of commissioning. Confirm the installation and documentation requirements."
+msgstr "Melden Sie diese vollständig typgeprüfte Anlage an einem einzelnen Standort innerhalb der G98-Stromgrenze spätestens 28 Tage nach Inbetriebnahme beim Verteilnetzbetreiber. Prüfen Sie die Installations- und Dokumentationsanforderungen."
+
+#: build/planner/assets/planner.js:1
+msgid "For installations at multiple premises in a close geographic region, obtain prior agreement from the DNO."
+msgstr "Holen Sie vor dem Anschluss mehrerer Anlagen an räumlich nahe beieinanderliegenden Standorten die Zustimmung des Verteilnetzbetreibers ein."
+
+#: build/planner/assets/planner.js:1
+msgid "The aggregate current exceeds the G98 limit. Apply to the DNO under G99 before connection."
+msgstr "Der Gesamtstrom übersteigt die G98-Grenze. Stellen Sie vor dem Anschluss einen G99-Antrag beim Verteilnetzbetreiber."
+
+#: build/planner/assets/planner.js:1
+msgid "The G98 route requires fully type-tested equipment. Agree the applicable procedure and tests with the DNO before connection."
+msgstr "Das G98-Verfahren setzt vollständig typgeprüfte Geräte voraus. Klären Sie Verfahren und Prüfungen vor dem Anschluss mit dem Verteilnetzbetreiber."
+
+#: build/planner/assets/planner.js:1
+msgid "This edition covers England, Scotland and Wales. Confirm the rules for the site with its network operator."
+msgstr "Diese Ausgabe gilt für England, Schottland und Wales. Klären Sie die Vorschriften am Standort mit dem zuständigen Netzbetreiber."
+
+#: build/planner/assets/planner.js:1
+msgid "The renewable electricity installation meets the statutory microinstallation limits. Ask your operator to confirm the notification route and equipment evidence."
+msgstr "Die Anlage zur Stromerzeugung aus erneuerbaren Energien erfüllt die gesetzlichen Grenzen für eine Mikroanlage. Lassen Sie Meldeverfahren und Gerätenachweise vom Netzbetreiber bestätigen."
+
+#: build/planner/assets/planner.js:1
+msgid "This electrical installation is outside the microinstallation limits. Request the connection conditions from your network operator."
+msgstr "Diese elektrische Anlage liegt außerhalb der Grenzen für Mikroanlagen. Fordern Sie die Anschlussbedingungen beim Netzbetreiber an."
+
+#: build/planner/assets/planner.js:1
+msgid "Both AC power totals are within the standard small-plant limits. Check separation protection, storage controls, special cases and regional DSO requirements before selecting the connection procedure."
+msgstr "Beide AC-Leistungssummen liegen innerhalb der regulären Grenzen für Kleinanlagen. Prüfen Sie Entkupplungsschutz, Speichersteuerung, Sonderfälle und regionale Netzbetreibervorgaben, bevor Sie das Anschlussverfahren wählen."
+
+#: build/planner/assets/planner.js:1
+msgid "At least one AC power total exceeds the three-phase small-plant limit. Ask the DSO for the applicable connection procedure."
+msgstr "Mindestens eine AC-Leistungssumme übersteigt die dreiphasige Kleinanlagengrenze. Erfragen Sie das Anschlussverfahren beim Netzbetreiber."
+
+#: build/planner/assets/planner.js:1
+msgid "At least one AC power total exceeds 5 kVA. Check whether the regional DSO publishes a higher single-phase limit."
+msgstr "Mindestens eine AC-Leistungssumme übersteigt 5 kVA. Prüfen Sie, ob Ihr regionaler Netzbetreiber eine höhere einphasige Grenze veröffentlicht hat."
+
+#: build/planner/assets/planner.js:1
+msgid "Enter the generating or storage equipment present at this connection."
+msgstr "Geben Sie die am Anschluss vorhandenen Erzeugungs- oder Speichereinheiten an."
+
+#: build/planner/assets/planner.js:1
+msgid "For this new LV installation, provide the emergency interface for reducing feed-in to zero. Agree the implementation with the DSO."
+msgstr "Sehen Sie bei dieser neuen Niederspannungsanlage eine Schnittstelle zur Notabsenkung der Einspeisung auf null vor. Stimmen Sie die Ausführung mit dem Netzbetreiber ab."
+
+#: build/planner/assets/planner.js:1
+msgid "In addition to emergency reduction to zero, provide a technical interface for the DSO to reduce active feed-in at any time."
+msgstr "Sehen Sie neben der Notabsenkung auf null eine technische Schnittstelle vor, mit der der Netzbetreiber die Wirkleistungseinspeisung jederzeit reduzieren kann."
+
+#: build/planner/assets/planner.js:1
+msgid "Above 250 kW, confirm the interface under section 6.5.2 with the DSO."
+msgstr "Stimmen Sie die Schnittstelle oberhalb von 250 kW nach Abschnitt 6.5.2 mit Ihrem Netzbetreiber ab."
+
+#: build/planner/assets/planner.js:1
+msgid "For an existing installation, ask your DSO whether the new-installation provisions apply to the planned change."
+msgstr "Klären Sie bei einer Bestandsanlage mit dem Netzbetreiber, ob die Anforderungen an Neuanlagen für Ihre Änderung gelten."
+
+#: build/planner/assets/planner.js:1
+msgid "Total installed generating power"
+msgstr "Installierte Gesamterzeugungsleistung"
+
+#: build/planner/assets/planner.js:1
+msgid "Nominal network voltage at the connection point"
+msgstr "Netznennspannung am Anschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "Installed apparent power"
+msgstr "Installierte Scheinleistung"
+
+#: build/planner/assets/planner.js:1
+msgid "Is the site in England, Scotland or Wales?"
+msgstr "Liegt der Standort in England, Schottland oder Wales?"
+
+#: build/planner/assets/planner.js:1
+msgid "Total registered generating current on the most heavily loaded phase"
+msgstr "Registrierter Gesamterzeugungsstrom auf der am stärksten belasteten Phase"
+
+#: build/planner/assets/planner.js:1
+msgid "Is all generating equipment fully type-tested to G98?"
+msgstr "Sind alle Erzeugungseinheiten vollständig nach G98 typgeprüft?"
+
+#: build/planner/assets/planner.js:1
+msgid "Does this project cover multiple premises in a close geographic region?"
+msgstr "Umfasst dieses Projekt mehrere räumlich nahe beieinanderliegende Standorte?"
+
+#: build/planner/assets/planner.js:1
+msgid "Will this self-consumption installation export surplus electricity?"
+msgstr "Wird diese Eigenverbrauchsanlage überschüssigen Strom einspeisen?"
+
+#: build/planner/assets/planner.js:1
+msgid "Is the site on urbanised land with all legally required infrastructure and services?"
+msgstr "Liegt die Anlage auf städtebaulich erschlossenem Land mit der gesetzlich erforderlichen Infrastruktur und Versorgung?"
+
+#: build/planner/assets/planner.js:1
+msgid "Is this a three-phase connection?"
+msgstr "Ist der Netzanschluss dreiphasig?"
+
+#: build/planner/assets/planner.js:1
+msgid "Maximum AC power of generating units including hybrids (enter 0 if none)"
+msgstr "Maximale AC-Scheinleistung der Erzeugungseinheiten einschließlich Hybridgeräten (0, falls keine vorhanden)"
+
+#: build/planner/assets/planner.js:1
+msgid "Maximum AC power of separate storage units (enter 0 if none)"
+msgstr "Maximale AC-Scheinleistung der separaten Speichereinheiten (0, falls keine vorhanden)"
+
+#: build/planner/assets/planner.js:1
+msgid "Is this a new generating installation?"
+msgstr "Handelt es sich um eine neue Erzeugungsanlage?"
+
+#: build/planner/assets/planner.js:1
+msgid "Network voltage level at the site connection"
+msgstr "Netzebene am Standortanschluss"
+
+#: build/planner/assets/planner.js:1
+msgid "Compare the total generating power at the low-voltage grid connection with the CEI interface protection requirement."
+msgstr "Vergleichen Sie die Gesamterzeugungsleistung am Niederspannungsanschluss mit der CEI-Vorgabe zum Schnittstellenschutz."
+
+#: build/planner/assets/planner.js:1
+msgid "Check the permit route for generation supplying on-site consumption under Article 7 of RD 244/2019. For PV, use the installed power defined in Article 3(h)."
+msgstr "Prüfen Sie das Genehmigungsverfahren für Erzeugungsanlagen zum Eigenverbrauch nach Artikel 7 des RD 244/2019. Verwenden Sie bei PV die installierte Leistung nach Artikel 3(h)."
+
+#: build/planner/assets/planner.js:1
+msgid "Check the low-voltage connection route under ENA G98 for England, Scotland and Wales. Use the aggregate registered current per phase at nominal 230 V."
+msgstr "Prüfen Sie das Niederspannungs-Anschlussverfahren nach ENA G98 für England, Schottland und Wales. Verwenden Sie den registrierten Gesamtstrom je Phase bei 230 V Nennspannung."
+
+#: build/planner/assets/planner.js:1
+msgid "Check the statutory power and voltage limits for a renewable electricity microinstallation."
+msgstr "Prüfen Sie die gesetzlichen Leistungs- und Spannungsgrenzen für eine Mikroanlage zur Stromerzeugung aus erneuerbaren Energien."
+
+#: build/planner/assets/planner.js:1
+msgid "Check the standard AC power limits in Synergrid C10/11 for a small plant at a low-voltage connection. Count hybrid equipment under generation and separate storage under storage."
+msgstr "Prüfen Sie die regulären AC-Leistungsgrenzen aus Synergrid C10/11 für Kleinanlagen am Niederspannungsanschluss. Zählen Sie Hybridgeräte zur Erzeugung und separate Speicher zur Speicherleistung."
+
+#: build/planner/assets/planner.js:1
+msgid "Check the control interface for new generating installations up to 250 kW on the Swiss low-voltage network (NE7)."
+msgstr "Prüfen Sie die Steuerschnittstelle für neue Erzeugungsanlagen bis 250 kW im Schweizer Niederspannungsnetz (NE7)."
