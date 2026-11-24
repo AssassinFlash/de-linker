@@ -1075,6 +1075,7 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 	} );
 
 	expect( sendTurn ).toHaveBeenCalledWith( {
+		surface: 'helper',
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
 		onStage: expect.any( Function ),
@@ -1671,6 +1672,7 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 		} )
 	).toBeNull();
 	expect( sendTurn ).toHaveBeenCalledWith( {
+		surface: 'helper',
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
 		onStage: expect.any( Function ),
@@ -3265,6 +3267,7 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 		await screen.findByText( 'The SAJ B2 fits it.' )
 	).toBeInTheDocument();
 	expect( sendTurn ).toHaveBeenLastCalledWith( {
+		surface: 'helper',
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		onOperation: expect.any( Function ),
 		onStage: expect.any( Function ),

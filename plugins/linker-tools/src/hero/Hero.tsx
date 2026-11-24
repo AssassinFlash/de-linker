@@ -1415,6 +1415,7 @@ export function HeroConversation( {
 						<>
 							{ ' ' }
 							<a
+								data-genie-handoff=""
 								href={ config.requestPageUrl }
 								onClick={ () => {
 									// The hero field lives outside React. Read its

@@ -48,7 +48,13 @@ export default defineConfig({
 		{
 			name: 'firefox',
 			testMatch: 'header-parity.spec.ts',
-			use: { ...devices['Desktop Firefox'] },
+			use: {
+				...devices['Desktop Firefox'],
+				// The header fixture runs entirely on the local WordPress instance.
+				launchOptions: {
+					firefoxUserPrefs: { 'network.proxy.type': 0 },
+				},
+			},
 		},
 	],
 });

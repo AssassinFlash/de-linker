@@ -20,6 +20,7 @@ use Linker\Commerce\Presentation\Module;
 use Linker\Commerce\Presentation\ProductShortcodes;
 use Linker\Commerce\Presentation\Shortcodes;
 use Linker\Commerce\Presentation\WindPress;
+use Linker\Commerce\Presentation\WindPressPageStyles;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
 use Linker\Commerce\Tests\TestCase;
@@ -32,6 +33,60 @@ use WP_Mock\Matcher\AnyInstance;
  * @covers \Linker\Commerce\Presentation\Module
  */
 final class ModuleTest extends TestCase {
+
+	/**
+	 * Only the rendered main picture participates in responsive image preloading.
+	 *
+	 * @dataProvider gallery_preloads
+	 * @param bool                 $is_pdp  Whether Woo is rendering a product.
+	 * @param string               $gallery Actual LiveCanvas gallery markup.
+	 * @param array<string,string> $hint    The selected image resource, or no hint.
+	 */
+	public function test_preloads_only_the_rendered_main_image( bool $is_pdp, string $gallery, array $hint ): void {
+		WP_Mock::userFunction( 'plugins_url' )->andReturn( 'https://linker.test/fonts/' );
+		WP_Mock::userFunction( 'is_front_page' )->andReturn( false );
+		WP_Mock::userFunction( 'is_product' )->andReturn( $is_pdp );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- LiveCanvas's rendered dynamic template.
+		$GLOBALS['lc_main_html'] = '<img class="pdp-brand-logo" src="/logo.png">' . $gallery;
+		try {
+			$resources = ( new Module( new Shortcodes(), new LoginGate(), new WindPress() ) )->preload_resources( array() );
+			$images    = array_values( array_filter( $resources, static fn ( array $entry ): bool => 'image' === $entry['as'] ) );
+			$this->assertSame( $hint ? array( $hint ) : array(), $images );
+		} finally {
+			unset( $GLOBALS['lc_main_html'] );
+		}
+	}
+
+	/** WordPress attachment candidates, gallery fallback and empty galleries.
+	 *
+	 * @return array<string,array{bool,string,array<string,string>}>
+	 */
+	public static function gallery_preloads(): array {
+		return array(
+			'responsive featured image' => array(
+				true,
+				'<img class="pdp-gallery-main" src="/original.jpg" srcset="/small.jpg 300w, /original.jpg 800w" sizes="(max-width: 768px) 100vw, 667px">',
+				array(
+					'as'            => 'image',
+					'href'          => '/original.jpg',
+					'fetchpriority' => 'high',
+					'imagesrcset'   => '/small.jpg 300w, /original.jpg 800w',
+					'imagesizes'    => '(max-width: 768px) 100vw, 667px',
+				),
+			),
+			'first gallery attachment'  => array(
+				true,
+				'<img class="pdp-gallery-main" src="/gallery-only.jpg" sizes="100vw">',
+				array(
+					'as'            => 'image',
+					'href'          => '/gallery-only.jpg',
+					'fetchpriority' => 'high',
+				),
+			),
+			'empty product gallery'     => array( true, '<div class="pdp-gallery-empty">Photography in preparation</div>', array() ),
+			'other page'                => array( false, '<img class="pdp-gallery-main" src="/embedded.jpg">', array() ),
+		);
+	}
 
 	/** The standalone native draft also receives the saved-quantity guard. */
 	public function test_cart_loads_account_interactions(): void {
@@ -117,6 +172,12 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( \Linker\Commerce\Presentation\LegalNavigation::class, 'enqueue' ) );
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
+		WP_Mock::expectFilterAdded( 'wp_preload_resources', array( $module, 'preload_resources' ) );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'trim_woo_assets' ), 30 );
+		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.before', WindPressPageStyles::class, 'before_cache' );
+		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.after', WindPressPageStyles::class, 'after_cache' );
+		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.before', WindPressPageStyles::class, 'before_cache' );
+		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.after', WindPressPageStyles::class, 'after_cache' );
 		$module->register();
 		self::assertSame( array_fill_keys( array_column( $family_hooks, 1 ), 1 ), $registered );
 

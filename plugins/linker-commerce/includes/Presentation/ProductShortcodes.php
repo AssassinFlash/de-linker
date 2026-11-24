@@ -692,14 +692,14 @@ final class ProductShortcodes {
 		} else {
 			$html .= '<span class="sf-card-price-net">' . wp_kses_post( $card['price']['html'] ) . '</span>';
 		}
-		$html     .= '</div>';
-		$html     .= '<p class="sf-card-availability" data-card-availability>' . esc_html( $card['availability'] ) . '</p>';
-		$html     .= '<div class="sf-card-actions">';
-		$html     .= '<a class="sf-card-view tv-woo-card-action tv-woo-card-action--primary" data-card-view href="' . esc_url( $url ) . '">' . esc_html__( 'View product', 'linker-commerce' ) . '</a>';
-		$html     .= '<button type="button" class="card-compare-checkbox" data-compare-product="' . esc_attr( (string) Publication::canonical_id( $product_id ) ) . '" aria-pressed="false" aria-label="'
+		$html .= '</div>';
+		$html .= '<p class="sf-card-availability" data-card-availability>' . esc_html( $card['availability'] ) . '</p>';
+		$html .= '<div class="sf-card-actions">';
+		$html .= '<a class="sf-card-view tv-woo-card-action tv-woo-card-action--secondary" data-card-view href="' . esc_url( $url ) . '">' . esc_html__( 'View product', 'linker-commerce' ) . '</a>';
+		$html .= '<button type="button" class="card-compare-checkbox" data-compare-product="' . esc_attr( (string) Publication::canonical_id( $product_id ) ) . '" aria-pressed="false" aria-label="'
 			. esc_attr( sprintf( /* translators: %s: product name. */ __( 'Compare: %s', 'linker-commerce' ), (string) $card['title'] ) ) . '">' . self::icon( 'compare' )
 			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span><svg class="compare-selected-mark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></button>';
-			$html .= '<a class="sf-card-atc tv-woo-card-action tv-woo-card-action--secondary" data-card-atc href="#" hidden>' . esc_html__( 'Add to solution draft', 'linker-commerce' ) . '</a>';
+		$html .= '<a class="sf-card-atc tv-woo-card-action tv-woo-card-action--primary" data-card-atc' . ( '' === $card['cta_url'] ? ' hidden' : ' href="' . esc_url( $card['cta_url'] ) . '"' ) . '>' . esc_html__( 'Add to solution draft', 'linker-commerce' ) . '</a>';
 		if ( '' !== $card['price']['url'] ) {
 			$html .= '<a class="tv-woo-card-action tv-woo-card-action--secondary" data-card-gate href="' . esc_url( $card['price']['url'] ) . '">' . esc_html__( 'Log in for pricing', 'linker-commerce' ) . '</a>' . AccountLinks::create();
 		}
@@ -769,7 +769,7 @@ final class ProductShortcodes {
 					$html .= ' sizes="' . esc_attr( (string) $logo['sizes'] ) . '"';
 				}
 			}
-			return $html . ' alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" fetchpriority="high" /></div>';
+			return $html . ' alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" /></div>';
 		}
 		if ( '' === (string) $view['brand'] ) {
 			return '';
@@ -906,15 +906,14 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * The purchase panel's primary action: sign in for partner pricing, or
-	 * the solution draft entry when the visitor sees prices.
+	 * The purchase panel's direct link to add an available product to the draft.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
 	public function pdp_cta( $atts = array() ): string {
 		unset( $atts );
 		$view = $this->current_view();
-		if ( null === $view ) {
+		if ( null === $view || '' === $view['cta_url'] ) {
 			return '';
 		}
 		return '<a class="pdp-btn pdp-btn-dark" href="' . esc_url( (string) $view['cta_url'] ) . '">' . esc_html( (string) $view['cta_label'] ) . '</a>';
@@ -1083,8 +1082,11 @@ final class ProductShortcodes {
 				$ids[0],
 				'full',
 				array(
-					'class' => 'pdp-gallery-main',
-					'alt'   => (string) $view['title'],
+					'class'         => 'pdp-gallery-main',
+					'fetchpriority' => 'high',
+					'loading'       => 'eager',
+					'decoding'      => 'async',
+					'alt'           => (string) $view['title'],
 					// The main picture is the largest image on a product page and
 					// the box it fills is fixed by the gallery layout, so a
 					// responsive candidate list is stated from the measured box
@@ -1093,7 +1095,7 @@ final class ProductShortcodes {
 					// 667 and 663 CSS px wide; the picture is painted with
 					// object-fit: contain, so the box is an upper bound of the
 					// painted width for every product aspect ratio.
-					'sizes' => '(max-width: 768px) 100vw, (max-width: 1024px) 493px, (max-width: 1280px) 627px, 667px',
+					'sizes'         => '(max-width: 768px) 100vw, (max-width: 1024px) 493px, (max-width: 1280px) 627px, 667px',
 				)
 			) . '</button>';
 		if ( isset( $ids[1] ) ) {
@@ -1521,7 +1523,7 @@ final class ProductShortcodes {
 				),
 				static fn( string $part ): bool => '' !== $part
 			);
-			$html    .= '<a class="pdp-doc" href="' . esc_url( (string) $document['url'] ) . '" target="_blank" rel="noopener">';
+			$html    .= '<a class="pdp-doc" data-doc-kind="' . esc_attr( $kind ) . '" data-doc-brand="' . esc_attr( (string) $view['brand'] ) . '" href="' . esc_url( (string) $document['url'] ) . '" target="_blank" rel="noopener">';
 			$html    .= '<span class="pdp-doc-icon">' . self::icon( 'file' ) . '</span>';
 			$html    .= '<span class="grow">' . esc_html( $title )
 				. '<span class="pdp-doc-meta">' . esc_html( implode( ' · ', $meta ) ) . '</span>'
@@ -2163,7 +2165,7 @@ final class ProductShortcodes {
 					: '<span class="sf-card-price-net">' . esc_html( wp_strip_all_tags( (string) $card['price']['html'] ) ) . '</span>',
 				'availability' => (string) $card['availability'],
 				'canPurchase'  => ! $gated,
-				'addToCartUrl' => '',
+				'addToCartUrl' => (string) $card['cta_url'],
 				'accountUrl'   => (string) $card['price']['url'],
 				'selection'    => $this->selection_line( $product, $card ),
 				'factsHtml'    => $factshtml,
@@ -2213,7 +2215,7 @@ final class ProductShortcodes {
 		$cart_url      = function_exists( 'wc_get_cart_url' ) ? (string) wc_get_cart_url() : '';
 		$account       = function_exists( 'wc_get_account_endpoint_url' ) ? (string) wc_get_account_endpoint_url( 'dashboard' ) : '';
 		$logged_in     = is_user_logged_in();
-		$account_label = $logged_in ? __( 'My account', 'linker-commerce' ) : __( 'Sign in', 'linker-commerce' );
+		$account_label = $logged_in ? __( 'My account', 'linker-commerce' ) : __( 'Account', 'linker-commerce' );
 		$count         = function_exists( 'WC' ) && null !== WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
 		$shop          = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : PageUrls::home();
 		$search_icon   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
@@ -2225,6 +2227,7 @@ final class ProductShortcodes {
 		$badge = $count > 0 ? '<span class="tv-b2b-acct-count">' . esc_html( (string) $count ) . '</span>' : '';
 		$html .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Solution draft', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</span>' . $badge . '</a>';
 		if ( 'mobile' === $attributes['part'] ) {
+			$account_label = $logged_in ? $account_label : __( 'Sign in', 'linker-commerce' );
 			return '<a href="' . esc_url( $cart_url ) . '" class="tv-mobile-utility tv-header-cart-link" aria-label="' . esc_attr__( 'Solution draft', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</span>' . $badge . '</a><a href="' . esc_url( $account ) . '" class="tv-mobile-utility tv-b2b-mobile-portal-link" aria-label="' . esc_attr( $account_label ) . '">' . $user_icon . '<span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span></a>' . AccountLinks::create();
 		}
 		$html .= '<div class="tv-b2b-acct"><button type="button" class="tv-b2b-acct-btn" aria-haspopup="true" aria-controls="linker-header-account-menu" aria-expanded="false" aria-label="' . esc_attr( $account_label ) . '"><span class="tv-b2b-acct-avatar">' . $user_icon . '</span><span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span><span class="tv-b2b-acct-chev"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>';

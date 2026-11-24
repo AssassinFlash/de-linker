@@ -165,7 +165,7 @@ final class ComparePage {
 	}
 
 	/** The current comparison page, including a twin with its own slug. */
-	private static function is_comparison_page(): bool {
+	public static function is_comparison_page(): bool {
 		if ( is_page( self::PAGE_SLUG ) ) {
 			return true;
 		}

@@ -952,6 +952,8 @@ export default function ProjectWorkbench({
 	]);
 
 	function showStep(next: Step) {
+		if (next === "review" && step !== "review")
+			window.linkerTrack?.("configurator_complete");
 		if (next !== step)
 			setSystemRequest(next === "system" ? "navigation" : null);
 		setGenieReportId(null);

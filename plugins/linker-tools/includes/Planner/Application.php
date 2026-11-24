@@ -16,6 +16,9 @@ final class Application {
 
 	public const HANDLE = 'linker-planner';
 
+	private const LANDING_ROUTES = '(?:solution-configurator|de/loesungskonfigurator)/?';
+	private const PRIVATE_COOKIE = '(?:wp_woocommerce_session_|woocommerce_|wordpress_logged_in_|linker_planner_)';
+
 	/**
 	 * Initial workspace shell and session-boundary messages kept inline so the
 	 * page still reads in its own language when the full static catalog cannot
@@ -110,6 +113,7 @@ final class Application {
 		add_shortcode( 'linker_planner', array( $this, 'mount' ) );
 		add_filter( 'load_script_translations', array( $this, 'filter_translations' ), 10, 4 );
 		add_action( 'wp_footer', array( $this, 'print_translation_loader' ), 22 );
+		add_filter( 'mod_rewrite_rules', array( $this, 'cache_rules' ) );
 		( new Indexing() )->register();
 		( new WindPress( $this->plugin_file ) )->register();
 	}
@@ -240,6 +244,36 @@ final class Application {
 	}
 
 	/**
+	 * LiteSpeed's public cache can answer before WordPress reads the request.
+	 *
+	 * @param string $rules WordPress's native web-server rules.
+	 */
+	public function cache_rules( string $rules ): string {
+		$conditions = 'RewriteCond %{QUERY_STRING} !^$ [OR]' . "\n"
+			. 'RewriteCond %{HTTP_COOKIE} (^|;[[:space:]]*)' . self::PRIVATE_COOKIE . "\n"
+			. 'RewriteRule ^' . self::LANDING_ROUTES . '$ - [E=Cache-Control:no-cache]';
+		return str_replace( 'RewriteEngine On', "RewriteEngine On\n" . $conditions, $rules );
+	}
+
+	/**
+	 * Only a clean, anonymous landing URL can carry a shared copy of the workspace shell.
+	 *
+	 * @param bool $signed_in Whether WordPress authenticated the visitor.
+	 */
+	private function public_landing( bool $signed_in ): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Compare the raw URL and names only. No request data is echoed.
+		if ( $signed_in || ! empty( $_GET ) || 1 !== preg_match( '~^/' . self::LANDING_ROUTES . '$~D', $_SERVER['REQUEST_URI'] ?? '' ) ) {
+			return false;
+		}
+		foreach ( array_keys( $_COOKIE ) as $name ) {
+			if ( preg_match( '~^' . self::PRIVATE_COOKIE . '~', (string) $name ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * WordPress owns routes, language and country labels.
 	 *
 	 * @param array<string,string>|string $attributes Native shortcode attributes.
@@ -248,7 +282,10 @@ final class Application {
 		if ( is_admin() || $this->mounted || ( is_array( $attributes ) && 'home' === ( $attributes['mode'] ?? '' ) ) ) {
 			return '';
 		}
-		\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
+		$signed_in = is_user_logged_in();
+		if ( ! $this->public_landing( $signed_in ) ) {
+			\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
+		}
 		$this->mounted = true;
 		wp_enqueue_script( 'wp-i18n' );
 		wp_enqueue_script_module( self::HANDLE );
@@ -268,7 +305,7 @@ final class Application {
 				// has always treated it as the normal guest branch). Sending
 				// the URL only to a signed-in visitor removes a request that
 				// could never succeed from every guest's first paint.
-				'nonce_url'           => is_user_logged_in()
+				'nonce_url'           => $signed_in
 					? add_query_arg( 'action', 'rest-nonce', admin_url( 'admin-ajax.php' ) )
 					: null,
 				'locale'              => determine_locale(),
@@ -279,8 +316,10 @@ final class Application {
 			)
 		);
 		return sprintf(
-			'<section data-linker-planner data-planner-config="%s"><p role="status">%s</p></section>',
+			'<section data-linker-planner data-planner-config="%s"><div class="sc-configurator sc-intake sc-loading"><header class="sc-project-heading"><div><h1>%s</h1><p>%s</p></div></header><p role="status">%s</p></div></section>',
 			esc_attr( is_string( $config ) ? $config : '{}' ),
+			esc_html__( 'Solution Configurator', 'linker-tools' ),
+			esc_html__( 'A project can start with the information already available. Roof drawing is optional.', 'linker-tools' ),
 			esc_html__( 'Opening your workspace…', 'linker-tools' )
 		);
 	}

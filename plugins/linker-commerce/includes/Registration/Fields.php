@@ -243,6 +243,13 @@ final class Fields {
 		update_user_meta( $customer_id, 'locale', OrderLocale::current() );
 
 		$this->vat->update( $customer_id, $values[ VatProfile::VAT_META ], false );
+		\Linker\Commerce\Consent\BasicMode::remember_conversion(
+			'sign_up',
+			array(
+				'business_type' => $values[ CustomerRole::META ],
+				'country'       => $values['billing_country'],
+			)
+		);
 
 		/**
 		 * Fires after a customer registered through the account page's form;

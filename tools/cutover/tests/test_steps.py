@@ -12,8 +12,11 @@ about the command line itself rather than about the step's prose.
 from __future__ import annotations
 
 import fcntl
+import gzip
 import json
 import os
+import shutil
+import subprocess
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -2132,29 +2135,30 @@ def test_windpress_cache_guard_fails_or_warns_when_cache_mtime_does_not_advance(
         )
 
 
+def _resumable_snapshot(
+    site: Target, home: Path, **options: object
+) -> snapshot.Snapshot:
+    del site
+    reservation = options.get("reservation")
+    assert isinstance(reservation, snapshot.Reservation)
+    path = home / "snapshots" / reservation.name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
+    result = snapshot.Snapshot(
+        path.name, path, path.stat().st_size, backup.sha256(path)
+    )
+    callback = options.get("on_verified")
+    assert callable(callback)
+    callback(result)
+    return result
+
+
 def test_windpress_cache_guard_passes_when_cache_mtime_advances(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Generating a fresh cache advances mtime and unlocks deploy / resume-deploy."""
-    import gzip
-
-    def take(site: Target, home: Path, **options: object) -> snapshot.Snapshot:
-        del site
-        reservation = options.get("reservation")
-        assert isinstance(reservation, snapshot.Reservation)
-        path = home / "snapshots" / reservation.name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
-        result = snapshot.Snapshot(
-            path.name, path, path.stat().st_size, backup.sha256(path)
-        )
-        callback = options.get("on_verified")
-        assert callable(callback)
-        callback(result)
-        return result
-
-    monkeypatch.setattr(snapshot, "take", take)
+    monkeypatch.setattr(snapshot, "take", _resumable_snapshot)
 
     class StagedGenerateTarget(FilesystemTarget):
         def __init__(self, root: Path) -> None:
@@ -2220,3 +2224,121 @@ def test_windpress_cache_guard_passes_when_cache_mtime_advances(
         )
         == "present changed the WindPress inputs and the cache was generated"
     )
+
+
+@pytest.mark.parametrize("archived", [False, True])
+def test_p0a_rewrite_and_windpress_restore_match_the_plugin_batch(
+    tmp_path: Path, archived: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Resume and archived rollback use the same private pre-publication files."""
+    from linker_cutover import p0a
+
+    monkeypatch.setattr(snapshot, "take", _resumable_snapshot)
+    root = tmp_path / "site"
+    target = FilesystemTarget(root)
+    repository = _repository(tmp_path)
+    plugins = Path("wp-content/plugins")
+    old = root / plugins / "linker-commerce/linker-commerce.php"
+    old.parent.mkdir(parents=True)
+    old.write_text("old commerce")
+    styles = repository / plan.REPO / "linker-commerce" / p0a.PAGE_STYLES
+    styles.parent.mkdir(parents=True)
+    styles.write_text("<?php")
+    app = repository / plan.REPO / "linker-tools" / p0a.APPLICATION
+    app.parent.mkdir(parents=True)
+    source = (
+        Path(__file__).resolve().parents[3] / "plugins/linker-tools" / p0a.APPLICATION
+    )
+    shutil.copyfile(source, app)
+    cache = root / p0a.CACHE
+    cache.mkdir(parents=True)
+    (cache / "tailwind.css").write_text("original complete CSS")
+    main = root / p0a.PATHS[1]
+    main.parent.mkdir()
+    main.write_text("previous imports")
+    edge = root / ".htaccess"
+    before = (
+        "# BEGIN WordPress\nRewriteEngine On\n"
+        "RewriteRule ^wp-content/uploads/(.+\\.pdf)$ index.php?linker_public_document=$1 [END,NC,QSA]\n"
+        "RewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule . /index.php [L]\n# END WordPress\n"
+    )
+    edge.write_text(before)
+    deploy_id = "20261124T000000Z-p0a"
+    private = tmp_path / "deploy-prev" / (deploy_id + "-p0a")
+    saved = private / "files"
+    for relative in p0a.PATHS[:3]:
+        dest = saved / relative
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if (root / relative).is_dir():
+            shutil.copytree(root / relative, dest)
+        else:
+            shutil.copy2(root / relative, dest)
+    Path(str(saved / p0a.HERO) + ".absent").touch()
+    marker = private / "deploy-id"
+    marker.write_text("some-other-batch\n")
+    staging = tmp_path / "staging"
+    with pytest.raises(CutoverError, match="planner cache bypass"):
+        steps.deploy(
+            target, repository=repository, staging=staging, deploy_id=deploy_id
+        )
+    assert old.read_text() == "old commerce"
+    rules = subprocess.check_output(
+        [
+            "php",
+            "-r",
+            r"require $argv[1]; echo (new \Linker\Tools\Planner\Application(''))->cache_rules('RewriteEngine On');",
+            str(app),
+        ],
+        text=True,
+    )
+    edge.write_text(before.replace("RewriteEngine On", rules))
+    with pytest.raises(CutoverError, match="Incomplete P0-A rollback snapshot"):
+        steps.deploy(target, repository=repository, staging=staging, resume=True)
+    assert old.read_text() == "old commerce"
+    marker.write_text(deploy_id + "\n")
+    result = steps.deploy(target, repository=repository, staging=staging, resume=True)
+    assert result.publication
+    assert not private.exists()
+    directory, manifest = atomic.latest_manifest(target)
+    assert manifest.p0a_snapshot and manifest.deploy_id == deploy_id
+    (cache / "tailwind.css").write_text("shared rules only")
+    (cache / "linker").mkdir()
+    (cache / "linker/page.css").write_text("page rules")
+    main.write_text("shared imports")
+    (root / p0a.HERO).write_text("new hero rules")
+    if archived:
+        assert not steps.finish_deploy(
+            target, result.publication, cache_buster="test"
+        ).notes
+    stored_cache = Path(directory) / "p0a/files" / p0a.CACHE / "tailwind.css"
+    stored_cache.rename(stored_cache.with_suffix(".hold"))
+    with pytest.raises(CutoverError, match="Incomplete P0-A rollback snapshot"):
+        steps.rollback_deploy(target, repository=repository)
+    assert old.read_text() == "<?php"
+    stored_cache.with_suffix(".hold").rename(stored_cache)
+    if archived:
+        native_shell = FilesystemTarget.shell
+
+        def interrupt(site: Target, script: str) -> str:
+            before_hero = f"mv {root / p0a.HERO} "
+            if "restore_all()" in script and before_hero in script:
+                script = script.replace(before_hero, "exit 23\n" + before_hero, 1)
+            return native_shell(site, script)
+
+        with monkeypatch.context() as interrupted:
+            interrupted.setattr(FilesystemTarget, "shell", interrupt)
+            with pytest.raises(CutoverError):
+                steps.rollback_deploy(target, repository=repository)
+        assert old.read_text() == "<?php"
+        assert edge.read_text() == before.replace("RewriteEngine On", rules)
+        assert (cache / "linker/page.css").read_text() == "page rules"
+        assert stored_cache.read_text() == "original complete CSS"
+    restored = steps.rollback_deploy(target, repository=repository)
+    assert not restored.notes
+    assert old.read_text() == "old commerce"
+    assert edge.read_text() == before
+    assert main.read_text() == "previous imports"
+    assert (cache / "tailwind.css").read_text() == "original complete CSS"
+    assert not (cache / "linker").exists()
+    assert not (root / p0a.HERO).exists()
+    assert atomic.latest_manifest(target)[1].state == "rolled_back"

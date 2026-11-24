@@ -189,6 +189,7 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 	class WP_HTML_Tag_Processor {
 		private string $html;
 		private ?string $tag_name = null;
+		private ?DOMElement $matched_element = null;
 		/** @var array<string, string> */
 		private array $updates = array();
 
@@ -202,9 +203,24 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 			if ( '' === $name || 1 !== preg_match( '/<' . preg_quote( $name, '/' ) . '\b/i', $this->html ) ) {
 				return false;
 			}
+			if ( isset( $query['class_name'] ) ) {
+				$document = new DOMDocument();
+				$document->loadHTML( $this->html, LIBXML_NOERROR | LIBXML_NOWARNING );
+				foreach ( $document->getElementsByTagName( strtolower( $name ) ) as $element ) {
+					if ( in_array( $query['class_name'], explode( ' ', $element->getAttribute( 'class' ) ), true ) ) {
+						$this->matched_element = $element;
+						return true;
+					}
+				}
+				return false;
+			}
 			$this->tag_name = $name;
 			$this->updates  = array();
 			return true;
+		}
+
+		public function get_attribute( string $name ): ?string {
+			return $this->matched_element?->hasAttribute( $name ) ? $this->matched_element->getAttribute( $name ) : null;
 		}
 
 		public function set_attribute( $name, $value ): bool {

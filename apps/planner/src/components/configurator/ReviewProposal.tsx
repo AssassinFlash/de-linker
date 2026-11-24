@@ -265,6 +265,11 @@ function ReportPreview({
 							<a
 								className="sc-button"
 								href={pdfUrl}
+								onClick={() =>
+									window.linkerTrack?.("configurator_export_pdf", {
+										export_type: "pdf",
+									})
+								}
 								target="_blank"
 								rel="noopener noreferrer"
 							>
@@ -412,6 +417,10 @@ function ReportDownloads({
 			link.href = objectUrl.current;
 			link.download = filename;
 			link.click();
+			if (format === "pdf" || format === "materials")
+				window.linkerTrack?.("configurator_export_pdf", {
+					export_type: format === "pdf" ? "pdf" : "csv",
+				});
 		} catch (cause) {
 			if (instance !== lifetime.current) return;
 			recheckAccess(cause);

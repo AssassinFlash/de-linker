@@ -276,6 +276,7 @@ final class Handler {
 				WC()->session->set( 'linker_inquiry_error', null );
 				WC()->session->set( 'linker_inquiry_error_locale', null );
 			}
+			\Linker\Commerce\Consent\BasicMode::remember_conversion( 'generate_lead', array( 'lead_surface' => isset( $post[ Context::PROJECT_FIELD ] ) || isset( $post[ InquiryTransfer::FIELD ] ) ? 'configurator_inquiry' : 'inquiry' ) );
 			wp_safe_redirect( $result->get_checkout_order_received_url(), $on_checkout ? 303 : 302 );
 		} else {
 			if ( WC()->session instanceof \WC_Session_Handler ) {

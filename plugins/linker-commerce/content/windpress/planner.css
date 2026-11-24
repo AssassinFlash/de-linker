@@ -384,6 +384,12 @@
 
 /* Configurator workspace and inquiry flow. */
 @layer components {
+  /* Reserve Step 1's footprint while the session opens. Other steps size to their own contents. */
+  [data-linker-planner]:has(> .sc-loading) { min-height: 1890px; }
+  @media (max-width: 600px) {
+    [data-linker-planner]:has(> .sc-loading) { min-height: 3200px; }
+  }
+  [data-linker-planner]:has(> .sc-opening-error) { min-height: 100svh; }
   .sc-configurator { width: 100%; min-width: 0; max-width: var(--proto-form-max-width); margin-inline: auto; padding: 24px clamp(16px, 2.5vw, 32px) 60px; color: var(--proto-ink-deep); background: var(--proto-paper-journal); font-family: var(--proto-font-sans); font-size: 15px; line-height: 1.55; }
   .sc-configurator.sc-intake { --proto-neutral-500: var(--proto-ink-muted-deep); background: var(--proto-paper-journal); }
   .sc-intake .sc-entry-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-block: 8px 20px; color: var(--proto-ink-muted-deep); font-size: 14px; }

@@ -69,6 +69,9 @@ final class Handler {
 		if ( ! in_array( $state, array( 'sent', 'sent_no_receipt', 'receipt_pending', 'saved_review' ), true ) ) {
 			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post, $this->last_error );
 		}
+		if ( $this->last_order instanceof WC_Order ) {
+			\Linker\Commerce\Consent\BasicMode::remember_conversion( 'generate_lead', array( 'lead_surface' => 'contact' ) );
+		}
 		$this->back( $back, $state );
 	}
 

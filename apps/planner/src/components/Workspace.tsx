@@ -248,6 +248,12 @@ export function Workspace({
 			url.searchParams.delete("brief");
 			for (const key of ENTRY_QUERY_KEYS) url.searchParams.delete(key);
 			url.hash = destination;
+			if (
+				id &&
+				from !== destination &&
+				(destination === "sc-preliminary-review" || destination === "sc-review")
+			)
+				window.linkerTrack?.("configurator_complete");
 			setRoute(id ? destination : "projects");
 			if (
 				id &&

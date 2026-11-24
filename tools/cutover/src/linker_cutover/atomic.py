@@ -14,7 +14,7 @@ from collections.abc import Callable, Iterator
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
-from linker_cutover import planner_contracts, public_assets
+from linker_cutover import p0a, planner_contracts, public_assets
 from linker_cutover.target import CutoverError, Target
 
 
@@ -68,6 +68,7 @@ class Manifest:
     deploy_id: str
     state: str
     backups: tuple[Backup, ...]
+    p0a_snapshot: bool = False
 
 
 # GNU stat on Hostinger/Linux; BSD stat on the development Mac. Both return
@@ -193,6 +194,7 @@ def latest_manifest(target: Target) -> tuple[str, Manifest]:
             raw["deploy_id"],
             raw["state"],
             tuple(Backup(**entry) for entry in raw["backups"]),
+            raw.get("p0a_snapshot", False),
         )
     except (KeyError, TypeError, ValueError) as error:
         raise CutoverError(f"invalid deployment manifest in {directory}") from error
@@ -501,7 +503,26 @@ def publish(
             artifacts, live_paths, next_paths, strict=True
         )
     )
-    manifest = Manifest(deploy_id, "pending", entries)
+    source = {item.relative: item.source for item in artifacts}
+    commerce = "wp-content/plugins/linker-commerce"
+    tools = "wp-content/plugins/linker-tools"
+    needs_snapshot = False
+    if commerce in source and (source[commerce] / p0a.PAGE_STYLES).is_file():
+        if target.rsync_remote is not None or target.exists(".htaccess"):
+            if tools not in source:
+                raise CutoverError(
+                    "the WindPress transition requires the paired planner plugin"
+                )
+            staged_app = str(
+                Path(target.path_of(_siblings(tools).next)) / p0a.APPLICATION
+            )
+            p0a.check_edge(target, staged_app)
+            needs_snapshot = target.exists(
+                f"{commerce}/linker-commerce.php"
+            ) and not target.exists(f"{commerce}/{p0a.PAGE_STYLES}")
+            if needs_snapshot:
+                p0a.check_snapshot(target, directory + "-p0a", deploy_id)
+    manifest = Manifest(deploy_id, "pending", entries, needs_snapshot)
     switch: list[str] = []
     restore: list[str] = []
     for entry in entries:
@@ -528,6 +549,10 @@ def publish(
             )
         else:
             restore.insert(0, f"rm -rf {live}\nrm -f {absent}")
+    companion = shlex.quote(directory + "-p0a")
+    bound = shlex.quote(str(Path(directory) / "p0a"))
+    if needs_snapshot:
+        restore.append(f"if [ -d {bound} ]; then mv {bound} {companion}; fi")
     restore.append(f"rm -rf {shlex.quote(directory)}")
     restore.append(
         f"printf '%s' {shlex.quote(prior_id)} > {pointer}"
@@ -590,7 +615,8 @@ def publish(
         + "\n}; } 2>&1\n"
     )
     script += (
-        _write_prepared_manifest(target, manifest, directory)
+        (f"mv {companion} {bound}\n" if needs_snapshot else "")
+        + _write_prepared_manifest(target, manifest, directory)
         + f"\nprintf '%s' {shlex.quote(deploy_id)} > {pointer}\ntrap - EXIT HUP INT TERM\n"
     )
     if after_switch:
@@ -650,10 +676,7 @@ def reconcile_pending(target: Target) -> tuple[str, ...]:
     )
     if changed:
         target.shell(
-            "set -eu\n"
-            + _write_manifest(
-                Manifest(manifest.deploy_id, "pending", entries), directory
-            )
+            "set -eu\n" + _write_manifest(replace(manifest, backups=entries), directory)
         )
     return changed
 
@@ -728,9 +751,7 @@ def archive(target: Target, receipt: Receipt) -> None:
     script += (
         "\n".join(switch)
         + "\n"
-        + _write_manifest(
-            Manifest(manifest.deploy_id, "archived", manifest.backups), directory
-        )
+        + _write_manifest(replace(manifest, state="archived"), directory)
     )
     script += "\ntrap - EXIT HUP INT TERM\n"
     target.shell(script)
@@ -797,6 +818,30 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
     ]
     if drifted:
         raise CutoverError("live changed since deploy: " + ", ".join(drifted))
+    entries = list(manifest.backups)
+    if manifest.p0a_snapshot:
+        companion = str(Path(directory) / "p0a")
+        p0a.check_snapshot(target, companion, manifest.deploy_id)
+        saved = Path(companion) / "files"
+        assets = [str(saved / relative) for relative in p0a.PATHS]
+        live_assets = [target.path_of(relative) for relative in p0a.PATHS]
+        actual = identities(target, [*assets, *live_assets])
+        for relative, old, live in zip(p0a.PATHS, assets, live_assets, strict=True):
+            existed = actual[old] != "-"
+            if not existed and actual[live] == "-":
+                continue
+            entries.append(
+                Backup(
+                    relative,
+                    manifest.deploy_id,
+                    relative == p0a.CACHE,
+                    existed,
+                    actual[old],
+                    actual[live],
+                )
+            )
+            paths.append(old if existed else old + ".absent")
+            live_paths.append(live)
     _same_filesystem(
         target, backup_root(target), [str(Path(path).parent) for path in live_paths]
     )
@@ -805,7 +850,7 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
     switch: list[str] = []
     recover: list[str] = []
     cleanup: list[str] = []
-    for entry, backup_path in zip(manifest.backups, paths, strict=True):
+    for entry, backup_path in zip(entries, paths, strict=True):
         names = _siblings(entry.relative)
         live, current, previous = (
             _quoted(target, entry.relative),
@@ -846,7 +891,7 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
             "set -eu\n"
             + "\n".join(
                 f"rm -f {_quoted(target, _siblings(entry.relative).next)}"
-                for entry in manifest.backups
+                for entry in entries
                 if entry.existed and not entry.directory
             )
         )
@@ -861,7 +906,7 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
             target,
             [
                 (entry.relative, path if entry.existed else None)
-                for entry, path in zip(manifest.backups, paths, strict=True)
+                for entry, path in zip(entries, paths, strict=True)
             ],
         )
         or ":"
@@ -874,7 +919,7 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
     output = target.shell(script)
     restored = identities(target, live_paths)
     readbacks: list[str] = []
-    for entry, live in zip(manifest.backups, live_paths, strict=True):
+    for entry, live in zip(entries, live_paths, strict=True):
         wanted = entry.inode if entry.existed else "-"
         if restored[live] != wanted:
             raise CutoverError(
@@ -887,14 +932,12 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
         "set -eu\n"
         + "\n".join(cleanup)
         + "\n"
-        + _write_manifest(
-            Manifest(manifest.deploy_id, "rolled_back", manifest.backups), directory
-        )
+        + _write_manifest(replace(manifest, state="rolled_back"), directory)
     )
     return Receipt(
         manifest.deploy_id,
         _switch_seconds(output, manifest.deploy_id),
         directory,
-        tuple(relatives),
+        tuple(entry.relative for entry in entries),
         tuple(readbacks),
     )

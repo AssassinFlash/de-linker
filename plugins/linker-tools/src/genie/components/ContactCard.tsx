@@ -231,6 +231,9 @@ export function ContactCard( {
 			fetcher
 		);
 		if ( result.ok ) {
+			window.linkerTrack?.( 'generate_lead', {
+				lead_surface: 'contact',
+			} );
 			setSentTo( result.email );
 			setReceipt( result.receipt );
 			setPhase( 'sent' );
@@ -366,6 +369,7 @@ export function ContactCard( {
 					<button
 						type="submit"
 						className="linker-genie-contact__send"
+						data-genie-handoff=""
 						disabled={ 'ready' !== phase }
 					>
 						{ 'sending' === phase

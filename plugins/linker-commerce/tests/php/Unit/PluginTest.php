@@ -112,6 +112,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( Monitor::HOOK, array( new AnyInstance( Monitor::class ), 'run' ) ); // @phpstan-ignore argument.type
 		WP_Mock::userFunction( 'register_deactivation_hook' );
 
+		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'read_conversion' ), 99 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'enqueue_withdrawal' ), 0 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_get_consent_type', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'opt_in' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'script_loader_tag', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'hold_google_tag' ), 30, 2 ); // @phpstan-ignore argument.type

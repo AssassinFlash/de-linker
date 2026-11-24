@@ -70,6 +70,17 @@
 		setText( card.querySelector( '[data-card-selection]' ), member.selection );
 		setHref( card.querySelector( '[data-card-view]' ), member.url );
 		setText( card.querySelector( '[data-card-availability]' ), member.availability );
+		var draft = card.querySelector( '[data-card-atc]' );
+		if ( draft ) {
+			draft.hidden = ! member.addToCartUrl;
+			if ( draft.hidden ) {
+				draft.removeAttribute( 'href' );
+			} else {
+				setHref( draft, member.addToCartUrl );
+			}
+		}
+		setHref( card.querySelector( '[data-card-gate]' ), member.accountUrl );
+
 
 		var price = card.querySelector( '[data-card-price]' );
 		if ( price && member.priceHtml ) {

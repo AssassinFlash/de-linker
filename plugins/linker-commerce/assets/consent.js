@@ -136,36 +136,111 @@
 		});
 	}
 
-	document.addEventListener(
-		'wp_listen_for_consent_change',
-		function (event) {
-			if (
-				!event.detail ||
-				!Object.prototype.hasOwnProperty.call(
-					event.detail,
-					'statistics'
-				)
-			) {
-				return;
+	const googleTag = 'script[src*="googletagmanager.com/gtag/js"]';
+	const liveTag = googleTag + ':not([type="text/plain"]):not([type="javascript/blocked"])';
+	const optedOut = window['ga-disable-' + measurementId()] === true;
+	let statistics;
+	function cookieValue(name) {
+		const cookie = document.cookie.split('; ').find((entry) => entry.startsWith(name + '='));
+		return cookie ? cookie.slice(name.length + 1) : '';
+	}
+	function cookieAllowsAnalytics() {
+		return cookieValue('cookieyes-consent').split(',').includes('analytics:yes');
+	}
+	// Site Kit queues its config after this script. Keep private search terms,
+	// password reset and receipt keys out of the first page_view as well as events.
+	function searchPath(url) {
+		if (url.searchParams.has('s') || /^\/(?:de\/)?search(?:\/|$)/i.test(url.pathname)) {
+			return url.pathname.startsWith('/de/') ? '/de/search/' : '/search/';
+		}
+		return '';
+	}
+	function analyticsUrl(value, campaign) {
+		if (!value) return '';
+		const url = new URL(value);
+		if (url.origin !== location.origin) return url.origin + '/';
+		const safe = new URL(searchPath(url) || url.pathname, url.origin);
+		if (campaign) {
+			for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_id', 'utm_term', 'utm_content']) {
+				const tag = url.searchParams.get(key);
+				if (tag && /^[a-z0-9._~-]+$/i.test(tag)) safe.searchParams.set(key, tag);
 			}
-			const allowed = event.detail.statistics === 'allow';
-			const id = measurementId();
-			if (id) {
-				window['ga-disable-' + id] = !allowed;
-			}
-			if (!allowed) {
-				clearAnalyticsCookies();
-				// Remove the measuring library's event handlers by reloading into the
-				// CMP's denied state. A blocked placeholder has no active src.
-				if (
-					document.querySelector(
-						'script[src*="googletagmanager.com/gtag/js"]:not([type="text/plain"]):not([type="javascript/blocked"])'
-					)
-				) {
-					location.reload();
-				}
-			}
-		},
-		true
-	);
+		}
+		return safe.href;
+	}
+	if (typeof window.gtag === 'function') {
+		// Enhanced measurement reads the raw query independently of page_location.
+		const searchKeys = ['q', 's', 'search', 'query', 'keyword'];
+		window.gtag('policy', 'get_url', function (_container, _permission, data) {
+			return data.component !== 'query' || !searchKeys.includes(data.queryKey);
+		});
+		const context = {
+			page_location: analyticsUrl(location.href, true),
+			page_referrer: analyticsUrl(document.referrer, false),
+		};
+		if (searchPath(new URL(location.href))) context.page_title = 'Search';
+		window.gtag('set', context);
+	}
+
+	const eventFields = {
+		generate_lead: ['lead_surface'],
+		configurator_start: [],
+		configurator_complete: [],
+		configurator_export_pdf: ['export_type'],
+		genie_ask: ['surface'],
+		genie_handoff: [],
+		datasheet_download: ['brand', 'doc_kind'],
+		sign_up: ['business_type', 'country'],
+	};
+	window.linkerTrack = function (name, params = {}) {
+		const allowed = cookieValue('cookieyes-consent') ? cookieAllowsAnalytics() : statistics === true;
+		if (optedOut || !allowed || statistics === false || typeof window.gtag !== 'function' || !Object.hasOwn(eventFields, name)) return false;
+		const payload = { page_lang: document.documentElement.lang.startsWith('de') ? 'de' : 'en' };
+		for (const field of eventFields[name]) {
+			if (params[field]) payload[field] = params[field];
+		}
+		window.gtag('event', name, payload);
+		return true;
+	};
+
+	document.addEventListener('click', function (event) {
+		const link = event.target.closest?.('a[data-doc-kind]');
+		if (link) window.linkerTrack('datasheet_download', { brand: link.dataset.docBrand, doc_kind: link.dataset.docKind });
+		const handoff = event.target.closest?.('[data-genie-handoff], .linker-genie-app a[href^="mailto:"], .linker-genie-hero__surface a[href^="mailto:"]');
+		if (handoff) window.linkerTrack('genie_handoff');
+	});
+	function releaseTag() {
+		const held = document.querySelector(googleTag + '[type="text/plain"]');
+		const id = measurementId();
+		if (!held || !id || window['ga-disable-' + id] === true || document.querySelector(liveTag)) return;
+		window['ga-disable-' + id] = false;
+		const tag = document.createElement('script');
+		tag.async = true;
+		tag.src = held.src;
+		tag.dataset.linkerGtagReleased = '1';
+		held.replaceWith(tag);
+	}
+	function setStatistics(allowed) {
+		const id = measurementId();
+		const wasDenied = statistics === false;
+		statistics = allowed;
+		if (id) window['ga-disable-' + id] = optedOut || !allowed;
+		if (allowed) {
+			releaseTag();
+		} else if (!wasDenied) {
+			clearAnalyticsCookies();
+			if (document.querySelector(liveTag)) location.reload();
+		}
+	}
+	document.addEventListener('DOMContentLoaded', function () {
+		if (cookieAllowsAnalytics()) releaseTag();
+	});
+	document.addEventListener('cookieyes_consent_update', function () {
+		setStatistics(cookieAllowsAnalytics());
+	}, true);
+	document.addEventListener('wp_listen_for_consent_change', function (event) {
+		if (Object.hasOwn(event.detail || {}, 'statistics')) {
+			setStatistics(event.detail.statistics === 'allow');
+		}
+	}, true);
 })();

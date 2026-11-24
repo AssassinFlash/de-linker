@@ -11,11 +11,12 @@ const map={101:101,201:101,102:102,202:102,103:103,203:103,104:104,204:104,105:1
 
 function fixture(ids,{language='en',page=null,family=false}={}){
  const label=language==='de'?'Vergleichen':'Compare';
- const rows=[{id:201,compareId:101,name:'Modell A',compareLabel:'Vergleichen: Modell A'},{id:202,compareId:102,name:'Modell B',compareLabel:'Vergleichen: Modell B'}];
+ const rows=[{id:201,compareId:101,name:'Modell A',compareLabel:'Vergleichen: Modell A'},{id:202,addToCartUrl:'/de/loesungsentwurf/?add-to-cart=202',compareId:102,name:'Modell B',compareLabel:'Vergleichen: Modell B'}];
  const markup=family?`<article data-linker-family-card data-compare-identities='${JSON.stringify(map)}'>
   <script type="application/json" data-linker-products>${JSON.stringify(rows)}</script>
   <button data-compare-product="101" aria-pressed="false" aria-label="Vergleichen: Modell A">${label}</button>
-  <details class="card-product-picker" open><button data-linker-select-product="202">Modell B</button></details></article>`:
+  <a data-card-atc hidden>Zum Lösungsentwurf hinzufügen</a>
+  <details class="card-product-picker" open><button data-linker-select-product="202">Modell B</button><button data-linker-select-product="201">Modell A</button></details></article>`:
   `<section data-compare-identities='${JSON.stringify(map)}'>${[101,102,103,104,105].map(id=>`<button data-compare-product="${id}" aria-pressed="false">${label}</button>`).join('')}</section>`;
  const dom=new JSDOM(`${markup}<a data-compare-chip data-compare-page="/${language}/compare/" data-compare-max="4" hidden><span data-compare-count></span></a>${page===null?'':`<div id="linker-compare" data-compare-ids="${page}"></div>`}`,{url:'https://linker.test/',runScripts:'outside-only'});
  const {window}=dom;
@@ -65,6 +66,17 @@ test('choosing a family model immediately repaints its selection and localized a
  assert.equal(win.document.querySelector('details').open,false);
  selected.click();
  assert.deepEqual(stored(win),[]);
+});
+
+test('the family draft action follows the selected article and disappears for an unavailable model',()=>{
+ const win=fixture([],{language:'de',family:true});
+ const draft=win.document.querySelector('[data-card-atc]');
+ win.document.querySelector('[data-linker-select-product="202"]').click();
+ assert.equal(draft.hidden,false);
+ assert.equal(draft.getAttribute('href'),'/de/loesungsentwurf/?add-to-cart=202');
+ win.document.querySelector('[data-linker-select-product="201"]').click();
+ assert.equal(draft.hidden,true);
+ assert.equal(draft.hasAttribute('href'),false);
 });
 
 test('the visible mobile comparison row follows the header through scroll and resize',()=>{

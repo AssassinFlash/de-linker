@@ -145,6 +145,13 @@ export function NewProject({
 		Boolean(entryHints || initialProject || openOnLoad || compareOnLoad),
 	);
 	const openedOnLoad = useRef(openOnLoad);
+	const comparisonStarted = useRef(false);
+	function trackStart() {
+		if (!comparisonStarted.current)
+			comparisonStarted.current = Boolean(
+				window.linkerTrack?.("configurator_start"),
+			);
+	}
 	const draftEntry =
 		directComparison || compareOnLoad || Boolean(returnToComparison);
 	const source = JSON.stringify(entryHints);
@@ -741,6 +748,7 @@ export function NewProject({
 			);
 			if (lifetime.current !== instance) return;
 			creationConfirmed = true;
+			trackStart();
 			if (profile.current) {
 				try {
 					project = await attachHomepageProfile(
@@ -998,7 +1006,10 @@ export function NewProject({
 				<section className="sc-main sc-direction-entry">
 					<ProjectDirections
 						selectedScene={scene}
-						changeScene={setScene}
+						changeScene={(next) => {
+							trackStart();
+							setScene(next);
+						}}
 						inputs={inputs}
 						title={title}
 						changeTitle={setTitle}

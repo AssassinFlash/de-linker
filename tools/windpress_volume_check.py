@@ -38,6 +38,8 @@ def main() -> int:
     for name, present in imports.items():
         if not present:
             missing.append(f"main.css import {name}")
+    if "daisyui" in main_css.lower():
+        missing.append("main.css still contains DaisyUI inputs")
     report = {
         "data_dir": str(data),
         "sizes": sizes,

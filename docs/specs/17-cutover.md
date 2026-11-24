@@ -50,6 +50,12 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
 2. 一起切换兼容接收端的 WooCommerce 与 Tools，再发布有初步方向的新界面。英德首页入口是最后一步，用配对内容发布更新已存首页，读回两个真实首页的链接和落地页。评审站从空白浏览器、正式德语与英语的 390/1440 宽度走完三步，核对回执号与 Woo 唯一询盘、项目修订及方向。另实走已打开的旧标签页提交和可恢复的重提。线上用匿名入口读回部署后的界面，等首份自然询盘后再核对线上回执与订单。
 3. 回撤入口时恢复两个首页链接，保留 Planner 的项目删除检查、Tools 的项目准入和 Woo 的接收及关联，使已打开的新版表单继续可提交。接收端上线前的版本不能承担这次回撤。
 
+### WindPress 页面样式首次切换（P0-A）
+
+预发布为本次切换选定原生部署 ID，在生产主机创建仅业主可读的 `~/deploy-prev/<id>-p0a/`。将原 `.htaccess`、`wp-content/uploads/windpress/data/main.css`、整个 `wp-content/uploads/windpress/cache/` 和 `wp-content/uploads/windpress/data/hero-readability.css` 按相同相对路径复制到其 `files/` 下，保留原权限。原先没有 hero 文件时，在相同路径建立零字节的 `hero-readability.css.absent`。核对备份后，将本批 ID 单独一行写进 `deploy-id`。
+
+在 WordPress 的 `.htaccess` 区块中，将候选 `Application::cache_rules('RewriteEngine On')` 生成的规则置于静态文件快捷判断之前，保留 Woo PDF 规则。运行 `just cutover deploy --deploy-id <id>`。切换前读回原生规则和旧样式快照。中断后运行 `just cutover resume-deploy`，沿用同一批次。成功切换会把私有快照移入 `~/deploy-prev/<id>/p0a/`。该批的 `rollback-deploy` 在同一组可恢复的重命名中还原插件、CSS 与原 `.htaccess`，再清理页面缓存。后续部署继续读回规则，快照随旧批次淘汰。
+
 ### 部署前快照与完整备份（#305）
 
 业主 2026-10-18 问：每次部署前都做一次完整备份是否必要（4.6 GB，30–60 分钟）。结论按"部署能改动什么"分层：

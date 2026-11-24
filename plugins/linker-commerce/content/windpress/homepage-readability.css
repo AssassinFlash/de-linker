@@ -206,3 +206,21 @@
 	/* Manual word wrapping makes the current placeholder three lines tall. */
 	html[lang^="de"] #home-a .hero-prompt { min-height: 3lh; }
 }
+
+@media (min-width: 1200px) {
+	#home-a .hero-ops-desktop,
+	#home-a .hero-ops-lead {
+		flex-wrap: nowrap;
+		gap: 6px;
+	}
+
+	#home-a .hero-ops-lead {
+		min-width: 0;
+		letter-spacing: -.15px;
+	}
+
+	#home-a .hero-ops-links {
+		flex-shrink: 0;
+		gap: 6px;
+	}
+}

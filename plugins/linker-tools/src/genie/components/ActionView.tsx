@@ -65,6 +65,7 @@ export function ActionView( {
 			<p>
 				<a
 					className="linker-genie-app__action"
+					data-genie-handoff=""
 					href={ configuratorLink( url, configuratorLinks ) }
 				>
 					{ __( 'Open the configurator', 'linker-tools' ) }
