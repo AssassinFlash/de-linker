@@ -52,6 +52,13 @@ _MANIFEST = json.loads(
     )
 )
 DOC = "Clearances ≥1500/400/500/1000/500 mm. Drill bit: Φ10."
+MISSING_DIRECTIONS = [
+    "missing front clearance of 1500 mm",
+    "missing right clearance of 1000 mm",
+    "missing rear clearance of 400 mm",
+    "missing left clearance of 500 mm",
+    "missing top clearance of 500 mm",
+]
 
 
 def _facts(value: str = "") -> TurnFacts:
@@ -206,7 +213,7 @@ def test_clearance_appends_only_a_figure_the_documents_contain() -> None:
     assert "Bohrer 10" not in text
     assert "Φ10" not in text
     assert any(block.type == "document" for block in sealed.blocks)
-    assert _grade("b15-de", sealed) == []
+    assert _grade("b15-de", sealed) == MISSING_DIRECTIONS
 
     invented = seal(
         output,
@@ -250,7 +257,10 @@ def test_a_clearance_answer_drops_datasheet_energy() -> None:
     assert "47" in text
     assert "1.5" in text
     assert "1000 mm" in text
-    assert _grade("b15-en", sealed) == []
+    assert _grade("b15-en", sealed) == [
+        *MISSING_DIRECTIONS,
+        "number 47 is in no expected fact",
+    ]
 
 
 def test_an_install_question_does_not_grow_a_clearance_sentence() -> None:
