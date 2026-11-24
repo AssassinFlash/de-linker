@@ -425,7 +425,7 @@ def structured_copy(path: Path, data: dict) -> list[str]:
                 labels.extend((qa["question"], qa["answer"]))
         return [text for label in labels for text in label.values()]
     if path.name == "document-titles.json":
-        return [text for title in data.values() for text in title.values()]
+        return [title[lang] for title in data.values() for lang in ("en", "de")]
     return [
         item[field]
         for item in data.get("items", [])

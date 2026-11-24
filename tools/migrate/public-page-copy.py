@@ -100,7 +100,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True, help="WP-CLI prefix")
     parser.add_argument("--page", help="Limit publication to one named page pair")
-    parser.add_argument("--vocabulary", action="store_true", help="Publish the reviewed Wave 3 marketing wording")
+    parser.add_argument(
+        "--vocabulary",
+        action="store_true",
+        help="Publish the reviewed Wave 3 marketing wording",
+    )
     parser.add_argument("--backup-dir", type=Path)
     parser.add_argument(
         "--full-backup", type=Path, help="Completed production backup directory"
@@ -112,7 +116,11 @@ def main() -> None:
     if (args.write or args.restore) and not args.backup_dir:
         parser.error("--write and --restore require --backup-dir")
     full_backup_verified = False
-    vocabulary = json.loads(Path(__file__).with_name("wave3-vocabulary.json").read_text()) if args.vocabulary else {}
+    vocabulary = (
+        json.loads(Path(__file__).with_name("wave3-vocabulary.json").read_text())
+        if args.vocabulary
+        else {}
+    )
     pairs = vocabulary.get("page_pairs", PAGES)
     if args.page and args.page not in pairs:
         parser.error(f"Unknown page in this publication: {args.page}")
@@ -121,7 +129,12 @@ def main() -> None:
         current = wp.read(args.wp, *ids)
         site = current["home"]
         host = urlsplit(site).netloc.replace(":", "-")
-        path = args.backup_dir / f"{host}-{page}{'-vocabulary' if args.vocabulary else ''}.json" if args.backup_dir else None
+        path = (
+            args.backup_dir
+            / f"{host}-{page}{'-vocabulary' if args.vocabulary else ''}.json"
+            if args.backup_dir
+            else None
+        )
         if args.restore:
             assert path is not None
             if not args.page and not path.exists():

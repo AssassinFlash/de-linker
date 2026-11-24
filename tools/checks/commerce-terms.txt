@@ -19,6 +19,9 @@ order*
 checkout*
 payment*
 shipping*
+ship
+ships
+shipped
 # "dispatch" was missing from the first version of this list, and that gap is
 # visible on the live site: the German home said "Lagerversand" while its
 # English twin said "warehouse dispatch", and the German commercial-storage
@@ -32,10 +35,12 @@ dispatch*
 # AGENTS.md §1 rules out 采购 (purchasing) too. No string in the tree uses the
 # word today; it is listed so the first one that does is caught.
 purchase*
+purchasing
 cart
 carts
 basket*
 catalogue*
+catalog
 article
 articles
 
@@ -45,6 +50,7 @@ articles
 # Zahlungsbedingungen; Bezahl* = bezahlen, Bezahlung, Bezahlvorgang;
 # Warenkorb* = Warenkorb, Warenkorbs; Kasse* = Kasse, Kassen.
 Versand*
+versandt
 Kasse*
 Bezahl*
 Warenkorb*

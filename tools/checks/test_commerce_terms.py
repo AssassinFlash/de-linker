@@ -89,7 +89,7 @@ class MatchingTests(unittest.TestCase):
         self.assertEqual(commerce.matched_terms("backorder", patterns()), [])
 
     def test_prefix_terms_carry_inflections(self):
-        self.assertEqual(commerce.matched_terms("Your orders ship", patterns()), ["order*"])
+        self.assertEqual(commerce.matched_terms("Your orders ship", patterns()), ["order*", "ship"])
         self.assertEqual(commerce.matched_terms("Bestellungen", patterns()), ["Bestell*"])
         self.assertEqual(commerce.matched_terms("Versandkosten", patterns()), ["Versand*"])
         self.assertEqual(commerce.matched_terms("Zahlungsbedingungen", patterns()), ["Zahlung*"])
@@ -221,7 +221,7 @@ class ScanCoverageTests(unittest.TestCase):
                 }]}],
             }))
             (data / "document-titles.json").write_text(json.dumps({
-                "order-manual.pdf": {"de": "Versand", "en": "Manual"},
+                "order-manual.pdf": {"de": "Versand", "en": "Meter catalog", "previous": True},
             }))
             (faq / "meter.json").write_text(json.dumps({"items": [
                 {"status": "pass", "answer": "Before ordering", "reason": "old order"},
@@ -229,7 +229,7 @@ class ScanCoverageTests(unittest.TestCase):
             ]}))
             hits = commerce.repo_hits(root, commerce.load_terms())
             self.assertCountEqual([h.text for h in hits], [
-                "Shipping", "Mindestbestellmenge?", "Before ordering", "Versand",
+                "Shipping", "Mindestbestellmenge?", "Before ordering", "Versand", "Meter catalog",
             ])
 
     """What the gate reads, pinned so a root cannot shrink silently."""
