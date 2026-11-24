@@ -79,6 +79,8 @@ def _rule_row(rule: RuleResult, locale: Locale) -> ReportRow:
 
 def _quantity_text(line: Line, locale: Locale) -> str:
     """The quantity with its unit, in the grammatical number of the count: 1 pc, 22 pcs, 60 m."""
+    if line.quantity is None:
+        return t("quantity.site", locale)
     return tn(f"unit.{line.unit}", line.quantity, locale, n=line.quantity)
 
 

@@ -561,8 +561,6 @@ def installer_lines(
             mppts=", ".join(str(g.mppt) for g in fused),
         ),
     ]
-    cable_m = rules.DC_CABLE_M_PER_STRING.value
-    pairs = rules.CONNECTOR_PAIRS_PER_STRING.value
     lines = [
         Line(
             role="pv_module",
@@ -576,7 +574,7 @@ def installer_lines(
         Line(
             role="mounting",
             product=None,
-            quantity=1,
+            quantity=None,
             unit="set",
             label=t("line.mounting", locale, count=layout.module_count),
             basis=[],
@@ -585,19 +583,19 @@ def installer_lines(
         Line(
             role="dc_cable",
             product=None,
-            quantity=total * 2 * cable_m,
+            quantity=None,
             unit="m",
             label=t("line.dc_cable", locale),
-            basis=[tn("basis.cable", total, locale, strings=total, length=cable_m)],
+            basis=[],
             documents=[],
         ),
         Line(
             role="connector",
             product=None,
-            quantity=total * pairs,
+            quantity=None,
             unit="pairs",
             label=t("line.connector", locale),
-            basis=[tn("basis.connectors", pairs, locale, pairs=pairs)],
+            basis=[],
             documents=[],
         ),
     ]

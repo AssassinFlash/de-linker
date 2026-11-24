@@ -183,15 +183,6 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "{count} modules of {wp} Wp in {strings} strings of {length}",
         "{count} Module mit {wp} Wp in {strings} Strängen zu je {length}",
     ),
-    "basis.cable.one": (
-        "One string × 2 poles × {length} m",
-        "Ein Strang × 2 Pole × {length} m",
-    ),
-    "basis.cable.other": (
-        "{strings} strings × 2 poles × {length} m",
-        "{strings} Stränge × 2 Pole × {length} m",
-    ),
-    "basis.connectors.other": ("{pairs} pairs per string", "{pairs} Paare je Strang"),
     "basis.fuses": (
         "{fuses} fuses on MPPT {mppts}: the reverse current of the parallel strings exceeds the module's fuse rating",
         "{fuses} Sicherungen an MPPT {mppts}: Der Rückstrom der parallelen Stränge übersteigt die Sicherungsgrenze des Moduls",
@@ -565,17 +556,14 @@ _TEXTS: dict[str, tuple[str, str]] = {
     "unit.pairs.other": ("{n} pairs", "{n} Paare"),
     "unit.set.one": ("{n} set", "{n} Satz"),
     "unit.set.other": ("{n} sets", "{n} Sätze"),
-    # The reply time is the promise the Proforma request page makes
-    # (docs/specs/11-commerce.md, item 4).
+    "quantity.site": ("Per site layout", "Nach Anlagenplanung"),
     "next.draft": (
-        "Add the Linker products to your solution draft and request a Proforma; we reply within one business day.",
-        "Übernehmen Sie die Linker-Produkte in Ihren Lösungsentwurf und fordern Sie eine Proforma an; "
-        "wir antworten innerhalb eines Werktags.",
+        "Add the Linker products to your solution draft and send an inquiry. We reply within one business day.",
+        "Übernehmen Sie die Linker-Produkte in Ihren Lösungsentwurf und senden Sie Ihre Anfrage. Wir antworten innerhalb eines Werktags.",
     ),
     "next.installer": (
-        "Before ordering, confirm the string layout with the module you install, the cable routes and the grid connection on site.",
-        "Prüfen Sie vor der Bestellung die Stringauslegung mit dem tatsächlich verbauten Modul, die Leitungswege "
-        "und den Netzanschluss vor Ort.",
+        "Before installation, check the string layout, cable routes and grid connection on site.",
+        "Prüfen Sie vor der Installation die Stringauslegung, die Leitungswege und den Netzanschluss vor Ort.",
     ),
     "limit.no_payback": (
         "This report contains no economics: no payback period, cash flow or feed-in tariff.",
@@ -605,14 +593,6 @@ _TEXTS: dict[str, tuple[str, str]] = {
     "assume.string_t_cell_max": (
         "MPP voltage checked at 70 °C cell temperature, with the module's Voc temperature coefficient.",
         "MPP-Spannung geprüft bei 70 °C Zelltemperatur, mit dem Voc-Temperaturkoeffizienten des Moduls.",
-    ),
-    "assume.dc_cable_length": (
-        "DC cable: 15 m per string and pole until the route is measured.",
-        "DC-Kabel: 15 m je Strang und Pol, bis der Leitungsweg aufgemessen ist.",
-    ),
-    "assume.connector_pairs": (
-        "Two connector pairs per string: one at the array, one at the inverter.",
-        "Zwei Steckverbinderpaare je Strang: eines am Generator, eines am Wechselrichter.",
     ),
     "assume.pvgis_timeout": (
         "PVGIS requests time out after 120 s.",

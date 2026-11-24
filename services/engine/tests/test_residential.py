@@ -86,7 +86,7 @@ def test_three_phase_ten_kwp_is_a_complete_released_system(engine: Engine) -> No
     roles = [line.role for line in selected.lines]
     assert roles[:2] == ["inverter", "battery"]
     ours = [line for line in selected.lines if line.product]
-    assert all(line.quantity >= 1 for line in ours)
+    assert all(line.quantity is not None and line.quantity >= 1 for line in ours)
     # Nothing commercial, nothing single-phase, nothing above the HTW limit was proposed.
     for candidate in result.candidates.inverters:
         product = engine.products.by_id[candidate.product.id]

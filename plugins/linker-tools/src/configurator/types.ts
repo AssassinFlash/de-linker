@@ -61,7 +61,7 @@ export type Role =
 export interface Line {
 	role: Role;
 	product: ProductRef | null;
-	quantity: number;
+	quantity: number | null;
 	unit: 'pcs' | 'm' | 'pairs' | 'set';
 	label: string;
 	basis: string[];
@@ -257,7 +257,7 @@ export interface CommercialSystem {
 	usable_kwh: number;
 	power_kw: number;
 	release: Release | null;
-	lines: Line[];
+	lines: ( Line & { quantity: number } )[];
 }
 
 export interface CommercialResult {

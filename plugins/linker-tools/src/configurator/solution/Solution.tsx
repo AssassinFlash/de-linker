@@ -64,6 +64,9 @@ export function verdictText( verdict: Verdict ): string {
 }
 
 function unitText( line: Line, locale: Locale ): string {
+	if ( line.quantity === null ) {
+		return locale === 'de' ? 'Nach Anlagenplanung' : 'Per site layout';
+	}
 	const amount = formatNumber( line.quantity, locale );
 	switch ( line.unit ) {
 		case 'm':

@@ -264,24 +264,6 @@ STRING_FUSE_RATING_MAX = Rule(
     STRING_FUSE_RATING_MIN.evidence,
 )
 
-# Installer-scope Stückliste lines.
-DC_CABLE_M_PER_STRING = Rule(
-    "dc_cable_length",
-    15.0,
-    "m per pole and string",
-    "Placeholder DC route between array and inverter; the installer measures the real route",
-    f"{PLANNER} §2.5(c)",
-    verified=False,
-)
-CONNECTOR_PAIRS_PER_STRING = Rule(
-    "connector_pairs",
-    2.0,
-    "pairs per string",
-    "One mating pair at the array end and one at the inverter end of each string",
-    "",
-    verified=False,
-)
-
 # Roof step: module count on LoD2 roof planes.
 ROOF_FLAT_TILT_DEG = Rule(
     "roof_flat",

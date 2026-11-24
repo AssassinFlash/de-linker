@@ -525,3 +525,36 @@ def test_proposal_places_monthly_generation_and_verified_cards_before_appendix(
         word not in "\n".join(pages).lower()
         for word in ("payback", "amortisation", "cashflow")
     )
+
+
+@pytest.mark.parametrize(
+    ("locale", "site"), [("en", "Per site layout"), ("de", "Nach Anlagenplanung")]
+)
+def test_quick_proposal_leaves_site_materials_to_the_measured_layout(
+    engine: Engine, locale: str, site: str
+) -> None:
+    from conftest import PANEL_ELECTRICAL
+
+    scenario = ResidentialInput.model_validate(
+        dict(
+            plz="80538",
+            country="DE",
+            annual_kwh=5000,
+            pv_kwp=10,
+            phase=3,
+            locale=locale,
+            module=PANEL_ELECTRICAL,
+        )
+    )
+    design = residential.design(engine, scenario)
+    assert design.selected
+    lines = [
+        line
+        for line in design.selected.lines
+        if line.role in ("dc_cable", "connector", "mounting")
+    ]
+    assert len(lines) == 3 and all(line.quantity is None for line in lines)
+    sections = report.residential(design, "2026-01-01T00:00:00Z").sections
+    materials = next(s for s in sections if s.id == "bom").table
+    assert materials and sum(row[0] == site for row in materials.rows) == 3
+    assert "Proforma" not in str(sections)

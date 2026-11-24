@@ -225,7 +225,7 @@ class Line(BaseModel):
 
     role: Role
     product: ProductRef | None
-    quantity: float
+    quantity: float | None
     unit: Literal["pcs", "m", "pairs", "set"]
     label: str
     basis: list[str]
