@@ -586,7 +586,7 @@ windpress-compile name *options:
     # The anchor-class check is the plugins' own (WindPressCache::missing_anchor_classes
     # for the templates, Linker\Tools\Genie\WindPress::missing_anchor_classes for the
     # entries' ask chip), so the recipe fails on exactly the classes they need.
-    missing="$(PHP={{ php }} {{ linker_local }} wp "$name" eval '$css = (string) @file_get_contents( wp_upload_dir()["basedir"] . "/windpress/cache/tailwind.css" ); echo json_encode( array_merge( ( new Linker\Commerce\Presentation\WindPressCache() )->missing_anchor_classes( $css ), ( new Linker\Tools\Genie\WindPress() )->missing_anchor_classes( $css ) ) );' | tail -n 1)"
+    missing="$(PHP={{ php }} {{ linker_local }} wp "$name" eval '$css = (string) @file_get_contents( wp_upload_dir()["basedir"] . "/windpress/cache/tailwind.css" ); echo json_encode( array_merge( ( new Linker\Commerce\Presentation\WindPressCache() )->missing_anchor_classes( $css, wp_upload_dir()["basedir"] . "/windpress/cache" ), ( new Linker\Tools\Genie\WindPress() )->missing_anchor_classes( $css ) ) );' | tail -n 1)"
     if [ "$missing" != "[]" ]; then
         echo "windpress: the compiled cache misses the templates' or the entries' anchor classes: $missing" >&2
         exit 1

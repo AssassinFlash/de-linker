@@ -30,7 +30,7 @@ final class WindPressCache {
 	 *
 	 * @var array<string, string>
 	 */
-	private const ANCHOR_CLASSES = array(
+	private const UTILITY_CLASSES = array(
 		'py-10'                 => '.py-10',
 		'px-4'                  => '.px-4',
 		'bg-white'              => '.bg-white',
@@ -39,6 +39,10 @@ final class WindPressCache {
 		'text-(--proto-accent)' => '.text-\\(--proto-accent\\)',
 		'overflow-x-auto'       => '.overflow-x-auto',
 		'object-contain'        => '.object-contain',
+	);
+
+	/** Template-specific selectors in the published page styles. */
+	private const PAGE_CLASSES = array(
 		// The replica templates' anchors (#16): their rules live in the
 		// WindPress volume stylesheets, so a missing selector is the alarm for
 		// a volume file that never made it into the compile, or a shortcode
@@ -184,7 +188,7 @@ final class WindPressCache {
 				),
 			);
 		}
-		$missing = $this->missing_anchor_classes( (string) file_get_contents( $path ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local cache file on disk, not a remote URL.
+		$missing = $this->missing_anchor_classes( (string) file_get_contents( $path ), dirname( $path ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local cache file on disk, not a remote URL.
 		if ( array() !== $missing ) {
 			return array(
 				'kind'   => 'missing-classes',
@@ -220,12 +224,33 @@ final class WindPressCache {
 	 * escaped selector appears followed by something that is not part of a
 	 * longer class name, so .py-10 does not match a compiled .py-100.
 	 *
-	 * @param string $css Compiled CSS.
+	 * @param string      $css       Compiled shared CSS.
+	 * @param string|null $cache_dir Published WindPress cache directory.
 	 * @return list<string>
 	 */
-	public function missing_anchor_classes( string $css ): array {
+	public function missing_anchor_classes( string $css, ?string $cache_dir = null ): array {
+		$missing = $this->missing_selectors( $css, self::UTILITY_CLASSES );
+		if ( null !== $cache_dir ) {
+			foreach ( WindPressPageStyles::filenames() as $name ) {
+				$path = $cache_dir . '/linker/' . $name;
+				if ( is_readable( $path ) ) {
+					$css .= "\n" . file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local published stylesheet.
+				}
+			}
+		}
+		return array_merge( $missing, $this->missing_selectors( $css, self::PAGE_CLASSES ) );
+	}
+
+	/**
+	 * Find absent selectors in a published stylesheet.
+	 *
+	 * @param string                $css CSS to search.
+	 * @param array<string, string> $selectors Expected selector names and patterns.
+	 * @return list<string>
+	 */
+	private function missing_selectors( string $css, array $selectors ): array {
 		$missing = array();
-		foreach ( self::ANCHOR_CLASSES as $class => $selector ) {
+		foreach ( $selectors as $class => $selector ) {
 			$pattern = '/' . preg_quote( $selector, '/' ) . '(?![a-zA-Z0-9_-])/';
 			if ( 1 !== preg_match( $pattern, $css ) ) {
 				$missing[] = $class;

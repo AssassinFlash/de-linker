@@ -1090,6 +1090,23 @@ final class PresentCommandTest extends TestCase {
 		$this->assertArrayNotHasKey( self::BACKUP, $this->options, 'check stages no rollback backup' );
 	}
 
+	/** Route sheets leave the shared compile but remain published and checked. */
+	public function test_present_publishes_the_account_volume_on_its_own(): void {
+		$state  = $this->mock_synced_site();
+		$root   = $state->uploads . '/windpress';
+		$entry  = $root . '/data/main.css';
+		$sheet  = $root . '/cache/linker/account.css';
+		$volume = new WindPressVolume();
+		file_put_contents( $entry, file_get_contents( $entry ) . '@import "./account.css";' . "\n" );
+		$volume->install();
+
+		$this->assertStringNotContainsString( './account.css', (string) file_get_contents( $entry ) );
+		$this->assertSame( file_get_contents( $root . '/data/account.css' ), file_get_contents( $sheet ) );
+		$this->assertSame( array(), $volume->drift() );
+		unlink( $sheet );
+		$this->assertContains( 'account.css', array_column( $volume->drift(), 'target' ) );
+	}
+
 	/** A legacy WindPress entry loses its DaisyUI inputs while retaining the site's other compiler inputs. */
 	public function test_present_retires_daisyui_and_preserves_the_entry_backup(): void {
 		$state   = $this->mock_synced_site();
@@ -1350,6 +1367,7 @@ CSS;
 		// The volume directory after an install: a real one, so drift's md5
 		// comparison runs against real bytes.
 		mkdir( $state->uploads . '/windpress/data', 0777, true );
+		mkdir( $state->uploads . '/windpress/cache/linker', 0777, true );
 		( new WindPressVolume() )->install();
 
 		$this->site = $state;
