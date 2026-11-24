@@ -418,7 +418,10 @@ def test_ac_current_cannot_support_a_shared_battery_limit(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, scenario: str
 ) -> None:
     # The Woo publication feed captured the L260-OMNI's AC rating on page 2.
-    feed_path = Path(__file__).resolve().parents[2] / "engine/tests/fixtures/feed.json"
+    feed_path = (
+        Path(__file__).resolve().parents[2]
+        / "engine/tests/fixtures/scenario-feed-2026-10-09.json"
+    )
     pylon = next(
         p for p in json.loads(feed_path.read_text())["products"] if p["id"] == 2003
     )
