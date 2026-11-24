@@ -800,7 +800,7 @@ class ScopeTest(unittest.TestCase):
                 list(ci_scope.FULL_LANES),
             )
 
-    def run_plan(self, event, candidate, proven=True, reused=None):
+    def run_plan(self, event, candidate, proven=True, reused=None, changes=None):
         with TemporaryDirectory() as folder:
             output = Path(folder) / "output"
             output.write_text("")
@@ -817,7 +817,7 @@ class ScopeTest(unittest.TestCase):
                 patch.object(
                     ci_scope,
                     "diff_changes",
-                    return_value=[("M", "services/genie/app.py")],
+                    return_value=changes if changes is not None else [("M", "services/genie/app.py")],
                 ),
                 patch.object(ci_scope, "classify", return_value=candidate),
                 patch.object(ci_scope, "checked_base", return_value=proven) as checked,
@@ -932,6 +932,26 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(ledger["lanes"], list(ci_scope.FULL_LANES))
         self.assertEqual(self.audit(ledger, self.results(ledger["lanes"])), [])
 
+    def test_bulk_archive_retirement_keeps_the_gate_environment_small(self):
+        changes = [
+            ("D", f".scratch/visual/archived-comparison-{i:04d}/desktop.png")
+            for i in range(3000)
+        ]
+        with patch("builtins.print") as report:
+            output, _ = self.run_plan(
+                "pull_request", list(ci_scope.FULL_LANES), changes=changes
+            )
+        summary = report.call_args.args[0]
+        ledger = next(
+            line.removeprefix("ledger=")
+            for line in output.splitlines()
+            if line.startswith("ledger=")
+        )
+        # A Linux runner cannot start bash with a single argument of 128 KiB.
+        self.assertLess(len(ledger.encode()), 128 * 1024)
+        self.assertIn(changes[0][1], summary)
+        self.assertIn(changes[-1][1], summary)
+
     def test_a_changed_tree_cannot_pass_with_every_lane_skipped(self):
         # The exact PR #1121 result: every required module carried a reuse
         # proof, no lane executed, and the gate reported success. Replaying that
@@ -952,7 +972,7 @@ class ScopeTest(unittest.TestCase):
                     "inputs": "f" * 64,
                 }
             },
-            "changes": [{"status": "M", "path": "services/genie/app.py"}],
+            "changes_sha256": ci_scope.changes_digest([("M", "services/genie/app.py")]),
         }
         errors = self.audit(ledger, self.results([]))
         self.assertTrue(errors)
@@ -984,7 +1004,7 @@ class ScopeTest(unittest.TestCase):
             if mode == "scoped"
             else [],
             "reused": {},
-            "changes": [{"status": "M", "path": "services/genie/app.py"}],
+            "changes_sha256": ci_scope.changes_digest([("M", "services/genie/app.py")]),
         }
 
     def results(self, selected):
@@ -1060,7 +1080,7 @@ class ScopeTest(unittest.TestCase):
 
     def test_gate_recomputes_the_whole_ledger(self):
         ledger = self.ledger()
-        ledger["changes"] = []
+        ledger["changes_sha256"] = ci_scope.changes_digest([])
         self.assertIn(
             "the changed-path ledger is incomplete or different",
             self.audit(ledger, self.results(["genie"])),

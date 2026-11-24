@@ -1018,6 +1018,11 @@ def diff_changes(base, head):
     return structural + changes
 
 
+def changes_digest(changes):
+    """Bind the complete name-status list without passing it in the runner environment."""
+    return hashlib.sha256(json.dumps(changes, separators=(",", ":")).encode()).hexdigest()
+
+
 def change_flags(changes):
     """Guards consumed by the same local and hosted recipes."""
     paths = [path for _, path in changes]
@@ -1597,7 +1602,7 @@ def plan():
         "lanes": selected,
         "modules": required_modules,
         "reused": reused,
-        "changes": [{"status": status, "path": path} for status, path in changes],
+        "changes_sha256": changes_digest(changes),
     }
     if error:
         ledger["error"] = error
@@ -1650,8 +1655,7 @@ def audit_gate(ledger, results, changes):
         "head"
     ) != os.environ.get("HEAD_SHA"):
         errors.append("plan and gate use different commits")
-    recorded = [(item["status"], item["path"]) for item in ledger.get("changes", [])]
-    if recorded != changes:
+    if ledger.get("changes_sha256") != changes_digest(changes):
         errors.append("the changed-path ledger is incomplete or different")
     candidate = classify(changes, ledger.get("base", ""), ledger.get("head", ""))
     if ledger.get("candidate") != candidate:
