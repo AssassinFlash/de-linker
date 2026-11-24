@@ -36,9 +36,9 @@
 		},
 		"linux-x86_64": {
 			"fixture": "preparation-flow-linux-x86_64.json",
-			"source_sha256": "ac14120521ac981ec7ff8002cedbd0ced60f74941f3ab07598c3a8f5ce6ddbc3",
-			"runtime_sha256": "c527328414905647b4f88e669e48d5c3d96635dbb2914ed541d83cd03b9a48ba",
-			"canonical_sorted_json_sha256": "f028261b97cc3d69009bbedbd7354ea726398ad29c7bd118c121012c2de92c3c",
+			"source_sha256": "2f7513bfa8082ff9c25ef1ae3b0b760f4814876be283f2031308c1fad161f0f8",
+			"runtime_sha256": "01ed0aeea0a26a5d985a5a8cec1952534137433d80c8a4bcf936fa8bb11aa570",
+			"canonical_sorted_json_sha256": "48eeb3ef6b239ae90cea466d9100984bb515e7687c24d6c89c852ffd2997205a",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",
@@ -64,7 +64,7 @@
 				"python_implementation": "CPython",
 				"sqlite": "3.45.1"
 			},
-			"export_run": "native:linux-x86_64:2026-11-23T08:37:21Z"
+			"export_run": "native:linux-x86_64:2026-11-24T12:25:26Z"
 		}
 	}
 }
