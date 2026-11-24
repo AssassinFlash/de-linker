@@ -58,6 +58,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'the_content', array( $module, 'mount_form' ), 9 );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_language' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $module, 'prepare_form_owner' ) );
+		WP_Mock::expectActionAdded( 'template_redirect', array( $module, 'render_article_form' ), 100 );
 
 		$module->register();
 		$this->assertConditionsMet();
