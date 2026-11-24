@@ -54,6 +54,7 @@ final class Module {
 			( $this->products ?? new ProductShortcodes( new ProductFilters(), new ProductView() ) )->register();
 		$this->gate->register();
 		$this->windpress->register();
+		( new WindPressPageStyles() )->register();
 		$this->compare->register();
 		$this->library->register();
 		$this->account->register();
