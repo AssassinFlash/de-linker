@@ -129,6 +129,35 @@ final class PublicationEvidenceTest extends IntegrationTestCase {
 		);
 	}
 
+	/** One full catalogue read primes the PDF batch. A subsequent read honors a native withdrawal. */
+	public function test_full_catalog_primes_pdf_attachments_and_reads_current_permission(): void {
+		$product = $this->product( '100' );
+		$files   = $this->files( array( 'manual', 'other' ) );
+		$ids     = array();
+		foreach ( $files as $name => $file ) {
+			$id = wp_insert_attachment( array( 'post_mime_type' => 'application/pdf' ), $file['path'], 0, true );
+			$this->assertIsInt( $id );
+			update_attached_file( $id, $file['path'] );
+			$this->later( static fn () => wp_delete_attachment( $id, true ) );
+			$ids[ $name ] = $id;
+		}
+		$url = $files['manual']['url'];
+		update_post_meta( $product->get_id(), EngineeringData::DOCUMENTS_META_KEY, array( array( 'url' => $url ) ) );
+		wp_cache_delete( $ids['other'], 'posts' );
+		wp_cache_delete( $ids['other'], 'post_meta' );
+
+		$before = Publication::catalog();
+		$this->assertContains( $url, array_column( $before['documents'], 'url' ) );
+		$this->assertNotFalse( wp_cache_get( $ids['other'], 'posts' ) );
+		$this->assertNotFalse( wp_cache_get( $ids['other'], 'post_meta' ) );
+
+		update_post_meta( $ids['manual'], '_linker_document_public', '0' );
+		$after = Publication::catalog();
+		$this->assertNotSame( $before['source_revision'], $after['source_revision'] );
+		$this->assertNotContains( $url, array_column( $after['documents'], 'url' ) );
+		$this->assertSame( 410, $this->download_status( $url ) );
+	}
+
 	/** Old text/page references cannot adopt replacement bytes through a routine save. */
 	public function test_same_url_replacement_requires_a_changed_faq_to_bind_current_bytes(): void {
 		$product = $this->published_product();

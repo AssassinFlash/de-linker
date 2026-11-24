@@ -222,6 +222,7 @@ final class DocumentFiles {
 				$key                          = $base . $row->meta_value;
 				self::$attachment_ids[ $key ] = array_key_exists( $key, self::$attachment_ids ) ? null : (int) $row->post_id;
 			}
+			_prime_post_caches( array_values( array_filter( self::$attachment_ids ) ), false, true );
 		}
 		return self::$attachment_ids[ $url ] ?? $existing;
 	}
