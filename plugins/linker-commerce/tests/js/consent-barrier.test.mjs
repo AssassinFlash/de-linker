@@ -101,7 +101,37 @@ test('GA attribution preserves campaign tags and excludes private receipt, searc
 	});
 	const config = window.calls.find(call => call[0] === 'set')[1];
 	assert.equal(config.page_location, 'https://linker.test/contact/?utm_source=partner');
-	assert.equal(config.page_referrer, 'https://linker.test/');
+	assert.equal(config.page_referrer, 'https://linker.test/search/');
+});
+
+test('search terms never reach GA page titles, locations, or the following page referrer', () => {
+	for (const prefix of ['/', '/de/']) {
+		const base = 'https://linker.test' + prefix;
+		for (const search of [base + 'search/private%40example.invalid/', base + '?s=private%40example.invalid']) {
+			const url = new URL(search);
+			url.searchParams.set('utm_source', 'partner');
+			const results = page('<title>Search results for private@example.invalid</title>' + held, { url: url.href });
+			const config = results.calls.find(call => call[0] === 'set')[1];
+			assert.equal(config.page_location, base + 'search/?utm_source=partner');
+			assert.equal(config.page_title, 'Search');
+
+			const next = page(held, { url: base + 'products/', referrer: url.href });
+			assert.equal(next.calls.find(call => call[0] === 'set')[1].page_referrer, base + 'search/');
+		}
+	}
+});
+
+test('Woo account-claim and password-reset parameters stay out of GA location and referrer', () => {
+	for (const path of [
+		'/my-account/register/?linker_inquiry=17&linker_key=wc_order_private',
+		'/my-account/lost-password/?key=private&login=private%40example.invalid',
+	]) {
+		const url = new URL(path, 'https://linker.test');
+		const window = page(held, { url: url.href, referrer: url.href });
+		const config = window.calls.find(call => call[0] === 'set')[1];
+		assert.equal(config.page_location, url.origin + url.pathname);
+		assert.equal(config.page_referrer, url.origin + url.pathname);
+	}
 });
 
 test('withdrawing analytics re-blocks, clears measurement cookies, and reloads a live tag', () => {

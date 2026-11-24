@@ -149,11 +149,17 @@
 	}
 	// Site Kit queues its config after this script. Keep private search terms,
 	// password reset and receipt keys out of the first page_view as well as events.
+	function searchPath(url) {
+		if (url.searchParams.has('s') || /^\/(?:de\/)?search(?:\/|$)/i.test(url.pathname)) {
+			return url.pathname.startsWith('/de/') ? '/de/search/' : '/search/';
+		}
+		return '';
+	}
 	function analyticsUrl(value, campaign) {
 		if (!value) return '';
 		const url = new URL(value);
 		if (url.origin !== location.origin) return url.origin + '/';
-		const safe = new URL(url.pathname, url.origin);
+		const safe = new URL(searchPath(url) || url.pathname, url.origin);
 		if (campaign) {
 			for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_id', 'utm_term', 'utm_content']) {
 				const tag = url.searchParams.get(key);
@@ -167,7 +173,7 @@
 			page_location: analyticsUrl(location.href, true),
 			page_referrer: analyticsUrl(document.referrer, false),
 		};
-		if (new URL(location.href).searchParams.has('s')) context.page_title = 'Search';
+		if (searchPath(new URL(location.href))) context.page_title = 'Search';
 		window.gtag('set', context);
 	}
 
