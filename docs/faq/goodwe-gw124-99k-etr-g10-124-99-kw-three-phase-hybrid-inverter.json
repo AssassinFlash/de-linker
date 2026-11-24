@@ -21,7 +21,7 @@
     },
     {
       "question": "Is an external STS needed for the ETR backup path?",
-      "answer": "Yes. The manual states that the inverter can only use the BACK-UP function when paired with STS. The datasheet footnote also states that the STS Box or STS Cabinet is needed. The inverter-to-STS communication cable is shipped with the unit.",
+      "answer": "Yes. The manual states that the inverter can only use the BACK-UP function when paired with STS. The datasheet footnote also states that the STS Box or STS Cabinet is needed. The inverter-to-STS communication cable is included with the unit.",
       "question_de": "Ist für den ETR-Notstrompfad ein externer STS nötig?",
       "answer_de": "Ja. Das Handbuch gibt an, dass der Wechselrichter die BACK-UP-Funktion nur in Verbindung mit STS nutzen kann. Die Datenblatt-Fußnote gibt ebenfalls an, dass die STS-Box oder der STS-Schrank benötigt wird. Das Kommunikationskabel vom Wechselrichter zum STS wird mit dem Gerät geliefert.",
       "citation": {

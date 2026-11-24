@@ -35,7 +35,7 @@
     },
     {
       "question": "Is GW11K-HCA-20 prepared for §14a EnWG?",
-      "answer": "The manual describes an EnWG §14a grid-dispatch setting. It says that, when enabled, the function is intended to limit the power drawn from the grid by a single device to 4.2 kW, and that the grid-import limit should be set according to the actual requirements.",
+      "answer": "The manual describes an EnWG §14a grid control setting. It says that, when enabled, the function is intended to limit the power drawn from the grid by a single device to 4.2 kW, and that the grid-import limit should be set according to the actual requirements.",
       "question_de": "Ist GW11K-HCA-20 für §14a EnWG vorbereitet?",
       "answer_de": "Das Handbuch beschreibt eine Einstellung für die Netzsteuerung nach § 14a EnWG. Demnach soll die Funktion im aktivierten Zustand die aus dem Netz bezogene Leistung eines einzelnen Geräts auf 4,2 kW begrenzen; der Netzbezugsgrenzwert ist entsprechend den tatsächlichen Anforderungen einzustellen.",
       "citation": {

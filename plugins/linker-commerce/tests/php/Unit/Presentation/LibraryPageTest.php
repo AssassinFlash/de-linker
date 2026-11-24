@@ -217,7 +217,7 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( 'id="linker-library-trade-0"', $html );
 		$this->assertStringContainsString( 'data-library-kind="trade"', $html );
 		$this->assertStringContainsString( 'Inquiries & delivery', $html );
-		$this->assertStringContainsString( 'What is the minimum order quantity, and where does Linker deliver?', $html );
+		$this->assertStringContainsString( 'Can I request a single unit, and where do you deliver?', $html );
 		$this->assertStringContainsString( 'There is no pallet minimum.', $html );
 		$this->assertStringContainsString( 'id="linker-library-zone-answers"', $html );
 		$this->assertStringContainsString( 'Is the module stackable?', $html );
@@ -542,7 +542,7 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( '"@type":"FAQPage"', $html );
 		$this->assertStringContainsString( '"name":"Is the module stackable?"', $html );
 		$this->assertStringContainsString( '"text":"Yes, up to four modules. GoodWe GW5.1-BAT-D-G21 — ESA battery manual, p. 12"', $html );
-		$this->assertStringContainsString( '"name":"What is the minimum order quantity, and where does Linker deliver?"', $html );
+		$this->assertStringContainsString( '"name":"Can I request a single unit, and where do you deliver?"', $html );
 		$this->assertConditionsMet();
 	}
 

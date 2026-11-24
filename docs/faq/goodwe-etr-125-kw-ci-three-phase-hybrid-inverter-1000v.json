@@ -7,7 +7,7 @@
   "items": [
     {
       "question": "Which BAT-C cabinet does the Battery Compatibility Overview list for the ETR, and how is GW208.9-BAT-LCD-G10 documented?",
-      "answer": "The compatibility overview lists the GW208.9-BAT-LCD-G10 battery system for the ETR. It is documented as purchased from GoodWe, and the battery system supports a maximum of 4 clusters in parallel.",
+      "answer": "The compatibility overview lists the GW208.9-BAT-LCD-G10 battery system for the ETR. The document names GoodWe as the supplier, and the battery system supports a maximum of 4 clusters in parallel.",
       "question_de": "Welchen BAT-C-Schrank listet die Batterie-Kompatibilitätsübersicht für den ETR, und wie ist GW208.9-BAT-LCD-G10 dokumentiert?",
       "answer_de": "Die Kompatibilitätsübersicht listet das Batteriesystem GW208.9-BAT-LCD-G10 für den ETR. Es ist dokumentiert als von GoodWe zu beziehen, und das Batteriesystem unterstützt maximal 4 parallele Cluster.",
       "citation": {
