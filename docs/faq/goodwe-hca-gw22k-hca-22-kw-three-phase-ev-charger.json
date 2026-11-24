@@ -6,10 +6,10 @@
   "model": "GW22K-HCA-20",
   "items": [
     {
-      "question": "What should be checked before requesting a GW22K-HCA-20?",
-      "answer": "Check the charging station model before requesting a quotation. If there is any discrepancy, do not open the packaging and contact your dealer.",
-      "question_de": "Was ist vor der Anfrage für GW22K-HCA-20 zu prüfen?",
-      "answer_de": "Prüfen Sie vor Ihrer Anfrage, ob das Modell der Ladestation passt. Bei Abweichungen öffnen Sie die Verpackung nicht und kontaktieren Sie Ihren Händler.",
+      "question": "What should I check when the GW22K-HCA-20 arrives?",
+      "answer": "Before accepting delivery, check the model shown on the packaging. If it differs from the model you expect, leave the box unopened and contact your supplier.",
+      "question_de": "Was sollte ich bei der Lieferung des GW22K-HCA-20 prüfen?",
+      "answer_de": "Prüfen Sie vor der Annahme der Lieferung die Modellangabe auf der Verpackung. Bei einer Abweichung lassen Sie die Verpackung geschlossen und wenden Sie sich an Ihren Lieferanten.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
         "page": 33,

@@ -581,14 +581,16 @@ def test_warranty_references_match_the_document_library_and_preserve_support_lin
     de = UNCHANGED + "<p>Nennen Sie Ihre Rechnungs- oder Proforma-Referenz.</p>"
     corrected = controls.plan_faq_warranty_reference(en, de)
     assert corrected == (
-        en.replace("invoice or proforma reference", "invoice or order reference"),
+        en.replace(
+            "invoice or proforma reference", "invoice number or project reference"
+        ),
         de.replace(
-            "Rechnungs- oder Proforma-Referenz", "Rechnungs- oder Bestellreferenz"
+            "Rechnungs- oder Proforma-Referenz", "Rechnungsnummer oder Projektreferenz"
         ),
     )
     assert controls.plan_faq_warranty_reference(*corrected) == corrected
     source = Path(__file__).parents[3] / "plugins/linker-commerce/data/faq-trade.json"
     content = source.read_text()
-    assert "invoice or order reference" in content
-    assert "Rechnungs- oder Bestellreferenz" in content
+    assert "invoice number or project reference" in content
+    assert "Rechnungsnummer oder Projektreferenz" in content
     assert "proforma" not in content.lower()

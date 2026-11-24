@@ -59,14 +59,13 @@
     "We work out the delivery schedule with you when arranging the order.": "We agree the delivery schedule with you for your project.",
     "Stock ships from our warehouse.": "We deliver from our warehouse.",
     "Warranty terms follow the order.": "For product warranty conditions, see the manufacturer’s terms for your model.",
-    "Garantiebedingungen richten sich nach der Bestellung.": "Die Garantiebedingungen für Ihr Modell finden Sie in den Garantieunterlagen des Herstellers."
+    "Garantiebedingungen richten sich nach der Bestellung.": "Die Garantiebedingungen für Ihr Modell finden Sie in den Garantieunterlagen des Herstellers.",
+    "Sie werden zusammen mit einer einheitlichen Rechnung geliefert; prüfen Sie": "Eine gemeinsame Lieferung mit einer Rechnung ist möglich. Prüfen Sie"
   },
   "product_faq_copy": {
     "Contents are order-dependent": "The exact contents depend on the configuration",
     "Der Inhalt ist bestellabhängig": "Der Inhalt hängt von der Konfiguration ab",
     "Der Lieferumfang ist bestellabhängig": "Der Lieferumfang hängt von der Konfiguration ab",
-    "Before ordering, check that the charging pile model is correct.": "Check the charging station model before requesting a quotation.",
-    "Prüfen Sie vor der Bestellung, ob das Modell der Ladestation korrekt ist.": "Prüfen Sie vor Ihrer Anfrage, ob das Modell der Ladestation passt.",
     "order an additional DTSU666": "include an additional DTSU666",
     "bestellen Sie zusätzlich einen DTSU666": "verwenden Sie zusätzlich einen DTSU666",
     "GMK330 ships with": "GMK330 includes",
@@ -79,6 +78,10 @@
     "contact a dealer to purchase a GMK330 or GM330 Smart Meter": "ask a dealer for a GMK330 or GM330 Smart Meter",
     "It is documented as purchased from GoodWe": "The document names GoodWe as the supplier",
     "grid-dispatch setting": "grid control setting",
-    "Netzstromzähler bei SAJ und bereiten": "Netzstromzähler von SAJ und bereiten"
+    "Netzstromzähler bei SAJ und bereiten": "Netzstromzähler von SAJ und bereiten",
+    "What should be checked before requesting a GW22K-HCA-20?": "What should I check when the GW22K-HCA-20 arrives?",
+    "Was ist vor der Anfrage für GW22K-HCA-20 zu prüfen?": "Was sollte ich bei der Lieferung des GW22K-HCA-20 prüfen?",
+    "Before ordering, check that the charging pile model is correct. If there is any discrepancy, do not open the packaging and contact your dealer.": "Before accepting delivery, check the model shown on the packaging. If it differs from the model you expect, leave the box unopened and contact your supplier.",
+    "Prüfen Sie vor der Bestellung, ob das Modell der Ladestation korrekt ist. Bei Abweichungen öffnen Sie die Verpackung nicht und kontaktieren Sie Ihren Händler.": "Prüfen Sie vor der Annahme der Lieferung die Modellangabe auf der Verpackung. Bei einer Abweichung lassen Sie die Verpackung geschlossen und wenden Sie sich an Ihren Lieferanten."
   }
 }

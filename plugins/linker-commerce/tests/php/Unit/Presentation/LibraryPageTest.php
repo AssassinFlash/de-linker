@@ -226,7 +226,7 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( 'data-library-kind="trade"', $html );
 		$this->assertStringContainsString( 'Inquiries & delivery', $html );
 		$this->assertStringContainsString( 'Can I request a single unit, and where do you deliver?', $html );
-		$this->assertStringContainsString( 'There is no pallet minimum.', $html );
+		$this->assertStringContainsString( 'You can request a single unit.', $html );
 		$this->assertStringContainsString( 'id="linker-library-zone-answers"', $html );
 		$this->assertStringContainsString( 'Is the module stackable?', $html );
 		$this->assertStringContainsString( 'Yes, up to four modules.', $html );

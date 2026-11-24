@@ -99,7 +99,11 @@ def planned(page: str, snapshot: dict[str, Any]) -> dict[str, str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True, help="WP-CLI prefix")
-    parser.add_argument("--page", help="Limit publication to one named page pair")
+    parser.add_argument(
+        "--page",
+        choices=sorted(set(PAGES) | {"blog", "solution", "residential"}),
+        help="Limit publication to one named page pair",
+    )
     parser.add_argument(
         "--vocabulary",
         action="store_true",
