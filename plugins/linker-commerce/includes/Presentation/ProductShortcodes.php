@@ -1550,22 +1550,32 @@ final class ProductShortcodes {
 		if ( ! $product instanceof WC_Product ) {
 			return '';
 		}
-		$kind = Materials::contract_type( (string) Materials::identity( $product )['kind'] );
-		if ( ! in_array( $kind, array( 'battery', 'system' ), true ) ) {
+		$kind    = Materials::contract_type( (string) Materials::identity( $product )['kind'] );
+		$storage = in_array( $kind, array( 'battery', 'system' ), true );
+		if ( ! $storage && 'commercial' !== SelectionFacts::for_product( $id )->application ) {
 			return '';
 		}
-		$model = (string) $view['model'];
-		/* translators: %s: equipment model. */
-		$prompt = sprintf( __( 'Which inverters are compatible with %s? Please include the manufacturer documentation.', 'linker-commerce' ), $model );
-		$plan   = add_query_arg(
+		$model  = (string) $view['model'];
+		$prompt = $storage
+			/* translators: %s: equipment model. */
+			? sprintf( __( 'Which inverters are compatible with %s? Please include the manufacturer documentation.', 'linker-commerce' ), $model )
+			/* translators: %s: equipment model. */
+			: sprintf( __( 'Which equipment is compatible with %s? Please include the manufacturer documentation.', 'linker-commerce' ), $model );
+		$title = $storage ? __( 'Check inverter compatibility', 'linker-commerce' ) : __( 'Check system compatibility', 'linker-commerce' );
+		$intro = $storage
+			/* translators: %s: equipment model. */
+			? sprintf( __( 'Find an inverter for %s or discuss your existing equipment with our team.', 'linker-commerce' ), $model )
+			/* translators: %s: equipment model. */
+			: sprintf( __( 'Check which equipment works with %s in your project.', 'linker-commerce' ), $model );
+		$plan = add_query_arg(
 			array(
 				'step'       => 'equipment',
 				'product_id' => Publication::canonical_id( $id ),
 			),
 			self::configurator_page_url()
 		);
-		return '<section class="pdp-block sf-container pdp-compatibility-check"><h2 class="pdp-section-title">' . esc_html__( 'Check inverter compatibility', 'linker-commerce' ) . '</h2>'
-			. '<p>' . esc_html( sprintf( /* translators: %s: equipment model. */ __( 'Find an inverter for %s or discuss your existing equipment with our team.', 'linker-commerce' ), $model ) ) . '</p><div class="pdp-compatibility-actions">'
+		return '<section class="pdp-block sf-container pdp-compatibility-check"><h2 class="pdp-section-title">' . esc_html( $title ) . '</h2>'
+			. '<p>' . esc_html( $intro ) . '</p><div class="pdp-compatibility-actions">'
 			. '<button type="button" class="pdp-btn pdp-btn-secondary" data-pdp-ask data-ask-message="' . esc_attr( $prompt ) . '">' . esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>'
 			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( $plan ) . '">' . esc_html__( 'Open configurator', 'linker-commerce' ) . '</a>'
 			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( (string) $view['ask_url'] ) . '">' . esc_html__( 'Contact our team', 'linker-commerce' ) . '</a></div></section>';
