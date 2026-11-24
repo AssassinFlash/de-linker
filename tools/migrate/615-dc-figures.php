@@ -62,7 +62,7 @@ try {
 				if ( ! $product instanceof WC_Product || $product->get_attribute( 'pa_model' ) !== $patch['model'] ) {
 					throw new RuntimeException( esc_html( "Model identity changed for {$id}." ) );
 				}
-				$urls   = $document_urls( $id, $patch['documents'] );
+				$urls = $document_urls( $id, $patch['documents'] );
 				if ( isset( $patch['package'] ) ) {
 					$items    = $request['plan']['package_contents'][ $patch['package'] ];
 					$manifest = \Linker\Commerce\Products\Publication::manifest();
@@ -73,7 +73,10 @@ try {
 						}
 						$contents[] = \Linker\Commerce\Products\Publication\PackageContents::bind( $id, $item, $manifest, true );
 					}
-					$after  = array( 'schema_version' => 1, 'items' => $contents );
+					$after  = array(
+						'schema_version' => 1,
+						'items'          => $contents,
+					);
 					$before = get_post_meta( $id, \Linker\Commerce\Products\Publication\PackageContents::META_KEY, true );
 					if ( '' !== $before && $before !== $after ) {
 						throw new RuntimeException( esc_html( "Review existing package contents for {$id}." ) );
