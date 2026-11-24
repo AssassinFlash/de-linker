@@ -72,7 +72,7 @@ final class ProductView {
 				'downloads'   => $this->downloads( $product_id ),
 				'faqs'        => $this->faqs( $product_id ),
 				'pairings'    => $this->pairings( $product_id ),
-				'crumbs'      => $this->crumbs( $product_id ),
+				'crumbs'      => self::crumbs( $product_id ),
 			)
 		);
 	}
@@ -706,7 +706,7 @@ final class ProductView {
 	 * @param int $product_id The product.
 	 * @return list<array{label: string, url: string|null}> The crumbs.
 	 */
-	private function crumbs( int $product_id ): array {
+	public static function crumbs( int $product_id ): array {
 		$crumbs = array(
 			array(
 				'label' => __( 'Products', 'linker-commerce' ),

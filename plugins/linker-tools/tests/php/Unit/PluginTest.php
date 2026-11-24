@@ -149,6 +149,8 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_titles_noindex_bypass', array( $page_indexing, 'noindex' ) );
 		WP_Mock::expectFilterAdded( 'seopress_titles_robots_attrs', array( $page_indexing, 'seopress_robots' ) );
 		WP_Mock::expectFilterAdded( 'wp_robots', array( $page_indexing, 'robots' ) );
+		WP_Mock::expectFilterAdded( 'pll_rel_hreflang_attributes', array( $page_indexing, 'alternates' ), 50 );
+		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( $page_indexing, 'description' ), 50 );
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_url', array( $page_indexing, 'drop_from_sitemap' ), 10, 2 );
 
 		$replies         = new \Linker\Tools\Protection\Replies();

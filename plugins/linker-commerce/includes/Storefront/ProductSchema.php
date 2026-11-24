@@ -9,50 +9,19 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
-/**
- * Emits the one Product JSON-LD block a product page carries.
- *
- * WHY HERE AND NOT IN THE RETAINED SEO PLUGIN. The site runs SEOPress (its
- * licence stays), and its schema editor does emit a Product node for products —
- * from a stored template row that says, for every product of every brand,
- * `"brand": "Linker"` and `"category": "Energy storage system"`, and that
- * carries no sku, no model, no image and no availability. Nothing in this
- * repository can test that row, and the product's real facts would not survive
- * the switch: the previous emitter (custom code in a plugin this switch
- * deletes) is where they live today. The product page's facts are this
- * plugin's (docs/specs/12-site-chrome.md item 6: the words come from
- * WooCommerce's own fields, the numbers from #7's contract), so the page's
- * structured data is built next to ProductView, which reads the same fields.
- *
- * WHAT IT MUST NOT SAY. No price, no priceCurrency, no offers.price: the block
- * is emitted into pages that LiteSpeed's cache serves to anonymous visitors,
- * and net prices are visible only to approved partners (#11's gate is the one
- * authority on that). `url` and `availability` are the public facts. The brand
- * is the product's own `pa_brand` term — the manufacturer's name, never this
- * company's.
- */
-final class ProductSchema {
+use Linker\Commerce\Products\SelectionFacts;
 
-	/**
-	 * The schema.org term for WooCommerce's stock status.
-	 *
-	 * WooCommerce's own stock state is the authority; the previous tree's
-	 * mirror of it is gone. An unknown status is left out rather than guessed:
-	 * an absent availability claim is recoverable, a wrong one is not.
-	 *
-	 * @var array<string, string>
-	 */
-	private const AVAILABILITY = array(
-		'instock'     => 'https://schema.org/InStock',
-		'outofstock'  => 'https://schema.org/OutOfStock',
-		'onbackorder' => 'https://schema.org/BackOrder',
-	);
+/** Public product identity and search metadata use the same WooCommerce facts. */
+final class ProductSchema {
 
 	/**
 	 * Adds the block to the head of a product page.
 	 */
 	public function register(): void {
 		add_action( 'wp_head', array( $this, 'print_block' ) );
+		add_filter( 'seopress_titles_desc', array( $this, 'description' ), 45 );
+		add_filter( 'seopress_social_og_desc', array( $this, 'social_description' ), 45 );
+		add_filter( 'seopress_social_twitter_card_desc', array( $this, 'social_description' ), 45 );
 	}
 
 	/**
@@ -100,7 +69,7 @@ final class ProductSchema {
 			'@type'       => 'Product',
 			'name'        => $this->text( $product->get_name() ),
 			'url'         => $url,
-			'description' => $this->text( wp_strip_all_tags( $this->intro( $product ) ) ),
+			'description' => $this->summary( $product, $brand, $model ),
 		);
 
 		$sku = $this->text( $product->get_sku() );
@@ -129,28 +98,76 @@ final class ProductSchema {
 			$data['image'] = $image;
 		}
 
-		$availability   = self::AVAILABILITY[ $product->get_stock_status() ] ?? '';
-		$data['offers'] = array_filter(
-			array(
-				'@type'        => 'Offer',
-				'url'          => $url,
-				'availability' => $availability,
-			),
-			static fn( string $value ): bool => '' !== $value
-		);
-
 		return $data;
 	}
 
 	/**
-	 * The product's own introduction: its short description, or its long one
-	 * when it has no short one (the same choice the page's own text makes).
+	 * SEOPress also uses the SEO description for its social cards.
 	 *
-	 * @param \WC_Product $product The product.
+	 * @param string $existing Existing description after native template expansion.
 	 */
-	private function intro( \WC_Product $product ): string {
-		$short = (string) $product->get_short_description();
-		return '' !== $short ? $short : (string) $product->get_description();
+	public function description( string $existing ): string {
+		$product = $this->product();
+		if ( ! $product || '' !== trim( (string) get_post_meta( $product->get_id(), '_seopress_titles_desc', true ) ) ) {
+			return $existing;
+		}
+		return $this->summary( $product, $this->term_name( $product->get_id(), 'pa_brand' ), $this->term_name( $product->get_id(), 'pa_model' ) );
+	}
+
+	/** @param string $tag Existing Open Graph or Twitter meta tag. */
+	public function social_description( string $tag ): string {
+		$product = $this->product();
+		if ( ! $product ) {
+			return $tag;
+		}
+		$twitter = 'seopress_social_twitter_card_desc' === current_filter();
+		$custom  = $twitter ? '_seopress_social_twitter_desc' : '_seopress_social_fb_desc';
+		if ( '' !== trim( (string) get_post_meta( $product->get_id(), $custom, true ) ) ) {
+			return $tag;
+		}
+		$description = $this->description( (string) get_post_meta( $product->get_id(), '_seopress_titles_desc', true ) );
+		return '<meta ' . ( $twitter ? 'name="twitter:description"' : 'property="og:description"' ) . ' content="' . esc_attr( $description ) . '">';
+	}
+
+	/**
+	 * Add the category and published rating when the Woo title is only a model.
+	 *
+	 * @param \WC_Product $product Localized product.
+	 * @param string      $brand   Manufacturer name.
+	 * @param string      $model   Model designation.
+	 */
+	private function summary( \WC_Product $product, string $brand, string $model ): string {
+		$name = $this->text( $product->get_name() );
+		if ( '' !== $model && ( $name === trim( $brand . ' ' . $model ) || $name === $model ) ) {
+			$facts    = SelectionFacts::for_product( $product->get_id() );
+			$category = $this->term_name( $product->get_id(), 'product_cat' );
+			$details  = array_filter( array( $category ) );
+			if ( is_float( $facts->ac_power_kw ) ) {
+				$details[] = wc_format_localized_decimal( (string) $facts->ac_power_kw ) . ' kW';
+			} elseif ( is_float( $facts->nominal_kwh ) ) {
+				$details[] = wc_format_localized_decimal( (string) $facts->nominal_kwh ) . ' kWh';
+			}
+			if ( is_int( $facts->phase ) ) {
+				$details[] = 1 === $facts->phase ? __( 'single-phase', 'linker-commerce' ) : __( 'three-phase', 'linker-commerce' );
+			}
+			if ( $details ) {
+				$name .= ' – ' . implode( ', ', $details );
+			}
+		}
+		$endings = array(
+			__( 'Use the manufacturer’s documents to check the technical details, then request a quotation from Linker for your installation.', 'linker-commerce' ),
+			__( 'Check the technical details in the manufacturer’s documents and request a quotation from Linker for your project.', 'linker-commerce' ),
+			__( 'Check the manufacturer’s documents and ask Linker for a quotation for your installation.', 'linker-commerce' ),
+			__( 'See the manufacturer’s documents and request a project quotation from Linker.', 'linker-commerce' ),
+			__( 'Check the manufacturer’s documents and request a quotation.', 'linker-commerce' ),
+		);
+		foreach ( $endings as $ending ) {
+			$description = $name . '. ' . $ending;
+			if ( mb_strlen( $description ) <= 155 ) {
+				return $description;
+			}
+		}
+		return $name . '. ' . end( $endings );
 	}
 
 	/**

@@ -56,6 +56,8 @@ final class PageIndexingTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_titles_noindex_bypass', array( $rule, 'noindex' ) );
 		WP_Mock::expectFilterAdded( 'seopress_titles_robots_attrs', array( $rule, 'seopress_robots' ) );
 		WP_Mock::expectFilterAdded( 'wp_robots', array( $rule, 'robots' ) );
+		WP_Mock::expectFilterAdded( 'pll_rel_hreflang_attributes', array( $rule, 'alternates' ), 50 );
+		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( $rule, 'description' ), 50 );
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_url', array( $rule, 'drop_from_sitemap' ), 10, 2 );
 
 		$rule->register();

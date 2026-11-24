@@ -197,6 +197,10 @@ def check(base: str, path: str, name: str) -> tuple[bool, str]:
     brand = brand_name(node)
     sku = sku_of(node)
     problems: list[str] = []
+    if "offers" in node:
+        problems.append("quotation-only product has an offer")
+    if re.search(r'"(?:price|priceCurrency|lowPrice|highPrice|priceSpecification)"\s*:', json.dumps(node), re.I):
+        problems.append("price data in the public Product node")
     if not brand:
         problems.append("brand is missing")
     elif brand.casefold() == name.casefold():
