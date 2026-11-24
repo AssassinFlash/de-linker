@@ -99,7 +99,8 @@ def planned(page: str, snapshot: dict[str, Any]) -> dict[str, str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True, help="WP-CLI prefix")
-    parser.add_argument("--page", choices=PAGES, help="Default: all pairs")
+    parser.add_argument("--page", help="Limit publication to one named page pair")
+    parser.add_argument("--vocabulary", action="store_true", help="Publish the reviewed Wave 3 marketing wording")
     parser.add_argument("--backup-dir", type=Path)
     parser.add_argument(
         "--full-backup", type=Path, help="Completed production backup directory"
@@ -111,12 +112,16 @@ def main() -> None:
     if (args.write or args.restore) and not args.backup_dir:
         parser.error("--write and --restore require --backup-dir")
     full_backup_verified = False
-    for page in (args.page,) if args.page else PAGES:
-        ids = PAGES[page]
+    vocabulary = json.loads(Path(__file__).with_name("wave3-vocabulary.json").read_text()) if args.vocabulary else {}
+    pairs = vocabulary.get("page_pairs", PAGES)
+    if args.page and args.page not in pairs:
+        parser.error(f"Unknown page in this publication: {args.page}")
+    for page in (args.page,) if args.page else pairs:
+        ids = tuple(pairs[page])
         current = wp.read(args.wp, *ids)
         site = current["home"]
         host = urlsplit(site).netloc.replace(":", "-")
-        path = args.backup_dir / f"{host}-{page}.json" if args.backup_dir else None
+        path = args.backup_dir / f"{host}-{page}{'-vocabulary' if args.vocabulary else ''}.json" if args.backup_dir else None
         if args.restore:
             assert path is not None
             if not args.page and not path.exists():
@@ -140,7 +145,14 @@ def main() -> None:
                     raise RuntimeError(f"{page}: original pair did not read back")
             print(f"{site} {page}: restored")
             continue
-        after = planned(page, current)
+        if args.vocabulary:
+            after = current["pages"].copy()
+            for post, content in current["pages"].items():
+                for previous, replacement in vocabulary["page_copy"].items():
+                    content = content.replace(previous, replacement)
+                after[post] = content
+        else:
+            after = planned(page, current)
         if after == current["pages"]:
             if path and path.exists():
                 wp.verify_published(json.loads(path.read_text()), current)
