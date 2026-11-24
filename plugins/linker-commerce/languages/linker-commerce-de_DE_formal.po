@@ -2855,6 +2855,7 @@ msgstr "Konto erstellen"
 
 #: includes/Presentation/AccountTemplates.php:300
 #: includes/Presentation/AccountTemplates.php:384
+#: includes/Presentation/ProductShortcodes.php
 msgid "Account"
 msgstr "Konto"
 

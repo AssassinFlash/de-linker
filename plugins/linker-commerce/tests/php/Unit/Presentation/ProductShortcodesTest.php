@@ -1544,6 +1544,7 @@ final class ProductShortcodesTest extends TestCase {
 		$product->allows( 'get_attributes' )->andReturn( array() );
 		$product->allows( 'get_parent_id' )->andReturn( 0 );
 		$product->allows( 'is_in_stock' )->andReturn( $in_stock );
+		$product->allows( 'is_purchasable' )->andReturn( true );
 
 		// WP_Mock keeps the first responder of a function, and this helper may
 		// run twice in one test (an in-stock product, then one that is not):
@@ -1658,6 +1659,7 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'http://linker.test/product/goodwe-gw60k-sts-g10/' ) );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( $value ): string => (string) json_encode( $value ) ) );
 		$html = $shortcodes->products_card();
+		$this->assertStringContainsString( 'data-card-atc href="http://linker.test/cart/?add-to-cart=6530"', $html );
 		$this->assertStringContainsString( '<small>Model</small><strong data-card-selection>GW60K-STS-G10</strong>', $html );
 		$this->assertStringContainsString( '<dt>Communication</dt><dd>RS485</dd>', $html );
 
@@ -1670,6 +1672,7 @@ final class ProductShortcodesTest extends TestCase {
 		$without_model = $shortcodes->products_card();
 		$this->assertStringContainsString( 'GoodWe GW60K-STS-G10</a>', $without_model );
 		$this->assertStringNotContainsString( 'data-linker-exact-product', $without_model );
+		$this->assertStringContainsString( 'data-card-atc hidden>', $this->pdp( false )->products_card() );
 	}
 
 	/** The shared component carries semantic facts and a neutral visual fallback. */
@@ -1801,6 +1804,7 @@ final class ProductShortcodesTest extends TestCase {
 		$pair  = $pdp->pdp_gallery_pair();
 		$thumb = $pdp->pdp_gallery_thumbs();
 
+		$this->assertMatchesRegularExpression( '/class="pdp-gallery-main"(?=[^>]*fetchpriority="high")(?=[^>]*loading="eager")(?=[^>]*decoding="async")/', $pair );
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-main"[^>]*alt="GoodWe GW60K-STS-G10"(?![^>]*loading="lazy")/', $pair );
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-secondary"[^>]*data-src="http:\/\/linker\.test\/uploads\/image-6504\.png"[^>]*>\s*<img[^>]*loading="lazy"/', $pair );
 		$this->assertSame( 3, substr_count( $thumb, 'data-pdp-thumb' ) );
@@ -1993,6 +1997,7 @@ final class ProductShortcodesTest extends TestCase {
 		$shortcodes = $this->pdp( true );
 
 		$html = $shortcodes->pdp_brand_logo();
+		$this->assertStringNotContainsString( 'fetchpriority="high"', $html );
 
 		$this->assertStringContainsString( 'srcset="http://linker.test/uploads/logo-300.png 300w, http://linker.test/uploads/logo.png 1480w"', $html );
 		$this->assertStringContainsString( ' sizes="(max-width: 120px) 120px, 120px"', $html );

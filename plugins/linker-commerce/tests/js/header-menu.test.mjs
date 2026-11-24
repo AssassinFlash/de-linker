@@ -77,8 +77,8 @@ test( 'an account menu served without hidden is closed on load', () => {
 	const dom = new JSDOM( `<!doctype html><html lang="en"><body>
 		<header id="tv-header-v2">
 			<div class="tv-b2b-acct">
-				<button class="tv-b2b-acct-btn" aria-haspopup="true" aria-expanded="false">Sign in</button>
-				<div class="tv-b2b-acct-menu"><a href="/my-account/">My account</a></div>
+				<button class="tv-b2b-acct-btn" aria-haspopup="true" aria-expanded="false">Account</button>
+				<div class="tv-b2b-acct-menu"><a href="/my-account/">Sign in</a><a href="/my-account/register/">Create account</a></div>
 			</div>
 		</header>
 	</body></html>`, { runScripts: 'outside-only', pretendToBeVisual: true } );

@@ -32,10 +32,6 @@
 .linker-guest-account-links{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 20px;padding:10px 16px;background:#fff;color:var(--proto-ink,#172636);font-size:13px;line-height:1.5}
 /* The mobile dock scrim has auto stack order (genie.css); keep its sibling links above it. */
 
-/* Split the existing card action row; retain its 44px minimum footprint. */
-body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account){grid-template-columns:repeat(3,minmax(0,1fr))}
-body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>a{min-width:0;min-height:44px;padding:8px 4px;font-size:11px;line-height:1.1;text-align:center}
-
 /* The mobile dock scrim is a fixed child before the relative main column.
    Give that column the app's opaque sheet background so only the page behind
    the sheet is dimmed (owner visual report, 223/computer-use/*-rejected.png). */

@@ -59,7 +59,6 @@ final class ProductView {
 				'designation' => Materials::apply_terms( $this->designation( $product->get_name(), $fields['brand'], $this->term_name( $product_id, 'pa_model' ) ) ),
 				'brand_logo'  => $this->brand_logo( $product_id ),
 				'cta_label'   => $this->cta_label(),
-				'cta_url'     => $this->cta_url( $product ),
 				'ask_url'     => $this->ask_url( $product ),
 				'intro'       => Materials::apply_terms( '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ) ),
 				'body'        => Materials::apply_terms( $product->get_description() ),
@@ -103,6 +102,7 @@ final class ProductView {
 			'gallery'      => $this->gallery( $product ),
 			'stats'        => $this->key_numbers( $facts ),
 			'price'        => $this->price( $product ),
+			'cta_url'      => $product->is_purchasable() && $product->is_in_stock() ? $this->cta_url( $product ) : '',
 			'availability' => $product->is_in_stock() ? __( 'In stock', 'linker-commerce' ) : __( 'Currently unavailable', 'linker-commerce' ),
 			'series'       => $titles['series'],
 		);
