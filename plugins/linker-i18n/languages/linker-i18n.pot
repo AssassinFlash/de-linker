@@ -225,3 +225,7 @@ msgstr ""
 #: includes/Woo/AttributeLabels.php:48
 msgid "Series"
 msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Compare inverters, LFP storage and accessories for your project. Filter by brand or look up a device by model or product number."
+msgstr ""

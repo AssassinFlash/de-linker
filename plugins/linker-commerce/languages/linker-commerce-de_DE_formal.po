@@ -7014,6 +7014,56 @@ msgstr "Nicht verfügbare Berichtsverknüpfungen entfernen"
 msgid "The planning project “%s” is no longer accessible. Remove the unavailable report link on the inquiry form to keep its products."
 msgstr "Das Planungsprojekt „%s“ ist nicht mehr zugänglich. Entfernen Sie die Verknüpfung zum Bericht im Anfrageformular, um die Produkte zu behalten."
 
+#: includes/Abilities/SizeHint.php includes/Storefront/ProductSchema.php includes/Storefront/ProductView.php includes/Products/SelectionFacts.php includes/Products/Materials.php
+msgid "single-phase"
+msgstr "einphasig"
+
+#: includes/Products/SelectionFacts.php includes/Storefront/ProductSchema.php includes/Abilities/SizeHint.php includes/Products/Materials.php
+msgid "three-phase"
+msgstr "dreiphasig"
+
+#: includes/Storefront/ProductSchema.php
+msgid "Use the manufacturer’s documents to check the technical details, then request a quotation from Linker for your installation."
+msgstr "Prüfen Sie die technischen Angaben in den Herstellerunterlagen und fragen Sie bei Linker ein Angebot für Ihre Anlage an."
+
+#: includes/Storefront/ProductSchema.php
+msgid "Check the technical details in the manufacturer’s documents and request a quotation from Linker for your project."
+msgstr "Lesen Sie die technischen Angaben in den Herstellerunterlagen und fragen Sie Ihr Projektangebot bei Linker an."
+
+#: includes/Storefront/ProductSchema.php
+msgid "Check the manufacturer’s documents and ask Linker for a quotation for your installation."
+msgstr "Prüfen Sie die Herstellerunterlagen und fragen Sie bei Linker ein Angebot für Ihre Anlage an."
+
+#: includes/Storefront/ProductSchema.php
+msgid "See the manufacturer’s documents and request a project quotation from Linker."
+msgstr "Prüfen Sie die Herstellerunterlagen und fragen Sie Ihr Projektangebot bei Linker an."
+
+#: includes/Storefront/ProductSchema.php
+msgid "Check the manufacturer’s documents and request a quotation."
+msgstr "Prüfen Sie die Herstellerunterlagen und fragen Sie ein Angebot an."
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Which inverters are compatible with %s? Please include the manufacturer documentation."
+msgstr "Welche Wechselrichter sind mit %s kompatibel? Nennen Sie bitte die Unterlagen des Herstellers."
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Check inverter compatibility"
+msgstr "Kompatibilität mit Wechselrichtern prüfen"
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Find an inverter for %s or discuss your existing equipment with our team."
+msgstr "Finden Sie einen passenden Wechselrichter für %s oder besprechen Sie Ihre vorhandene Anlage mit unserem Team."
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Open configurator"
+msgstr "Konfigurator öffnen"
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Contact our team"
+msgstr "Unser Team kontaktieren"
+
 #~ msgid "Update the solution draft before sending your inquiry."
 #~ msgstr ""
 #~ "Aktualisieren Sie den Lösungsentwurf, bevor Sie Ihre Anfrage senden."
