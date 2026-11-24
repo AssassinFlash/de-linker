@@ -47,6 +47,7 @@ import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
 import {
 	cardIdsOf,
+	controlsOf,
 	comparisonsOf,
 	pricesOf,
 	proofsOf,
@@ -3072,19 +3073,8 @@ export function App( { config }: { config: GenieConfig } ) {
 											/>
 										) )
 									: null }
-								{ turn?.blocks
-									.filter(
-										( block ) =>
-											'text' !== block.type &&
-											'planning_sources' !== block.type &&
-											! (
-												block.type === 'action' &&
-												block.name ===
-													'open_configurator'
-											) &&
-											'contact' !== block.type
-									)
-									.map( ( block, index ) => (
+								{ controlsOf( turn?.blocks ?? [] ).map(
+									( block, index ) => (
 										<BlockView
 											key={ index }
 											block={ block }
@@ -3099,7 +3089,8 @@ export function App( { config }: { config: GenieConfig } ) {
 												onTypeModel: typeModel,
 											} }
 										/>
-									) ) }
+									)
+								) }
 								{ config.requestPageUrl &&
 								turn?.meta?.fallback &&
 								turn.blocks.some(
