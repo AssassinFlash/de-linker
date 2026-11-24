@@ -319,4 +319,11 @@ final class MaterialsKindTest extends TestCase {
 		$index = new ReflectionProperty( Materials::class, 'product_index' );
 		$index->setValue( null, null );
 	}
+	/** The title follows the requested language; archived PDFs keep their own revision. */
+	public function test_reviewed_manufacturer_file_has_two_customer_labels(): void {
+		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing( static fn ( string $url, int $part ): mixed => parse_url( $url, $part ) );
+		$url = 'https://de-linker.test/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf#page=1';
+		$this->assertSame( 'Chint DTSU666 – Three-phase meter overview', Materials::localized_document_title( 'old', false, $url ) );
+		$this->assertSame( 'Chint DTSU666 – Produktübersicht für den Drehstromzähler', Materials::localized_document_title( 'old', true, $url ) );
+	}
 }

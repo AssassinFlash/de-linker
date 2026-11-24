@@ -61,6 +61,13 @@ final class Materials {
 	 * @var array<int, list<string>>|null
 	 */
 	private static ?array $product_index = null;
+	/**
+	 * Reviewed display labels, keyed by the manufacturer's file in uploads.
+	 *
+	 * @var array<string, mixed>|null
+	 */
+	private static ?array $document_titles = null;
+
 
 	/**
 	 * Whether the page is German.
@@ -1412,9 +1419,19 @@ final class Materials {
 	 *
 	 * @param string    $title  Stored title shown to the customer.
 	 * @param bool|null $german Whether the page is German; null reads the request.
+	 * @param string    $url Published file whose label is shown.
 	 */
-	public static function localized_document_title( string $title, ?bool $german = null ): string {
+	public static function localized_document_title( string $title, ?bool $german = null, string $url = '' ): string {
 		$german = $german ?? self::is_de();
+		if ( '' !== $url ) {
+			$path                    = (string) wp_parse_url( $url, PHP_URL_PATH );
+			$key                     = explode( '/wp-content/uploads/', rawurldecode( $path ), 2 )[1] ?? '';
+			self::$document_titles ??= self::read( 'document-titles.json' );
+			$label                   = self::$document_titles[ $key ][ $german ? 'de' : 'en' ] ?? '';
+			if ( is_string( $label ) && '' !== $label ) {
+				return $label;
+			}
+		}
 		if ( ! $german ) {
 			return $title;
 		}

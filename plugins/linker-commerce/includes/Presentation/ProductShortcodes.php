@@ -1516,7 +1516,7 @@ final class ProductShortcodes {
 			$language = DocumentLibrary::language( $document['language'] );
 			$language = 'MUL' === $language ? __( 'Multilingual', 'linker-commerce' ) : $language;
 			$title    = trim( $document['title'] );
-			$title    = Materials::localized_document_title( '' !== $title ? $title : Materials::document_kind_label( $kind ) );
+			$title    = Materials::localized_document_title( '' !== $title ? $title : Materials::document_kind_label( $kind ), null, $document['url'] );
 			$meta     = array_filter(
 				array(
 					Materials::document_kind_label( $kind ),

@@ -510,7 +510,7 @@ final class ComparePage {
 	 */
 	private static function cell_value( $value ): string {
 		if ( is_bool( $value ) ) {
-			return $value ? 'yes' : 'no';
+			return $value ? __( 'Yes', 'linker-commerce' ) : __( 'No', 'linker-commerce' );
 		}
 		if ( is_array( $value ) ) {
 			$range = array_map( 'strval', $value );

@@ -51,6 +51,13 @@ final class LibraryPageTest extends TestCase {
 	private int $post_queries = 0;
 
 	/**
+	 * Whether this product has a published answer.
+	 *
+	 * @var bool
+	 */
+	private bool $has_answer = true;
+
+	/**
 	 * Fresh publication assemblies used by the page's shared model.
 	 *
 	 * @var int
@@ -155,7 +162,7 @@ final class LibraryPageTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
-				'return' => static function ( int $id, string $key ): mixed {
+				'return' => function ( int $id, string $key ): mixed {
 					return match ( $key ) {
 						'_sku'                => 'DLK-EXAMPLE',
 						'_tv_legacy_acf_json' => (string) json_encode(
@@ -177,7 +184,7 @@ final class LibraryPageTest extends TestCase {
 								'faqs'      => array(),
 							)
 						),
-						'_linker_faqs' => (string) json_encode( self::FAQ ),
+						'_linker_faqs' => (string) json_encode( $this->has_answer ? self::FAQ : array() ),
 						\Linker\Commerce\Products\Publication\EvidenceBindings::FAQ_META_KEY => self::bound_faqs( self::FAQ, 'fixture-manual', hash( 'sha256', 'fixture manual bytes' ) ),
 						default               => '',
 					};
@@ -233,6 +240,14 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringNotContainsString( ' style="', $html );
 	}
 
+	/** Brands remain browsable on each tab that actually has entries. */
+	public function test_files_without_answers_have_no_empty_faq_card_or_anchor(): void {
+		$this->has_answer = false;
+		$page             = new LibraryPage( $this->library() );
+		self::assertStringNotContainsString( 'linker-library-answers-goodwe', $page->faq() . $page->rail() . $page->chips() );
+		self::assertStringContainsString( 'linker-library-docs-goodwe', $page->documents() );
+	}
+
 	/**
 	 * The documents tab: the type chips with their counts, one card per brand,
 	 * and one row per file carrying its type, title, coverage, language and
@@ -242,6 +257,8 @@ final class LibraryPageTest extends TestCase {
 		$html = ( new LibraryPage( $this->library() ) )->documents();
 
 		$this->assertStringContainsString( 'data-library-filters', $html );
+		self::assertSame( 1, substr_count( $html, '<symbol id="library-download"' ) );
+		self::assertStringContainsString( '<use href="#library-download"', $html );
 		$this->assertStringContainsString( 'data-library-skus=', $html );
 		$this->assertStringContainsString( 'DLK-EXAMPLE', $html );
 		$this->assertStringContainsString( 'aria-label="Document type"', $html );

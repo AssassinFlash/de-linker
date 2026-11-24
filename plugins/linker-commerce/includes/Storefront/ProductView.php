@@ -14,6 +14,7 @@ use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Presentation\PageUrls;
 
 use Linker\Commerce\Products\Materials;
+use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Products\Publication;
@@ -600,7 +601,7 @@ final class ProductView {
 	 */
 	public function downloads( int $product_id, ?array $manifest = null ): array {
 		if ( null !== $this->document_reader ) {
-			return ( $this->document_reader )( $product_id );
+			return self::by_language( ( $this->document_reader )( $product_id ) );
 		}
 		if ( ! Publication::is_published( $product_id ) ) {
 			return array();
@@ -638,7 +639,7 @@ final class ProductView {
 				);
 				unset( $allowed[ $key ] );
 			}
-			return $documents;
+			return self::by_language( $documents );
 		}
 		foreach ( $manifest['documents'] as $document ) {
 			if ( ! in_array( $id, $document['product_ids'], true ) ) {
@@ -651,6 +652,26 @@ final class ProductView {
 				'role'     => $document['role'] ?? '',
 				'language' => $document['lang'],
 			);
+		}
+		return self::by_language( $documents );
+	}
+
+	/**
+	 * PHP's stable sort keeps the publisher's ordering among equally useful files.
+	 *
+	 * @param list<array{title:string,url:string,type:string,role:string,language:string}> $documents Authorized documents.
+	 * @return list<array{title:string,url:string,type:string,role:string,language:string}>
+	 */
+	private static function by_language( array $documents ): array {
+		if ( Materials::is_de() ) {
+			$rank = array(
+				'DE'    => 0,
+				'MUL'   => 1,
+				'DE/EN' => 1,
+				'EN/DE' => 1,
+				'EN'    => 2,
+			);
+			usort( $documents, static fn ( array $a, array $b ): int => ( $rank[ DocumentLibrary::language( $a['language'] ) ] ?? 3 ) <=> ( $rank[ DocumentLibrary::language( $b['language'] ) ] ?? 3 ) );
 		}
 		return $documents;
 	}

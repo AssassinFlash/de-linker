@@ -7064,6 +7064,14 @@ msgstr "Konfigurator öffnen"
 msgid "Contact our team"
 msgstr "Unser Team kontaktieren"
 
+#: includes/Presentation/ComparePage.php content/windpress/consent.css includes/Consent/BasicMode.php
+msgid "Yes"
+msgstr "Ja"
+
+#: content/journal-titles.json includes/Vocabulary/Labels.php src/accounts/api.test.ts content/livecanvas/blog_index.html src/accounts/style.css
+msgid "No"
+msgstr "Nein"
+
 #~ msgid "Update the solution draft before sending your inquiry."
 #~ msgstr ""
 #~ "Aktualisieren Sie den Lösungsentwurf, bevor Sie Ihre Anfrage senden."

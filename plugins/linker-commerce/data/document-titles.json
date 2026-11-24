@@ -1,0 +1,598 @@
+{
+	"2026/07/chint_dtsu666_catalog_en.pdf": {
+		"de": "Chint DTSU666 – Produktübersicht für den Drehstromzähler",
+		"en": "Chint DTSU666 – Three-phase meter overview"
+	},
+	"2026/07/chint_dtsu666_dssu666_user_manual_en.pdf": {
+		"de": "Chint DTSU666 und DSSU666 – Benutzerhandbuch",
+		"en": "Chint DTSU666 and DSSU666 – User manual"
+	},
+	"2026/07/delinker-goodwe_batc208-datasheet.pdf": {
+		"de": "GoodWe BAT-C 208,9–261,2 kWh – Datenblatt (EMEA, frühere Fassung V1.0)",
+		"en": "GoodWe BAT-C 208.9–261.2 kWh – Datasheet (EMEA, earlier edition V1.0)"
+	},
+	"2026/07/delinker-goodwe_batc60-datasheet.pdf": {
+		"de": "GoodWe BAT-C 61,4–112,6 kWh – Datenblatt (EMEA)",
+		"en": "GoodWe BAT-C 61.4–112.6 kWh – Datasheet (EMEA)"
+	},
+	"2026/07/delinker-saj_chs2-datasheet.pdf": {
+		"de": "SAJ CHS2 – Datenblatt der Baureihe",
+		"en": "SAJ CHS2 – Series datasheet"
+	},
+	"2026/07/delinker-saj_emanager-datasheet.pdf": {
+		"de": "SAJ eManager-C1 – Datenblatt",
+		"en": "SAJ eManager-C1 – Datasheet"
+	},
+	"2026/07/goodwe_gm330_datasheet_en-1.pdf": {
+		"de": "GoodWe GM330 – Datenblatt",
+		"en": "GoodWe GM330 – Datasheet"
+	},
+	"2026/07/goodwe_gmk330_datasheet_en-1.pdf": {
+		"de": "GoodWe GMK330 – Datenblatt",
+		"en": "GoodWe GMK330 – Datasheet"
+	},
+	"2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf": {
+		"de": "GoodWe GW125K-STS-G10 – Datenblatt (EMEA)",
+		"en": "GoodWe GW125K-STS-G10 – Datasheet (EMEA)"
+	},
+	"2026/07/saj_hs2-10k-t2-x_datasheet.pdf": {
+		"de": "SAJ HS2 – Datenblatt für das dreiphasige Speichersystem",
+		"en": "SAJ HS2 – Three-phase storage system datasheet"
+	},
+	"2026/08/saj_emanager_datasheet_en_beu.pdf": {
+		"de": "SAJ eManager – Datenblatt zum Energiemanagement-Modul (BEU)",
+		"en": "SAJ eManager – Energy management module datasheet (BEU)"
+	},
+	"2026/08/saj_emanager_manual_en_v3.pdf": {
+		"de": "SAJ eManager – Handbuch für den Energiemanager",
+		"en": "SAJ eManager – Smart energy controller manual"
+	},
+	"2026/08/saj_esolar-aio3_datasheet_en.pdf": {
+		"de": "SAJ eSolar AIO3 – Datenblatt",
+		"en": "SAJ eSolar AIO3 – Datasheet"
+	},
+	"2026/08/saj_esolar-aio3_quick-install-guide_en.pdf": {
+		"de": "SAJ eSolar AIO3 – Kurzanleitung zur Installation",
+		"en": "SAJ eSolar AIO3 – Quick installation guide"
+	},
+	"2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf": {
+		"de": "SAJ HS3 5–12K-T2 – Datenblatt für das dreiphasige Speichersystem (EU)",
+		"en": "SAJ HS3 5–12K-T2 – Three-phase storage system datasheet (EU)"
+	},
+	"2026/08/saj_hs3_warranty_en_2025-08.pdf": {
+		"de": "SAJ HS3 – Garantiebedingungen (Europa)",
+		"en": "SAJ HS3 – Limited warranty (Europe)"
+	},
+	"2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf": {
+		"de": "SAJ B2 HV1/HV5 – Datenblatt (BEU, 5,0–25,0 kWh)",
+		"en": "SAJ B2 HV1/HV5 – Datasheet (BEU, 5.0–25.0 kWh)"
+	},
+	"2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf": {
+		"de": "SAJ B2 HV1/HV5 – Datenblatt (Australien)",
+		"en": "SAJ B2 HV1/HV5 – Datasheet (Australia)"
+	},
+	"2026/09/BAT100KWHInverterCompatibilitystatement.pdf": {
+		"de": "GoodWe BAT-AC-G10 – Erklärung zur Wechselrichterkompatibilität",
+		"en": "GoodWe BAT-AC-G10 – Inverter compatibility statement"
+	},
+	"2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf": {
+		"de": "SAJ BU3-5.0-TV2-PRO – Datenblatt (HS3, EU)",
+		"en": "SAJ BU3-5.0-TV2-PRO – Datasheet (HS3, EU)"
+	},
+	"2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf": {
+		"de": "GoodWe BAT-C 208,9–261,2 kWh – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe BAT-C 208.9–261.2 kWh – Datasheet (EMEA, V1.1)"
+	},
+	"2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf": {
+		"de": "GoodWe BAT-C 208–261 kWh – Benutzerhandbuch",
+		"en": "GoodWe BAT-C 208–261 kWh – User manual"
+	},
+	"2026/09/GW_Battery-Compatibility-Overview_EMEA-DE_20260910.pdf": {
+		"de": "GoodWe EMEA – Übersicht zur Batteriekompatibilität",
+		"en": "GoodWe EMEA – Battery compatibility overview"
+	},
+	"2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf": {
+		"de": "GoodWe EMEA – Übersicht zur Batteriekompatibilität",
+		"en": "GoodWe EMEA – Battery compatibility overview"
+	},
+	"2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf": {
+		"de": "GoodWe ESA 5–30 kW – Datenblatt",
+		"en": "GoodWe ESA 5–30 kW – Datasheet"
+	},
+	"2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf": {
+		"de": "GoodWe ESA 5–30 kW – Benutzerhandbuch (frühere Fassung V1.4)",
+		"en": "GoodWe ESA 5–30 kW – User manual (earlier edition V1.4)"
+	},
+	"2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf": {
+		"de": "GoodWe ET 50–100 kW – Systemhandbuch (V1.3)",
+		"en": "GoodWe ET 50–100 kW – System manual (V1.3)"
+	},
+	"2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf": {
+		"de": "GoodWe ET 75–100 kW – Datenblatt (EMEA, V2.1)",
+		"en": "GoodWe ET 75–100 kW – Datasheet (EMEA, V2.1)"
+	},
+	"2026/09/GW_ETR-50-125kW_User-Manual-DE.pdf": {
+		"de": "GoodWe ETR 50–125 kW – Benutzerhandbuch",
+		"en": "GoodWe ETR 50–125 kW – User manual"
+	},
+	"2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf": {
+		"de": "GoodWe ETR 80–125 kW – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe ETR 80–125 kW – Datasheet (EMEA, V1.1)"
+	},
+	"2026/09/GW_EzManager3000_User-Manual-EN_V1.3.pdf": {
+		"de": "GoodWe EzManager3000 – Benutzerhandbuch (V1.3)",
+		"en": "GoodWe EzManager3000 – User manual (V1.3)"
+	},
+	"2026/09/GW_HCA-G2_User-Manual-EN.pdf": {
+		"de": "GoodWe HCA G2 – Benutzerhandbuch",
+		"en": "GoodWe HCA G2 – User manual"
+	},
+	"2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf": {
+		"de": "GoodWe SEC3000C – Datenblatt (EMEA)",
+		"en": "GoodWe SEC3000C – Datasheet (EMEA)"
+	},
+	"2026/09/GW_SEC3000C_User-Manual-EN.pdf": {
+		"de": "GoodWe SEC3000C – Benutzerhandbuch",
+		"en": "GoodWe SEC3000C – User manual"
+	},
+	"2026/09/GW_STS-125kW_Quick-Installation-Guide-Multilingual_V1.0.pdf": {
+		"de": "GoodWe GW125K-STS-G10 – Kurzanleitung zur Installation (V1.0)",
+		"en": "GoodWe GW125K-STS-G10 – Quick installation guide (V1.0)"
+	},
+	"2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf": {
+		"de": "SAJ H2 10–30K T2/T3 – Datenblatt (BEU)",
+		"en": "SAJ H2 10–30K T2/T3 – Datasheet (BEU)"
+	},
+	"2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf": {
+		"de": "SAJ H2, HS2, HS3 – Konfigurationsanleitung (V1.0)",
+		"en": "SAJ H2, HS2, HS3 – Configuration instructions (V1.0)"
+	},
+	"2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf": {
+		"de": "Pylontech OPTIM US L260-OMNI – Datenblatt",
+		"en": "Pylontech OPTIM US L260-OMNI – Datasheet"
+	},
+	"2026/09/hs3-series.pdf": {
+		"de": "SAJ HS3 – Datenblatt der Baureihe",
+		"en": "SAJ HS3 – Series datasheet"
+	},
+	"2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf": {
+		"de": "SAJ HS2 – Datenblatt der Baureihe",
+		"en": "SAJ HS2 – Series datasheet"
+	},
+	"2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf": {
+		"de": "SAJ B2 HV1/HV5 – Benutzerhandbuch (5,0–25,0 kWh)",
+		"en": "SAJ B2 HV1/HV5 – User manual (5.0–25.0 kWh)"
+	},
+	"2026/10/GW112.6-BAT-AC-G10_UN38.3_Test-Report.pdf": {
+		"de": "GoodWe GW112.6-BAT-AC-G10 – Prüfbericht (UN 38.3)",
+		"en": "GoodWe GW112.6-BAT-AC-G10 – Test report (UN 38.3)"
+	},
+	"2026/10/GW_BAT-AC-G10_EU-Declaration-of-Conformity.pdf": {
+		"de": "GoodWe BAT-AC-G10 – EU-Konformitätserklärung",
+		"en": "GoodWe BAT-AC-G10 – EU declaration of conformity"
+	},
+	"2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf": {
+		"de": "GoodWe BAT-C 208,9–261,2 kWh – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe BAT-C 208.9–261.2 kWh – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_BAT-C-208-261kWh_EU-Declaration-of-Conformity.pdf": {
+		"de": "GoodWe BAT-C 208–261 kWh – EU-Konformitätserklärung",
+		"en": "GoodWe BAT-C 208–261 kWh – EU declaration of conformity"
+	},
+	"2026/10/GW_BAT-C-208-261kWh_Limited-Warranty-Europe.pdf": {
+		"de": "GoodWe BAT-C 208–261 kWh – Garantiebedingungen (Europa)",
+		"en": "GoodWe BAT-C 208–261 kWh – Limited warranty (Europe)"
+	},
+	"2026/10/GW_BAT-C-208-261kWh_User-Manual-DE_V1.0.pdf": {
+		"de": "GoodWe BAT-C 208–261 kWh – Benutzerhandbuch (V1.0)",
+		"en": "GoodWe BAT-C 208–261 kWh – User manual (V1.0)"
+	},
+	"2026/10/GW_BAT-C-60-112kWh_Datasheet_EMEA-DE_V1.1.pdf": {
+		"de": "GoodWe BAT-C 61,4–112,6 kWh – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe BAT-C 61.4–112.6 kWh – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_BAT-C-60-112kWh_Limited-Warranty-Europe.pdf": {
+		"de": "GoodWe BAT-C 61,4–112,6 kWh – Garantiebedingungen (Europa)",
+		"en": "GoodWe BAT-C 61.4–112.6 kWh – Limited warranty (Europe)"
+	},
+	"2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf": {
+		"de": "GoodWe BAT-C 60–112 kWh – Kurzanleitung zur Installation (V1.7)",
+		"en": "GoodWe BAT-C 60–112 kWh – Quick installation guide (V1.7)"
+	},
+	"2026/10/GW_BAT-C-60-112kWh_User-Manual-EN_V1.0.pdf": {
+		"de": "GoodWe BAT-C 60–112 kWh – Benutzerhandbuch (V1.0)",
+		"en": "GoodWe BAT-C 60–112 kWh – User manual (V1.0)"
+	},
+	"2026/10/GW_Compatibility-list-of-GoodWe-inverters-and-IoT-products-EN_V18.pdf": {
+		"de": "GoodWe IoT – Kompatibilität von Wechselrichtern und IoT-Geräten (V18)",
+		"en": "GoodWe IoT – Inverter and IoT device compatibility (V18)"
+	},
+	"2026/10/GW_ESA-261kWh_Certificate_EN-50549-1_EN-50549-10.pdf": {
+		"de": "GoodWe ESA 261 kWh – Zertifikat (EN 50549-1, EN 50549-10)",
+		"en": "GoodWe ESA 261 kWh – Certificate (EN 50549-1, EN 50549-10)"
+	},
+	"2026/10/GW_ESA-261kWh_Certificate_IEC-62619_IEC-62477-1_LVD_2025.pdf": {
+		"de": "GoodWe GW125/261-ESA-LCN-G10 – Zertifikat zur Niederspannungsrichtlinie (IEC 62619, IEC 62477-1)",
+		"en": "GoodWe GW125/261-ESA-LCN-G10 – Low Voltage Directive certificate (IEC 62619, IEC 62477-1)"
+	},
+	"2026/10/GW_ESA-261kWh_Certificate_VDE-AR-N-4105.pdf": {
+		"de": "GoodWe GW125/261-ESA-LCN-G10 – Zertifikat (VDE-AR-N 4105)",
+		"en": "GoodWe GW125/261-ESA-LCN-G10 – Certificate (VDE-AR-N 4105)"
+	},
+	"2026/10/GW_ESA-261kWh_Certificate_VDE-AR-N-4110-4120-4130.pdf": {
+		"de": "GoodWe GW125/261-ESA-LCN-G10 – Einheitenzertifikat (VDE-AR-N 4110, 4120, 4130)",
+		"en": "GoodWe GW125/261-ESA-LCN-G10 – Generating unit certificate (VDE-AR-N 4110, 4120, 4130)"
+	},
+	"2026/10/GW_ESA-261kWh_Datasheet_EMEA-DE_V1.1.pdf": {
+		"de": "GoodWe ESA 125 kW / 261 kWh – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe ESA 125 kW / 261 kWh – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf": {
+		"de": "GoodWe ESA 125 kW / 261 kWh – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe ESA 125 kW / 261 kWh – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_ESA-261kWh_EU-Declaration-of-Conformity.pdf": {
+		"de": "GoodWe GW125/261-ESA-LCN-G10 – EU-Konformitätserklärung",
+		"en": "GoodWe GW125/261-ESA-LCN-G10 – EU declaration of conformity"
+	},
+	"2026/10/GW_ESA-261kWh_Limited-Warranty-Europe_Rev1.4.pdf": {
+		"de": "GoodWe ESA 261 kWh – Garantiebedingungen (Europa, Rev. 1.4)",
+		"en": "GoodWe ESA 261 kWh – Limited warranty (Europe, Rev. 1.4)"
+	},
+	"2026/10/GW_ESA-261kWh_Maintenance-Manual-EN_V1.0.pdf": {
+		"de": "GoodWe ESA 261 kWh – Wartungshandbuch (V1.0)",
+		"en": "GoodWe ESA 261 kWh – Maintenance manual (V1.0)"
+	},
+	"2026/10/GW_ESA-261kWh_Microgrid-User-Manual-EN_V1.1.pdf": {
+		"de": "GoodWe ESA 261 kWh – Mikronetz-Handbuch (V1.1)",
+		"en": "GoodWe ESA 261 kWh – Microgrid manual (V1.1)"
+	},
+	"2026/10/GW_ESA-261kWh_On-grid_User-Manual-EN_V1.0.pdf": {
+		"de": "GoodWe ESA 261 kWh – Handbuch für netzgekoppelte Systeme (V1.0)",
+		"en": "GoodWe ESA 261 kWh – Grid-connected system manual (V1.0)"
+	},
+	"2026/10/GW_ESA-261kWh_Quick-Installation-Guide-POLY_V1.5.pdf": {
+		"de": "GoodWe ESA 261 kWh – Kurzanleitung zur Installation (V1.5)",
+		"en": "GoodWe ESA 261 kWh – Quick installation guide (V1.5)"
+	},
+	"2026/10/GW_ESA-261kWh_User-Manual-DE_V1.6.pdf": {
+		"de": "GoodWe ESA 261 kWh – Benutzerhandbuch (V1.6)",
+		"en": "GoodWe ESA 261 kWh – User manual (V1.6)"
+	},
+	"2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf": {
+		"de": "GoodWe ESA 261 kWh – Benutzerhandbuch (V1.6)",
+		"en": "GoodWe ESA 261 kWh – User manual (V1.6)"
+	},
+	"2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf": {
+		"de": "GoodWe ESA 3–10 kW – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe ESA 3–10 kW – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf": {
+		"de": "GoodWe ESA 3–10 kW – Benutzerhandbuch (V1.8)",
+		"en": "GoodWe ESA 3–10 kW – User manual (V1.8)"
+	},
+	"2026/10/GW_ESA-5-30kW_Certificate_EN-50549-1_EN-50549-10.pdf": {
+		"de": "GoodWe ESA 5–30 kW ETA-G20 – Zertifikat (EN 50549-1, A3 50705507)",
+		"en": "GoodWe ESA 5–30 kW ETA-G20 – Certificate (EN 50549-1, A3 50705507)"
+	},
+	"2026/10/GW_ESA-5-30kW_Certificate_EN-50549-2_EN-50549-10.pdf": {
+		"de": "GoodWe ESA 5–30 kW ETA-G20 – Zertifikat (EN 50549-2, A3 50706340)",
+		"en": "GoodWe ESA 5–30 kW ETA-G20 – Certificate (EN 50549-2, A3 50706340)"
+	},
+	"2026/10/GW_ESA-5-30kW_Certificate_IEC-62109.pdf": {
+		"de": "GoodWe ESA 5–30 kW ETA-G20 – Zertifikat (IEC 62109)",
+		"en": "GoodWe ESA 5–30 kW ETA-G20 – Certificate (IEC 62109)"
+	},
+	"2026/10/GW_ESA-5-30kW_Certificate_IEC-63027.pdf": {
+		"de": "GoodWe ESA 5–30 kW ETA-G20 – Zertifikat (IEC 63027)",
+		"en": "GoodWe ESA 5–30 kW ETA-G20 – Certificate (IEC 63027)"
+	},
+	"2026/10/GW_ESA-5-30kW_Certificate_VDE-AR-N-4105.pdf": {
+		"de": "GoodWe ESA 5–30 kW ETA-G20 – Zertifikat (VDE-AR-N 4105, A3 50706429)",
+		"en": "GoodWe ESA 5–30 kW ETA-G20 – Certificate (VDE-AR-N 4105, A3 50706429)"
+	},
+	"2026/10/GW_ESA-5-30kW_Datasheet_EMEA-DE_V1.1.pdf": {
+		"de": "GoodWe ESA 5–30 kW – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe ESA 5–30 kW – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_ESA-5-30kW_EU-Declaration-of-Conformity_POLY.pdf": {
+		"de": "GoodWe ESA 5–30 kW – EU-Konformitätserklärung",
+		"en": "GoodWe ESA 5–30 kW – EU declaration of conformity"
+	},
+	"2026/10/GW_ESA-5-30kW_Quick-Installation-Guide-POLY_V1.7.pdf": {
+		"de": "GoodWe ESA 5–30 kW – Kurzanleitung zur Installation (V1.7)",
+		"en": "GoodWe ESA 5–30 kW – Quick installation guide (V1.7)"
+	},
+	"2026/10/GW_ESA-5-30kW_User-Manual-DE_V1.4.pdf": {
+		"de": "GoodWe ESA 5–30 kW – Benutzerhandbuch (V1.4)",
+		"en": "GoodWe ESA 5–30 kW – User manual (V1.4)"
+	},
+	"2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf": {
+		"de": "GoodWe ESA 5–30 kW – Benutzerhandbuch (V1.5)",
+		"en": "GoodWe ESA 5–30 kW – User manual (V1.5)"
+	},
+	"2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf": {
+		"de": "GoodWe ET 50–100 kW – Benutzerhandbuch (V1.2)",
+		"en": "GoodWe ET 50–100 kW – User manual (V1.2)"
+	},
+	"2026/10/GW_ET-50-100kW_User-Manual-DE_V1.3.pdf": {
+		"de": "GoodWe ET 50–100 kW – Systemhandbuch (V1.3)",
+		"en": "GoodWe ET 50–100 kW – System manual (V1.3)"
+	},
+	"2026/10/GW_ET-75-100kW_Certificate_VDE-AR-N-4105.pdf": {
+		"de": "GoodWe ET 75–100 kW – Zertifikat (VDE-AR-N 4105, A3 50694726 0001)",
+		"en": "GoodWe ET 75–100 kW – Certificate (VDE-AR-N 4105, A3 50694726 0001)"
+	},
+	"2026/10/GW_ET-75-100kW_Certificate_VDE-AR-N-4110-4120.pdf": {
+		"de": "GoodWe ET 75–100 kW – Einheitenzertifikat (VDE-AR-N 4110/4120, SGS 250008RECO14-CER)",
+		"en": "GoodWe ET 75–100 kW – Generating unit certificate (VDE-AR-N 4110/4120, SGS 250008RECO14-CER)"
+	},
+	"2026/10/GW_ET-75-100kW_Datasheet_EMEA-DE_V1.1.pdf": {
+		"de": "GoodWe ET 80–100 kW – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe ET 80–100 kW – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_ET-G10_EU-Declaration-of-Conformity.pdf": {
+		"de": "GoodWe ET-G10 – EU-Konformitätserklärung",
+		"en": "GoodWe ET-G10 – EU declaration of conformity"
+	},
+	"2026/10/GW_ETR-50-125kW_Certificate_EN-50549-1_EN-50549-10.pdf": {
+		"de": "GoodWe ETR – Zertifikat (EN 50549-1)",
+		"en": "GoodWe ETR – Certificate (EN 50549-1)"
+	},
+	"2026/10/GW_ETR-50-125kW_Certificate_EN-50549-2_EN-50549-10.pdf": {
+		"de": "GoodWe ETR – Zertifikat (EN 50549-2)",
+		"en": "GoodWe ETR – Certificate (EN 50549-2)"
+	},
+	"2026/10/GW_ETR-50-125kW_Certificate_IEC-61727_IEC-62116.pdf": {
+		"de": "GoodWe ETR – Zertifikat (IEC 61727, IEC 62116)",
+		"en": "GoodWe ETR – Certificate (IEC 61727, IEC 62116)"
+	},
+	"2026/10/GW_ETR-50-125kW_Certificate_VDE-AR-N-4105.pdf": {
+		"de": "GoodWe ETR – Zertifikat (VDE-AR-N 4105)",
+		"en": "GoodWe ETR – Certificate (VDE-AR-N 4105)"
+	},
+	"2026/10/GW_ETR-50-125kW_Datasheet_EMEA-DE_V1.1.pdf": {
+		"de": "GoodWe ETR 80–125 kW – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe ETR 80–125 kW – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf": {
+		"de": "GoodWe ETR 50–125 kW – Benutzerhandbuch (V1.0)",
+		"en": "GoodWe ETR 50–125 kW – User manual (V1.0)"
+	},
+	"2026/10/GW_ETR-G10_EU-Declaration-of-Conformity.pdf": {
+		"de": "GoodWe ETR-G10 – EU-Konformitätserklärung",
+		"en": "GoodWe ETR-G10 – EU declaration of conformity"
+	},
+	"2026/10/GW_ETR_Quick-Installation-Guide-POLY.pdf": {
+		"de": "GoodWe ETR – Kurzanleitung zur Installation",
+		"en": "GoodWe ETR – Quick installation guide"
+	},
+	"2026/10/GW_EzManager3000_Certificate_EN-18031.pdf": {
+		"de": "GoodWe EzManager3000 – EU-Baumusterprüfbescheinigung (EN 18031)",
+		"en": "GoodWe EzManager3000 – EU type-examination certificate (EN 18031)"
+	},
+	"2026/10/GW_EzManager3000_Datasheet_EMEA-EN_V1.1.pdf": {
+		"de": "GoodWe EzManager3000 – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe EzManager3000 – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_GM330_Certificate_IEC-61010-1.pdf": {
+		"de": "GoodWe GM330 – Zertifikat (IEC 61010-1)",
+		"en": "GoodWe GM330 – Certificate (IEC 61010-1)"
+	},
+	"2026/10/GW_GMK120-330-360_Certificate_IEC-61010-1.pdf": {
+		"de": "GoodWe GMK330 – Zertifikat (IEC 61010-1)",
+		"en": "GoodWe GMK330 – Certificate (IEC 61010-1)"
+	},
+	"2026/10/GW_GMK330_Datasheet_EMEA-EN_V1.0.pdf": {
+		"de": "GoodWe GMK330 – Datenblatt (EMEA, V1.0)",
+		"en": "GoodWe GMK330 – Datasheet (EMEA, V1.0)"
+	},
+	"2026/10/GW_HCA-G2_Certificate_EN-18031.pdf": {
+		"de": "GoodWe HCA G2 – EU-Baumusterprüfbescheinigung (RED)",
+		"en": "GoodWe HCA G2 – EU type-examination certificate (RED)"
+	},
+	"2026/10/GW_HCA-G2_Certificate_EN-303645.pdf": {
+		"de": "GoodWe HCA G2 – Prüfbescheinigung (EN 303 645)",
+		"en": "GoodWe HCA G2 – Attestation (EN 303 645)"
+	},
+	"2026/10/GW_HCA-G2_Certificate_IEC-61851-1-CB.pdf": {
+		"de": "GoodWe HCA G2 – CB-Zertifikat (IEC 61851-1)",
+		"en": "GoodWe HCA G2 – CB certificate (IEC 61851-1)"
+	},
+	"2026/10/GW_HCA-G2_Datasheet_EMEA-DE_V1.1.pdf": {
+		"de": "GoodWe HCA G2 – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe HCA G2 – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf": {
+		"de": "GoodWe HCA G2 – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe HCA G2 – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_HCA-G2_User-Manual-DE.pdf": {
+		"de": "GoodWe HCA G2 – Benutzerhandbuch",
+		"en": "GoodWe HCA G2 – User manual"
+	},
+	"2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf": {
+		"de": "GoodWe – Garantiebedingungen für Wechselrichtersysteme (Europa)",
+		"en": "GoodWe – Inverter system warranty (Europe)"
+	},
+	"2026/10/GW_Limited-Warranty_Inverter-System_Europe_DE.pdf": {
+		"de": "GoodWe – Garantiebedingungen für Wechselrichtersysteme (Europa)",
+		"en": "GoodWe – Inverter system warranty (Europe)"
+	},
+	"2026/10/GW_Limited-Warranty_LX-D-G2-Battery_EU.pdf": {
+		"de": "GoodWe Lynx D G2 – Garantiebedingungen (EU)",
+		"en": "GoodWe Lynx D G2 – Limited warranty (EU)"
+	},
+	"2026/10/GW_Lynx-D-G2_Certificate_IEC-62619-CB.pdf": {
+		"de": "GoodWe Lynx D G2 5.1/8.3 – CB-Zertifikat (IEC 62619, G21)",
+		"en": "GoodWe Lynx D G2 5.1/8.3 – CB certificate (IEC 62619, G21)"
+	},
+	"2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf": {
+		"de": "GoodWe Lynx D G2 – Datenblatt (EU, V1.1)",
+		"en": "GoodWe Lynx D G2 – Datasheet (EU, V1.1)"
+	},
+	"2026/10/GW_SEC3000C_Certificate_EN-303645.pdf": {
+		"de": "GoodWe SEC3000C – Prüfbescheinigung (EN 303 645)",
+		"en": "GoodWe SEC3000C – Attestation (EN 303 645)"
+	},
+	"2026/10/GW_SEC3000C_Certificate_IEC-61010-1.pdf": {
+		"de": "GoodWe SEC3000C – Zertifikat (IEC 61010-1)",
+		"en": "GoodWe SEC3000C – Certificate (IEC 61010-1)"
+	},
+	"2026/10/GW_STS-125kW_Certificate_CE-LVD.pdf": {
+		"de": "GoodWe GW125K-STS-G10 – Zertifikat zur Niederspannungsrichtlinie (AN 50703461 0001)",
+		"en": "GoodWe GW125K-STS-G10 – Low Voltage Directive certificate (AN 50703461 0001)"
+	},
+	"2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf": {
+		"de": "GoodWe STS 30/60 kW – Datenblatt (EMEA, V1.1)",
+		"en": "GoodWe STS 30/60 kW – Datasheet (EMEA, V1.1)"
+	},
+	"2026/10/GW_Smart-Meter-EU_EU-Declaration-of-Conformity.pdf": {
+		"de": "GoodWe GM330 – EU-Konformitätserklärung",
+		"en": "GoodWe GM330 – EU declaration of conformity"
+	},
+	"2026/10/GW_Smart-Meter_User-Manual-EN_V1.5.pdf": {
+		"de": "GoodWe GM330, GMK330, GMK360 – Benutzerhandbuch (V1.5)",
+		"en": "GoodWe GM330, GMK330, GMK360 – User manual (V1.5)"
+	},
+	"2026/10/SAJ_ATS1-T63-A_User-Manual_EN_V3.0.pdf": {
+		"de": "SAJ ATS1-T63-A – Benutzerhandbuch (V3.0)",
+		"en": "SAJ ATS1-T63-A – User manual (V3.0)"
+	},
+	"2026/10/SAJ_ATS1-T63_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ ATS1-T63 – EU-Konformitätserklärung",
+		"en": "SAJ ATS1-T63 – EU declaration of conformity"
+	},
+	"2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf": {
+		"de": "SAJ ATS1 – Datenblatt (BEU)",
+		"en": "SAJ ATS1 – Datasheet (BEU)"
+	},
+	"2026/10/SAJ_B2_5-25kWh_HV1-HV5_Datasheet_DE.pdf": {
+		"de": "SAJ B2-5.0 bis B2-25.0 HV1/HV5 – Datenblatt",
+		"en": "SAJ B2-5.0 to B2-25.0 HV1/HV5 – Datasheet"
+	},
+	"2026/10/SAJ_B2_BC2-HV1_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ B2, BC2-HV1 – EU-Konformitätserklärung",
+		"en": "SAJ B2, BC2-HV1 – EU declaration of conformity"
+	},
+	"2026/10/SAJ_B2_BU2-5.0_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ B2, BU2-5.0 – EU-Konformitätserklärung",
+		"en": "SAJ B2, BU2-5.0 – EU declaration of conformity"
+	},
+	"2026/10/SAJ_BU3-5.0_BC3-TV_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ BU3, BC3-TV – EU-Konformitätserklärung (BU3-5.0-TV2-PRO)",
+		"en": "SAJ BU3, BC3-TV – EU declaration of conformity (BU3-5.0-TV2-PRO)"
+	},
+	"2026/10/SAJ_CB2_57.3-100.3-HV5_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ CB2 – EU-Konformitätserklärung (CB2-57.3-HV5)",
+		"en": "SAJ CB2 – EU declaration of conformity (CB2-57.3-HV5)"
+	},
+	"2026/10/SAJ_CB2_57.3-100.3-HV5_Quick-Installation-Guide_EN.pdf": {
+		"de": "SAJ CB2 57.3–100.3 HV5 – Kurzanleitung zur Installation (CB2-57.3-HV5)",
+		"en": "SAJ CB2 57.3–100.3 HV5 – Quick installation guide (CB2-57.3-HV5)"
+	},
+	"2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf": {
+		"de": "SAJ CB2 57.3–100.3 HV5 – Benutzerhandbuch (CB2-57.3-HV5, V0.0)",
+		"en": "SAJ CB2 57.3–100.3 HV5 – User manual (CB2-57.3-HV5, V0.0)"
+	},
+	"2026/10/SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf": {
+		"de": "SAJ CHS2 29.9–50K – Benutzerhandbuch (CHS2-29.9K-T4-X, V0.2)",
+		"en": "SAJ CHS2 29.9–50K – User manual (CHS2-29.9K-T4-X, V0.2)"
+	},
+	"2026/10/SAJ_CHS2_30-50K_Datasheet_DE.pdf": {
+		"de": "SAJ CHS2 30–50K – Datenblatt (CHS2-29.9K-T4-X)",
+		"en": "SAJ CHS2 30–50K – Datasheet (CHS2-29.9K-T4-X)"
+	},
+	"2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf": {
+		"de": "SAJ CHS2 – Datenblatt für das Hybrid-Speichersystem (BEU)",
+		"en": "SAJ CHS2 – Hybrid storage system datasheet (BEU)"
+	},
+	"2026/10/SAJ_CHS2_Certificate_VDE-AR-N-4105.pdf": {
+		"de": "SAJ CHS2 – Zertifikat (VDE-AR-N 4105:2018-11, CHS2-29.9K-T4-X)",
+		"en": "SAJ CHS2 – Certificate (VDE-AR-N 4105:2018-11, CHS2-29.9K-T4-X)"
+	},
+	"2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf": {
+		"de": "SAJ H2 10–30K T2/T3 – Benutzerhandbuch",
+		"en": "SAJ H2 10–30K T2/T3 – User manual"
+	},
+	"2026/10/SAJ_H2_15-30K-T3_Datasheet_DE.pdf": {
+		"de": "SAJ H2 15–30K – Datenblatt (H2-25K-T3)",
+		"en": "SAJ H2 15–30K – Datasheet (H2-25K-T3)"
+	},
+	"2026/10/SAJ_H2_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ H2 – EU-Konformitätserklärung (H2-25K-T3)",
+		"en": "SAJ H2 – EU declaration of conformity (H2-25K-T3)"
+	},
+	"2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf": {
+		"de": "SAJ HS2/AS2 5–10K-T2 – Benutzerhandbuch (HS2-5K bis HS2-10K-T2, V0.3)",
+		"en": "SAJ HS2/AS2 5–10K-T2 – User manual (HS2-5K to HS2-10K-T2, V0.3)"
+	},
+	"2026/10/SAJ_HS2_6-10K-T2_Datasheet_DE.pdf": {
+		"de": "SAJ HS2-6K, HS2-8K, HS2-10K-T2-X – Datenblatt",
+		"en": "SAJ HS2-6K, HS2-8K, HS2-10K-T2-X – Datasheet"
+	},
+	"2026/10/SAJ_HS2_BU2_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ HS2 – EU-Konformitätserklärung (HS2-5K bis HS2-10K-T2-X)",
+		"en": "SAJ HS2 – EU declaration of conformity (HS2-5K to HS2-10K-T2-X)"
+	},
+	"2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf": {
+		"de": "SAJ HS3 3–12K-T2 – Benutzerhandbuch (V4)",
+		"en": "SAJ HS3 3–12K-T2 – User manual (V4)"
+	},
+	"2026/10/SAJ_HS3_5-12K-T2_Datasheet_DE.pdf": {
+		"de": "SAJ HS3 5–12K-T2 – Datenblatt",
+		"en": "SAJ HS3 5–12K-T2 – Datasheet"
+	},
+	"2026/10/SAJ_HS3_BU3_BC3-TV_EU-Declaration-of-Conformity_V2.pdf": {
+		"de": "SAJ HS3, BU3, BC3-TV – EU-Konformitätserklärung",
+		"en": "SAJ HS3, BU3, BC3-TV – EU declaration of conformity"
+	},
+	"2026/10/SAJ_eManager-C1-Pro_Datasheet_DE.pdf": {
+		"de": "SAJ eManager-C1 Pro – Datenblatt",
+		"en": "SAJ eManager-C1 Pro – Datasheet"
+	},
+	"2026/10/SAJ_eManager-C1-Pro_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ eManager-C1 Pro – EU-Konformitätserklärung",
+		"en": "SAJ eManager-C1 Pro – EU declaration of conformity"
+	},
+	"2026/10/SAJ_eSolar-AIO3_EU-Declaration-of-Conformity.pdf": {
+		"de": "SAJ eSolar AIO3 – EU-Konformitätserklärung",
+		"en": "SAJ eSolar AIO3 – EU declaration of conformity"
+	},
+	"2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf": {
+		"de": "Pylontech L260-OMNI 125 kW / 260 kWh – Datenblattauszug (Druckseiten 17–18)",
+		"en": "Pylontech L260-OMNI 125 kW / 260 kWh – Datasheet excerpt (printed pp. 17–18)"
+	},
+	"2026/10/pylontech-l260-pp20-21.pdf": {
+		"de": "Pylontech L260-OMNI – Gewerbespeicher im Überblick (PY2412EN-SD, S. 20–21)",
+		"en": "Pylontech L260-OMNI – Commercial storage range (PY2412EN-SD, pp. 20–21)"
+	},
+	"2026/11/GW_BAT-C-60-112kWh_Maintenance-Manual-EN.pdf": {
+		"de": "GoodWe BAT-C 60–112 kWh – Wartungshandbuch",
+		"en": "GoodWe BAT-C 60–112 kWh – Maintenance manual"
+	},
+	"2026/11/GW_BAT-C_Certificate-CE-LVD.pdf": {
+		"de": "GoodWe BAT-C – Zertifikat zur Niederspannungsrichtlinie",
+		"en": "GoodWe BAT-C – Low Voltage Directive certificate"
+	},
+	"2026/11/GW_BAT-C_Certificate-IEC62040.pdf": {
+		"de": "GoodWe BAT-C – Zertifikat (IEC 62040)",
+		"en": "GoodWe BAT-C – Certificate (IEC 62040)"
+	},
+	"2026/11/GW_BAT-C_Certificate-IEC62477.pdf": {
+		"de": "GoodWe BAT-C 102,4–112,6 kWh – Zertifikat (IEC 62477)",
+		"en": "GoodWe BAT-C 102.4–112.6 kWh – Certificate (IEC 62477)"
+	},
+	"2026/11/GW_BAT-C_Certificate-IEC62619-IEC63056-EN62477.pdf": {
+		"de": "GoodWe BAT-C – Zertifikat (IEC 62619, IEC 63056, EN 62477 · TÜV R 50669810 0001)",
+		"en": "GoodWe BAT-C – Certificate (IEC 62619, IEC 63056, EN 62477 · TÜV R 50669810 0001)"
+	},
+	"2026/11/GW_BAT-C_Certificate-VDE2510-50.pdf": {
+		"de": "GoodWe BAT-C – Zertifikat (VDE 2510-50)",
+		"en": "GoodWe BAT-C – Certificate (VDE 2510-50)"
+	},
+	"linker-hca-warranty/goodwe-ev-warranty-europe-rev-1-2-88a8a5bd9e70.pdf": {
+		"de": "GoodWe EV – Garantiebedingungen für Ladestationen (Europa, Rev. 1.2)",
+		"en": "GoodWe EV – EV charger warranty (Europe, Rev. 1.2)"
+	}
+}

@@ -78,12 +78,12 @@ final class LibraryPage {
 	/**
 	 * The type tile's file icon.
 	 */
-	private const FILE_ICON = '<svg class="linker-library-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v6h6"/></svg>';
+	private const FILE_ICON = '<svg class="linker-library-icon" width="18" height="18" aria-hidden="true"><use href="#library-file"/></svg>';
 
 	/**
 	 * The download link's arrow.
 	 */
-	private const DOWNLOAD_ICON = '<svg class="linker-library-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+	private const DOWNLOAD_ICON = '<svg class="linker-library-icon" width="14" height="14" aria-hidden="true"><use href="#library-download"/></svg>';
 
 	/**
 	 * The register the fragments list.
@@ -252,11 +252,17 @@ final class LibraryPage {
 		}
 		$brand_links = '';
 		foreach ( $model['brands'] as $brand ) {
-			$brand_links .= '<a href="#' . esc_attr( $brand['answers_id'] ) . '" data-library-spy-link>' . esc_html( $brand['name'] ) . ' <span class="linker-library-n">' . esc_html( (string) count( $brand['answers'] ?? array() ) ) . '</span></a>';
+			if ( empty( $brand['answers'] ) ) {
+				continue;
+			}
+			$brand_links .= '<a href="#' . esc_attr( $brand['answers_id'] ) . '" data-library-spy-link>' . esc_html( $brand['name'] ) . ' <span class="linker-library-n">' . esc_html( (string) count( $brand['answers'] ) ) . '</span></a>';
 		}
 		$document_links = '';
 		foreach ( $model['brands'] as $brand ) {
-			$document_links .= '<a href="#' . esc_attr( $brand['documents_id'] ) . '" data-library-spy-link>' . esc_html( $brand['name'] ) . ' <span class="linker-library-n">' . esc_html( (string) count( $brand['documents'] ?? array() ) ) . '</span></a>';
+			if ( empty( $brand['documents'] ) ) {
+				continue;
+			}
+			$document_links .= '<a href="#' . esc_attr( $brand['documents_id'] ) . '" data-library-spy-link>' . esc_html( $brand['name'] ) . ' <span class="linker-library-n">' . esc_html( (string) count( $brand['documents'] ) ) . '</span></a>';
 		}
 
 		$out  = '<div class="linker-library-rail-group" data-library-nav="faq">';
@@ -290,11 +296,17 @@ final class LibraryPage {
 		}
 		$answer_chips = '';
 		foreach ( $model['brands'] as $brand ) {
-			$answer_chips .= $this->chip( $brand['answers_id'], $brand['name'], count( $brand['answers'] ?? array() ) );
+			if ( empty( $brand['answers'] ) ) {
+				continue;
+			}
+			$answer_chips .= $this->chip( $brand['answers_id'], $brand['name'], count( $brand['answers'] ) );
 		}
 		$document_chips = '';
 		foreach ( $model['brands'] as $brand ) {
-			$document_chips .= $this->chip( $brand['documents_id'], $brand['name'], count( $brand['documents'] ?? array() ) );
+			if ( empty( $brand['documents'] ) ) {
+				continue;
+			}
+			$document_chips .= $this->chip( $brand['documents_id'], $brand['name'], count( $brand['documents'] ) );
 		}
 
 		$out  = '<div class="linker-library-chips-scroll" data-library-nav="faq">';
@@ -339,7 +351,10 @@ final class LibraryPage {
 
 		$cards = '';
 		foreach ( $model['brands'] as $brand ) {
-			$answers = $brand['answers'] ?? array();
+			if ( empty( $brand['answers'] ) ) {
+				continue;
+			}
+			$answers = $brand['answers'];
 			$rows    = '';
 			foreach ( $answers as $answer ) {
 				$rows .= '<details class="linker-library-qa" data-library-item data-library-group="' . esc_attr( $brand['name'] ) . '">';
@@ -371,7 +386,8 @@ final class LibraryPage {
 	public function documents( $atts = array() ): string {
 		unset( $atts );
 		$model = $this->model();
-		$out   = '<div class="linker-library-filters" data-library-filters hidden role="group" aria-label="' . esc_attr( (string) __( 'Document type', 'linker-commerce' ) ) . '">';
+		$out   = '<svg hidden aria-hidden="true" width="0" height="0"><symbol id="library-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v6h6"/></symbol><symbol id="library-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>';
+		$out  .= '<div class="linker-library-filters" data-library-filters hidden role="group" aria-label="' . esc_attr( (string) __( 'Document type', 'linker-commerce' ) ) . '">';
 		$out  .= '<button type="button" class="linker-library-chip" data-library-type="all" aria-pressed="true">' . esc_html( (string) __( 'All', 'linker-commerce' ) ) . ' <span class="linker-library-n">' . esc_html( (string) $model['document_total'] ) . '</span></button>';
 		foreach ( $model['types'] as $type ) {
 			$out .= '<button type="button" class="linker-library-chip" data-library-type="' . esc_attr( $type['type'] ) . '" aria-pressed="false">' . esc_html( $type['label'] ) . ' <span class="linker-library-n">' . esc_html( (string) $type['count'] ) . '</span></button>';
@@ -380,7 +396,10 @@ final class LibraryPage {
 
 		$cards = '';
 		foreach ( $model['brands'] as $brand ) {
-			$documents = $brand['documents'] ?? array();
+			if ( empty( $brand['documents'] ) ) {
+				continue;
+			}
+			$documents = $brand['documents'];
 			$rows      = '';
 			foreach ( $documents as $document ) {
 				$rows .= $this->document( $document, $brand['name'] );
@@ -503,7 +522,12 @@ final class LibraryPage {
 		// `has-tile` is constant: the design gives every row the same 52x72
 		// slot, and what varies is only whether a page image fills it (the
 		// fragments' `has-src`) or the type tile stands alone.
-		$out = '<li class="linker-library-doc has-tile" data-library-item data-library-type="' . esc_attr( $document['type'] ) . '" data-library-products="' . esc_attr( (string) wp_json_encode( $document['products'] ) ) . '" data-library-skus="' . esc_attr( (string) wp_json_encode( $document['skus'] ) ) . '">';
+		$extra_products = array_values( array_diff( $document['products'], $document['skus'] ) );
+		$out            = '<li class="linker-library-doc has-tile" data-library-item data-library-type="' . esc_attr( $document['type'] ) . '" data-library-skus="' . esc_attr( (string) wp_json_encode( $document['skus'] ) ) . '"';
+		if ( $extra_products ) {
+			$out .= ' data-library-products="' . esc_attr( (string) wp_json_encode( $extra_products ) ) . '"';
+		}
+		$out .= '>';
 		if ( null !== $document['thumb'] ) {
 			// `has-src` is what hides the tile's icon while the page image is
 			// there; a reader without the script sees the image, and the

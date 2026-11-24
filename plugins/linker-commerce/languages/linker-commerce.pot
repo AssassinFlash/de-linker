@@ -6534,3 +6534,11 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php
 msgid "Contact our team"
 msgstr ""
+
+#: includes/Presentation/ComparePage.php includes/Consent/BasicMode.php content/windpress/consent.css
+msgid "Yes"
+msgstr ""
+
+#: src/accounts/api.test.ts templates/emails/linker-genie-handoff.php includes/Vocabulary/Labels.php content/journal-titles.json src/accounts/style.css
+msgid "No"
+msgstr ""
