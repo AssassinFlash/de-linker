@@ -17,7 +17,7 @@ import { expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import type { CardState } from '../shared/ProductCard';
-import type { storeClient } from '../configurator/api/store';
+import type { storeClient } from './api/store';
 
 vi.mock( './api/turn', async ( importOriginal ) => {
 	const actual = await importOriginal< typeof import( './api/turn' ) >();
@@ -61,7 +61,7 @@ function storeDouble( addAll?: ReturnType< typeof vi.fn > ) {
 // The store client is created inside the component; route it through a module
 // mock so each test installs its own double.
 let storeFactory: () => ReturnType< typeof storeClient > = () => storeDouble();
-vi.mock( '../configurator/api/store', () => ( {
+vi.mock( './api/store', () => ( {
 	storeClient: () => storeFactory(),
 } ) );
 
@@ -197,7 +197,7 @@ test( 'the customer sees and adds the quantity on the signed product card', asyn
 	expect( add ).toHaveBeenCalledWith(
 		[ { productId: 3556, quantity: 2 } ],
 		expect.any( Function ),
-		{ kind: 'genie', token: 'signed-two' }
+		'signed-two'
 	);
 } );
 

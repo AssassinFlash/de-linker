@@ -18,7 +18,7 @@ import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
  * Internal dependencies
  */
 import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
-import type { storeClient } from '../configurator/api/store';
+import type { storeClient } from './api/store';
 import { GenieCards } from './components/GenieCard';
 
 afterEach( () => {

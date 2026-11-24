@@ -1,8 +1,6 @@
 """Request and response bodies of the HTTP API.
 
-The JSON Schemas of the requests are exported to `schemas/api/` and into the
-configurator (scripts/export_schemas.py); the configurator validates its form
-against them, so the rules of an input exist once.
+scripts/export_schemas.py publishes the request contracts in schemas/api/.
 """
 
 from __future__ import annotations

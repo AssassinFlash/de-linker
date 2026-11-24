@@ -38,7 +38,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { storeClient } from '../configurator/api/store';
+import { storeClient } from '../genie/api/store';
 import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { SentInquiry } from '../genie/api/inquiry';
 import type { Upload } from '../genie/attachments/prepare';

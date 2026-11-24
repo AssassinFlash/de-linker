@@ -18,7 +18,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import type { Locale } from '../../configurator/types';
+import type { Locale } from '../types';
 import type { Upload } from '../attachments/prepare';
 import type { SentInquiry } from './inquiry';
 import { restoreArtifacts, type ArtifactContext } from './historyArtifacts';

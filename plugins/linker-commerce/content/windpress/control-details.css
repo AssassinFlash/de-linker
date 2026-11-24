@@ -1,28 +1,6 @@
 /* Existing site controls: the owner's 2026-10-21 visual review. Spacing and
    focus treatment reuse the site's tokens; no separate CSS delivery path. */
 
-/* Native fieldset legends sit outside their grid's gap. Give the choice
-   heading the same explicit space as the neighbouring labelled controls. */
-.linker-configurator .linker-form__choice > legend {
-	float: none;
-	width: auto;
-	margin: 0 0 var(--proto-space-2, 0.5rem);
-	padding: 0;
-}
-
-.linker-configurator .linker-form__choice input[type="radio"] {
-	flex: 0 0 1.125rem;
-}
-
-.linker-configurator .linker-cards-choice label:hover {
-	border-color: var(--linker-accent);
-}
-
-.linker-configurator .linker-cards-choice label:has(input:focus-visible) {
-	outline: 2px solid var(--linker-accent);
-	outline-offset: 2px;
-}
-
 /* The brand capsules now lead to the existing product, capability and
    support pages. Preserve the diagram while making its affordance real. */
 #tv-footer-v2 .footer-identity-network {

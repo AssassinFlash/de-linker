@@ -12,7 +12,7 @@
 /**
  * Internal dependencies
  */
-import type { Locale } from '../../configurator/types';
+import type { Locale } from '../types';
 import type { PageContext } from './turn';
 
 type Fetch = typeof fetch;

@@ -1,10 +1,6 @@
 """Write the JSON Schemas of the API's request bodies.
 
-The configurator validates its forms against these schemas, so each input rule
-(ranges, required fields, the PLZ pattern) is written once, in the Pydantic
-models of `linker_engine.models`. Two copies are written: `schemas/api/` for
-readers of the engine, and the configurator's `src/configurator/schema/`, which
-the front-end build bundles. tests/test_schemas.py fails when either is stale.
+The engine publishes its Pydantic request contracts in schemas/api/.
 
     uv run python scripts/export_schemas.py
 """
@@ -25,10 +21,7 @@ from linker_engine.models import (
 )
 
 ENGINE = Path(__file__).resolve().parents[1]
-TARGETS = (
-    ENGINE / "schemas" / "api",
-    ENGINE.parents[1] / "plugins" / "linker-tools" / "src" / "configurator" / "schema",
-)
+TARGET = ENGINE / "schemas" / "api"
 MODELS: dict[str, type[BaseModel]] = {
     "residential-input": ResidentialInput,
     "commercial-input": CommercialInput,
@@ -49,11 +42,10 @@ def documents() -> dict[str, str]:
 
 
 def main() -> None:
-    for target in TARGETS:
-        target.mkdir(parents=True, exist_ok=True)
-        for name, text in documents().items():
-            (target / name).write_text(text)
-        print(f"wrote {len(MODELS)} schemas to {target}")
+    TARGET.mkdir(parents=True, exist_ok=True)
+    for name, text in documents().items():
+        (TARGET / name).write_text(text)
+    print(f"wrote {len(MODELS)} schemas to {TARGET}")
 
 
 if __name__ == "__main__":

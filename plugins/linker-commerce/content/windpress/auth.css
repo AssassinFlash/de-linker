@@ -605,16 +605,7 @@
 .linker-auth-verify { margin-top: 14px; padding: 14px 16px 16px; border: 1px solid var(--acct-line-soft); border-radius: 16px; background: #f7f9f9; }
 .linker-auth-verify .linker-auth-fields { margin-top: 6px; }
 
-/* The business type: the prototype's three pills (registration-prototype.css
- * 29-33) drawn the accessible way (#351): RoleField nests each native input
- * inside its option label, and the input overlays the whole pill — the input
- * itself is the pill's hit area, so a pointer, Playwright's actionability
- * check, Tab focus and the checked-state announcement all land on the real
- * control. The same nesting the configurator's choice cards use
- * (plugins/linker-tools/src/configurator/configurator.css,
- * .linker-form__choice label with label:has(input:checked)). The input is
- * hidden with opacity alone: pointer-events or display would take the hit
- * area away again, the very defect this replaced. */
+/* Keep the native radio clickable across its visible choice label. */
 .linker-auth .form-row:has(input[type="radio"]) .woocommerce-input-wrapper {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));

@@ -17,10 +17,7 @@ import { __, resetLocaleData, setLocaleData } from '@wordpress/i18n';
  */
 import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
 import germanHero from '../../languages/linker-tools-de_DE_formal-6796211aef57736d0923df38ef696ad2.json';
-import {
-	additionStatusText,
-	additionUnconfirmedText,
-} from '../configurator/publication';
+import { additionStatusText, additionUnconfirmedText } from './publication';
 
 afterEach( () => resetLocaleData( {}, 'linker-tools' ) );
 

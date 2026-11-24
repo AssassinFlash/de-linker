@@ -37,7 +37,7 @@
 /**
  * Internal dependencies
  */
-import type { Locale } from '../configurator/types';
+import type { Locale } from './types';
 import type { PageContext } from './api/turn';
 
 export interface GenieConfig {

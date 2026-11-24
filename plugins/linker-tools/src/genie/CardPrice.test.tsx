@@ -19,7 +19,7 @@ import { expect, test, vi } from 'vitest';
 /**
  * Internal dependencies
  */
-import type { storeClient } from '../configurator/api/store';
+import type { storeClient } from './api/store';
 import type { CardPrice } from './api/turn';
 
 vi.mock( './api/turn', async ( importOriginal ) => {
@@ -37,7 +37,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendVote: vi.fn( async () => true ),
 	};
 } );
-vi.mock( '../configurator/api/store', () => ( {
+vi.mock( './api/store', () => ( {
 	storeClient: () =>
 		( {
 			products: vi.fn( async () => [

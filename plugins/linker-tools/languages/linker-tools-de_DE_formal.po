@@ -1,6 +1,6 @@
 # German (formal) translations of linker-tools: the PHP strings (the dock
 # button, the page chips and the opening prompts of includes/Genie/Entries.php,
-# the quality page) and the Genie and configurator apps' script strings (references to
+# the quality page) and the active frontend scripts' strings (references to
 # build/genie.js, extracted with `wp i18n make-pot . <pot>
 # --include=build/genie.js --skip-php`). AGENTS.md §3: Sie form. The prompts of
 # #234 passed the copy review of docs/acceptance/2026-10-18/234/copy-review.md;
@@ -8,9 +8,6 @@
 # the strings of #243 that of docs/acceptance/2026-10-18/243/copy-review.md.
 # Compile: msgfmt -o linker-tools-de_DE_formal.mo linker-tools-de_DE_formal.po
 # Script JSON: just i18n-tools (wp i18n make-json --no-purge).
-# Configurator source references locate the messages; build/configurator.js
-# groups them under the enqueued entry, including its lazy roof chunk. WordPress
-# loads one hashed JSON for the entry before any of those components render.
 msgid ""
 msgstr ""
 "Project-Id-Version: linker-tools 0.1.0\n"
@@ -440,36 +437,16 @@ msgstr "Das Projekt ist noch nicht bereit für die Berechnung. Prüfen Sie die m
 msgid "Discard stored request"
 msgstr "Gespeicherte Anfrage verwerfen"
 
-#: src/configurator/commercial/CommercialResult.tsx:290 build/configurator.js
-msgid "%1$s kW, %2$s kWh usable"
-msgstr "%1$s kW, %2$s kWh nutzbar"
-
 #. translators: 1: date and time, 2: the address the team replies to, 3: why Genie offered the contact.
 #: includes/Genie/QualityPage.php
 #, php-format
 msgid "%1$s · Reply address: %2$s · Reason: %3$s"
 msgstr "%1$s · Antwortadresse: %2$s · Grund: %3$s"
 
-#: src/configurator/report/ReportView.tsx:133 build/configurator.js
-msgid "%1$s, %2$s"
-msgstr "%1$s, %2$s"
-
 #: includes/Genie/QualityPage.php
 #, php-format
 msgid "%1$s: %2$s (%3$s)"
 msgstr "%1$s: %2$s (%3$s)"
-
-#: src/configurator/solution/NoCandidate.tsx:67 build/configurator.js
-msgid "%d inverter"
-msgid_plural "%d inverters"
-msgstr[0] "%d Wechselrichter"
-msgstr[1] "%d Wechselrichter"
-
-#: src/configurator/roof/RoofStep.tsx:505 build/configurator.js
-msgid "%d module"
-msgid_plural "%d modules"
-msgstr[0] "%d Modul"
-msgstr[1] "%d Module"
 
 #. translators: %d is how many of this product the customer listed.
 #: build/genie.js build/hero.js
@@ -482,24 +459,6 @@ msgstr "%d ×"
 msgid "%s could not be read."
 msgstr "%s konnte nicht gelesen werden."
 
-#: src/configurator/solution/Solution.tsx:66 build/configurator.js
-msgid "%s pair"
-msgid_plural "%s pairs"
-msgstr[0] "%s Paar"
-msgstr[1] "%s Paare"
-
-#: src/configurator/solution/Solution.tsx:78 build/configurator.js
-msgid "%s pc"
-msgid_plural "%s pcs"
-msgstr[0] "%s Stk."
-msgstr[1] "%s Stk."
-
-#: src/configurator/solution/Solution.tsx:72 build/configurator.js
-msgid "%s set"
-msgid_plural "%s sets"
-msgstr[0] "%s Satz"
-msgstr[1] "%s Sätze"
-
 #. translators: %s: the product category's name as the page shows it.
 #: includes/Genie/Preview.php
 #, php-format
@@ -511,10 +470,6 @@ msgstr "%s: Worin unterscheiden sich die Serien?"
 #, php-format
 msgid "%s: which model fits my project?"
 msgstr "%s: Welches Modell passt zu meinem Projekt?"
-
-#: src/configurator/commercial/CommercialPanel.tsx:402 build/configurator.js
-msgid "15-minute load profile (CSV, optional)"
-msgstr "15-Minuten-Lastgang (CSV, optional)"
 
 #. translators: %s is the email address the confirmation link went to.
 #: build/genie.js:7 build/hero.js
@@ -529,14 +484,6 @@ msgstr "Ein falsches Produkt wurde als bessere Antwort bewertet."
 msgid "AI assistant"
 msgstr "KI-Assistent"
 
-#: src/configurator/solution/Solution.tsx:268 build/configurator.js
-msgid "Above the HTW limit"
-msgstr "Über der HTW-Grenze"
-
-#: src/configurator/commercial/CommercialResult.tsx:242 build/configurator.js
-msgid "Action"
-msgstr "Aktion"
-
 #. translators: %d is the number of distinct products.
 #: build/genie.js build/hero.js
 msgid "Add %d products to the solution draft"
@@ -547,10 +494,6 @@ msgid "Add a product to your solution draft or write a message."
 msgstr ""
 "Fügen Sie Ihrem Lösungsentwurf ein Produkt hinzu oder schreiben Sie eine "
 "Nachricht."
-
-#: src/configurator/solution/Solution.tsx:323 build/configurator.js
-msgid "Add all to solution draft"
-msgstr "Alles zum Lösungsentwurf hinzufügen"
 
 #: build/genie.js build/hero.js
 msgid "Add the product to the solution draft"
@@ -565,24 +508,13 @@ msgstr "Zum Entwurf hinzufügen"
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
-#: build/genie.js:13 src/configurator/solution/Solution.tsx:90 build/hero.js
-#: src/genie/shared/cardActions.ts src/configurator/solution/Solution.tsx
-#: build/configurator.js build/genie.js
+#: build/genie.js:13 build/hero.js src/genie/shared/cardActions.ts build/genie.js
 msgid "Adding…"
 msgstr "Wird hinzugefügt …"
 
-#: src/configurator/publication.ts:26 build/configurator.js build/genie.js
-#: build/hero.js
+#: build/genie.js build/hero.js
 msgid "Addition not confirmed."
 msgstr "Hinzufügen nicht bestätigt."
-
-#: src/configurator/residential/ResidentialForm.tsx:348 build/configurator.js
-msgid "Additional consumers"
-msgstr "Zusätzliche Verbraucher"
-
-#: src/configurator/roof/RoofStep.tsx:445 build/configurator.js
-msgid "Aerial image: click a roof to select it"
-msgstr "Luftbild: Klicken Sie auf ein Dach, um es auszuwählen"
 
 #: includes/Genie/QualityPage.php
 msgid "All"
@@ -592,26 +524,9 @@ msgstr "Alle"
 msgid "All conversations"
 msgstr "Alle Unterhaltungen"
 
-#: src/configurator/solution/Solution.tsx:339 build/configurator.js
-msgid "All products are in your solution draft."
-msgstr "Alle Produkte sind in Ihrem Lösungsentwurf."
-
-#: src/configurator/commercial/CommercialPanel.tsx:258 build/configurator.js
 #: build/planner/assets/planner.js:1
 msgid "Annual consumption"
 msgstr "Jahresverbrauch"
-
-#: src/configurator/residential/ResidentialForm.tsx:182 build/configurator.js
-msgid "Annual household consumption"
-msgstr "Jahresverbrauch des Haushalts"
-
-#: src/configurator/commercial/CommercialResult.tsx:146 build/configurator.js
-msgid "Annual peak"
-msgstr "Jahreshöchstlast"
-
-#: src/configurator/commercial/CommercialPanel.tsx:315 build/configurator.js
-msgid "Annual peak from the bill"
-msgstr "Jahreshöchstlast laut Rechnung"
 
 #: includes/Genie/QualityPage.php
 msgid "Answer against a wrong pick"
@@ -628,9 +543,7 @@ msgstr ""
 msgid "Answers judged"
 msgstr "Bewertete Antworten"
 
-#: includes/Genie/Entries.php src/configurator/report/ReportView.tsx
-#: build/genie.js:19 build/hero.js build/configurator.js
-#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
+#: includes/Genie/Entries.php build/genie.js:19 build/hero.js ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
 msgid "Ask Genie"
 msgstr "Genie fragen"
 
@@ -662,10 +575,6 @@ msgstr "Stellte dieselbe Frage dreimal hintereinander"
 msgid "Asked to talk to a person"
 msgstr "Wollte mit einem Menschen sprechen"
 
-#: src/configurator/roof/RoofStep.tsx:583 build/configurator.js
-msgid "Assumptions of the module count"
-msgstr "Annahmen der Modulzahl"
-
 #. translators: %s is the file name. The plural does not repeat names.
 #: build/genie.js build/hero.js
 msgid "Attach %s again. It could not be kept for another try."
@@ -691,7 +600,7 @@ msgstr "Zusammenfassung des Gesprächs anhängen"
 msgid "Attached: %s"
 msgstr "Anhang: %s"
 
-#: src/configurator/commercial/CommercialPanel.tsx:439 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Average power in kW"
 msgstr "Mittlere Leistung in kW"
 
@@ -700,24 +609,9 @@ msgstr "Mittlere Leistung in kW"
 msgid "Back"
 msgstr "Zurück"
 
-#: ../../apps/planner/src/components/NewProject.tsx
-#: build/planner/assets/planner.js
-#: src/configurator/commercial/CommercialPanel.tsx:304
-#: src/configurator/residential/ResidentialForm.tsx:294 build/configurator.js
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
 msgid "Backup supply"
 msgstr "Notstromversorgung"
-
-#: src/configurator/solution/Solution.tsx:383 build/configurator.js
-msgid "Basis"
-msgstr "Grundlage"
-
-#: src/configurator/commercial/CommercialResult.tsx:180 build/configurator.js
-msgid "Battery power"
-msgstr "Batterieleistung"
-
-#: src/configurator/commercial/CommercialResult.tsx:182 build/configurator.js
-msgid "Battery power, indicative"
-msgstr "Batterieleistung, Richtwert"
 
 #: build/genie.js build/hero.js
 msgid "Brand"
@@ -727,20 +621,6 @@ msgstr "Marke"
 msgid "Brochure"
 msgstr "Broschüre"
 
-#: src/configurator/commercial/CommercialPanel.tsx:502 build/configurator.js
-msgid "Calculate storage"
-msgstr "Speicher berechnen"
-
-#: src/configurator/residential/ResidentialForm.tsx:402 build/configurator.js
-msgid "Calculate system"
-msgstr "System berechnen"
-
-#: src/configurator/residential/ResidentialPanel.tsx:291 build/configurator.js
-msgid "Calculating yield, storage and the released system…"
-msgstr "Ertrag, Speicher und freigegebenes System werden berechnet …"
-
-#: src/configurator/commercial/CommercialPanel.tsx:501
-#: src/configurator/residential/ResidentialForm.tsx:401 build/configurator.js
 #: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Calculating…"
 msgstr "Wird berechnet …"
@@ -756,21 +636,9 @@ msgstr "Abbrechen"
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: src/configurator/commercial/CommercialResult.tsx:232 build/configurator.js
-msgid "Cap"
-msgstr "Grenze"
-
 #: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
 msgid "Certificate"
 msgstr "Zertifikat"
-
-#: src/configurator/residential/ResidentialForm.tsx:238 build/configurator.js
-msgid "Change roof"
-msgstr "Dach ändern"
-
-#: src/configurator/solution/NoCandidate.tsx:100 build/configurator.js
-msgid "Change the inputs"
-msgstr "Eingaben ändern"
 
 #: includes/Genie/Entries.php
 msgid "Check my draft"
@@ -780,21 +648,9 @@ msgstr "Meinen Entwurf prüfen"
 msgid "Check the details and send the inquiry to the Linker team."
 msgstr "Prüfen Sie die Angaben und senden Sie die Anfrage an das Linker-Team."
 
-#: src/configurator/validation.ts:65 build/configurator.js
-msgid "Check this value."
-msgstr "Prüfen Sie diesen Wert."
-
-#: src/configurator/report/ReportView.tsx:52 build/configurator.js
-msgid "Choose a PNG or JPEG file."
-msgstr "Wählen Sie eine PNG- oder JPEG-Datei."
-
 #: src/genie/components/MissingFiles.tsx src/hero/Hero.tsx ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/genie.js build/hero.js build/planner/assets/planner.js:1
 msgid "Choose a file"
 msgstr "Datei auswählen"
-
-#: src/configurator/report/ReportView.tsx:57 build/configurator.js
-msgid "Choose a logo of at most 500 kB."
-msgstr "Wählen Sie ein Logo mit höchstens 500 kB."
 
 #: build/genie.js build/hero.js
 msgid "Choose a photo"
@@ -804,12 +660,11 @@ msgstr "Foto auswählen"
 msgid "Choose another photo"
 msgstr "Anderes Foto auswählen"
 
-#: src/configurator/commercial/CommercialPanel.tsx:405 build/configurator.js
 #: build/planner/assets/planner.js:1
 msgid "Choose file"
 msgstr "Datei auswählen"
 
-#: src/configurator/report/ReportView.tsx:89 build/configurator.js ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
 msgid "Choose logo"
 msgstr "Logo auswählen"
 
@@ -817,16 +672,6 @@ msgstr "Logo auswählen"
 #, php-format
 msgid "Citation: %s"
 msgstr "Quellenprüfung: %s"
-
-#: src/configurator/roof/RoofStep.tsx:453 build/configurator.js
-msgid "Click the corners of the plane; click the first corner again to finish."
-msgstr ""
-"Klicken Sie die Ecken der Fläche an; ein Klick auf die erste Ecke schließt "
-"sie."
-
-#: src/configurator/roof/RoofStep.tsx:400 build/configurator.js
-msgid "Click the roof of the building in the aerial image."
-msgstr "Klicken Sie im Luftbild auf das Dach des Gebäudes."
 
 #: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js
 #, javascript-format
@@ -836,10 +681,6 @@ msgstr "Für Ihre Anfrage wird der aktuelle Bericht (Revision %d) verwendet."
 #: build/genie.js:16 build/hero.js build/planner/assets/planner.js
 msgid "Close"
 msgstr "Schließen"
-
-#: src/configurator/roof/RoofStep.tsx:436 build/configurator.js
-msgid "Close roof step"
-msgstr "Dachauswahl schließen"
 
 #: build/genie.js:16 build/genie.js:19 build/hero.js
 msgid "Close sidebar"
@@ -852,10 +693,6 @@ msgstr "Seitenleiste schließen"
 #: includes/Genie/Preview.php
 msgid "Close. Suggestion cards stay hidden for 30 days."
 msgstr "Schließen. Vorschlagskarten bleiben 30 Tage lang ausgeblendet."
-
-#: src/configurator/App.tsx:61 build/configurator.js
-msgid "Commercial & industrial"
-msgstr "Gewerbe und Industrie"
 
 #: build/genie.js build/hero.js
 msgid "Company (optional)"
@@ -882,26 +719,6 @@ msgstr "Kompatibilitätsliste"
 #: build/genie.js build/hero.js
 msgid "Completed"
 msgstr "Abgeschlossen"
-
-#: src/configurator/Steps.tsx:77 build/configurator.js
-msgid "Configurator"
-msgstr "Konfigurator"
-
-#: src/configurator/MobileNavigation.tsx:94 build/configurator.js
-msgid "Configurator navigation"
-msgstr "Konfigurator-Navigation"
-
-#: src/configurator/Steps.tsx:74 build/configurator.js
-msgid "Configurator steps"
-msgstr "Konfigurator-Schritte"
-
-#: src/configurator/residential/ResidentialForm.tsx:267 build/configurator.js
-msgid "Connection"
-msgstr "Anschluss"
-
-#: src/configurator/commercial/CommercialResult.tsx:151 build/configurator.js
-msgid "Consumption per year"
-msgstr "Verbrauch pro Jahr"
 
 #: build/genie.js:19 build/hero.js
 msgid "Contact Linker"
@@ -986,9 +803,7 @@ msgstr "Gespeicherten Bericht in neuem Tab öffnen"
 msgid "Current unsent draft"
 msgstr "Bisheriger ungesendeter Entwurf"
 
-#: build/genie.js build/hero.js src/configurator/stock.ts:34 build/configurator.js
-#: src/genie/components/GenieCard.tsx
-#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
+#: build/genie.js build/hero.js src/genie/components/GenieCard.tsx ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
 msgid "Currently unavailable"
 msgstr "Derzeit nicht verfügbar"
 
@@ -1005,10 +820,6 @@ msgstr "Kunde: %1$s · Begonnen: %2$s · Unterhaltung %3$d"
 msgid "Datasheet"
 msgstr "Datenblatt"
 
-#: src/configurator/commercial/CommercialResult.tsx:161 build/configurator.js
-msgid "Days in the profile"
-msgstr "Tage im Lastgang"
-
 #: build/genie.js:19 build/hero.js
 msgid "Delete"
 msgstr "Löschen"
@@ -1021,12 +832,6 @@ msgstr "Gespräch löschen: %s"
 #: build/genie.js:19 build/hero.js
 msgid "Delete this conversation permanently?"
 msgstr "Dieses Gespräch endgültig löschen?"
-
-#: src/configurator/Steps.tsx:35
-#: src/configurator/residential/ResidentialPanel.tsx:118
-#: src/configurator/residential/ResidentialPanel.tsx:362 build/configurator.js
-msgid "Design report"
-msgstr "Auslegungsbericht"
 
 #: build/genie.js build/hero.js
 msgid "Device"
@@ -1056,25 +861,9 @@ msgstr "Dokument"
 msgid "Documents"
 msgstr "Unterlagen"
 
-#: src/configurator/report/ReportView.tsx:118 build/configurator.js
-#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
-#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx build/planner/assets/planner.js
 msgid "Download PDF"
 msgstr "PDF herunterladen"
-
-#: src/configurator/roof/RoofStep.tsx:534 build/configurator.js
-msgid "Draw a plane yourself"
-msgstr "Fläche selbst zeichnen"
-
-#: src/configurator/roof/RoofStep.tsx:566 build/configurator.js
-msgid "Draw plane"
-msgstr "Fläche zeichnen"
-
-#: src/configurator/roof/RoofStep.tsx:413 build/configurator.js
-msgid "Draw the plane on one roof: this one is too large or outside Germany."
-msgstr ""
-"Zeichnen Sie die Fläche auf einem einzelnen Dach ein: Diese ist zu groß oder "
-"liegt außerhalb Deutschlands."
 
 #. translators: %d is the number of days a guest's conversation is kept from its start (Retention::RETENTION_DAYS).
 #: build/genie.js:16 build/hero.js
@@ -1091,10 +880,6 @@ msgstr[1] ""
 "Jedes Gespräch bleibt ab Beginn %d Tage in diesem Browser gespeichert. Wenn "
 "Sie sich anmelden, werden alle in Ihr Konto übernommen."
 
-#: src/configurator/residential/ResidentialForm.tsx:368 build/configurator.js
-msgid "Electric car (installed or planned)"
-msgstr "Elektroauto (vorhanden oder geplant)"
-
 #: build/genie.js:10 build/hero.js
 msgid "Email address confirmed. The conversation is on its way."
 msgstr "E-Mail-Adresse bestätigt. Das Gespräch ist unterwegs."
@@ -1103,35 +888,9 @@ msgstr "E-Mail-Adresse bestätigt. Das Gespräch ist unterwegs."
 msgid "Email me this conversation"
 msgstr "Gespräch per E-Mail erhalten"
 
-#: src/configurator/commercial/CommercialPanel.tsx:445 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Energy per 15 minutes in kWh"
 msgstr "Energie je 15 Minuten in kWh"
-
-#: src/configurator/validation.ts:63 build/configurator.js
-msgid "Enter a number."
-msgstr "Geben Sie eine Zahl ein."
-
-#: src/configurator/validation.ts:46 build/configurator.js
-msgid "Enter at least %s."
-msgstr "Geben Sie mindestens %s ein."
-
-#: src/configurator/validation.ts:59 build/configurator.js
-msgid "Enter at most %s."
-msgstr "Geben Sie höchstens %s ein."
-
-#: src/configurator/residential/ResidentialForm.tsx:246 build/configurator.js
-msgid "Enter kWp instead"
-msgstr "Stattdessen kWp eingeben"
-
-#: src/configurator/validation.ts:52 build/configurator.js
-msgid "Enter more than %s."
-msgstr "Geben Sie mehr als %s ein."
-
-#: src/configurator/residential/ResidentialPanel.tsx:279 build/configurator.js
-msgid "Enter the household and calculate: the proposed system appears here."
-msgstr ""
-"Geben Sie die Daten des Haushalts ein und berechnen Sie: Das vorgeschlagene "
-"System erscheint hier."
 
 #: includes/Genie/QualityPage.php
 msgid ""
@@ -1144,21 +903,9 @@ msgstr ""
 "und ob ein falsches Produkt besser abgeschnitten hätte. Markierte Antworten "
 "sollten Sie sich ansehen."
 
-#: src/configurator/residential/ResidentialForm.tsx:376 build/configurator.js
-msgid "Existing inverter (retrofit)"
-msgstr "Vorhandener Wechselrichter (Nachrüstung)"
-
 #: build/genie.js:19 build/hero.js
 msgid "FAQ & Downloads"
 msgstr "FAQ & Downloads"
-
-#: src/configurator/roof/RoofStep.tsx:488 build/configurator.js
-msgid "Facing %1$s, tilt %2$s°"
-msgstr "Ausrichtung %1$s, Neigung %2$s°"
-
-#: src/configurator/roof/RoofStep.tsx:549 build/configurator.js
-msgid "Facing (south 180°)"
-msgstr "Ausrichtung (Süden 180°)"
 
 #: includes/Genie/QualityPage.php
 msgid "Fine"
@@ -1168,20 +915,9 @@ msgstr "In Ordnung"
 msgid "Flagged"
 msgstr "Markiert"
 
-#: src/configurator/commercial/CommercialPanel.tsx:385 ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
-#: src/configurator/residential/ResidentialForm.tsx:334 build/configurator.js
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "For how long"
 msgstr "Dauer"
-
-#: src/configurator/residential/ResidentialForm.tsx:219 build/configurator.js
-msgid "From the roof: %1$s modules on %2$s plane, %3$s kWp."
-msgid_plural "From the roof: %1$s modules on %2$s planes, %3$s kWp."
-msgstr[0] "Aus dem Dach: %1$s Module auf %2$s Fläche, %3$s kWp."
-msgstr[1] "Aus dem Dach: %1$s Module auf %2$s Flächen, %3$s kWp."
-
-#: src/configurator/commercial/CommercialResult.tsx:156 build/configurator.js
-msgid "Full-load hours"
-msgstr "Volllaststunden"
 
 #: build/genie.js:16 build/genie.js:19 build/hero.js
 msgid "Genie"
@@ -1315,7 +1051,6 @@ msgstr ""
 msgid "Get help with your solar project"
 msgstr "Hilfe bei Ihrem Solarprojekt"
 
-#: src/configurator/commercial/CommercialPanel.tsx:273 build/configurator.js
 #: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Goals"
 msgstr "Ziele"
@@ -1324,26 +1059,17 @@ msgstr "Ziele"
 msgid "Goes beyond Genie's remit."
 msgstr "Geht über den Aufgabenbereich von Genie hinaus."
 
-#: ../../apps/planner/src/components/NewProject.tsx
-#: build/planner/assets/planner.js
-#: src/configurator/residential/ResidentialForm.tsx:271 build/hero.js
-#: src/configurator/utility/UtilityForm.tsx:45 build/configurator.js
-#: build/genie.js
-#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:214
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js build/hero.js build/genie.js ../../apps/planner/src/components/equipment/PlantSetup.tsx:214
 msgid "Grid connection"
 msgstr "Netzanschluss"
 
-#: src/configurator/commercial/CommercialPanel.tsx:243 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Grid connection capacity"
 msgstr "Netzanschlussleistung"
 
 #: includes/Genie/QualityPage.php
 msgid "Guest"
 msgstr "Gast"
-
-#: src/configurator/residential/ResidentialForm.tsx:357 build/configurator.js
-msgid "Heat pump (installed or planned)"
-msgstr "Wärmepumpe (vorhanden oder geplant)"
 
 #: src/genie/components/HelperFooter.tsx build/genie.js build/hero.js
 msgid "Help & privacy"
@@ -1361,10 +1087,6 @@ msgstr "Hier ist meine Teileliste."
 msgid "Hide"
 msgstr "Ausblenden"
 
-#: src/configurator/App.tsx:57 build/configurator.js
-msgid "Home PV, storage and backup"
-msgstr "PV-Anlage, Speicher und Notstrom im Eigenheim"
-
 #: build/genie.js build/hero.js
 msgid "I agree that my details may be used to respond to this message."
 msgstr ""
@@ -1381,32 +1103,13 @@ msgstr "In unserem Sortiment: %s"
 msgid "In our range: %s. Is this your device?"
 msgstr "In unserem Sortiment: %s. Ist das Ihr Gerät?"
 
-#: build/genie.js:1 src/configurator/stock.ts:31 build/hero.js
-#: src/genie/components/Compare.tsx:55 src/genie/components/GenieCard.tsx:86
-#: build/configurator.js
-#: ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
+#: build/genie.js:1 build/hero.js src/genie/components/Compare.tsx:55 src/genie/components/GenieCard.tsx:86 ../../apps/planner/src/components/configurator/InquiryBomLine.tsx build/planner/assets/planner.js
 msgid "In stock"
 msgstr "Auf Lager"
-
-#: src/configurator/solution/Solution.tsx:94 build/configurator.js
-msgid "In your solution draft"
-msgstr "In Ihrem Lösungsentwurf"
 
 #: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "In your solution draft."
 msgstr "Im Lösungsentwurf."
-
-#: src/configurator/commercial/CommercialPanel.tsx:466 build/configurator.js
-msgid "Indoors"
-msgstr "Innen"
-
-#: src/configurator/Steps.tsx:33
-#: src/configurator/commercial/CommercialPanel.tsx:151
-#: src/configurator/commercial/CommercialPanel.tsx:208
-#: src/configurator/residential/ResidentialPanel.tsx:108
-#: src/configurator/residential/ResidentialPanel.tsx:216 build/configurator.js
-msgid "Inputs"
-msgstr "Eingaben"
 
 # "The inquiry confirmation card" (#250): copy review docs/acceptance/2026-10-18/250/copy-review.md.
 #. translators: 1: inquiry number, 2: the inquiry's status.
@@ -1423,14 +1126,6 @@ msgstr "Anfrage Nr. %s"
 msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
-#: src/configurator/commercial/CommercialPanel.tsx:454 build/configurator.js
-msgid "Installation place"
-msgstr "Aufstellort"
-
-#: src/configurator/solution/Solution.tsx:371 build/configurator.js
-msgid "Installer's scope"
-msgstr "Leistung des Installateurs"
-
 #: includes/Genie/Entries.php
 msgid "Is there a datasheet for my model?"
 msgstr "Gibt es ein Datenblatt zu meinem Modell?"
@@ -1444,10 +1139,6 @@ msgstr "Es ist das Modell %s"
 #: build/genie.js build/hero.js
 msgid "It's the %s."
 msgstr "Es ist das Modell %s."
-
-#: src/configurator/solution/Solution.tsx:381 build/configurator.js
-msgid "Item"
-msgstr "Position"
 
 #: includes/Genie/QualityPage.php
 #, php-format
@@ -1485,38 +1176,13 @@ msgstr ""
 msgid "Let the Linker team contact you"
 msgstr "Rückmeldung vom Linker-Team"
 
-#: src/configurator/solution/Solution.tsx:246 build/configurator.js
-msgid "Linker products"
-msgstr "Linker-Produkte"
-
-#: src/configurator/commercial/CommercialResult.tsx:114 build/configurator.js
-msgid ""
-"Load duration curve: every 15-minute value of the profile, from the highest "
-"to the lowest."
-msgstr ""
-"Jahresdauerlinie: jeder 15-Minuten-Wert des Lastgangs, vom höchsten zum "
-"niedrigsten."
-
-#: src/configurator/commercial/CommercialResult.tsx:72 build/configurator.js
-msgid "Load duration curve: the year sorted from highest to lowest load"
-msgstr "Jahresdauerlinie: das Jahr nach Last absteigend sortiert"
-
-#: src/configurator/commercial/CommercialPanel.tsx:370 ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
-#: src/configurator/residential/ResidentialForm.tsx:316 build/configurator.js
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Load to keep running"
 msgstr "Zu versorgende Last"
 
 #: build/genie.js:19 build/hero.js
 msgid "Loading conversations…"
 msgstr "Gespräche werden geladen …"
-
-#: src/configurator/roof/RoofStep.tsx:398 build/configurator.js
-msgid "Loading the aerial image…"
-msgstr "Luftbild wird geladen …"
-
-#: src/configurator/residential/ResidentialPanel.tsx:238 build/configurator.js
-msgid "Loading the map…"
-msgstr "Karte wird geladen …"
 
 #: includes/Genie/Preview.php
 msgid "Look up my device from a nameplate photo"
@@ -1546,10 +1212,6 @@ msgstr "Nachricht"
 msgid "Model"
 msgstr "Modell"
 
-#: src/configurator/solution/Solution.tsx:285 build/configurator.js
-msgid "Model %s"
-msgstr "Modell %s"
-
 #. translators: %s stays empty: the customer types the model after the words.
 #: build/genie.js build/hero.js
 msgid "My device is the %s"
@@ -1565,31 +1227,9 @@ msgstr "Mein Gerät ist das Modell %s"
 msgid "Name"
 msgstr "Name"
 
-#: src/configurator/residential/ResidentialForm.tsx:301 build/configurator.js
-msgid "Needed"
-msgstr "Benötigt"
-
-#: src/configurator/residential/ResidentialForm.tsx:305 build/configurator.js
-msgid "Needed, an accessory is fine"
-msgstr "Benötigt, auch mit Zubehör"
-
-#: src/configurator/publication.ts:30 build/configurator.js
-msgid "New calculation required."
-msgstr "Neue Berechnung erforderlich."
-
 #: build/genie.js:16 build/genie.js:19 build/hero.js
 msgid "New conversation"
 msgstr "Neues Gespräch"
-
-#: src/configurator/residential/ResidentialForm.tsx:258 build/configurator.js
-msgid "No PV figure yet? Estimate from the roof"
-msgstr "Noch keine PV-Leistung? Aus dem Dach abschätzen"
-
-#: src/configurator/roof/RoofStep.tsx:417 build/configurator.js
-msgid "No building at this point. Click on a roof, or draw the plane yourself."
-msgstr ""
-"An dieser Stelle steht kein Gebäude. Klicken Sie auf ein Dach oder zeichnen "
-"Sie die Fläche selbst."
 
 #: build/genie.js:19 build/hero.js
 msgid "No earlier conversation."
@@ -1599,32 +1239,13 @@ msgstr "Kein früheres Gespräch."
 msgid "No exact match. Is it one of these?"
 msgstr "Kein genauer Treffer. Ist es eines dieser Modelle?"
 
-#: src/configurator/commercial/CommercialPanel.tsx:409 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "No file chosen"
 msgstr "Keine Datei ausgewählt"
-
-#: src/configurator/report/ReportView.tsx:92 build/configurator.js
-msgid "No logo chosen"
-msgstr "Kein Logo ausgewählt"
-
-#: src/configurator/roof/RoofStep.tsx:421 build/configurator.js
-msgid ""
-"No official building model is available here. Draw the roof plane yourself."
-msgstr ""
-"Hier ist kein amtliches Gebäudemodell verfügbar. Zeichnen Sie die Dachfläche "
-"selbst."
 
 #: build/genie.js build/hero.js
 msgid "No products in your solution draft."
 msgstr "Keine Produkte im Lösungsentwurf."
-
-#: src/configurator/solution/Solution.tsx:54 build/configurator.js
-msgid "No release document"
-msgstr "Kein Freigabedokument"
-
-#: src/configurator/solution/NoCandidate.tsx:40 build/configurator.js
-msgid "No system in our range meets every rule"
-msgstr "Kein System aus unserem Sortiment erfüllt alle Regeln"
 
 #: includes/Genie/QualityPage.php
 msgid "No verdicts yet."
@@ -1634,7 +1255,7 @@ msgstr "Noch keine Bewertungen."
 msgid "No, type the model"
 msgstr "Nein, Modell eingeben"
 
-#: src/configurator/solution/Solution.tsx:208 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "None"
 msgstr "Keiner"
 
@@ -1643,14 +1264,10 @@ msgid "Not added. Try again."
 msgstr "Nicht hinzugefügt. Bitte erneut versuchen."
 
 #. #302: retain the configurator wording independently of Genie.
-#: src/configurator/solution/Solution.tsx build/configurator.js build/hero.js
+#: build/hero.js
 msgctxt "configurator"
 msgid "Not added. Try again."
 msgstr "Nicht hinzugefügt. Versuchen Sie es erneut."
-
-#: src/configurator/commercial/CommercialPanel.tsx:463 build/configurator.js
-msgid "Not decided"
-msgstr "Noch offen"
 
 #: build/genie.js:19 build/hero.js
 msgid "Not deleted. Try again."
@@ -1671,15 +1288,9 @@ msgstr "Nicht in unserem Sortiment."
 msgid "Not judged"
 msgstr "Nicht bewertet"
 
-#: ../../apps/planner/src/components/NewProject.tsx
-#: build/planner/assets/planner.js
-#: src/configurator/residential/ResidentialForm.tsx:298 build/configurator.js
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
 msgid "Not needed"
 msgstr "Nicht benötigt"
-
-#: src/configurator/solution/Solution.tsx:52 build/configurator.js
-msgid "Not released"
-msgstr "Nicht freigegeben"
 
 #: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "Not saved. Try again."
@@ -1689,15 +1300,6 @@ msgstr "Nicht gespeichert. Bitte erneut versuchen."
 msgid "Not sent"
 msgstr "Nicht gesendet"
 
-#: src/configurator/roof/RoofStep.tsx:410 build/configurator.js
-msgid "Official building model found."
-msgstr "Amtliches Gebäudemodell gefunden."
-
-#: src/configurator/roof/RoofStep.tsx:407 build/configurator.js
-msgid "Official building model: %s"
-msgstr "Amtliches Gebäudemodell: %s"
-
-#: src/configurator/commercial/CommercialPanel.tsx:412 build/configurator.js
 #: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid ""
 "One value per line, optionally after a timestamp; the last number of each "
@@ -1718,10 +1320,6 @@ msgstr "Als Entwurf öffnen"
 msgid "Open full page"
 msgstr "Vollständige Seite öffnen"
 
-#: src/configurator/solution/Solution.tsx:355 build/configurator.js
-msgid "Open saved solution"
-msgstr "Gespeicherte Lösung öffnen"
-
 #: build/genie.js:1 build/hero.js
 msgid "Open the configurator"
 msgstr "Konfigurator öffnen"
@@ -1735,69 +1333,17 @@ msgstr "Anfrageseite öffnen"
 msgid "One moment…"
 msgstr "Einen Moment …"
 
-#: src/configurator/report/ReportView.tsx:146 build/configurator.js
-msgid "Opening Genie…"
-msgstr "Genie öffnet sich …"
-
-#: src/configurator/commercial/CommercialPanel.tsx:320 build/configurator.js
-msgid "Optional when you upload the load profile."
-msgstr "Optional, wenn Sie den Lastgang hochladen."
-
-#: src/configurator/residential/ResidentialForm.tsx:380 build/configurator.js
-msgid "Optional. Enter its model and we list only batteries released for it."
-msgstr ""
-"Optional. Mit dem Modell zeigen wir nur Batterien, die dafür freigegeben "
-"sind."
-
-#: src/configurator/residential/ResidentialForm.tsx:321 build/configurator.js
-msgid "Optional; sizes a reserve on top."
-msgstr "Optional; dafür wird zusätzlich eine Reserve ausgelegt."
-
-#: src/configurator/solution/Solution.tsx:174 build/configurator.js
-msgid "Other battery"
-msgstr "Andere Batterie"
-
-#: src/configurator/solution/Solution.tsx:158 build/configurator.js
-msgid "Other inverter"
-msgstr "Anderer Wechselrichter"
-
-#: src/configurator/commercial/CommercialPanel.tsx:469 build/configurator.js
-msgid "Outdoors"
-msgstr "Außen"
-
-#: src/configurator/report/ReportView.tsx:95 build/configurator.js
-msgid "PNG or JPEG, at most 500 kB."
-msgstr "PNG oder JPEG, höchstens 500 kB."
-
-#: ../../apps/planner/src/components/NewProject.tsx
-#: build/planner/assets/planner.js
-#: src/configurator/residential/ResidentialForm.tsx:200 build/configurator.js
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
 msgid "PV array"
 msgstr "PV-Leistung"
 
-#: src/configurator/commercial/CommercialPanel.tsx:352 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "PV array, existing or planned"
 msgstr "PV-Anlage, bestehend oder geplant"
 
-#: src/configurator/solution/Solution.tsx:194 build/configurator.js
-msgid "PV yield per year"
-msgstr "PV-Ertrag pro Jahr"
-
-#: src/configurator/commercial/CommercialPanel.tsx:283 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Peak shaving"
 msgstr "Spitzenlastkappung"
-
-#: src/configurator/commercial/CommercialResult.tsx:228 build/configurator.js
-msgid "Peak shaving options from your load profile"
-msgstr "Kappungsoptionen aus Ihrem Lastgang"
-
-#: src/configurator/commercial/CommercialResult.tsx:239 build/configurator.js
-msgid "Peaks per year"
-msgstr "Spitzen pro Jahr"
-
-#: src/configurator/utility/UtilityForm.tsx:46 build/configurator.js
-msgid "Planned commissioning"
-msgstr "Geplante Inbetriebnahme"
 
 #. translators: %s: the solution's name, e.g. "residential storage".
 #: includes/Genie/Preview.php
@@ -1821,24 +1367,15 @@ msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."
 msgid "Please enter a valid email address."
 msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
 
-#: src/configurator/validation.ts:37 build/configurator.js
-msgid "Please fill in this field."
-msgstr "Bitte füllen Sie dieses Feld aus."
-
-#: src/configurator/commercial/CommercialPanel.tsx:228 ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
-#: src/configurator/residential/ResidentialForm.tsx:168 build/configurator.js
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Postcode of the site"
 msgstr "Postleitzahl des Standorts"
 
-#: src/configurator/commercial/CommercialResult.tsx:233 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Power"
 msgstr "Leistung"
 
-#: src/configurator/utility/UtilityForm.tsx:43 build/configurator.js
-msgid "Power (MW)"
-msgstr "Leistung (MW)"
-
-#: src/configurator/report/ReportView.tsx:117 ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/configurator.js build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
 msgid "Preparing PDF…"
 msgstr "PDF wird erstellt …"
 
@@ -2068,27 +1605,19 @@ msgstr "Steuergerät"
 msgid "Edit boundaries and roof features"
 msgstr "Dachkonturen und Aufbauten bearbeiten"
 
-#: src/configurator/utility/UtilityForm.tsx:79 build/configurator.js
-#: ../../apps/planner/src/components/ProjectEditor.tsx
-#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js
 msgid "Project"
 msgstr "Projekt"
 
-#: src/configurator/utility/UtilityForm.tsx:47 build/configurator.js
-#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx
-#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/configurator/PreliminaryOptions.tsx build/planner/assets/planner.js
 msgid "Project details"
 msgstr "Projektbeschreibung"
 
-#: ../../apps/planner/src/components/QuickStart.tsx
-#: src/configurator/App.tsx:117 src/configurator/App.tsx:130
-#: build/configurator.js
-#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/QuickStart.tsx build/planner/assets/planner.js
 msgid "Project type"
 msgstr "Projektart"
 
 #: build/planner/assets/planner.js
-#: src/configurator/solution/Solution.tsx:382 build/configurator.js
 msgid "Quantity"
 msgstr "Menge"
 
@@ -2120,26 +1649,6 @@ msgstr[1] "Gelesen: %1$s (%2$d von %3$d Seiten)"
 msgid "Read: %s"
 msgstr "Gelesen: %s"
 
-#: src/configurator/roof/RoofStep.tsx:403 build/configurator.js
-msgid "Reading the official building model…"
-msgstr "Amtliches Gebäudemodell wird gelesen …"
-
-#: src/configurator/roof/RoofStep.tsx:591 build/configurator.js
-msgid ""
-"Reference module %1$s with %2$s Wp; the module you install can fit "
-"differently."
-msgstr ""
-"Referenzmodul %1$s mit %2$s Wp; das tatsächlich verbaute Modul kann anders "
-"passen."
-
-#: src/configurator/solution/Solution.tsx:48 build/configurator.js
-msgid "Released by the manufacturer"
-msgstr "Vom Hersteller freigegeben"
-
-#: src/configurator/solution/Solution.tsx:50 build/configurator.js
-msgid "Released with accessory"
-msgstr "Freigegeben mit Zubehör"
-
 #: src/genie/components/EntryInbox.tsx src/hero/Hero.tsx build/genie.js
 #: build/hero.js
 #: ../../apps/planner/src/components/installation/InstallationEditor.tsx:437
@@ -2160,9 +1669,7 @@ msgstr "E-Mail für die Antwort"
 msgid "Reply with an option"
 msgstr "Antwort auswählen"
 
-#: build/genie.js build/hero.js
-#: src/configurator/App.tsx:56 build/configurator.js
-#: build/planner/assets/planner.js:1
+#: build/genie.js build/hero.js build/planner/assets/planner.js:1
 msgid "Residential"
 msgstr "Wohngebäude"
 
@@ -2176,13 +1683,10 @@ msgid "Restore unsent draft"
 msgstr "Bisherigen Entwurf wiederherstellen"
 
 #: build/planner/assets/planner.js
-#: src/configurator/commercial/CommercialPanel.tsx:155
-#: src/configurator/commercial/CommercialPanel.tsx:518 build/configurator.js
 msgid "Result"
 msgstr "Ergebnis"
 
 #: build/planner/assets/planner.js:1
-#: src/configurator/roof/RoofStep.tsx:430 build/configurator.js
 msgid "Roof"
 msgstr "Dach"
 
@@ -2196,12 +1700,7 @@ msgstr "Zeile %1$d: %2$s"
 msgid "Row %d: skip"
 msgstr "Zeile %d: überspringen"
 
-#: src/configurator/solution/NoCandidate.tsx:55 build/configurator.js
-msgid "Rules that excluded the inverters:"
-msgstr "Regeln, die Wechselrichter ausgeschlossen haben:"
-
-#: build/genie.js:1 src/configurator/solution/Solution.tsx:334 build/hero.js
-#: src/genie/components/GenieCard.tsx:109 build/configurator.js
+#: build/genie.js:1 build/hero.js src/genie/components/GenieCard.tsx:109
 msgid "Save solution"
 msgstr "Lösung speichern"
 
@@ -2215,15 +1714,12 @@ msgid "Saved to your account."
 msgstr "Im Konto gespeichert."
 
 #. #302: retain the configurator wording independently of Genie.
-#: src/configurator/solution/Solution.tsx build/configurator.js build/hero.js
+#: build/hero.js
 msgctxt "configurator"
 msgid "Saved to your account."
 msgstr "In Ihrem Konto gespeichert."
 
-#: build/genie.js:13 src/configurator/solution/Solution.tsx:333 build/hero.js
-#: src/genie/shared/cardActions.ts src/configurator/solution/Solution.tsx
-#: build/configurator.js build/genie.js
-#: build/planner/assets/planner.js
+#: build/genie.js:13 build/hero.js src/genie/shared/cardActions.ts build/genie.js build/planner/assets/planner.js
 msgid "Saving…"
 msgstr "Wird gespeichert …"
 
@@ -2241,21 +1737,13 @@ msgstr "Wirkte unzufrieden oder wollte einen Menschen"
 msgid "Select %s again before sending."
 msgstr "Wählen Sie %s vor dem Senden erneut aus."
 
-#: src/configurator/roof/RoofStep.tsx:525 build/configurator.js
-msgid "Selected: %1$s modules, %2$s kWp"
-msgstr "Ausgewählt: %1$s Module, %2$s kWp"
-
-#: src/configurator/solution/Solution.tsx:226 build/configurator.js ../../apps/planner/src/components/energy/SimpleEnergySetup.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/SimpleEnergySetup.tsx build/planner/assets/planner.js:1
 msgid "Self-consumption"
 msgstr "Eigenverbrauchsanteil"
 
-#: src/configurator/commercial/CommercialPanel.tsx:293 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Self-consumption of PV"
 msgstr "Eigenverbrauch von PV-Strom"
-
-#: src/configurator/solution/Solution.tsx:215 build/configurator.js
-msgid "Self-sufficiency"
-msgstr "Autarkiegrad"
 
 #: build/genie.js:19 build/hero.js
 msgid "Send"
@@ -2276,14 +1764,6 @@ msgstr "Anfrage senden"
 #: src/genie/components/EntryInbox.tsx build/genie.js
 msgid "Send question separately"
 msgstr "Frage separat senden"
-
-#: src/configurator/commercial/CommercialResult.tsx:323 build/configurator.js
-msgid "Send this to our team"
-msgstr "An unser Team senden"
-
-#: src/configurator/commercial/CommercialResult.tsx:324 build/configurator.js
-msgid "Send us an inquiry"
-msgstr "Anfrage senden"
 
 #: build/genie.js build/hero.js
 msgid "Sending did not work. Please try again, or use the inquiry page."
@@ -2332,47 +1812,18 @@ msgid "Show the documents for the %s"
 msgstr "%s: Unterlagen anzeigen"
 
 #: build/genie.js
-#: src/configurator/report/ReportView.tsx:173 build/configurator.js
 msgid "Sign in"
 msgstr "Anmelden"
 
-#: ../../apps/planner/src/components/NewProject.tsx
-#: build/planner/assets/planner.js
-#: src/configurator/residential/ResidentialForm.tsx:289 build/configurator.js
-#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:235
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js ../../apps/planner/src/components/equipment/PlantSetup.tsx:235
 msgid "Single-phase"
 msgstr "Einphasig"
-
-#: src/configurator/commercial/CommercialPanel.tsx:223
-#: src/configurator/residential/ResidentialForm.tsx:164 build/configurator.js
-msgid "Site"
-msgstr "Standort"
-
-#: src/configurator/utility/UtilityForm.tsx:42 build/configurator.js
-msgid "Site (postcode or place)"
-msgstr "Standort (PLZ oder Ort)"
-
-#: src/configurator/commercial/CommercialPanel.tsx:476 build/configurator.js
-msgid "Site conditions"
-msgstr "Bedingungen vor Ort"
-
-#: src/configurator/App.tsx:63 build/configurator.js
-msgid "Site load, peak power and operating profile"
-msgstr "Standortlast, Spitzenlast und Betriebsprofil"
 
 #. translators: %s: the solution's name.
 #: includes/Genie/Preview.php
 #, php-format
 msgid "Size a %s system for my project"
 msgstr "%s: Anlage für mein Projekt auslegen"
-
-#: src/configurator/commercial/CommercialResult.tsx:259 build/configurator.js
-msgid "Size for %s kW"
-msgstr "Für %s kW auslegen"
-
-#: src/configurator/App.tsx:103 build/configurator.js
-msgid "Size your system and get the bill of materials."
-msgstr "System auslegen und Stückliste erhalten."
 
 #: build/genie.js build/hero.js
 msgid "Skip this line"
@@ -2386,13 +1837,6 @@ msgstr "Übersprungen"
 msgid "Skipped."
 msgstr "Übersprungen."
 
-#: src/configurator/Steps.tsx:34
-#: src/configurator/residential/ResidentialPanel.tsx:112
-#: src/configurator/residential/ResidentialPanel.tsx:267 build/configurator.js
-msgid "Solution"
-msgstr "Lösung"
-
-#: src/configurator/App.tsx:97 build/configurator.js
 #: build/planner/assets/planner.js:1
 msgid "Solution Configurator"
 msgstr "Lösungskonfigurator"
@@ -2403,10 +1847,6 @@ msgstr ""
 "Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten "
 "stehen in den Karten oben."
 
-#: src/configurator/commercial/CommercialPanel.tsx:480 build/configurator.js
-msgid "Space, access, fire protection: anything we should know."
-msgstr "Platz, Zufahrt, Brandschutz: alles, was wir wissen sollten."
-
 #: includes/Genie/QualityPage.php
 msgid "States facts Genie did not look up."
 msgstr "Nennt Fakten, die Genie nicht nachgeschlagen hat."
@@ -2415,41 +1855,9 @@ msgstr "Nennt Fakten, die Genie nicht nachgeschlagen hat."
 msgid "States or cites something no lookup returned."
 msgstr "Nennt oder zitiert etwas, das keine Abfrage geliefert hat."
 
-#: src/configurator/App.tsx:121 build/configurator.js
-msgid "Step 1 · Which project are you sizing?"
-msgstr "Schritt 1 · Welches Projekt legen Sie aus?"
-
-#: src/configurator/commercial/CommercialPanel.tsx:212 build/configurator.js
-msgid "Step 2 · The figures that size the storage"
-msgstr "Schritt 2 · Die Angaben, nach denen der Speicher ausgelegt wird"
-
-#: src/configurator/residential/ResidentialPanel.tsx:220 build/configurator.js
-msgid "Step 2 · The figures that size the system"
-msgstr "Schritt 2 · Die Angaben, nach denen das System ausgelegt wird"
-
-#: src/configurator/utility/UtilityForm.tsx:68 build/configurator.js
-msgid "Step 2 · The project we quote"
-msgstr "Schritt 2 · Das Projekt, das wir anbieten"
-
-#: src/configurator/commercial/CommercialPanel.tsx:522 build/configurator.js
-msgid "Step 3 · Sized storage, or indicative ranges"
-msgstr "Schritt 3 · Ausgelegter Speicher oder Richtwerte"
-
-#: src/configurator/residential/ResidentialPanel.tsx:271 build/configurator.js
-msgid "Step 3 · The released system for these inputs"
-msgstr "Schritt 3 · Das für diese Eingaben freigegebene System"
-
 #: build/genie.js:19 build/hero.js
 msgid "Stop dictation"
 msgstr "Diktat beenden"
-
-#: src/configurator/App.tsx:71 build/configurator.js
-msgid "Storage blocks, grid connection and project stage"
-msgstr "Speicherblöcke, Netzanschluss und Projektphase"
-
-#: src/configurator/utility/UtilityForm.tsx:44 build/configurator.js
-msgid "Storage capacity (MWh)"
-msgstr "Speicherkapazität (MWh)"
 
 #: includes/Genie/Entries.php
 msgid "Summarize this page"
@@ -2463,23 +1871,13 @@ msgstr "Worum geht es in diesem Beitrag?"
 msgid "Supported by its sources"
 msgstr "Durch die Quellen gedeckt"
 
-#: src/configurator/commercial/CommercialResult.tsx:277 build/configurator.js
-#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:310
-#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:310 build/planner/assets/planner.js
 msgid "System"
 msgstr "System"
 
-#: src/configurator/commercial/CommercialResult.tsx:270 build/configurator.js
-msgid "Systems from our range"
-msgstr "Systeme aus unserem Sortiment"
-
-#: src/configurator/commercial/CommercialPanel.tsx:334 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Target peak"
 msgstr "Zielhöchstlast"
-
-#: src/configurator/commercial/CommercialResult.tsx:101 build/configurator.js
-msgid "Target peak %s kW"
-msgstr "Zielhöchstlast %s kW"
 
 #. translators: %s: an inverter from the current product range, e.g. "SAJ H2-10K-T3".
 #: includes/Genie/Preview.php
@@ -2487,12 +1885,7 @@ msgstr "Zielhöchstlast %s kW"
 msgid "Tell me about the %s"
 msgstr "%s: Was sind die wichtigsten Daten?"
 
-#: src/configurator/report/ReportView.tsx:123 build/configurator.js
-msgid "The PDF could not be created. Try again."
-msgstr "Das PDF konnte nicht erstellt werden. Versuchen Sie es erneut."
-
-#: src/configurator/publication.ts:20 build/configurator.js build/genie.js
-#: build/hero.js
+#: build/genie.js build/hero.js
 msgid ""
 "The addition could not be confirmed. The solution draft may already contain "
 "these products."
@@ -2500,31 +1893,12 @@ msgstr ""
 "Das Hinzufügen konnte nicht bestätigt werden. Die Produkte können bereits im "
 "Lösungsentwurf stehen."
 
-#: src/configurator/residential/ResidentialPanel.tsx:74 build/configurator.js
-msgid "The calculation failed. Try again."
-msgstr "Die Berechnung ist fehlgeschlagen. Versuchen Sie es erneut."
-
-#: build/configurator.js
-msgid ""
-"The calculation is temporarily unavailable. Your entries are still here. "
-"Please try again later."
-msgstr ""
-"Die Berechnung ist vorübergehend nicht verfügbar. Ihre Eingaben sind "
-"erhalten. Bitte versuchen Sie es später erneut."
-
 #: build/genie.js:16 build/hero.js
 msgid ""
 "The conversation changed while Genie was answering. Send your question again."
 msgstr ""
 "Während Genie geantwortet hat, ist in diesem Gespräch eine weitere Nachricht "
 "eingegangen. Stellen Sie Ihre Frage noch einmal."
-
-#: src/configurator/publication.ts:13 build/configurator.js
-msgid ""
-"The current product data could not be checked. Your entries are still here."
-msgstr ""
-"Die aktuellen Produktdaten konnten nicht geprüft werden. Ihre Angaben "
-"bleiben erhalten."
 
 #: build/genie.js:10 build/hero.js
 msgid "The email could not be sent. Please try again."
@@ -2549,21 +1923,9 @@ msgstr ""
 msgid "The judges could not decide."
 msgstr "Die Prüfer konnten nicht entscheiden."
 
-#: src/configurator/commercial/CommercialPanel.tsx:183 build/configurator.js
-msgid ""
-"The load profile could not be read, or the calculation failed. Check the "
-"file and try again."
-msgstr ""
-"Der Lastgang konnte nicht gelesen werden oder die Berechnung ist "
-"fehlgeschlagen. Prüfen Sie die Datei und versuchen Sie es erneut."
-
 #: build/genie.js build/hero.js
 msgid "The model could not be read."
 msgstr "Das Modell konnte nicht gelesen werden."
-
-#: src/configurator/roof/RoofStep.tsx:411 build/configurator.js
-msgid "The plane you drew is in the list."
-msgstr "Die gezeichnete Fläche steht in der Liste."
 
 #: src/genie/App.tsx src/genie/shared/cardActions.ts build/genie.js
 #: build/hero.js
@@ -2583,22 +1945,13 @@ msgstr "Die Qualitätsprüfung meldet sich nicht mehr."
 msgid "The quality check has stopped reporting. Last report: %s."
 msgstr "Die Qualitätsprüfung meldet sich nicht mehr. Letzte Meldung: %s."
 
-#: includes/Protection/Replies.php build/configurator.js build/genie.js
-#: build/hero.js
+#: includes/Protection/Replies.php build/genie.js build/hero.js
 msgid ""
 "The request status could not be confirmed. Please check before sending it "
 "again."
 msgstr ""
 "Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn "
 "vor einem erneuten Absenden."
-
-#: src/configurator/roof/RoofStep.tsx:424 build/configurator.js
-msgid "The roof could not be loaded. Try again."
-msgstr "Das Dach konnte nicht geladen werden. Versuchen Sie es erneut."
-
-#: src/configurator/solution/Solution.tsx:364 build/configurator.js
-msgid "The solution could not be saved. Try again."
-msgstr "Die Lösung konnte nicht gespeichert werden. Versuchen Sie es erneut."
 
 #: build/genie.js build/hero.js
 #, javascript-format
@@ -2608,12 +1961,6 @@ msgstr "Das Team schreibt Ihnen innerhalb eines Arbeitstags an %s."
 #: build/genie.js build/hero.js
 msgid "The team replies within one business day."
 msgstr "Das Team schreibt Ihnen innerhalb eines Arbeitstags."
-
-#: src/configurator/residential/ResidentialPanel.tsx:63 build/configurator.js
-msgid "The yield service did not answer. Try again in a minute."
-msgstr ""
-"Der Ertragsdienst hat nicht geantwortet. Versuchen Sie es in einer Minute "
-"erneut."
 
 #: build/genie.js build/hero.js
 msgid ""
@@ -2660,29 +2007,15 @@ msgid "This photo could not be opened. Please choose another one."
 msgstr ""
 "Dieses Foto konnte nicht geöffnet werden. Bitte wählen Sie ein anderes."
 
-#: src/configurator/publication.ts:6 build/configurator.js
-msgid "This solution needs a new calculation before the next step."
-msgstr "Für den nächsten Schritt muss diese Lösung neu berechnet werden."
-
-#: src/configurator/Steps.tsx:100 build/configurator.js
-msgid "Three steps. The result follows the inputs you enter."
-msgstr "Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen."
-
-#: ../../apps/planner/src/components/NewProject.tsx
-#: build/planner/assets/planner.js
-#: src/configurator/residential/ResidentialForm.tsx:280 build/configurator.js
-#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:236
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js ../../apps/planner/src/components/equipment/PlantSetup.tsx:236
 msgid "Three-phase"
 msgstr "Dreiphasig"
 
-#: src/configurator/roof/RoofStep.tsx:537 build/configurator.js build/planner/assets/planner.js:1
+#: build/planner/assets/planner.js:1
 msgid "Tilt"
 msgstr "Neigung"
 
-#: includes/Genie/Entries.php build/genie.js:19 build/hero.js
-#: src/configurator/residential/ResidentialPanel.tsx:308 src/genie/App.tsx:1351
-#: build/configurator.js
-#: build/planner/assets/planner.js:1
+#: includes/Genie/Entries.php build/genie.js:19 build/hero.js src/genie/App.tsx:1351 build/planner/assets/planner.js:1
 msgid "Try again"
 msgstr "Erneut versuchen"
 
@@ -2699,37 +2032,11 @@ msgstr "Teileliste in Produkte umwandeln"
 msgid "Type the model"
 msgstr "Modell eingeben"
 
-#: src/configurator/commercial/CommercialResult.tsx:197
-#: src/configurator/commercial/CommercialResult.tsx:235 build/configurator.js
 #: build/planner/assets/planner.js:1
 msgid "Usable energy"
 msgstr "Nutzbare Energie"
 
-#: src/configurator/commercial/CommercialResult.tsx:199 build/configurator.js
-msgid "Usable energy, indicative"
-msgstr "Nutzbare Energie, Richtwert"
-
-#: src/configurator/solution/Solution.tsx:204 build/configurator.js
-msgid "Usable storage"
-msgstr "Nutzbarer Speicher"
-
-#: src/configurator/roof/RoofStep.tsx:576 build/configurator.js
-msgid "Use this roof"
-msgstr "Dieses Dach übernehmen"
-
-#: src/configurator/App.tsx:69 build/configurator.js
-msgid "Utility"
-msgstr "Großanlagen"
-
-#: src/configurator/utility/UtilityForm.tsx:65 build/configurator.js
-msgid "Utility-scale inquiry"
-msgstr "Anfrage Großanlage"
-
-#: src/configurator/utility/UtilityForm.tsx:49 build/configurator.js
-msgid "Utility-scale storage inquiry"
-msgstr "Anfrage Großspeicher"
-
-#: src/configurator/commercial/CommercialPanel.tsx:429 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Values in the file"
 msgstr "Werte in der Datei"
 
@@ -2749,37 +2056,13 @@ msgstr "Anfrage ansehen"
 msgid "Warranty"
 msgstr "Garantie"
 
-#: src/configurator/residential/ResidentialPanel.tsx:69 build/configurator.js
-msgid "We do not know this postcode. Check it and try again."
-msgstr ""
-"Diese Postleitzahl ist uns nicht bekannt. Prüfen Sie sie und versuchen Sie "
-"es erneut."
-
-#: src/configurator/solution/Solution.tsx:375 build/configurator.js
-msgid ""
-"We do not supply these parts; the quantities follow the reference layout."
-msgstr ""
-"Diese Teile liefern wir nicht; die Mengen folgen der Referenzauslegung."
-
 #: build/genie.js build/hero.js
 msgid "We have not sent a confirmation email."
 msgstr "Es wurde keine Bestätigungs-E-Mail versendet."
 
-#: src/configurator/utility/UtilityForm.tsx:73 build/configurator.js
-msgid ""
-"We quote utility-scale storage per project. Describe the project and our "
-"team replies within one business day."
-msgstr ""
-"Großspeicher bieten wir pro Projekt an. Beschreiben Sie das Projekt; unser "
-"Team antwortet innerhalb eines Werktags."
-
 #: build/genie.js build/hero.js
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
-
-#: src/configurator/residential/ResidentialPanel.tsx:225 build/configurator.js
-msgid "What are the figures in my saved solution?"
-msgstr "Welche Kennzahlen enthält meine gespeicherte Lösung?"
 
 #. translators: %s: the solution's name.
 #: includes/Genie/Preview.php
@@ -2800,10 +2083,6 @@ msgstr "%s: Was passt dazu?"
 #: includes/Genie/Entries.php
 msgid "What pairs with this model?"
 msgstr "Was passt zu diesem Modell?"
-
-#: src/configurator/solution/NoCandidate.tsx:84 build/configurator.js
-msgid "What would change the result:"
-msgstr "Was das Ergebnis ändern würde:"
 
 #: includes/Genie/Entries.php
 msgid "Where is my quotation?"
@@ -2837,29 +2116,9 @@ msgstr "Welche Produkte betrifft dieser Beitrag?"
 msgid "Which products fit my project?"
 msgstr "Welche Produkte passen zu meinem Projekt?"
 
-#: src/configurator/solution/Solution.tsx:299 build/configurator.js
-msgid "Why this product"
-msgstr "Warum dieses Produkt"
-
-#: src/configurator/commercial/CommercialPanel.tsx:538 build/configurator.js
-msgid ""
-"With a 15-minute load profile we size the storage; without one you get "
-"indicative ranges."
-msgstr ""
-"Mit einem 15-Minuten-Lastgang legen wir den Speicher aus; ohne Lastgang "
-"erhalten Sie Richtwerte."
-
 #: includes/Genie/QualityPage.php
 msgid "Within Genie's remit"
 msgstr "Im Aufgabenbereich von Genie"
-
-#: src/configurator/residential/ResidentialForm.tsx:187 build/configurator.js
-msgid "Without heat pump and electric car; tick them below."
-msgstr "Ohne Wärmepumpe und Elektroauto; diese wählen Sie unten aus."
-
-#: src/configurator/utility/UtilityForm.tsx:124 build/configurator.js
-msgid "Write to our team"
-msgstr "Unserem Team schreiben"
 
 #: build/planner/assets/planner.js:1
 msgid "Yes"
@@ -2927,11 +2186,6 @@ msgstr "Ihre Anfrage"
 msgid "Your inquiry is with the Linker team"
 msgstr "Ihre Anfrage liegt beim Linker-Team"
 
-#: src/configurator/report/ReportView.tsx:105 build/configurator.js
-msgid "Your logo"
-msgstr "Ihr Logo"
-
-#: src/configurator/report/ReportView.tsx:86 build/configurator.js
 #: ../../apps/planner/src/components/energy/PlanningReportForm.tsx:129 build/planner/assets/planner.js
 msgid "Your logo on the PDF (optional)"
 msgstr "Ihr Logo im PDF (optional)"
@@ -2951,16 +2205,6 @@ msgstr ""
 #: build/genie.js build/hero.js
 msgid "Your request is with the Linker team"
 msgstr "Ihre Kontaktanfrage liegt beim Linker-Team"
-
-#: src/configurator/report/ReportView.tsx:164 build/configurator.js
-msgid ""
-"Your saved solution stays in this browser for now. Genie reads a saved "
-"solution only when it is in your account. Sign in or create an account to "
-"keep it."
-msgstr ""
-"Ihre gespeicherte Lösung bleibt vorerst in diesem Browser. Genie liest eine "
-"gespeicherte Lösung nur, wenn sie in Ihrem Konto liegt. Melden Sie sich an "
-"oder legen Sie ein Konto an, um sie zu behalten."
 
 #: build/genie.js build/hero.js
 msgid "Your selection is sent to Genie."
@@ -2989,14 +2233,6 @@ msgstr "Antworten können Fehler enthalten"
 msgid "contradicted"
 msgstr "widersprochen"
 
-#: src/configurator/roof/geometry.ts:81 build/configurator.js
-msgid "east"
-msgstr "Ost"
-
-#: src/configurator/roof/geometry.ts:94 build/configurator.js
-msgid "faces north"
-msgstr "nach Norden ausgerichtet"
-
 #: includes/Genie/QualityPage.php
 msgid "never"
 msgstr "nie"
@@ -3009,49 +2245,17 @@ msgstr "nein"
 msgid "no difference"
 msgstr "kein Unterschied"
 
-#: src/configurator/roof/geometry.ts:79 build/configurator.js
-msgid "north"
-msgstr "Nord"
-
-#: src/configurator/roof/geometry.ts:80 build/configurator.js
-msgid "north-east"
-msgstr "Nordost"
-
-#: src/configurator/roof/geometry.ts:86 build/configurator.js
-msgid "north-west"
-msgstr "Nordwest"
-
 #: includes/Genie/QualityPage.php
 msgid "not verifiable"
 msgstr "nicht überprüfbar"
 
-#: src/configurator/roof/geometry.ts:98 build/configurator.js
-msgid "outline cannot be used"
-msgstr "Umriss nicht verwendbar"
-
-#: src/configurator/solution/Documents.tsx:39 build/configurator.js build/genie.js build/hero.js
+#: build/genie.js build/hero.js
 msgid "page %d"
 msgstr "Seite %d"
 
 #: includes/Genie/QualityPage.php
 msgid "second judge"
 msgstr "zweiter Prüfer"
-
-#: src/configurator/roof/geometry.ts:83 build/configurator.js
-msgid "south"
-msgstr "Süd"
-
-#: src/configurator/roof/geometry.ts:82 build/configurator.js
-msgid "south-east"
-msgstr "Südost"
-
-#: src/configurator/roof/geometry.ts:84 build/configurator.js
-msgid "south-west"
-msgstr "Südwest"
-
-#: src/configurator/roof/geometry.ts:96 build/configurator.js
-msgid "steeper than 60°"
-msgstr "steiler als 60°"
 
 #: includes/Genie/QualityPage.php
 msgid "the answer is better"
@@ -3060,10 +2264,6 @@ msgstr "die Antwort ist besser"
 #: includes/Genie/QualityPage.php
 msgid "the wrong pick is better"
 msgstr "die falsche Auswahl ist besser"
-
-#: src/configurator/roof/geometry.ts:85 build/configurator.js
-msgid "west"
-msgstr "West"
 
 #: includes/Genie/QualityPage.php
 msgid "yes"
@@ -15696,10 +14896,6 @@ msgstr "Position anzeigen"
 msgid "Module details"
 msgstr "Moduldetails"
 
-#: build/configurator.js
-msgid "Enter a postcode using letters, numbers, spaces or hyphens."
-msgstr "Geben Sie die Postleitzahl mit Buchstaben, Ziffern, Leerzeichen oder Bindestrichen ein."
-
 #: ../../apps/planner/src/components/equipment/EquipmentDemandSetup.tsx:75 build/planner/assets/planner.js:1
 msgid "Compare against energy needs"
 msgstr "Mit dem Energiebedarf vergleichen"
@@ -18152,3 +17348,10 @@ msgstr "Sind alle Erzeugungseinheiten am Standort fest angeschlossen?"
 #: build/planner/assets/planner.js:1
 msgid "Grid connection review"
 msgstr "Netzanschlussprüfung"
+
+#: includes/Genie/DraftProof.php:268
+msgid ""
+"The current product data could not be checked. Your entries are still here."
+msgstr ""
+"Die aktuellen Produktdaten konnten nicht geprüft werden. Ihre Angaben "
+"bleiben erhalten."

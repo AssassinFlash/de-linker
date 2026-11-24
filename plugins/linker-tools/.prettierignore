@@ -7,10 +7,6 @@ vendor
 # Written by engine export_planner_schemas.py; keep the same canonical bytes as
 # apps/planner/src/contracts/project-input-contracts.json, not a second format.
 project-input-contracts.json
-# Written by services/engine (scripts/export_schemas.py, tests/test_ui_fixtures.py)
-# and compared byte for byte there; formatting them here would make them stale.
-src/configurator/schema
-tests/fixtures/configurator
 # Written by `wp i18n make-json` from languages/linker-tools-de_DE_formal.po
 # (one file per script, named by the md5 of its path); reformatting it would
 # make it differ from what the generator writes.

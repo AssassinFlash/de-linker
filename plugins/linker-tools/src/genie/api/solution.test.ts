@@ -1,7 +1,10 @@
 // @vitest-environment jsdom
 import { expect, test, vi } from 'vitest';
-import { saveGenieSolution, GenieSaveUnconfirmedError } from './solution';
-import { SolutionWriteError } from '../../configurator/api/solutions';
+import {
+	saveGenieSolution,
+	GenieSaveUnconfirmedError,
+	SolutionWriteError,
+} from './solution';
 
 function cart() {
 	return new Response( JSON.stringify( { items: [] } ), {

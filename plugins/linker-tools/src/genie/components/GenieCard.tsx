@@ -15,8 +15,8 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProductCard, type CardState } from '../../shared/ProductCard';
-import type { storeClient } from '../../configurator/api/store';
-import type { Locale, StoreProduct } from '../../configurator/types';
+import type { storeClient } from '../api/store';
+import type { Locale, StoreProduct } from '../types';
 import type { CardPrice } from '../api/turn';
 import { brandSeries } from '../shared/brandSeries';
 

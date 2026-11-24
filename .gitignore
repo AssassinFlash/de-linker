@@ -31,21 +31,10 @@ storybook-static/
 de-linker-data/
 __pycache__/
 
-# .scratch/ is where working material may be committed on purpose (the
-# prototype checkouts, capture scripts, evidence), so it is not ignored as a
-# whole. Caches are: the FAQ thumbnail pipeline's PDF cache is the live
-# uploads (hundreds of MB), and it is rebuilt on demand (tools/faq/thumbs.py
-# --cache). Never commit it.
-.scratch/faq-pdf-cache/
+# Scratch output and browser captures are local to each checkout.
+/.scratch/
 
-# The e2e suite's screenshots: per-run evidence of what that run rendered, so
-# they belong in the working area and never in a commit (they used to land in
-# the acceptance docs and rewrote committed PNGs on every run — ledger H10).
-.scratch/e2e-shots/
-
-# Root-level captures and session exports stay outside the repository; ticket
-# evidence belongs under docs/acceptance/. A 2026-10-18 sweep committed a
-# session transcript, live-site captures and a Playwright admin snapshot.
+# Root-level captures and session exports stay outside the repository.
 /*.png
 /*.txt
 wp-snapshot.yml

@@ -42,7 +42,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { storeClient } from '../configurator/api/store';
+import { storeClient } from './api/store';
 import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
 import {

@@ -14,8 +14,8 @@ import { expect, test, vi } from 'vitest';
 /**
  * Internal dependencies
  */
-import type { storeClient } from '../configurator/api/store';
-import type { Locale } from '../configurator/types';
+import type { storeClient } from './api/store';
+import type { Locale } from './types';
 import type { CardPrice } from './api/turn';
 import { GenieCards } from './components/GenieCard';
 

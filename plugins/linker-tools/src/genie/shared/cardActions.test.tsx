@@ -15,8 +15,8 @@ import { beforeEach, expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import { saveGenieSolution } from '../api/solution';
-import type { storeClient } from '../../configurator/api/store';
-import type { Locale } from '../../configurator/types';
+import type { storeClient } from '../api/store';
+import type { Locale } from '../types';
 import { useCardActions } from './cardActions';
 
 vi.mock( '../api/solution', async ( importOriginal ) => ( {
@@ -64,7 +64,7 @@ test( 'adding to the draft shows the settled status in the card', async () => {
 	expect( client.addAll ).toHaveBeenCalledWith(
 		[ { productId: 5, quantity: 1 } ],
 		expect.any( Function ),
-		{ kind: 'genie', token: 'signed-a' }
+		'signed-a'
 	);
 	expect( result.current.statusFor( 5 ) ).toEqual( {
 		state: 'added',
@@ -152,7 +152,7 @@ test( 'a parts list writes every row in one call and reports added', async () =>
 			{ productId: 6, quantity: 1 },
 		],
 		expect.any( Function ),
-		{ kind: 'genie', token: '' }
+		''
 	);
 	expect( outcome ).toBe( 'added' );
 } );
