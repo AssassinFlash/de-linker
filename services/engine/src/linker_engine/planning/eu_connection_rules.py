@@ -72,6 +72,10 @@ def evaluate(
             return "missing_inputs", ["gb_in_great_britain"]
         if not f.gb_in_great_britain:
             return "gb_other_territory", []
+        if f.gb_permanently_wired is None:
+            return "missing_inputs", ["gb_permanently_wired"]
+        if not f.gb_permanently_wired:
+            return "gb_plug_in_scope", []
         if f.current_per_phase_a is None:
             return "missing_inputs", ["current_per_phase_a"]
         if f.current_per_phase_a > 16:
@@ -228,6 +232,7 @@ FIELDS: dict[str, tuple[str, ...]] = {
     ),
     "GB": (
         "gb_in_great_britain",
+        "gb_permanently_wired",
         "current_per_phase_a",
         "gb_type_tested",
         "gb_multiple_premises",

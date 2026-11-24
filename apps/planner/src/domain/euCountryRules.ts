@@ -10,6 +10,7 @@ export const euRuleFields = {
 	],
 	gb_lv_microgeneration: [
 		"gb_in_great_britain",
+		"gb_permanently_wired",
 		"current_per_phase_a",
 		"gb_type_tested",
 		"gb_multiple_premises",
@@ -36,6 +37,7 @@ export const euFieldUnits = {
 	connection_voltage_kv: "kV",
 	apparent_power_kva: "kVA",
 	gb_in_great_britain: "",
+	gb_permanently_wired: "",
 	current_per_phase_a: "A",
 	gb_type_tested: "",
 	gb_multiple_premises: "",
@@ -76,6 +78,15 @@ export function euRuleScopes(): Record<string, string> {
 }
 export function euRuleLabels() {
 	return {
+		gb_plug_in_scope: __(
+			"Plug-in equipment has separate G98 requirements. Confirm the specific unit and connection route with the DNO.",
+			"linker-tools",
+		),
+		gb_permanently_wired: __(
+			"Is all generation at the premises permanently wired?",
+			"linker-tools",
+		),
+
 		it_lv_generation_spi: __(
 			"Italy · LV generator interface protection",
 			"linker-tools",

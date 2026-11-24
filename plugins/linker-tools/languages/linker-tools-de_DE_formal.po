@@ -18140,3 +18140,11 @@ msgstr "Prüfen Sie die regulären AC-Leistungsgrenzen aus Synergrid C10/11 für
 #: build/planner/assets/planner.js:1
 msgid "Check the control interface for new generating installations up to 250 kW on the Swiss low-voltage network (NE7)."
 msgstr "Prüfen Sie die Steuerschnittstelle für neue Erzeugungsanlagen bis 250 kW im Schweizer Niederspannungsnetz (NE7)."
+
+#: build/planner/assets/planner.js:1
+msgid "Plug-in equipment has separate G98 requirements. Confirm the specific unit and connection route with the DNO."
+msgstr "Für steckerfertige Geräte gelten besondere G98-Anforderungen. Klären Sie Gerät und Anschlussverfahren mit dem Verteilnetzbetreiber."
+
+#: build/planner/assets/planner.js:1
+msgid "Is all generation at the premises permanently wired?"
+msgstr "Sind alle Erzeugungseinheiten am Standort fest angeschlossen?"

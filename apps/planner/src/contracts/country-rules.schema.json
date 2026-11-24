@@ -246,6 +246,18 @@
       "default": null,
       "title": "Gb Type Tested"
     },
+    "gb_permanently_wired": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gb Permanently Wired"
+    },
     "gb_multiple_premises": {
       "anyOf": [
         {

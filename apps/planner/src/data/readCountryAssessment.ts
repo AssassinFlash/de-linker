@@ -46,6 +46,7 @@ const ruleOutcomes: Record<string, readonly string[]> = {
 		"gb_confirm_non_type_tested",
 		"outside_lv_scope",
 		"gb_other_territory",
+		"gb_plug_in_scope",
 		"missing_inputs",
 		"outside_version",
 	],
@@ -283,6 +284,7 @@ const seCheckSource: Record<string, number> = {
 const unresolvedOutcomes = [
 	"outside_lv_scope",
 	"gb_other_territory",
+	"gb_plug_in_scope",
 	"gb_confirm_non_type_tested",
 	"ch_above_interface_scope",
 	"ch_existing",
@@ -397,6 +399,7 @@ function readRuleReview(value: unknown, country: string): JsonObject {
 						"se_export_power_kw",
 						"se_existing_installation_change",
 						"gb_in_great_britain",
+						"gb_permanently_wired",
 						"current_per_phase_a",
 						"gb_type_tested",
 						"gb_multiple_premises",

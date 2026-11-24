@@ -74,6 +74,7 @@ class CountryRuleInputs(Document):
     ch_new_installation: bool | None = None
     current_per_phase_a: Positive | None = None
     gb_type_tested: bool | None = None
+    gb_permanently_wired: bool | None = None
     gb_multiple_premises: bool | None = None
     es_export_surplus: bool | None = None
     es_serviced_urban_land: bool | None = None
@@ -290,6 +291,7 @@ def review_country_rules(
                     "outside_scope",
                     "outside_lv_scope",
                     "gb_other_territory",
+                    "gb_plug_in_scope",
                     "ch_existing",
                     "ch_above_interface_scope",
                     "be_check_local_single_phase_limit",

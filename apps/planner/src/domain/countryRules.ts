@@ -39,6 +39,7 @@ export interface CountryRuleInputs extends JsonObject {
 	se_existing_installation_change?: boolean | null;
 	gb_in_great_britain?: boolean | null;
 	current_per_phase_a?: number | null;
+	gb_permanently_wired?: boolean | null;
 	gb_type_tested?: boolean | null;
 	gb_multiple_premises?: boolean | null;
 	es_export_surplus?: boolean | null;

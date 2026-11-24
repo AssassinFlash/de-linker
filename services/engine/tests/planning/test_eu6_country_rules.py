@@ -64,6 +64,18 @@ def test_eleven_reference_packs_have_versioned_sources() -> None:
 @pytest.mark.parametrize(
     ("country", "values", "expected"),
     [
+        ("GB", {"gb_in_great_britain": False}, "gb_other_territory"),
+        (
+            "GB",
+            {"gb_in_great_britain": True, "gb_permanently_wired": False},
+            "gb_plug_in_scope",
+        ),
+        ("CH", {"ch_new_installation": False}, "ch_existing"),
+        (
+            "CH",
+            {"ch_new_installation": True, "power_kw": 251},
+            "ch_above_interface_scope",
+        ),
         ("IT", {"power_kw": 11.08}, "it_integrated_or_dedicated"),
         ("IT", {"power_kw": 11.09}, "it_dedicated_relay"),
         ("IT", {"power_kw": 9.5, "voltage_level": "medium"}, "outside_lv_scope"),
@@ -102,6 +114,7 @@ def test_eleven_reference_packs_have_versioned_sources() -> None:
             "GB",
             {
                 "gb_in_great_britain": True,
+                "gb_permanently_wired": True,
                 "current_per_phase_a": 16,
                 "gb_type_tested": True,
                 "gb_multiple_premises": False,
@@ -112,6 +125,7 @@ def test_eleven_reference_packs_have_versioned_sources() -> None:
             "GB",
             {
                 "gb_in_great_britain": True,
+                "gb_permanently_wired": True,
                 "current_per_phase_a": 16,
                 "gb_type_tested": True,
                 "gb_multiple_premises": True,
@@ -120,7 +134,11 @@ def test_eleven_reference_packs_have_versioned_sources() -> None:
         ),
         (
             "GB",
-            {"gb_in_great_britain": True, "current_per_phase_a": 16.01},
+            {
+                "gb_in_great_britain": True,
+                "gb_permanently_wired": True,
+                "current_per_phase_a": 16.01,
+            },
             "gb_g99_application",
         ),
         ("ES", {"es_export_surplus": False}, "es_generation_permit_exempt"),

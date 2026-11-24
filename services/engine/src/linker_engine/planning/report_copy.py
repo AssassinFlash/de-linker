@@ -5,6 +5,18 @@ from __future__ import annotations
 from .eu_connection_rules import CHECKS as EU_CHECK_IDS
 
 TEXT = {
+    "country_rule_gb_plug_in_scope": (
+        "Plug-in equipment has separate G98 requirements. Confirm the specific unit and connection route with the DNO.",
+        "Für steckerfertige Geräte gelten besondere G98-Anforderungen. Klären Sie Gerät und Anschlussverfahren mit dem Verteilnetzbetreiber.",
+    ),
+    "eu_rule_field_gb_permanently_wired": (
+        "Is all generation at the premises permanently wired?",
+        "Sind alle Erzeugungseinheiten am Standort fest angeschlossen?",
+    ),
+    "country_rule_input_gb_permanently_wired": (
+        "Is all generation at the premises permanently wired?",
+        "Sind alle Erzeugungseinheiten am Standort fest angeschlossen?",
+    ),
     "grid_bundled_scope_IT": (
         "Compare the total generating power at the low-voltage grid connection with the CEI interface protection requirement.",
         "Vergleichen Sie die Gesamterzeugungsleistung am Niederspannungsanschluss mit der CEI-Vorgabe zum Schnittstellenschutz.",
