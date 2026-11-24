@@ -142,7 +142,7 @@ final class WindPressPageStyles {
 			'blog'       => $blog,
 			'search'     => $search,
 			'journal'    => $blog || $category || $search,
-			'services'   => $services,
+			'services'   => $services || isset( $ids['installer-journal'] ) || isset( $ids['tv-utility-page-v1'] ),
 			'marketing'  => $home || $services || array() !== array_intersect( array_keys( $ids ), array( 'installer-journal', 'about-journal', 'tv-rs-page-v1', 'tv-cs-page-v1', 'tv-cp-page-v1', 'tv-solution-v1', 'tv-solutions-developers-v1', 'tv-utility-page-v1' ) ),
 			'home'       => $home,
 			'showcase'   => $home || isset( $ids['configurator-showcase'] ),

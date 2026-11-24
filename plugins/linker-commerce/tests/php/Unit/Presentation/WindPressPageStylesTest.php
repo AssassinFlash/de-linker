@@ -90,17 +90,19 @@ final class WindPressPageStylesTest extends TestCase {
 	 */
 	public static function pages(): array {
 		return array(
-			'home showcase'       => array( 'is_front_page', '', '<section id="configurator-showcase"><a href="/solution-configurator/" data-linker-planner-entry>Plan</a></section>', array(), array( 'marketing-rhythm.css', 'homepage-focus.css', 'homepage-readability.css', 'home-configurator.css' ) ),
-			'custom showcase'     => array( '', '<section id="configurator-showcase">', '', array(), array( 'home-configurator.css' ) ),
+			'home showcase'            => array( 'is_front_page', '', '<section id="configurator-showcase"><a href="/solution-configurator/" data-linker-planner-entry>Plan</a></section>', array(), array( 'marketing-rhythm.css', 'homepage-focus.css', 'homepage-readability.css', 'home-configurator.css' ) ),
+			'custom showcase'          => array( '', '<section id="configurator-showcase">', '', array(), array( 'home-configurator.css' ) ),
 
-			'product category'    => array( 'is_product_taxonomy', '', '', array( 'products-mounts.css', 'products.css', 'storefront.css' ), array() ),
-			'translated FAQ'      => array( '', '', '<div id="linker-faq-page">', array( 'faq.css' ), array() ),
-			'product detail'      => array( 'product', '', '', array( 'pdp.css', 'storefront.css' ), array() ),
-			'native search'       => array( 'is_search', '', '', array( 'blog-search.css' ), array( 'journal.css' ) ),
-			'account endpoint'    => array( 'is_account_page', '', '', array( 'account.css', 'auth.css', 'storefront.css' ), array() ),
-			'planner inside post' => array( 'post', '[linker_planner]', '', array( 'blog.css', 'contact-invitation.css' ), array( 'planner-maplibre.css', 'planner.css', 'planner-equipment.css', 'planner-report.css', 'planner-site-energy.css', 'roof-studio.css' ) ),
-			'translated services' => array( '', '<main id="service-redesign">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),
-			'no component'        => array( '', '<p>Legal notice</p>', '', array(), array() ),
+			'product category'         => array( 'is_product_taxonomy', '', '', array( 'products-mounts.css', 'products.css', 'storefront.css' ), array() ),
+			'translated FAQ'           => array( '', '', '<div id="linker-faq-page">', array( 'faq.css' ), array() ),
+			'product detail'           => array( 'product', '', '', array( 'pdp.css', 'storefront.css' ), array() ),
+			'native search'            => array( 'is_search', '', '', array( 'blog-search.css' ), array( 'journal.css' ) ),
+			'account endpoint'         => array( 'is_account_page', '', '', array( 'account.css', 'auth.css', 'storefront.css' ), array() ),
+			'planner inside post'      => array( 'post', '[linker_planner]', '', array( 'blog.css', 'contact-invitation.css' ), array( 'planner-maplibre.css', 'planner.css', 'planner-equipment.css', 'planner-report.css', 'planner-site-energy.css', 'roof-studio.css' ) ),
+			'translated services'      => array( '', '<main id="service-redesign">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),
+			'installer stage controls' => array( '', '<main id="installer-journal">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),
+			'utility application dots' => array( '', '<main id="tv-utility-page-v1">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),
+			'no component'             => array( '', '<p>Legal notice</p>', '', array(), array() ),
 		);
 	}
 }
