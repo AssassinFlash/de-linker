@@ -141,6 +141,10 @@ final class SelectionFacts {
 	 * @param array<mixed> $figures Authorized figure entries.
 	 */
 	public static function from_figures( int $product_id, array $figures ): SelectionFactSet {
+		if ( in_array( $figures['sales_unit_kind']['value'] ?? null, array( 'battery_system', 'integrated_system' ), true ) ) {
+			// The internal pack rating cannot stand in for the cabinet's own energy.
+			unset( $figures['module_energy_kwh_nominal'], $figures['module_energy_kwh_usable'] );
+		}
 		list( $ac_power_kw, $ac_apparent )   = self::ac_power( $figures );
 		list( $usable_kwh, $usable_range )   = self::energy( $figures, self::USABLE_KEYS );
 		list( $nominal_kwh, $nominal_range ) = self::energy( $figures, self::NOMINAL_KEYS );

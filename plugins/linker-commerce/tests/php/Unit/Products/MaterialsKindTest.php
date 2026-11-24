@@ -56,6 +56,26 @@ final class MaterialsKindTest extends TestCase {
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id ) => 9295 === $id ? 9294 : 0 ) );
 	}
 
+	/** The complete ESA cabinet uses its own published model and source document. */
+	public function test_goodwe_esa_cabinet_has_one_material_binding(): void {
+		$material = Materials::material_for_product( 6321 );
+		$this->assertNotNull( $material );
+		$this->assertSame( array( 6321 ), $material['bindings']['woo_product_ids'] );
+		$this->assertSame( 'GW125/261-ESA-LCN-G10', $material['identity']['model'] );
+		$this->assertSame( 'storage_system', $material['identity']['kind'] );
+		$this->assertStringContainsString( 'GW_ESA-261kWh_Datasheet', $material['technical']['documents'][0]['url'] );
+		$this->assertNotContains( 'woo:6321', array_column( Materials::registry()['unresolved_inputs'], 'input_id' ) );
+		$native = array( 'ip_rating' => array( 'value' => 'IP54' ) );
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 6321, '_tv_b2b_figures', true ),
+				'return' => (string) json_encode( $native ),
+			)
+		);
+		$this->assertSame( $native, Materials::facts( $this->product( 6321 ) ) );
+	}
+
 	/** A cabinet and its internal inverter must not share the inverter's figures. */
 	public function test_duplicate_binding_uses_the_woo_models_matching_material_for_both_languages(): void {
 		$this->seed_registry(
