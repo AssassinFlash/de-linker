@@ -200,11 +200,11 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'key'                   => wp_generate_uuid4(),
 		);
 		$receipt = ( new DraftTransfer() )->apply( null, $command, $guest );
-		$this->assertIsArray( $receipt, $receipt instanceof \WP_Error ? $receipt->get_error_code() : '' );
+		$this->assertIsArray( $receipt, $receipt instanceof \WP_Error ? $receipt->get_error_message() : '' );
 
 		$this->as_user( $customer->get_id() );
 		WC()->customer = $customer;
-		wc_user_logged_in( $customer->get_username(), get_userdata( $customer->get_id() ) );
+		wc_user_logged_in( $customer->get_username(), wp_get_current_user() );
 		$session->init_session_cookie();
 		( new \WC_Cart_Session( $cart ) )->get_cart_from_session();
 		$this->assertSame( (string) $customer->get_id(), $session->get_customer_id() );
@@ -243,8 +243,12 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		);
 		$this->assertInstanceOf( Submission::class, $details );
 		$order = ( new Sender() )->request( $details );
-		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_code() : '' );
-		$this->later( static fn () => $order->delete( true ) );
+		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_message() : '' );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
 		$this->assertSame( $customer->get_id(), $order->get_customer_id() );
 		$this->assertSame( 6, $order->get_item_count() );
 		$this->assertCount( 3, $order->get_items() );

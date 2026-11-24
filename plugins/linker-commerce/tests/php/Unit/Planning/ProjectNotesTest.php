@@ -202,8 +202,12 @@ final class ProjectNotesTest extends TestCase {
 			'old'    => array( DraftTransfer::LINE_META => $gone ),
 			'manual' => array( 'quantity' => 3 ),
 		);
-		WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $owned['id'] )->reply( $owned );
-		WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $gone )->reply( new \WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) ) );
+		$reader     = WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $owned['id'] );
+		$this->assertInstanceOf( WP_Mock\Filter_Responder::class, $reader );
+		$reader->reply( $owned );
+		$reader = WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $gone );
+		$this->assertInstanceOf( WP_Mock\Filter_Responder::class, $reader );
+		$reader->reply( new \WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) ) );
 		$this->assertSame( array( 'old' ), DraftRecovery::review() );
 		$this->assertSame( array( $owned['id'] => DraftTransfer::native_context( $owned ) ), Context::active() );
 		$this->assertSame( $gone, $this->cart['old'][ DraftTransfer::LINE_META ] );
@@ -214,7 +218,9 @@ final class ProjectNotesTest extends TestCase {
 		$this->plain_text();
 		$id         = str_repeat( 'a', 32 );
 		$this->cart = array( 'old' => array( DraftTransfer::LINE_META => $id ) );
-		WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $id )->reply( new \WP_Error( 'linker_planner_unavailable', '', array( 'status' => 503 ) ) );
+		$reader     = WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $id );
+		$this->assertInstanceOf( WP_Mock\Filter_Responder::class, $reader );
+		$reader->reply( new \WP_Error( 'linker_planner_unavailable', '', array( 'status' => 503 ) ) );
 		$this->assertInstanceOf( \WP_Error::class, DraftRecovery::review() );
 		$this->assertSame( $id, $this->cart['old'][ DraftTransfer::LINE_META ] );
 	}
