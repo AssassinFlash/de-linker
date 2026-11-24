@@ -82,6 +82,14 @@
       "pages": [
         2
       ]
+    },
+    {
+      "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+      "blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+      "pages": [
+        36
+      ]
     }
   ],
   "products": {
@@ -1135,6 +1143,94 @@
           }
         }
       }
+    },
+    "1179": {
+      "model": "H2-25K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "1181": {
+      "model": "H2-30K-T3-DE",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "2063": {
+      "model": "H2-15K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "2064": {
+      "model": "H2-20K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "4107": {
+      "model": "H2-10K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "4108": {
+      "model": "H2-12K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
     }
+  },
+  "package_contents": {
+    "saj_h2_meter_and_wiring": [
+      {
+        "id": "smart-meter",
+        "label": {
+          "en": "Smart meter",
+          "de": "Smart Meter"
+        },
+        "quantity": 1,
+        "unit": "piece",
+        "role": "meter",
+        "source": {
+          "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+          "page": 36
+        }
+      },
+      {
+        "id": "current-transformers",
+        "label": {
+          "en": "Current transformer",
+          "de": "Stromwandler"
+        },
+        "quantity": 3,
+        "unit": "piece",
+        "role": "other",
+        "source": {
+          "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+          "page": 36
+        }
+      },
+      {
+        "id": "meter-comm-cable-10m",
+        "label": {
+          "en": "Meter communication cable (10 m)",
+          "de": "Kommunikationskabel für den Zähler (10 m)"
+        },
+        "quantity": 1,
+        "unit": "piece",
+        "role": "other",
+        "source": {
+          "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+          "page": 36
+        }
+      }
+    ]
   }
 }

@@ -1,9 +1,9 @@
 {
-	"source_revision": "11211aa011c530d5c04ea747b4da710c340beceb4615e329c2acecc88591bf91",
+	"source_revision": "1ba76dc85a78d59f868a3925818f34926ab89844deb3bd3756511432af128ec4",
 	"compatibility_revision": "ac8207e0af1b80a632ca1a29badb8621e44754249ce0206cb8370a8c7f36486f",
 	"schema_version": 1,
 	"figure_projection_version": 2,
-	"generated_at": "2026-11-24T12:17:59+00:00",
+	"generated_at": "2026-11-24T12:57:08+00:00",
 	"compatibility_version": "bba5bd0e143d7ce73b0737e11d228181c394ed8445a80c415a1d4053a2a7e65a",
 	"overlay": [
 		{
@@ -326,7 +326,7 @@
 		{
 			"id": 1179,
 			"canonical_product_id": 1179,
-			"product_revision": "4f3422cd91d19c3677d1159dc684e91651eb2fe37b40d898cf399f1600a64e38",
+			"product_revision": "b33659b4c351d94ae6bffe59dfebe8314de6b7478441da1decec839506d4825e",
 			"sku": "DLK-SAJ-H225KT3",
 			"device_class": "inverters",
 			"application": "home",
@@ -623,6 +623,65 @@
 			"model": "H2-25K-T3",
 			"brand": "SAJ",
 			"series": "SAJ H2",
+			"package_contents": {
+				"status": "documented",
+				"items": [
+					{
+						"id": "smart-meter",
+						"label": {
+							"en": "Smart meter",
+							"de": "Smart Meter"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "meter",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 1179,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "current-transformers",
+						"label": {
+							"en": "Current transformer",
+							"de": "Stromwandler"
+						},
+						"quantity": 3,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 1179,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "meter-comm-cable-10m",
+						"label": {
+							"en": "Meter communication cable (10 m)",
+							"de": "Kommunikationskabel für den Zähler (10 m)"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 1179,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					}
+				]
+			},
 			"installation_facts": {
 				"status": "documented",
 				"items": [
@@ -784,7 +843,7 @@
 		{
 			"id": 1181,
 			"canonical_product_id": 1181,
-			"product_revision": "df900787114de4733c0baf7dd3c3e2cc18c4002796bc5e2a01b6b5355c013306",
+			"product_revision": "e4a15f7739046ee2d56440646ff8c4826458408dfb564b2408235f097c83a3b3",
 			"sku": "DLK-SAJ-H230KT3DE",
 			"device_class": "inverters",
 			"application": "home",
@@ -1081,6 +1140,65 @@
 			"model": "H2-30K-T3-DE",
 			"brand": "SAJ",
 			"series": "SAJ H2",
+			"package_contents": {
+				"status": "documented",
+				"items": [
+					{
+						"id": "smart-meter",
+						"label": {
+							"en": "Smart meter",
+							"de": "Smart Meter"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "meter",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 1181,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "current-transformers",
+						"label": {
+							"en": "Current transformer",
+							"de": "Stromwandler"
+						},
+						"quantity": 3,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 1181,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "meter-comm-cable-10m",
+						"label": {
+							"en": "Meter communication cable (10 m)",
+							"de": "Kommunikationskabel für den Zähler (10 m)"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 1181,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					}
+				]
+			},
 			"installation_facts": {
 				"status": "documented",
 				"items": [
@@ -3972,7 +4090,7 @@
 		{
 			"id": 1832,
 			"canonical_product_id": 1832,
-			"product_revision": "2d253ae0886c6b378f0ad86840b0b9bd132a37995828893f7242d5a9f6e3a794",
+			"product_revision": "169de97cff5d5cb9fccd4f8ecede83fed166102dfcce193d93708addf60eeec7",
 			"sku": "DLK-SAJ-B250HV1",
 			"device_class": "home-storage",
 			"application": "home",
@@ -4027,6 +4145,22 @@
 				"sales_unit_kind": {
 					"value": "battery_system",
 					"unit": null,
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_nominal_energy_kwh": {
+					"value": "5.0",
+					"unit": "kWh",
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_usable_energy_kwh": {
+					"value": "4.5",
+					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
@@ -12911,7 +13045,7 @@
 		{
 			"id": 2063,
 			"canonical_product_id": 2063,
-			"product_revision": "b7b0e80397462d408fdb04dc0a1fc958dfbda085e06e030f30348fe799d399ba",
+			"product_revision": "ba6cbf00b84925abf2006a19cb5df2501e7d2ec070b07277e05d6fd418599c2d",
 			"sku": "DLK-SAJ-H215KT3",
 			"device_class": "inverters",
 			"application": "home",
@@ -13151,6 +13285,65 @@
 			"model": "H2-15K-T3",
 			"brand": "SAJ",
 			"series": "SAJ H2",
+			"package_contents": {
+				"status": "documented",
+				"items": [
+					{
+						"id": "smart-meter",
+						"label": {
+							"en": "Smart meter",
+							"de": "Smart Meter"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "meter",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 2063,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "current-transformers",
+						"label": {
+							"en": "Current transformer",
+							"de": "Stromwandler"
+						},
+						"quantity": 3,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 2063,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "meter-comm-cable-10m",
+						"label": {
+							"en": "Meter communication cable (10 m)",
+							"de": "Kommunikationskabel für den Zähler (10 m)"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 2063,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					}
+				]
+			},
 			"installation_facts": {
 				"status": "documented",
 				"items": [
@@ -13312,7 +13505,7 @@
 		{
 			"id": 2064,
 			"canonical_product_id": 2064,
-			"product_revision": "83c5dcb32421a21adc568adaa11e11c524e7b0f047fc9e516a333ee04d54be53",
+			"product_revision": "3c08bdbe7dfa60b5a46ae283f17f0050b132bf5ca7789fd3215f2c1a18b23b43",
 			"sku": "DLK-SAJ-H220KT3",
 			"device_class": "inverters",
 			"application": "home",
@@ -13552,6 +13745,65 @@
 			"model": "H2-20K-T3",
 			"brand": "SAJ",
 			"series": "SAJ H2",
+			"package_contents": {
+				"status": "documented",
+				"items": [
+					{
+						"id": "smart-meter",
+						"label": {
+							"en": "Smart meter",
+							"de": "Smart Meter"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "meter",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 2064,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "current-transformers",
+						"label": {
+							"en": "Current transformer",
+							"de": "Stromwandler"
+						},
+						"quantity": 3,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 2064,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "meter-comm-cable-10m",
+						"label": {
+							"en": "Meter communication cable (10 m)",
+							"de": "Kommunikationskabel für den Zähler (10 m)"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 2064,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					}
+				]
+			},
 			"installation_facts": {
 				"status": "documented",
 				"items": [
@@ -13713,7 +13965,7 @@
 		{
 			"id": 2067,
 			"canonical_product_id": 2067,
-			"product_revision": "35429da26d69faa21f5c64fde64cee1438c93a6b5b089edf514e6080aff3b51e",
+			"product_revision": "652985340a1c0950bc91455827874db186659ddca18fdcc503424376139b4df0",
 			"sku": "DLK-SAJ-B2100HV1",
 			"device_class": "home-storage",
 			"application": "home",
@@ -13725,18 +13977,18 @@
 			"kwh_range": null,
 			"figures": {
 				"module_energy_kwh_nominal": {
-					"value": "10.0",
+					"value": "5.0",
 					"unit": "kWh",
 					"citation": {
-						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
 					},
 					"evidence_refs": [
-						"saj_b2_hv1_hv5_datasheet_au_en.pdf:p2"
+						"B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
 					]
 				},
 				"module_energy_kwh_usable": {
-					"value": "9.0",
+					"value": "4.5",
 					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
@@ -13768,6 +14020,22 @@
 				"sales_unit_kind": {
 					"value": "battery_system",
 					"unit": null,
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_nominal_energy_kwh": {
+					"value": "10.0",
+					"unit": "kWh",
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_usable_energy_kwh": {
+					"value": "9.0",
+					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
@@ -13917,7 +14185,7 @@
 		{
 			"id": 2068,
 			"canonical_product_id": 2068,
-			"product_revision": "7d9e9661c36847dc0698ad2a6b4d466d2e1378b874fa412546cde91ee196ee0f",
+			"product_revision": "97ff2f558b6373077a431f18f5070e595b34997a47fa7a2bee27e70f5fdcd873",
 			"sku": "DLK-SAJ-B2150HV1",
 			"device_class": "home-storage",
 			"application": "home",
@@ -13929,18 +14197,18 @@
 			"kwh_range": null,
 			"figures": {
 				"module_energy_kwh_nominal": {
-					"value": "15.0",
+					"value": "5.0",
 					"unit": "kWh",
 					"citation": {
-						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
 					},
 					"evidence_refs": [
-						"saj_b2_hv1_hv5_datasheet_au_en.pdf:p2"
+						"B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
 					]
 				},
 				"module_energy_kwh_usable": {
-					"value": "13.5",
+					"value": "4.5",
 					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
@@ -13972,6 +14240,22 @@
 				"sales_unit_kind": {
 					"value": "battery_system",
 					"unit": null,
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_nominal_energy_kwh": {
+					"value": "15.0",
+					"unit": "kWh",
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_usable_energy_kwh": {
+					"value": "13.5",
+					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
@@ -14121,7 +14405,7 @@
 		{
 			"id": 2069,
 			"canonical_product_id": 2069,
-			"product_revision": "175c0d818718c6e7154d23bd2f686f089cfca80cff0494c79a7b899b760a5683",
+			"product_revision": "c9c139014c3d4d9679402a2a75c7f0dc181b115ff9de06b31477dcd8927dfa52",
 			"sku": "DLK-SAJ-B2200HV1",
 			"device_class": "home-storage",
 			"application": "home",
@@ -14133,18 +14417,18 @@
 			"kwh_range": null,
 			"figures": {
 				"module_energy_kwh_nominal": {
-					"value": "20.0",
+					"value": "5.0",
 					"unit": "kWh",
 					"citation": {
-						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
 					},
 					"evidence_refs": [
-						"saj_b2_hv1_hv5_datasheet_au_en.pdf:p2"
+						"B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
 					]
 				},
 				"module_energy_kwh_usable": {
-					"value": "18.0",
+					"value": "4.5",
 					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
@@ -14176,6 +14460,22 @@
 				"sales_unit_kind": {
 					"value": "battery_system",
 					"unit": null,
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_nominal_energy_kwh": {
+					"value": "20.0",
+					"unit": "kWh",
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_usable_energy_kwh": {
+					"value": "18.0",
+					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
@@ -14325,7 +14625,7 @@
 		{
 			"id": 2070,
 			"canonical_product_id": 2070,
-			"product_revision": "26cff4ffcf8999ac545a2ff0957aa43dbd75a140c50282aeb30c4511ad6f6c3f",
+			"product_revision": "c2b14897c8f43e548b42d982e339ed1593ebd6c21684bf99333f29f871dd0372",
 			"sku": "DLK-SAJ-B2250HV1",
 			"device_class": "home-storage",
 			"application": "home",
@@ -14337,18 +14637,18 @@
 			"kwh_range": null,
 			"figures": {
 				"module_energy_kwh_nominal": {
-					"value": "25.0",
+					"value": "5.0",
 					"unit": "kWh",
 					"citation": {
-						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
 					},
 					"evidence_refs": [
-						"saj_b2_hv1_hv5_datasheet_au_en.pdf:p2"
+						"B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
 					]
 				},
 				"module_energy_kwh_usable": {
-					"value": "22.5",
+					"value": "4.5",
 					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
@@ -14380,6 +14680,22 @@
 				"sales_unit_kind": {
 					"value": "battery_system",
 					"unit": null,
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_nominal_energy_kwh": {
+					"value": "25.0",
+					"unit": "kWh",
+					"citation": {
+						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+						"page": 2
+					}
+				},
+				"system_usable_energy_kwh": {
+					"value": "22.5",
+					"unit": "kWh",
 					"citation": {
 						"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
 						"page": 2
@@ -23006,7 +23322,7 @@
 		{
 			"id": 4107,
 			"canonical_product_id": 4107,
-			"product_revision": "3f6e9965b4402edb844df9d8be6fa5398fc4d612f3a9c10b9b3e90a26f713a63",
+			"product_revision": "b5b3dfe83c9492987498dea0d09bc800c56af0a50231fc9ec01f718bd1399d24",
 			"sku": "DLK-SAJ-H210KT3",
 			"device_class": "inverters",
 			"application": "home",
@@ -23294,6 +23610,65 @@
 			"model": "H2-10K-T3",
 			"brand": "SAJ",
 			"series": "SAJ H2",
+			"package_contents": {
+				"status": "documented",
+				"items": [
+					{
+						"id": "smart-meter",
+						"label": {
+							"en": "Smart meter",
+							"de": "Smart Meter"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "meter",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 4107,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "current-transformers",
+						"label": {
+							"en": "Current transformer",
+							"de": "Stromwandler"
+						},
+						"quantity": 3,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 4107,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "meter-comm-cable-10m",
+						"label": {
+							"en": "Meter communication cable (10 m)",
+							"de": "Kommunikationskabel für den Zähler (10 m)"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 4107,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					}
+				]
+			},
 			"installation_facts": {
 				"status": "documented",
 				"items": [
@@ -23455,7 +23830,7 @@
 		{
 			"id": 4108,
 			"canonical_product_id": 4108,
-			"product_revision": "34dd930fec8001c152850333dcc1bd8fcf317813d7f316e3648734302c0432e2",
+			"product_revision": "eca17c72b592cbe16425ebaa876b825b5221d49d067595b36acb9e49cad5d165",
 			"sku": "DLK-SAJ-H212KT3",
 			"device_class": "inverters",
 			"application": "home",
@@ -23675,6 +24050,65 @@
 			"model": "H2-12K-T3",
 			"brand": "SAJ",
 			"series": "SAJ H2",
+			"package_contents": {
+				"status": "documented",
+				"items": [
+					{
+						"id": "smart-meter",
+						"label": {
+							"en": "Smart meter",
+							"de": "Smart Meter"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "meter",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 4108,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "current-transformers",
+						"label": {
+							"en": "Current transformer",
+							"de": "Stromwandler"
+						},
+						"quantity": 3,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 4108,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					},
+					{
+						"id": "meter-comm-cable-10m",
+						"label": {
+							"en": "Meter communication cable (10 m)",
+							"de": "Kommunikationskabel für den Zähler (10 m)"
+						},
+						"quantity": 1,
+						"unit": "piece",
+						"role": "other",
+						"source": {
+							"document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+							"document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+							"blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+							"product_id": 4108,
+							"page": 36,
+							"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+						}
+					}
+				]
+			},
 			"installation_facts": {
 				"status": "documented",
 				"items": [

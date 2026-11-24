@@ -63,6 +63,30 @@ try {
 					throw new RuntimeException( esc_html( "Model identity changed for {$id}." ) );
 				}
 				$urls   = $document_urls( $id, $patch['documents'] );
+				if ( isset( $patch['package'] ) ) {
+					$items    = $request['plan']['package_contents'][ $patch['package'] ];
+					$manifest = \Linker\Commerce\Products\Publication::manifest();
+					$contents = array();
+					foreach ( $items as $item ) {
+						if ( ! isset( $urls[ $item['source']['document_id'] ] ) ) {
+							throw new RuntimeException( esc_html( "Missing reviewed package document for {$id}." ) );
+						}
+						$contents[] = \Linker\Commerce\Products\Publication\PackageContents::bind( $id, $item, $manifest, true );
+					}
+					$after  = array( 'schema_version' => 1, 'items' => $contents );
+					$before = get_post_meta( $id, \Linker\Commerce\Products\Publication\PackageContents::META_KEY, true );
+					if ( '' !== $before && $before !== $after ) {
+						throw new RuntimeException( esc_html( "Review existing package contents for {$id}." ) );
+					}
+					$receipt['products'][ $id ] = array(
+						'package'   => true,
+						'before'    => $before,
+						'after'     => $after,
+						'protected' => $protect( $id ),
+						'documents' => $patch['documents'],
+					);
+					continue;
+				}
 				$before = get_post_meta( $id, $key, true );
 				$raw    = is_string( $before ) ? json_decode( $before, true, 512, JSON_THROW_ON_ERROR ) : $before;
 				if ( ! is_array( $raw ) ) {
@@ -120,14 +144,16 @@ try {
 			$to   = 'rollback' === $request['action'] ? 'before' : 'after';
 			// Check every preimage before the first write. No partial stale-plan application.
 			foreach ( $receipt['products'] as $id => $entry ) {
-				$current = get_post_meta( (int) $id, $key, true );
+				$meta_key = empty( $entry['package'] ) ? $key : \Linker\Commerce\Products\Publication\PackageContents::META_KEY;
+				$current  = get_post_meta( (int) $id, $meta_key, true );
 				if ( ( $current !== $entry[ $from ] && $current !== $entry[ $to ] ) || $protect( (int) $id ) !== $entry['protected'] ) {
 					throw new RuntimeException( esc_html( "Concurrent edit to {$id}; receipt cannot overwrite it." ) );
 				}
 				$document_urls( (int) $id, $entry['documents'] );
 			}
 			foreach ( $receipt['products'] as $id => $entry ) {
-				$current = get_post_meta( (int) $id, $key, true );
+				$meta_key = empty( $entry['package'] ) ? $key : \Linker\Commerce\Products\Publication\PackageContents::META_KEY;
+				$current  = get_post_meta( (int) $id, $meta_key, true );
 				if ( $current === $entry[ $to ] ) {
 					continue;
 				}
@@ -135,9 +161,13 @@ try {
 					throw new RuntimeException( esc_html( "Concurrent edit to {$id} before write." ) );
 				}
 				// Native metadata events bind the edited facts and enqueue shared preparation.
-				update_post_meta( (int) $id, $key, is_string( $entry[ $to ] ) ? wp_slash( $entry[ $to ] ) : $entry[ $to ], $entry[ $from ] );
+				if ( ! empty( $entry['package'] ) && '' === $entry[ $to ] ) {
+					delete_post_meta( (int) $id, $meta_key, $entry[ $from ] );
+				} else {
+					update_post_meta( (int) $id, $meta_key, wp_slash( $entry[ $to ] ), $entry[ $from ] );
+				}
 				wc_delete_product_transients( (int) $id );
-				if ( get_post_meta( (int) $id, $key, true ) !== $entry[ $to ] || $protect( (int) $id ) !== $entry['protected'] ) {
+				if ( get_post_meta( (int) $id, $meta_key, true ) !== $entry[ $to ] || $protect( (int) $id ) !== $entry['protected'] ) {
 					throw new RuntimeException( esc_html( "Readback failed for {$id}; retain receipt for recovery." ) );
 				}
 				++$written;

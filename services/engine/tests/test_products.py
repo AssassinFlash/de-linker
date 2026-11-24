@@ -96,6 +96,26 @@ def test_saj_b2_fixed_system_energy(
     assert float(system.figures["module_energy_kwh_usable"].value) == 4.5
 
 
+def test_h2_meter_set_is_bound_to_each_supported_inverter() -> None:
+    feed = json.loads((FIXTURES / "feed.json").read_text())
+    for product_id in (1179, 1181, 2063, 2064, 4107, 4108):
+        product = next(row for row in feed["products"] if row["id"] == product_id)
+        contents = product["package_contents"]
+        assert contents["status"] == "documented"
+        assert [
+            (item["id"], item["quantity"], item["unit"]) for item in contents["items"]
+        ] == [
+            ("smart-meter", 1, "piece"),
+            ("current-transformers", 3, "piece"),
+            ("meter-comm-cable-10m", 1, "piece"),
+        ]
+        for item in contents["items"]:
+            source = item["source"]
+            assert source["product_id"] == product_id
+            assert source["page"] == 36
+            assert source["url"].endswith("SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf")
+
+
 def test_engineering_figures_are_read_per_mppt(products: Products) -> None:
     esa = products.by_id[6518]  # GW30K-ETA-G20
     assert esa.n_mppt == 4
