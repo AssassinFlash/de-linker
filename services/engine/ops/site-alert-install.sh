@@ -89,10 +89,22 @@ case "$1" in
         saved=$(mktemp -d)
         trap 'rm -rf "$saved"' EXIT
         tar -C "$saved" -xpf -
-        if [[ ! -f "$saved/timer-state" ]]; then
-            # Older archives have no timer metadata. Preserve the installation's
-            # current timer settings and restore only the files in that archive.
-            timer_state > "$saved/timer-state"
+        for relative in "${MANAGED[@]}"; do
+            # The deployed SMTP configuration stays in place when an operator
+            # excludes private credentials from the code recovery archive.
+            if [[ "$relative" != 'etc/linker-site-alert.env' && ! -f "$saved/$relative" ]]; then
+                echo "Incomplete monitor backup: missing $relative." >&2
+                exit 1
+            fi
+        done
+        if [[ ! -f "$saved/timer-state" ]] || ! awk '
+            NR == 1 && /^linker-site-probe[.]timer [01] [01]$/ { next }
+            NR == 2 && /^linker-site-alert[.]timer [01] [01]$/ { next }
+            { invalid = 1 }
+            END { exit (invalid || NR != 2) }
+        ' "$saved/timer-state"; then
+            echo "Incomplete monitor backup: both original timer settings are required." >&2
+            exit 1
         fi
         systemctl disable --quiet --now linker-site-alert.timer
         systemctl disable --quiet --now linker-site-probe.timer

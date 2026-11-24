@@ -242,3 +242,36 @@ esac
     (tmp_path / "old-notifier").touch()
     run(env, "rollback", backup)
     assert (tmp_path / "observed").read_text().strip() == "healthy"
+
+
+@pytest.mark.parametrize("omitted", ["pre-wave-six", "timer-state", *MANAGED])
+def test_incomplete_restore_keeps_live_files_and_running_timers(
+    tmp_path: Path, omitted: str
+) -> None:
+    env, root, calls = setup(tmp_path)
+    snapshot = run(env, "backup")
+    incomplete = io.BytesIO()
+    with (
+        tarfile.open(fileobj=io.BytesIO(snapshot)) as old,
+        tarfile.open(fileobj=incomplete, mode="w") as out,
+    ):
+        for member in old:
+            if member.name == omitted or (
+                omitted == "pre-wave-six"
+                and (member.name == "timer-state" or "probe" in member.name)
+            ):
+                continue
+            out.addfile(member, old.extractfile(member))
+    run(env, "apply")
+    current = [(root / p).read_bytes() for p in MANAGED]
+    calls.unlink()
+    result = subprocess.run(
+        ["bash", str(SCRIPT), "rollback"],
+        env=env,
+        input=incomplete.getvalue(),
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    assert not calls.exists()
+    assert [(root / p).read_bytes() for p in MANAGED] == current

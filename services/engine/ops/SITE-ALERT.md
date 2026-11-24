@@ -118,8 +118,9 @@ ssh linker-services "bash '$stage/site-alert-install.sh' verify"
 On rollback, use the **same staged installer**. It restores files and each
 timer's recorded enabled and active settings. When the prior alert timer was
 active, the restored probe records a fresh observation in its native format
-before the restored notifier resumes. Archives from older installers have no
-timer metadata; in that case rollback preserves the settings seen at entry.
+before the restored notifier resumes. Use a complete backup made by this staged installer: both programs, both
+service/timer pairs and both original timer settings must be present.
+Rollback verifies the archive before changing either live timer.
 
 ```sh
 ssh linker-services "bash '$stage/site-alert-install.sh' rollback" < monitor-backup.tar

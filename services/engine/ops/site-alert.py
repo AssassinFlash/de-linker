@@ -615,7 +615,9 @@ def run(
         return 0
     if not state.pending:
         save_state(state_path, state)
-        emit(f"site-alert: state {state.state}; nothing to send")
+        emit(
+            f"site-alert: WordPress/probe state {state.state}; active backend incidents: {', '.join(state.backend_outages) or 'none'}; nothing to send"
+        )
         return 0
 
     config = read_config(config_path)
