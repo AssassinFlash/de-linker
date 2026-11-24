@@ -219,7 +219,7 @@ test( 'unfolding after an outside focus change does not take that focus', async 
 test( 'site search shows linked model suggestions and preserves native search submission', async () => {
 	const dom = new JSDOM( `<html lang="de"><body><header id="tv-header-v2">
 		<a href="/de/produkte/#search-box" data-tv-header-search data-search-min="2" data-search-url="/wp-json/linker/v1/catalog-search">Suche</a>
-		<dialog id="tv-site-search"><button data-tv-search-close></button><form action="/de/"><input type="search" name="s"></form>
+		<dialog id="tv-site-search"><h2>Website durchsuchen</h2><button data-tv-search-close></button><form action="/de/"><input type="search" name="s"></form>
 		<ul class="tv-search-matches" hidden></ul><p role="status"></p></dialog></header></body></html>`,
 		{ url: 'https://example.test/de/', runScripts: 'outside-only' } );
 	try {

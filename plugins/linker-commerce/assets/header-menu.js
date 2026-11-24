@@ -27,6 +27,7 @@
 			matches.hidden = true;
 			status.textContent = '';
 		}
+		searchLink.setAttribute( 'aria-label', dialog.querySelector( 'h2' ).textContent );
 		searchLink.setAttribute( 'aria-haspopup', 'dialog' );
 		searchLink.setAttribute( 'aria-controls', dialog.id );
 		searchLink.addEventListener( 'click', event => {
