@@ -14,7 +14,7 @@ use WP_Term;
 
 /**
  * Sends the addresses the site retired — the tool entries this site itself
- * retired (#12: five retired_tools, no advisor addresses), and the addresses
+ * retired, localized tool aliases, and the addresses
  * the site before it retired (data/legacy-redirects.json, extracted
  * 2026-10-11: 255 product slugs, 31 category slugs, 18 retired page paths,
  * the /shop/ archive and the retired /checkout/ slug; six more product slugs
