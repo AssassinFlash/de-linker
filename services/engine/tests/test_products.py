@@ -74,6 +74,28 @@ def test_commercial_storage_facts_keep_energy_scopes(products: Products) -> None
     assert products.by_id[6321].model == "GW125/261-ESA-LCN-G10"
 
 
+@pytest.mark.parametrize(
+    ("product_id", "modules", "rated", "usable"),
+    [
+        (1832, 1, 5, 4.5),
+        (2067, 2, 10, 9),
+        (2068, 3, 15, 13.5),
+        (2069, 4, 20, 18),
+        (2070, 5, 25, 22.5),
+    ],
+)
+def test_saj_b2_fixed_system_energy(
+    products: Products, product_id: int, modules: int, rated: float, usable: float
+) -> None:
+    system = products.by_id[product_id]
+    assert system.modules_per_stack == (modules, modules)
+    assert (system.nominal_kwh, system.usable_kwh) == (rated, usable)
+    assert float(system.figures["system_nominal_energy_kwh"].value) == rated
+    assert float(system.figures["system_usable_energy_kwh"].value) == usable
+    assert float(system.figures["module_energy_kwh_nominal"].value) == 5
+    assert float(system.figures["module_energy_kwh_usable"].value) == 4.5
+
+
 def test_engineering_figures_are_read_per_mppt(products: Products) -> None:
     esa = products.by_id[6518]  # GW30K-ETA-G20
     assert esa.n_mppt == 4

@@ -74,6 +74,14 @@
       "pages": [
         2
       ]
+    },
+    {
+      "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+      "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+      "pages": [
+        2
+      ]
     }
   ],
   "products": {
@@ -850,6 +858,280 @@
               "page": 2
             },
             "value_de": "125,0 (75 bei 220 V)"
+          }
+        }
+      }
+    },
+    "1832": {
+      "model": "B2-5.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2067": {
+      "model": "B2-10.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "10.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "9.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "module_energy_kwh_nominal": {
+          "expect": {
+            "value": "10.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
+            ]
+          }
+        },
+        "module_energy_kwh_usable": {
+          "expect": {
+            "value": "9.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2068": {
+      "model": "B2-15.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "15.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "13.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "module_energy_kwh_nominal": {
+          "expect": {
+            "value": "15.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
+            ]
+          }
+        },
+        "module_energy_kwh_usable": {
+          "expect": {
+            "value": "13.5",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2069": {
+      "model": "B2-20.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "20.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "18.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "module_energy_kwh_nominal": {
+          "expect": {
+            "value": "20.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
+            ]
+          }
+        },
+        "module_energy_kwh_usable": {
+          "expect": {
+            "value": "18.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2070": {
+      "model": "B2-25.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "25.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "22.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "module_energy_kwh_nominal": {
+          "expect": {
+            "value": "25.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
+            ]
+          }
+        },
+        "module_energy_kwh_usable": {
+          "expect": {
+            "value": "22.5",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
           }
         }
       }

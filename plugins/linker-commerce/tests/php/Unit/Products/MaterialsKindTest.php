@@ -76,6 +76,15 @@ final class MaterialsKindTest extends TestCase {
 		$this->assertSame( $native, Materials::facts( $this->product( 6321 ) ) );
 	}
 
+	/** A B2-25.0 is one 25 kWh system containing five BU2 modules. */
+	public function test_saj_ratings_distinguish_the_complete_system_from_each_internal_module(): void {
+		$facts = Materials::facts( $this->product( 2070 ) );
+		$this->assertSame( '5.0', $facts['module_energy_kwh_nominal']['value'] );
+		$this->assertSame( '4.5', $facts['module_energy_kwh_usable']['value'] );
+		$this->assertSame( '25.0', $facts['system_nominal_energy_kwh']['value'] );
+		$this->assertSame( '22.5', $facts['system_usable_energy_kwh']['value'] );
+	}
+
 	/** A cabinet and its internal inverter must not share the inverter's figures. */
 	public function test_duplicate_binding_uses_the_woo_models_matching_material_for_both_languages(): void {
 		$this->seed_registry(
