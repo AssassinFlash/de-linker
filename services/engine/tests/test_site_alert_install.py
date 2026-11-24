@@ -1,6 +1,6 @@
 """The alert installer: streamed backup, reviewed apply, native rollback.
 
-Nothing here starts a real unit. The script writes only its three managed
+Nothing here starts a real unit. The script writes only its managed
 paths and reads the private env file, so a temporary root plus a recording
 `systemctl` proves both that the files land and that nothing else is touched.
 """
@@ -22,6 +22,9 @@ MANAGED = (
     "opt/linker-engine/ops/site-alert.py",
     "etc/systemd/system/linker-site-alert.service",
     "etc/systemd/system/linker-site-alert.timer",
+    "opt/linker-engine/ops/site-probe.sh",
+    "etc/systemd/system/linker-site-probe.service",
+    "etc/systemd/system/linker-site-probe.timer",
 )
 
 
@@ -37,7 +40,7 @@ def setup(tmp_path: Path) -> tuple[dict[str, str], Path, Path]:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"previous {relative}\n")
-        path.chmod(0o755 if relative.endswith(".py") else 0o644)
+        path.chmod(0o755 if relative.endswith((".py", ".sh")) else 0o644)
     config = root / CONFIG
     config.parent.mkdir(parents=True, exist_ok=True)
     config.write_text(
@@ -96,6 +99,11 @@ def test_apply_installs_reviewed_files_and_enables_the_timer(tmp_path: Path) -> 
     assert (root / MANAGED[2]).read_bytes() == (
         OPS / "linker-site-alert.timer"
     ).read_bytes()
+    for relative in MANAGED[3:]:
+        assert (root / relative).read_bytes() == (
+            OPS / Path(relative).name
+        ).read_bytes()
+    assert "systemctl start linker-site-probe.timer" in calls.read_text()
     assert (root / MANAGED[0]).stat().st_mode & 0o777 == 0o755
     # The private file is never rewritten by the installer.
     assert (root / CONFIG).stat().st_mode & 0o777 == 0o600
@@ -135,7 +143,7 @@ def test_rollback_stops_the_timer_and_restores_the_previous_files(
     assert [(root / relative).read_bytes() for relative in MANAGED] == original
     assert all(
         (root / relative).stat().st_mode & 0o777
-        == (0o755 if relative.endswith(".py") else 0o644)
+        == (0o755 if relative.endswith((".py", ".sh")) else 0o644)
         for relative in MANAGED
     )
     recorded = calls.read_text()

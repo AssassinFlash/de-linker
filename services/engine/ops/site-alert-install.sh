@@ -14,6 +14,9 @@ SYSTEMD="${SYSTEMD#/}"
 # Relative, so `tar -C ROOT` never sees an absolute member name.
 MANAGED=(
     "$OPS_DIR/site-alert.py"
+    "$OPS_DIR/site-probe.sh"
+    "$SYSTEMD/linker-site-probe.service"
+    "$SYSTEMD/linker-site-probe.timer"
     "$SYSTEMD/linker-site-alert.service"
     "$SYSTEMD/linker-site-alert.timer"
     "etc/linker-site-alert.env"
@@ -42,12 +45,17 @@ case "$1" in
             echo "mode 600, then rerun apply." >&2
             exit 1
         }
+        install -m 755 "$HERE/site-probe.sh" "$ROOT/$OPS_DIR/site-probe.sh"
+        install -m 644 "$HERE/linker-site-probe.service" "$ROOT/$SYSTEMD/linker-site-probe.service"
+        install -m 644 "$HERE/linker-site-probe.timer" "$ROOT/$SYSTEMD/linker-site-probe.timer"
         install -m 755 "$HERE/site-alert.py" "$ROOT/$OPS_DIR/site-alert.py"
         install -m 644 "$HERE/linker-site-alert.service" \
             "$ROOT/$SYSTEMD/linker-site-alert.service"
         install -m 644 "$HERE/linker-site-alert.timer" \
             "$ROOT/$SYSTEMD/linker-site-alert.timer"
         systemctl daemon-reload
+        systemctl enable --quiet linker-site-probe.timer
+        systemctl start linker-site-probe.timer
         systemctl enable --quiet linker-site-alert.timer
         systemctl start linker-site-alert.timer
         echo "installed $ROOT/$OPS_DIR/site-alert.py and the timer"
@@ -57,10 +65,11 @@ case "$1" in
         # decision for the current record, without sending or writing state.
         /usr/bin/python3 "$ROOT/$OPS_DIR/site-alert.py" --check-config
         /usr/bin/python3 "$ROOT/$OPS_DIR/site-alert.py" --dry-run
-        systemctl list-timers linker-site-alert.timer --no-pager
+        systemctl list-timers linker-site-probe.timer linker-site-alert.timer --no-pager
         ;;
     rollback)
         # Stop first: a restored unit must not keep running the new code.
+        systemctl stop linker-site-probe.timer
         systemctl disable --quiet --now linker-site-alert.timer 2>/dev/null || true
         tar -C "$ROOT" -xpf -
         systemctl daemon-reload

@@ -15,7 +15,11 @@ use Linker\Commerce\Mail\Producer;
 use WP_Error;
 
 /**
- * Once a day, asks each service for GET /health (docs/specs/13-genie.md,
+ * The independent VPS probe covers WordPress and the three loopback services
+ * every five minutes. Its Planner check includes the local worker. WordPress's
+ * configured /planning URL is an authenticated project RPC behind the TLS proxy.
+ *
+ * Once a day, asks each of the two externally reachable services for GET /health (docs/specs/13-genie.md,
  * docs/specs/14-solution-configurator.md). A service that does not answer
  * with HTTP 200 triggers one message to the internal notification address
  * (Options::notify_to(), with its blind copies), from the internal sender

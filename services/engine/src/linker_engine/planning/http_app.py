@@ -9,9 +9,14 @@ the Worker.
 
 from __future__ import annotations
 
+import fcntl
+import json
 import logging
 import os
+import sqlite3
+import time
 from collections.abc import Callable
+from contextlib import closing
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
@@ -26,6 +31,7 @@ from shapely.geometry import Point, Polygon
 from shapely.geometry.base import BaseGeometry
 from shapely.ops import unary_union
 from starlette.exceptions import HTTPException
+from starlette.routing import Route
 from starlette.types import ASGIApp
 
 from .. import geo, imagery
@@ -122,10 +128,12 @@ from .pvgis_reference_service import PvgisRoofReferenceService
 from .records import Actor
 from .report_kernel import ReportService
 from .retained_panels import display_document, project_panels
+from .schema import SCHEMA_VERSION
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .trace_window import TraceWindow
 from .weather_service import WeatherService
 from .weather_status import weather_status
+from .worker_policy import WorkerPolicy
 from .workspace import Workspace
 
 logger = logging.getLogger(__name__)
@@ -337,6 +345,60 @@ def _official_3d_outline(
             ],
         }
     return None
+
+
+def health_route(workspace: Workspace, worker: WorkerPolicy) -> Route:
+    """Read the store and the paired worker's live readiness lease on loopback."""
+    database = workspace.database.path
+    binding = storage_binding(database)
+    revision = workspace.kernel_runtime().sha256
+    ready = Path(worker.ready_file)
+
+    def worker_alive() -> bool:
+        try:
+            with Path(str(ready) + ".lock").open("rb") as lock:
+                try:
+                    fcntl.flock(lock, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                except BlockingIOError:
+                    with ready.open("rb") as record:
+                        updated = os.fstat(record.fileno()).st_mtime
+                        identity = json.load(record)
+                    return (
+                        time.time() - updated < worker.lease_seconds
+                        and isinstance(identity, dict)
+                        and identity.get("runtime_sha256") == revision
+                        and identity.get("storage_binding") == binding
+                    )
+        except (OSError, ValueError):
+            return False
+        return False
+
+    def health(_request: Request) -> JSONResponse:
+        try:
+            with closing(
+                sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)
+            ) as db:
+                readable = (
+                    db.execute("PRAGMA user_version").fetchone()[0] == SCHEMA_VERSION
+                )
+                db.execute("SELECT 1 FROM projects LIMIT 1").fetchone()
+        except sqlite3.Error:
+            readable = False
+        alive = worker_alive()
+        ok = readable and alive
+        return JSONResponse(
+            {
+                "service": "linker-planner-http",
+                "status": "ok" if ok else "degraded",
+                "revision": revision,
+                "workspace_readable": readable,
+                "worker_alive": alive,
+            },
+            status_code=200 if ok else 503,
+            headers={"Cache-Control": "no-store"},
+        )
+
+    return Route("/health", health, methods=["GET"])
 
 
 def create_private_app(

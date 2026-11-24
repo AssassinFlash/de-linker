@@ -452,7 +452,11 @@ class Release:
         token = source.get("GENIE_SERVICE_TOKEN", "")
         if not token:
             raise ValueError("existing service credential required")
-        http_values = {**public, "GENIE_SERVICE_TOKEN": token}
+        http_values = {
+            **public,
+            "LINKER_PLANNER_WORKER_CONFIG": str(self.worker_file),
+            "GENIE_SERVICE_TOKEN": token,
+        }
         map_tiles_key = source.get("LINKER_GOOGLE_MAP_TILES_KEY", "").strip()
         if map_tiles_key:
             http_values["LINKER_GOOGLE_MAP_TILES_KEY"] = map_tiles_key
@@ -500,7 +504,7 @@ class Release:
         write(
             self.deploy / self.http_unit,
             base
-            + f"EnvironmentFile={self.deploy}/http.env\nExecStart={self.path}/.venv/bin/python -m uvicorn linker_engine.application:app --host 127.0.0.1 --port {self.spec['port']}\n",
+            + f"EnvironmentFile={self.deploy}/http.env\nExecStart={self.path}/.venv/bin/python -m uvicorn linker_engine.planning.http_host:dedicated_app --factory --host 127.0.0.1 --port {self.spec['port']}\n",
             0o644,
         )
         write(
@@ -672,6 +676,26 @@ class Release:
         finally:
             connection.close()
 
+    def health(self, runtime: str) -> dict[str, Any]:
+        connection = HTTPConnection("127.0.0.1", self.spec["port"], timeout=1)
+        try:
+            connection.request("GET", "/health")
+            response = connection.getresponse()
+            if response.status != 200:
+                return {}
+            data: dict[str, Any] = json.loads(response.read(4096))
+            if (
+                data.get("service") != "linker-planner-http"
+                or data.get("status") != "ok"
+                or data.get("worker_alive") is not True
+                or data.get("workspace_readable") is not True
+                or data.get("revision") != runtime
+            ):
+                return {}
+            return data
+        finally:
+            connection.close()
+
     def wait_for(self, read: Callable[[], dict[str, Any]]) -> dict[str, Any]:
         deadline = time.monotonic() + self.spec["start_seconds"]
         while True:
@@ -699,6 +723,7 @@ class Release:
             for k, v in environment(self.deploy / "http.env").items()
             if k not in ("GENIE_SERVICE_TOKEN", "LINKER_GOOGLE_MAP_TILES_KEY")
         }
+        has_worker_probe = "LINKER_PLANNER_WORKER_CONFIG" in public
         public.update(
             LINKER_PLANNER_WORKER_CONFIG=str(self.worker_file),
             LINKER_PLANNER_RUNTIME_SHA256=identity["runtime_sha256"],
@@ -708,6 +733,8 @@ class Release:
         write(self.deploy / "worker.env", env_text(public))
         command(["systemctl", "start", self.worker_unit])
         identity["ready"] = self.wait_for(lambda: self.ready(identity))
+        if has_worker_probe:
+            self.wait_for(lambda: self.health(identity["runtime_sha256"]))
         self.assert_products(self.spec["start_seconds"])
         return identity
 

@@ -15,9 +15,10 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route, Router
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from .http_app import create_private_app
+from .http_app import create_private_app, health_route
 from .product_sources import ProductProvider, ProductSources, worker_product_provider
 from .runtime_config import RuntimeConfig
+from .worker_policy import WorkerPolicy
 
 LOG = logging.getLogger(__name__)
 
@@ -25,8 +26,19 @@ LOG = logging.getLogger(__name__)
 async def unavailable(scope: Scope, receive: Receive, send: Send) -> None:
     # No configured operation exists and no request body is consumed. This
     # response is private even when configuration/DB startup fails.
+    body = (
+        {
+            "service": "linker-planner-http",
+            "status": "degraded",
+            "revision": None,
+            "workspace_readable": False,
+            "worker_alive": False,
+        }
+        if scope.get("path") == "/health"
+        else {"error": {"code": "service_unconfigured"}}
+    )
     response = JSONResponse(
-        {"error": {"code": "service_unconfigured"}},
+        body,
         status_code=503,
         headers={
             "Cache-Control": "no-store, private",
@@ -41,13 +53,14 @@ def configured_private_app(
     config: RuntimeConfig | None = None,
     *,
     product_provider: Callable[[], ProductProvider] | None = None,
+    dedicated: bool = False,
 ) -> ASGIApp:
     try:
         settings = config or RuntimeConfig.from_environment()
         provider = product_provider or worker_product_provider
         products = ProductSources(provider)
         workspace, energy = settings.open(products=products)
-        return create_private_app(
+        private = create_private_app(
             workspace,
             energy,
             credential=lambda: os.environ.get("GENIE_SERVICE_TOKEN", ""),
@@ -66,9 +79,20 @@ def configured_private_app(
                 workspace, products=products
             ),
         )
+        if dedicated:
+            from ..app import app as legacy
+
+            probe = health_route(workspace, WorkerPolicy.from_environment())
+            return EngineApplications(legacy, private, health=probe)
+        return private
     except Exception:
         LOG.exception("planning service configuration is unavailable")
         return unavailable
+
+
+def dedicated_app() -> ASGIApp:
+    """Uvicorn factory for the separately deployed Planner listener."""
+    return configured_private_app(dedicated=True)
 
 
 class AsgiEndpoint:
@@ -82,10 +106,13 @@ class AsgiEndpoint:
 
 
 class EngineApplications:
-    def __init__(self, legacy: ASGIApp, planning: ASGIApp) -> None:
+    def __init__(
+        self, legacy: ASGIApp, planning: ASGIApp, *, health: Route | None = None
+    ) -> None:
         self.legacy = legacy
         self.router = Router(
             routes=[
+                *([health] if health else []),
                 # Cover the bare prefix without Router's public redirect.
                 Route("/planning", endpoint=AsgiEndpoint(planning)),
                 Mount("/planning", app=planning),

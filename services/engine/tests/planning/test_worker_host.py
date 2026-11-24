@@ -353,6 +353,9 @@ def test_duplicate_ready_path_cannot_replace_a_live_worker(tmp_path: Path) -> No
     try:
         wait_for(lambda: ready_generation(ready), lambda value: value == generation)
         original = ready.read_bytes()
+        previous_pulse = ready.stat().st_mtime_ns
+        wait_for(lambda: ready.stat().st_mtime_ns, lambda pulse: pulse > previous_pulse)
+
         b, _, _ = launch(
             tmp_path / "processes", settings, label="duplicate", ready=ready
         )

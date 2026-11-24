@@ -180,8 +180,15 @@ def serve(
             "storage_binding": expected_storage,
             "name": policy.name,
         }
+
+        def pulse() -> None:
+            while not stop.wait(policy.heartbeat_seconds):
+                os.utime(ready, None)
+
+        heartbeat = Thread(target=pulse, name="planner-readiness", daemon=True)
         try:
             publish_ready(ready, identity)
+            heartbeat.start()
             LOG.info("planning worker ready: %s", policy.name)
             if expanded_thread is not None:
                 expanded_thread.start()
@@ -193,6 +200,8 @@ def serve(
             return 0
         finally:
             stop.set()
+            if heartbeat.ident is not None:
+                heartbeat.join()
             expanded_stuck = False
             if expanded_thread is not None and expanded_thread.ident is not None:
                 expanded_thread.join(timeout=policy.drain_timeout_seconds)
