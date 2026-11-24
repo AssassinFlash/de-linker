@@ -1,6 +1,7 @@
 """The design report: one model for the screen and the PDF, in English and German."""
 
 import io
+from pathlib import Path
 from typing import Any, cast
 
 import pytest
@@ -579,3 +580,34 @@ def test_the_appendix_prints_a_document_url_once_per_reference() -> None:
     )
     result = text_of(pdf.render(report))
     assert result.count(link) == 1
+
+
+@pytest.mark.parametrize("system", ["solar", "storage"])
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_standard_customer_proposal_paginates_before_technical_evidence(
+    system: str, locale: str
+) -> None:
+    # Commercial sections from the four published residential proposals.
+    source = (
+        Path(__file__).parent / "fixtures" / "proposals" / f"{system}-{locale}.json"
+    )
+    proposal = Report.model_validate_json(source.read_bytes())
+    image = f"data:image/png;base64,{PNG}"
+    rendered = pdf.render(proposal, image)
+    pages = [page.extract_text() for page in PdfReader(io.BytesIO(rendered)).pages]
+    appendix = (
+        "Technischer & rechtlicher Anhang"
+        if locale == "de"
+        else "Technical & Compliance Appendix"
+    )
+    assert appendix in pages[2] and appendix not in "".join(pages[:2])
+    by_id = {s.id: s for s in proposal.sections}
+    comparison = by_id["self-consumption-comparison"]
+    assert comparison.title in pages[0] and comparison.rows[-1].label in pages[0]
+    assert by_id["grid-connection-evidence"].title in pages[1]
+    assert by_id["pv"].title in pages[1] and by_id["pv"].rows[-1].label in pages[1]
+    if locale == "de":
+        schedule = by_id["site-materials"].table
+        assert schedule is not None
+        assert pages[1].count("Anlagenplanung") == len(schedule.rows)
+    assert pdf.render(proposal, image) == rendered

@@ -1,0 +1,361 @@
+{
+  "title": "Project planning report",
+  "subtitle": "Saved project inputs and selected calculation results",
+  "generated_at": "2026-11-24T14:58:34.197041+00:00",
+  "locale": "en",
+  "sections": [
+    {
+      "id": "project",
+      "title": "Project",
+      "rows": [
+        {
+          "label": "Project",
+          "value": "Berlin · Residential solar and storage"
+        },
+        {
+          "label": "Planned system",
+          "value": "Solar and storage"
+        }
+      ]
+    },
+    {
+      "id": "site",
+      "title": "Site and project inputs",
+      "rows": [
+        {
+          "label": "Location",
+          "value": "Berlin"
+        },
+        {
+          "label": "Country",
+          "value": "DE"
+        }
+      ]
+    },
+    {
+      "id": "self-consumption-comparison",
+      "title": "Solar self-consumption comparison",
+      "rows": [
+        {
+          "label": "Profile period (UTC)",
+          "value": "2020-01-01T00:00:00+00:00 – 2020-12-31T23:00:00+00:00"
+        },
+        {
+          "label": "Electricity use",
+          "value": "6,007.128 kWh"
+        },
+        {
+          "label": "PV generation",
+          "value": "8,642.641 kWh"
+        },
+        {
+          "label": "Direct solar use",
+          "value": "2,547.73 kWh"
+        },
+        {
+          "label": "Grid import without storage",
+          "value": "3,459.398 kWh"
+        },
+        {
+          "label": "PV export",
+          "value": "6,094.911 kWh"
+        },
+        {
+          "label": "Grid import peak without storage",
+          "value": "1.611 kW"
+        },
+        {
+          "label": "Additional solar use, upper bound",
+          "value": "2,047.863 kWh"
+        }
+      ],
+      "paragraphs": [
+        "Only surplus solar energy stored during this period counts towards the upper bound. The calculation assumes lossless storage."
+      ]
+    },
+    {
+      "id": "equipment",
+      "title": "Equipment checks",
+      "rows": [
+        {
+          "label": "Assessment status",
+          "value": "Further checks required"
+        }
+      ]
+    },
+    {
+      "id": "grid-connection-evidence",
+      "title": "Grid connection review",
+      "rows": [
+        {
+          "label": "Country",
+          "value": "Germany (DE)"
+        },
+        {
+          "label": "National rule pack",
+          "value": "Bundled versioned reading available; local operator verification remains open"
+        },
+        {
+          "label": "Project details still needed",
+          "value": "grid operator, source for the grid operator, connection voltage level, source of the connection conditions, document edition or date, national rule inputs"
+        },
+        {
+          "label": "Operator territory and applicable conditions",
+          "value": "Independent verification pending"
+        },
+        {
+          "label": "Permission to connect",
+          "value": "No approval evidenced in this assessment"
+        }
+      ],
+      "paragraphs": [
+        "Linker bundles a dated rule reading for Germany (EnWG §19, VDE-AR-N 4110:2023-09, and EEG 2023 § 9(2), (3)), while local grid-operator TAB conditions and operator permission remain unassessed because no grid-connection details were entered. Provide the responsible grid operator, connection voltage level, applicable TAB document, and German rule inputs (rule date, installed power, control-test stage, and EEG remuneration) to evaluate these checks."
+      ]
+    },
+    {
+      "id": "bom",
+      "title": "Equipment from Linker",
+      "rows": [
+        {
+          "label": "Source document · Page 36",
+          "value": "Manufacturer package contents",
+          "href": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+        }
+      ],
+      "table": {
+        "columns": [
+          "Quantity",
+          "Product",
+          "Reference",
+          "Supply scope"
+        ],
+        "rows": [
+          [
+            "1 pc",
+            "SAJ H2-25K-T3",
+            "DLK-SAJ-H225KT3",
+            "Selected equipment"
+          ],
+          [
+            "1 pc",
+            "Smart meter",
+            "Page 36",
+            "Included with the equipment · SAJ H2-25K-T3"
+          ],
+          [
+            "3 pcs",
+            "Current transformer",
+            "Page 36",
+            "Included with the equipment · SAJ H2-25K-T3"
+          ],
+          [
+            "1 pc",
+            "Meter communication cable (10 m)",
+            "Page 36",
+            "Included with the equipment · SAJ H2-25K-T3"
+          ],
+          [
+            "1 pc",
+            "SAJ BC2-HV1",
+            "DLK-SAJ-BC2HV1",
+            "Selected equipment"
+          ],
+          [
+            "1 pc",
+            "SAJ B2-15.0-HV1",
+            "DLK-SAJ-B2150HV1",
+            "Selected equipment"
+          ]
+        ],
+        "column_weights": [
+          0.6,
+          1.7,
+          1.0,
+          1.7
+        ]
+      }
+    },
+    {
+      "id": "site-materials",
+      "title": "Site and installation materials",
+      "rows": [
+        {
+          "label": "Source document · Page 43",
+          "value": "Installation requirement source",
+          "href": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+        }
+      ],
+      "table": {
+        "columns": [
+          "Quantity",
+          "Product",
+          "Reference",
+          "Supply scope"
+        ],
+        "rows": [
+          [
+            "Per site layout",
+            "MPPT PV input terminals",
+            "Page 43",
+            "Site engineering assessment required"
+          ],
+          [
+            "Per site layout",
+            "Battery input terminals (BAT1/BAT2)",
+            "Page 43",
+            "Site engineering assessment required"
+          ],
+          [
+            "Per site layout",
+            "Communication terminal",
+            "Page 43",
+            "Site engineering assessment required"
+          ],
+          [
+            "Per site layout",
+            "Grid and back-up terminals",
+            "Page 43",
+            "Site engineering assessment required"
+          ],
+          [
+            "Per site layout",
+            "Grounding terminal",
+            "Page 43",
+            "Site engineering assessment required"
+          ]
+        ],
+        "column_weights": [
+          0.6,
+          1.7,
+          1.0,
+          1.7
+        ]
+      }
+    },
+    {
+      "id": "pv-components",
+      "title": "Customer-entered panel data",
+      "table": {
+        "columns": [
+          "Quantity",
+          "Panel parameters"
+        ],
+        "rows": [
+          [
+            "16",
+            "Generic 500 W PV module (reference only — not supplied by Linker)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "pv",
+      "title": "PV generation scenario",
+      "rows": [
+        {
+          "label": "PV generation",
+          "value": "8,642.641 kWh"
+        },
+        {
+          "label": "Calculation period (UTC)",
+          "value": "2020-01-01T00:00:00+00:00 – 2021-01-01T00:00:00+00:00"
+        },
+        {
+          "label": "Calculated intervals",
+          "value": "8,784"
+        }
+      ],
+      "paragraphs": [
+        "This section presents the selected saved PV profile and its original assumptions. Detailed shading and electrical design require separate assessment."
+      ]
+    },
+    {
+      "tier": "appendix",
+      "id": "check-0",
+      "title": "Converter output",
+      "rows": [
+        {
+          "label": "Assessment status",
+          "value": "Checked requirements met"
+        },
+        {
+          "label": "Result",
+          "value": "25 kW"
+        },
+        {
+          "label": "Source document · Page 2",
+          "value": "25000 W",
+          "href": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+        }
+      ]
+    }
+  ],
+  "summary_cards": [
+    {
+      "label": "PV array",
+      "value": "8 kWp"
+    },
+    {
+      "label": "Usable storage",
+      "value": "13.5 kWh",
+      "note": "Equipment assessment"
+    },
+    {
+      "label": "Estimated annual generation",
+      "value": "8,642.6 kWh",
+      "note": "2020-01-01 – 2021-01-01"
+    },
+    {
+      "label": "Grid connection",
+      "value": "3-phase",
+      "note": "Project input"
+    }
+  ],
+  "monthly_chart": {
+    "title": "Monthly energy profile",
+    "unit": "kWh",
+    "months": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "pv_kwh": [
+      318.09144000000015,
+      339.77392,
+      782.1985600000002,
+      1240.5806400000004,
+      1084.9093599999994,
+      1028.9501599999994,
+      1041.7999199999992,
+      1009.7767199999994,
+      872.0561600000007,
+      391.6996800000003,
+      295.31480000000005,
+      237.48920000000004
+    ],
+    "load_kwh": [
+      610.234601916052,
+      556.3121483930252,
+      554.7773690846751,
+      497.5356081462248,
+      468.9999568263503,
+      420.2667231437499,
+      417.0022391699758,
+      428.3808074018247,
+      439.1759301133996,
+      500.39490623254983,
+      519.4142705610983,
+      595.2157371652742
+    ],
+    "source_note": "PV reference profile · monthly means · 2020-01-01 – 2021-01-01 UTC · Load profile: Europe/Berlin"
+  }
+}

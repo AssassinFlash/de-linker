@@ -99,7 +99,6 @@ def _material_table(
                 text("reference", locale),
                 text("material_handling", locale),
             ],
-            column_weights=[0.6, 1.7, 1, 1.7],
             rows=rows,
         ),
     )

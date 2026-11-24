@@ -46,9 +46,7 @@ from .models import (
 )
 from .texts import t
 
-# The site's colour tokens, as the configurator's screen uses them
-# (plugins/linker-tools/src/configurator/configurator.css): --proto-color-ink,
-# --proto-color-muted, --proto-color-line and --proto-teal-800.
+# Print palette of the configurator's WindPress design system.
 INK = colors.HexColor("#0c0f0f")
 MUTED_HEX = "#5a6363"
 MUTED = colors.HexColor(MUTED_HEX)
@@ -86,6 +84,16 @@ def _styles() -> dict[str, ParagraphStyle]:
         textColor=INK,
         alignment=TA_LEFT,
     )
+    heading = ParagraphStyle(
+        "h2",
+        parent=base,
+        fontName="DejaVuSans-Bold",
+        fontSize=11,
+        leading=14,
+        spaceBefore=10,
+        spaceAfter=4,
+        textColor=ACCENT,
+    )
     return {
         "base": base,
         "small": ParagraphStyle(
@@ -97,15 +105,9 @@ def _styles() -> dict[str, ParagraphStyle]:
         "subtitle": ParagraphStyle(
             "subtitle", parent=base, fontSize=10, leading=14, textColor=MUTED
         ),
-        "h2": ParagraphStyle(
-            "h2",
-            parent=base,
-            fontName="DejaVuSans-Bold",
-            fontSize=11,
-            leading=14,
-            spaceBefore=10,
-            spaceAfter=4,
-            textColor=ACCENT,
+        "h2": heading,
+        "commercial_heading": ParagraphStyle(
+            "commercial_heading", parent=heading, spaceBefore=5, spaceAfter=2
         ),
         "cell": ParagraphStyle("cell", parent=base, fontSize=8.2, leading=10.6),
         "label": ParagraphStyle(
@@ -195,7 +197,10 @@ class _ReportRows(Table):
 def _section(
     section: ReportSection, styles: dict[str, ParagraphStyle], width: float
 ) -> list[Flowable]:
-    parts: list[Flowable] = [Paragraph(_text(section.title), styles["h2"])]
+    commercial = section.tier == "commercial"
+    row_padding = 1.5 if commercial else 3
+    style = styles["commercial_heading" if commercial else "h2"]
+    parts: list[Flowable] = [Paragraph(_text(section.title), style)]
     # The shared report document and application present scope before data.
     # Keep assumptions beside the heading instead of pushing them after a
     # potentially multi-page table.
@@ -217,8 +222,8 @@ def _section(
                 [
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),
                     ("LINEBELOW", (0, 0), (-1, -1), 0.4, RULE),
-                    ("TOPPADDING", (0, 0), (-1, -1), 3),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+                    ("TOPPADDING", (0, 0), (-1, -1), row_padding),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), row_padding),
                     ("LEFTPADDING", (0, 0), (-1, -1), 0),
                 ]
             )
@@ -231,6 +236,9 @@ def _section(
             for row in section.table.rows
         ]
         weights = section.table.column_weights
+        # The equipment and installation schedules share the same printed grid.
+        if section.id in {"bom", "site-materials"} and len(header) == 4:
+            weights = [1, 1.45, 1, 1.55]
         # Normalize the scale first: individually finite weights can have an
         # overflowing sum, while their relative layout is still representable.
         scaled = [weight / max(weights) for weight in weights] if weights else []
@@ -254,16 +262,20 @@ def _section(
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),
                     ("LINEBELOW", (0, 0), (-1, 0), 0.8, INK),
                     ("LINEBELOW", (0, 1), (-1, -1), 0.4, RULE),
-                    ("TOPPADDING", (0, 0), (-1, -1), 3),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+                    ("TOPPADDING", (0, 0), (-1, -1), row_padding),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), row_padding),
                     ("LEFTPADDING", (0, 0), (-1, -1), 0),
                 ]
             )
         )
         parts.append(table)
-    # Short schedules should carry their title and scope onto the page with the row.
-    # KeepTogether still permits an oversized row to split on an empty page.
-    if section.table and len(section.table.rows) == 1 and not section.rows:
+    # Keep the summary and its figures together when they fit a page.
+    # ReportLab can still split a section taller than an empty frame.
+    if section.id in {
+        "self-consumption-comparison",
+        "grid-connection-evidence",
+        "pv",
+    } or (section.table and len(section.table.rows) == 1 and not section.rows):
         return [KeepTogether(parts)]
     # A heading stays with the first paragraph, including its leading spacer;
     # a spacer alone must not make a heading look safe at the page bottom.
@@ -296,8 +308,8 @@ def _cards(
                 ("RIGHTPADDING", (0, 0), (-1, -1), 9),
                 ("TOPPADDING", (0, 0), (-1, -1), 2),
                 ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
-                ("TOPPADDING", (0, 0), (-1, 0), 10),
-                ("BOTTOMPADDING", (0, -1), (-1, -1), 10),
+                ("TOPPADDING", (0, 0), (-1, 0), 7),
+                ("BOTTOMPADDING", (0, -1), (-1, -1), 7),
             ]
         )
     )
@@ -319,7 +331,7 @@ def _energy_chart(chart: ReportMonthlyChart, width: float, de: bool) -> Drawing:
 
     labels = [fmt(i * step) for i in range(ticks + 1)]
     left = max(pdfmetrics.stringWidth(label, "DejaVuSans", 7) for label in labels) + 10
-    height = 92
+    height = 78
     cell = (width - left - 5) / 12
     drawing = Drawing(width, height + 45)
     series = [(chart.pv_kwh, ACCENT, "PV-Erzeugung" if de else "PV generation")]
@@ -469,11 +481,11 @@ def render(
             brand.hAlign = "LEFT"
         if installer:
             installer.hAlign = "RIGHT"
-        story.extend([marks, Spacer(1, 14)])
+        story.extend([marks, Spacer(1, 8)])
     story.extend(heading)
-    story.append(Spacer(1, 10))
+    story.append(Spacer(1, 7))
     if report.summary_cards:
-        story.extend([_cards(report.summary_cards, styles, width), Spacer(1, 8)])
+        story.extend([_cards(report.summary_cards, styles, width), Spacer(1, 4)])
     if report.monthly_chart and any(report.monthly_chart.pv_kwh):
         chart = report.monthly_chart
         story.extend(
@@ -481,7 +493,7 @@ def render(
                 Paragraph(_text(chart.title), styles["h2"]),
                 _energy_chart(chart, width, report.locale == "de"),
                 Paragraph(_text(chart.source_note), styles["small"]),
-                Spacer(1, 8),
+                Spacer(1, 4),
             ]
         )
     appendix = []

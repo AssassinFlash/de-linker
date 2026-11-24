@@ -1,0 +1,344 @@
+{
+  "title": "Projektplanungsbericht",
+  "subtitle": "Gespeicherte Projekteingaben und ausgewählte Berechnungsergebnisse",
+  "generated_at": "2026-11-24T14:58:12.707444+00:00",
+  "locale": "de",
+  "sections": [
+    {
+      "id": "project",
+      "title": "Projekt",
+      "rows": [
+        {
+          "label": "Projekt",
+          "value": "Berlin · Photovoltaik für ein Wohnhaus"
+        },
+        {
+          "label": "Geplantes System",
+          "value": "Photovoltaik"
+        }
+      ]
+    },
+    {
+      "id": "site",
+      "title": "Standort und Projekteingaben",
+      "rows": [
+        {
+          "label": "Standort",
+          "value": "Berlin"
+        },
+        {
+          "label": "Land",
+          "value": "DE"
+        }
+      ]
+    },
+    {
+      "id": "self-consumption-comparison",
+      "title": "Vergleich zum PV-Eigenverbrauch",
+      "rows": [
+        {
+          "label": "Profilzeitraum (UTC)",
+          "value": "2020-01-01T00:00:00+00:00 – 2020-12-31T23:00:00+00:00"
+        },
+        {
+          "label": "Stromverbrauch",
+          "value": "6.007,128 kWh"
+        },
+        {
+          "label": "PV-Erzeugung",
+          "value": "8.642,641 kWh"
+        },
+        {
+          "label": "Direkt genutzter Solarstrom",
+          "value": "2.547,73 kWh"
+        },
+        {
+          "label": "Netzbezug ohne Speicher",
+          "value": "3.459,398 kWh"
+        },
+        {
+          "label": "PV-Einspeisung",
+          "value": "6.094,911 kWh"
+        },
+        {
+          "label": "Netzbezugsspitze ohne Speicher",
+          "value": "1,611 kW"
+        },
+        {
+          "label": "Zusätzlicher Eigenverbrauch, Obergrenze",
+          "value": "0 kWh"
+        }
+      ],
+      "paragraphs": [
+        "Nur in diesem Zeitraum gespeicherte PV-Überschüsse zählen zur Obergrenze. Die Berechnung setzt eine verlustfreie Speicherung voraus."
+      ]
+    },
+    {
+      "id": "equipment",
+      "title": "Prüfung der Geräteauswahl",
+      "rows": [
+        {
+          "label": "Prüfstatus",
+          "value": "Geprüfte Anforderungen erfüllt"
+        }
+      ]
+    },
+    {
+      "id": "grid-connection-evidence",
+      "title": "Prüfung des Netzanschlusses",
+      "rows": [
+        {
+          "label": "Land",
+          "value": "Deutschland (DE)"
+        },
+        {
+          "label": "Nationales Regelwerk",
+          "value": "Versionierte Einordnung hinterlegt; örtliche Netzbetreiberprüfung bleibt offen"
+        },
+        {
+          "label": "Noch benötigte Projektangaben",
+          "value": "Netzbetreiber, Quelle zum zuständigen Netzbetreiber, Spannungsebene am Netzanschlusspunkt, Quelle der Anschlussbedingungen, Ausgabe oder Datum des Dokuments, nationale Regelungseingaben"
+        },
+        {
+          "label": "Netzgebiet und geltende Anschlussbedingungen",
+          "value": "Unabhängige Prüfung ausstehend"
+        },
+        {
+          "label": "Zustimmung zum Netzanschluss",
+          "value": "In dieser Prüfung ist keine Zustimmung nachgewiesen"
+        }
+      ],
+      "paragraphs": [
+        "Für Deutschland enthält Linker eine datierte Regelwerks-Einordnung (EnWG §19, VDE-AR-N 4110:2023-09 und EEG 2023 § 9 Absatz 2 und 3). Da keine Netzanschlussangaben hinterlegt sind, bleiben die örtlichen TAB des Netzbetreibers und die Anschlusszusage hier ungeprüft. Geben Sie den zuständigen Netzbetreiber, die Spannungsebene am Netzanschlusspunkt, das maßgebliche TAB-Dokument sowie die deutschen Regelungseingaben (Regelungsdatum, installierte Leistung, Stand der Ansteuerungsprüfung und EEG-Vergütungsform) an, um diese Prüfung auszuführen."
+      ]
+    },
+    {
+      "id": "bom",
+      "title": "Geräte von Linker",
+      "rows": [
+        {
+          "label": "Quelldokument · Seite 36",
+          "value": "Herstellerseitiger Lieferumfang",
+          "href": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+        }
+      ],
+      "table": {
+        "columns": [
+          "Menge",
+          "Produkt",
+          "Referenz",
+          "Lieferumfang"
+        ],
+        "rows": [
+          [
+            "1 St.",
+            "SAJ H2-25K-T3",
+            "DLK-SAJ-H225KT3",
+            "Ausgewählte Geräte"
+          ],
+          [
+            "1 St.",
+            "Smart Meter",
+            "Seite 36",
+            "Mit dem Gerät mitgeliefert · SAJ H2-25K-T3"
+          ],
+          [
+            "3 St.",
+            "Stromwandler",
+            "Seite 36",
+            "Mit dem Gerät mitgeliefert · SAJ H2-25K-T3"
+          ],
+          [
+            "1 St.",
+            "Kommunikationskabel für den Zähler (10 m)",
+            "Seite 36",
+            "Mit dem Gerät mitgeliefert · SAJ H2-25K-T3"
+          ]
+        ],
+        "column_weights": [
+          0.6,
+          1.7,
+          1.0,
+          1.7
+        ]
+      }
+    },
+    {
+      "id": "site-materials",
+      "title": "Materialien für Standort und Montage",
+      "rows": [
+        {
+          "label": "Quelldokument · Seite 43",
+          "value": "Quelle der Installationsanforderung",
+          "href": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+        }
+      ],
+      "table": {
+        "columns": [
+          "Menge",
+          "Produkt",
+          "Referenz",
+          "Lieferumfang"
+        ],
+        "rows": [
+          [
+            "Nach Anlagenplanung",
+            "MPPT-PV-Eingangsanschlüsse",
+            "Seite 43",
+            "Projektspezifische Planungsprüfung erforderlich"
+          ],
+          [
+            "Nach Anlagenplanung",
+            "Batterie-Eingangsanschlüsse (BAT1/BAT2)",
+            "Seite 43",
+            "Projektspezifische Planungsprüfung erforderlich"
+          ],
+          [
+            "Nach Anlagenplanung",
+            "Kommunikationsanschluss",
+            "Seite 43",
+            "Projektspezifische Planungsprüfung erforderlich"
+          ],
+          [
+            "Nach Anlagenplanung",
+            "Netz- und BACK-UP-Anschlüsse",
+            "Seite 43",
+            "Projektspezifische Planungsprüfung erforderlich"
+          ],
+          [
+            "Nach Anlagenplanung",
+            "Erdungsanschluss",
+            "Seite 43",
+            "Projektspezifische Planungsprüfung erforderlich"
+          ]
+        ],
+        "column_weights": [
+          0.6,
+          1.7,
+          1.0,
+          1.7
+        ]
+      }
+    },
+    {
+      "id": "pv-components",
+      "title": "Vom Kunden angegebene Moduldaten",
+      "table": {
+        "columns": [
+          "Menge",
+          "Moduldaten"
+        ],
+        "rows": [
+          [
+            "16",
+            "Generisches 500-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "pv",
+      "title": "PV-Erzeugungsszenario",
+      "rows": [
+        {
+          "label": "PV-Erzeugung",
+          "value": "8.642,641 kWh"
+        },
+        {
+          "label": "Berechnungszeitraum (UTC)",
+          "value": "2020-01-01T00:00:00+00:00 – 2021-01-01T00:00:00+00:00"
+        },
+        {
+          "label": "Berechnete Intervalle",
+          "value": "8.784"
+        }
+      ],
+      "paragraphs": [
+        "Dieser Abschnitt zeigt das ausgewählte gespeicherte PV-Profil mit den damaligen Annahmen. Detaillierte Verschattung und elektrische Auslegung müssen gesondert geprüft werden."
+      ]
+    },
+    {
+      "tier": "appendix",
+      "id": "check-0",
+      "title": "Ausgang des Umrichters",
+      "rows": [
+        {
+          "label": "Prüfstatus",
+          "value": "Geprüfte Anforderungen erfüllt"
+        },
+        {
+          "label": "Ergebnis",
+          "value": "25 kW"
+        },
+        {
+          "label": "Quelldokument · Seite 2",
+          "value": "25000 W",
+          "href": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+        }
+      ]
+    }
+  ],
+  "summary_cards": [
+    {
+      "label": "PV-Leistung",
+      "value": "8 kWp"
+    },
+    {
+      "label": "Erwarteter Jahresertrag",
+      "value": "8.642,6 kWh",
+      "note": "2020-01-01 – 2021-01-01"
+    },
+    {
+      "label": "Netzanschluss",
+      "value": "3-phasig",
+      "note": "Projektangabe"
+    }
+  ],
+  "monthly_chart": {
+    "title": "Monatliche Energiebilanz",
+    "unit": "kWh",
+    "months": [
+      "Jan",
+      "Feb",
+      "Mär",
+      "Apr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Dez"
+    ],
+    "pv_kwh": [
+      318.09144000000015,
+      339.77392,
+      782.1985600000002,
+      1240.5806400000004,
+      1084.9093599999994,
+      1028.9501599999994,
+      1041.7999199999992,
+      1009.7767199999994,
+      872.0561600000007,
+      391.6996800000003,
+      295.31480000000005,
+      237.48920000000004
+    ],
+    "load_kwh": [
+      610.234601916052,
+      556.3121483930252,
+      554.7773690846751,
+      497.5356081462248,
+      468.9999568263503,
+      420.2667231437499,
+      417.0022391699758,
+      428.3808074018247,
+      439.1759301133996,
+      500.39490623254983,
+      519.4142705610983,
+      595.2157371652742
+    ],
+    "source_note": "PV-Referenzprofil · Monatsmittel · 2020-01-01 – 2021-01-01 UTC · Lastprofil: Europe/Berlin"
+  }
+}
