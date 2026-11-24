@@ -20,6 +20,7 @@ use Linker\Commerce\Presentation\Module;
 use Linker\Commerce\Presentation\ProductShortcodes;
 use Linker\Commerce\Presentation\Shortcodes;
 use Linker\Commerce\Presentation\WindPress;
+use Linker\Commerce\Presentation\WindPressPageStyles;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
 use Linker\Commerce\Tests\TestCase;
@@ -119,6 +120,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		WP_Mock::expectFilterAdded( 'wp_preload_resources', array( $module, 'preload_resources' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'trim_woo_assets' ), 30 );
+		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.before', WindPressPageStyles::class, 'before_cache' );
+		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.after', WindPressPageStyles::class, 'after_cache' );
 		$module->register();
 		self::assertSame( array_fill_keys( array_column( $family_hooks, 1 ), 1 ), $registered );
 
