@@ -2145,6 +2145,11 @@ def test_retired_model_reference_does_not_authorize_a_card_or_a_rating() -> None
         "options": ["Storage"],
     }
     assert check(row, turn([missing, next_step]), FEED_TOKENS) == []
+    positive_claim = text("We stock the EcoFlow OCEAN 2.")
+    assert any(
+        "must not match" in f
+        for f in check(row, turn([missing, positive_claim, next_step]), FEED_TOKENS)
+    )
     false_card: dict[str, object] = {"type": "cards", "product_ids": [6483]}
     assert any(
         "withdrawn product" in f
