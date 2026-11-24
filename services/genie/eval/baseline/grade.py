@@ -29,8 +29,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from baseline.evidence import absent_models, pairing_prose
+from baseline.evidence import pairing_prose
 from linker_genie.figures import digits_are_regulation, is_code, regulation_number_spans
+from linker_genie.quality.item import absent_models
 
 # AGENTS.md §3: these words are not this shop's vocabulary, in either language.
 FORBIDDEN_WORDS = (

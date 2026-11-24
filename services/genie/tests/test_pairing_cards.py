@@ -1122,3 +1122,33 @@ def test_numeric_grading_requires_this_turns_exact_condition_cards_and_document(
     doc["document_revision"] = "v2"
     turn.tool_calls = []
     assert any("number 179.2" in f for f in check(row, turn))
+
+
+def test_absent_catalogue_evidence_requires_a_successful_empty_query_and_its_ref() -> (
+    None
+):
+    from linker_genie.quality.item import absent_models
+
+    call: dict[str, Any] = {
+        "name": "linker/search-products",
+        "arguments": {"text": "HD-P3-15K"},
+        "ok": True,
+        "result": {"qualified": []},
+    }
+    block: dict[str, Any] = {
+        "type": "text",
+        "refs": ["catalog.absent.HD-P3-15K", "3612"],
+    }
+    assert absent_models([call], [block]) == [
+        {
+            "published_model_lookup": "HD-P3-15K",
+            "qualified_products": [],
+            "released_pairing_with_unlisted_model": False,
+        }
+    ]
+    assert absent_models([{**call, "ok": False}], [block]) == []
+    assert (
+        absent_models([{**call, "result": {"qualified": [{"product_id": 8}]}}], [block])
+        == []
+    )
+    assert absent_models([call], [{**block, "refs": ["3612"]}]) == []

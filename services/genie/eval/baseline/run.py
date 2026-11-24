@@ -52,13 +52,13 @@ from urllib.parse import urlparse
 # case. One line makes both work; mypy resolves baseline.grade without it.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from baseline.evidence import absent_models  # noqa: E402
 from baseline.grade import (  # noqa: E402
     Turn,
     answer_text,
     check,
     parse_stream,
 )
+from linker_genie.quality.item import absent_models  # noqa: E402
 from linker_genie.quality.turns import TurnSource  # noqa: E402
 
 SET = Path(__file__).with_name("baseline100.jsonl")

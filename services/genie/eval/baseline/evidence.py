@@ -74,27 +74,3 @@ def pairing_prose(
         ):
             return None
     return next(b.text for b in native.blocks if isinstance(b, TextBlock))
-
-
-def absent_models(
-    calls: Sequence[dict[str, Any]], blocks: Sequence[dict[str, Any]]
-) -> list[dict[str, object]]:
-    refs = {ref for b in blocks if b.get("type") == "text" for ref in b.get("refs", [])}
-    checked = []
-    for call in calls:
-        code = (call.get("arguments") or {}).get("text")
-        if (
-            call.get("ok") is True
-            and call.get("name") == "linker/search-products"
-            and isinstance(code, str)
-            and f"catalog.absent.{code}" in refs
-            and (call.get("result") or {}).get("qualified") == []
-        ):
-            checked.append(
-                {
-                    "published_model_lookup": code,
-                    "qualified_products": [],
-                    "released_pairing_with_unlisted_model": False,
-                }
-            )
-    return checked
