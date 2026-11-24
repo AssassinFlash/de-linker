@@ -21,3 +21,39 @@ test( 'a change of conversation owner before dispatch sends no question', async 
 	await expect( result ).rejects.toThrow( 'verification_cancelled' );
 	expect( fetcher ).not.toHaveBeenCalled();
 } );
+
+test.each( [
+	[ 'helper', 'floating' ],
+	[ 'workspace', 'workspace' ],
+	[ 'hero', 'hero' ],
+] as const )(
+	'a question sent from %s reports only the %s surface',
+	async ( surface, expected ) => {
+		const track = vi.fn();
+		window.linkerTrack = track;
+		try {
+			const fetcher = vi.fn< typeof fetch >( async () =>
+				Response.json( { code: 'unavailable' }, { status: 503 } )
+			);
+			await expect(
+				sendTurn( {
+					surface,
+					turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+					nonce: 'wp',
+					locale: 'en',
+					page: { type: 'other' },
+					messages: [
+						{ role: 'user', content: 'private@example.invalid' },
+					],
+					fetcher,
+				} )
+			).rejects.toThrow();
+			expect( fetcher ).toHaveBeenCalledTimes( 1 );
+			expect( track.mock.calls ).toEqual( [
+				[ 'genie_ask', { surface: expected } ],
+			] );
+		} finally {
+			delete window.linkerTrack;
+		}
+	}
+);
