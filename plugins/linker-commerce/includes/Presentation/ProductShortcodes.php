@@ -1542,7 +1542,7 @@ final class ProductShortcodes {
 	public function pdp_compatibility_check( $atts = array() ): string {
 		unset( $atts );
 		$view = $this->current_view();
-		if ( ! $view || array() !== $view['pairings'] ) {
+		if ( ! $view || linker_commerce_pdp_has_pairings() ) {
 			return '';
 		}
 		$id      = (int) $view['id'];
