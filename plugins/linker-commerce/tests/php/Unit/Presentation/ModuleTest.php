@@ -122,6 +122,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'trim_woo_assets' ), 30 );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.before', WindPressPageStyles::class, 'before_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.after', WindPressPageStyles::class, 'after_cache' );
+		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.before', WindPressPageStyles::class, 'before_cache' );
+		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.after', WindPressPageStyles::class, 'after_cache' );
 		$module->register();
 		self::assertSame( array_fill_keys( array_column( $family_hooks, 1 ), 1 ), $registered );
 

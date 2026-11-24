@@ -6,7 +6,6 @@
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
     gap: var(--proto-space-3);
   }
-  .linker-product-card,
   .linker-source-card {
     min-width: 0;
     padding: var(--proto-space-4);
@@ -14,12 +13,6 @@
     border-radius: var(--proto-radius-lg);
     background: var(--proto-color-surface);
     overflow-wrap: anywhere;
-  }
-  .linker-product-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--proto-space-3);
   }
   .linker-product-card__identity {
     display: flex;
@@ -119,7 +112,7 @@
   .sc-table-scroll { max-width: 100%; overflow-x: auto; }
   @media (max-width: 40rem) {
     .linker-product-list,.linker-source-list { grid-template-columns: minmax(0,1fr); }
-    .linker-product-card,.linker-source-card { padding: var(--proto-space-3); }
+    .linker-source-card { padding: var(--proto-space-3); }
     .sc-project-equipment,.sc-selection-evidence { padding: var(--proto-space-3); }
   }
 }

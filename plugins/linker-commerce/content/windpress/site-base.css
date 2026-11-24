@@ -28,6 +28,23 @@
    the zero-specificity root alternative cannot increase the reset's weight.
    Native EN/DE inventory: marketing-initial-styles.md. */
 @layer components {
+  /* The same card holds a planner product and a Genie product lookup result. */
+  .linker-product-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--proto-space-3);
+    min-width: 0;
+    padding: var(--proto-space-4);
+    border: 1px solid var(--proto-color-line);
+    border-radius: var(--proto-radius-lg);
+    background: var(--proto-color-surface);
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 40rem) {
+    .linker-product-card { padding: var(--proto-space-3); }
+  }
+
 :where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main) :where(*):not(svg,svg *,img,video),:where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main) ::before,:where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main) ::after{all:revert}
 :where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main) :where(img,video,svg){box-sizing:revert;margin:revert;padding:revert;border:revert;display:revert;vertical-align:revert;max-width:revert}
 #theme-main:where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) *){all:revert}

@@ -64,10 +64,12 @@ final class WindPressPageStyles {
 		return array_keys( self::BEFORE + self::AFTER );
 	}
 
-	/** The installed WindPress runtime registers and prints its cache inside these two actions. */
+	/** Both the cached frontend and LiveCanvas's live compiler use the same page styles. */
 	public function register(): void {
 		add_action( 'a!windpress/core/runtime:enqueue_css_cache.before', array( $this, 'before_cache' ) );
 		add_action( 'a!windpress/core/runtime:enqueue_css_cache.after', array( $this, 'after_cache' ) );
+		add_action( 'a!windpress/core/runtime:enqueue_play_cdn.before', array( $this, 'before_cache' ) );
+		add_action( 'a!windpress/core/runtime:enqueue_play_cdn.after', array( $this, 'after_cache' ) );
 	}
 
 	/** Before shared control overrides. */
