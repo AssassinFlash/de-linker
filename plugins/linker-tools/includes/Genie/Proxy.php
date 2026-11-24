@@ -791,7 +791,8 @@ class Proxy {
 		if ( ! $turn ) {
 			return ( new Replies() )->read( $receipt, $binding );
 		}
-		if ( microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
+		$completion = get_post_meta( $conversation, Thread::COMPLETION, true );
+		if ( ( $completion['operation_id'] ?? null ) === $turn['operation_id'] || microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
 			$result = self::job_error( 503 );
 		} else {
 			$result = $this->job_request( $this->base() . '/assistant/turn/' . $job, $turn['subject_hash'] );
