@@ -69,10 +69,11 @@ defined( 'DAY_IN_SECONDS' ) || define( 'DAY_IN_SECONDS', 24 * HOUR_IN_SECONDS );
 
 if ( ! class_exists( 'WP_User' ) ) {
 	class WP_User {
-		public $ID           = 0;
-		public $user_email   = '';
-		public $display_name = '';
-		public $user_login   = '';
+		public $ID            = 0;
+		public $user_email    = '';
+		public $display_name  = '';
+		public $user_login    = '';
+		public $user_nicename = '';
 		/** WordPress's signature: "Y-m-d H:i:s" in the site's own time. */
 		public $user_registered = '';
 		/** @var list<string> */

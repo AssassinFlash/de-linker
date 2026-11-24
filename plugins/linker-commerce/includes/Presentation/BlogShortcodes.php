@@ -9,13 +9,14 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Products\SearchScope;
 use WP_Post;
 use WP_Term;
+use WP_User;
 
 /**
- * The two data fragments the blog single template renders: the article's
- * categories as links, and the related-articles grid.
+ * The blog single template's author, categories, share and related articles.
  *
  * Both are the areas the closure round brought out of the template engine
  * (the live templates resolved them with Tangible loops): a loop cannot be
@@ -26,6 +27,9 @@ use WP_Term;
  * content/livecanvas/blog_single.html and content/windpress/blog.css.
  */
 final class BlogShortcodes {
+
+	/** The public WordPress author slug for Chester John. */
+	private const CHESTER_AUTHOR = 'chester-john';
 
 	/**
 	 * How many related articles the grid holds. The live face caps at three
@@ -62,9 +66,108 @@ final class BlogShortcodes {
 	public function register(): void {
 		add_action( 'init', array( JournalTitles::class, 'register' ) );
 		add_filter( 'pre_get_document_title', array( $this, 'empty_search_title' ), 60 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_author_dialog' ) );
 		add_shortcode( 'linker_blog_post_categories', array( $this, 'post_categories' ) );
 		add_shortcode( 'linker_blog_related_posts', array( $this, 'related_posts' ) );
 		add_shortcode( 'linker_blog_share', array( $this, 'share' ) );
+		add_shortcode( 'linker_blog_author', array( $this, 'author' ) );
+	}
+
+	/** Load the dialog control only on a single article by Chester. */
+	public function enqueue_author_dialog(): void {
+		if ( ! is_singular( 'post' ) ) {
+			return;
+		}
+		$post   = get_queried_object();
+		$author = $post instanceof WP_Post ? get_userdata( (int) $post->post_author ) : false;
+		if ( $author instanceof WP_User && self::CHESTER_AUTHOR === $author->user_nicename ) {
+			$root  = dirname( __DIR__, 2 );
+			$asset = 'assets/blog-author-dialog.js';
+			wp_enqueue_script( 'linker-blog-author-dialog', plugins_url( $asset, $root . '/linker-commerce.php' ), array(), (string) filemtime( $root . '/' . $asset ), true );
+		}
+	}
+
+	/**
+	 * The WordPress byline or Chester John's profile card.
+	 *
+	 * @param array<string, string>|string $atts Copy and placement from the article template.
+	 */
+	public function author( $atts = array() ): string {
+		$post = get_post();
+		if ( ! $post instanceof WP_Post || 'post' !== $post->post_type ) {
+			return '';
+		}
+		$author = get_userdata( (int) $post->post_author );
+		if ( ! $author instanceof WP_User ) {
+			return '';
+		}
+
+		$attributes = (array) $atts;
+		$is_chester = self::CHESTER_AUTHOR === $author->user_nicename;
+		$name       = esc_html( $author->display_name );
+		if ( 'byline' === ( $attributes['view'] ?? '' ) ) {
+			return $is_chester ? '<a class="reader-author-byline" href="#tv-blog-author">' . $name . '</a>' : '<span>' . $name . '</span>';
+		}
+		if ( ! $is_chester ) {
+			return '';
+		}
+
+		$copy     = shortcode_atts(
+			array(
+				'role'              => '',
+				'focus'             => '',
+				'perspective_label' => '',
+				'perspective'       => '',
+				'topic_label'       => '',
+				'topic'             => '',
+			),
+			$attributes,
+			'linker_blog_author'
+		);
+		$portrait = plugins_url( 'assets/chester-john.webp', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+		$contact  = PageUrls::page( 'contact' );
+
+		return '<section id="tv-blog-author" class="reader-author" aria-labelledby="tv-blog-author-name" tabindex="-1">'
+			. '<div class="reader-author-identity">'
+			. '<img src="' . esc_url( $portrait ) . '" alt="" width="56" height="56">'
+			. '<div><h2 id="tv-blog-author-name">' . $name . '</h2>'
+			. '<p class="reader-author-role">' . esc_html( $copy['role'] ) . '</p></div></div>'
+			. '<p class="reader-author-focus">' . esc_html( $copy['focus'] ) . '</p>'
+			. '<dl class="reader-author-facts">'
+			. '<div><dt>' . esc_html( $copy['perspective_label'] ) . '</dt><dd>' . esc_html( $copy['perspective'] ) . '</dd></div>'
+			. '<div><dt>' . esc_html( $copy['topic_label'] ) . '</dt><dd>' . esc_html( $copy['topic'] ) . '</dd></div>'
+			. '</dl>'
+			. '<a class="reader-author-cta" href="' . esc_url( $contact . '#' . Form::ANCHOR ) . '">'
+			. esc_html__( 'Talk to Chester', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></a>'
+			. '</section>'
+			. $this->author_dialog( $name, $copy['role'], $portrait, $contact );
+	}
+
+	/**
+	 * The personal panel and the compact Contact view it opens.
+	 *
+	 * @param string $name     Escaped WordPress author name.
+	 * @param string $role     The role from the article template.
+	 * @param string $portrait Author portrait URL.
+	 * @param string $contact  Localized Contact page URL.
+	 */
+	private function author_dialog( string $name, string $role, string $portrait, string $contact ): string {
+		$heading = esc_html__( 'What would you like to know?', 'linker-commerce' );
+		$view    = add_query_arg( Form::ARTICLE_VIEW, '1', $contact );
+		return '<dialog id="tv-blog-author-dialog" class="reader-author-dialog" aria-labelledby="tv-blog-author-dialog-title">'
+			. '<form method="dialog" class="reader-author-dialog-close"><button type="submit" aria-label="' . esc_attr__( 'Close', 'linker-commerce' ) . '" autofocus>×</button></form>'
+			. '<div class="reader-author-dialog-profile">'
+			. '<img src="' . esc_url( $portrait ) . '" alt="" width="72" height="72" loading="lazy">'
+			. '<div><p class="reader-author-dialog-name">' . $name . '</p><p class="reader-author-dialog-role">' . esc_html( $role ) . '</p></div>'
+			. '<p class="reader-author-dialog-invite">' . esc_html__( 'Ask me a question or tell me what you’re working on.', 'linker-commerce' ) . '</p>'
+			. '</div>'
+			. '<div class="reader-author-dialog-content">'
+			. '<h2 id="tv-blog-author-dialog-title">' . $heading . '</h2>'
+			. '<p>' . esc_html__( 'We reply within one business day.', 'linker-commerce' ) . '</p>'
+			. '<div class="reader-author-dialog-loading" role="status">' . esc_html__( 'Loading the form…', 'linker-commerce' ) . '</div>'
+			. '<a class="reader-author-dialog-fallback" href="' . esc_url( $contact . '#' . Form::ANCHOR ) . '" hidden>' . esc_html__( 'Open the contact form', 'linker-commerce' ) . '</a>'
+			. '<iframe class="reader-author-dialog-frame" title="' . esc_attr__( 'Contact form', 'linker-commerce' ) . '" data-src="' . esc_url( $view ) . '" hidden></iframe>'
+			. '</div></dialog>';
 	}
 
 	/**

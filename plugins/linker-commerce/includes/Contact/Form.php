@@ -60,6 +60,9 @@ final class Form {
 	 */
 	public const BACK_FIELD = 'linker_contact_back';
 
+	/** Public query parameter for the article dialog's compact form. */
+	public const ARTICLE_VIEW = 'article_contact';
+
 	/**
 	 * The topics the "This is about" select offers, in the live card's order.
 	 *
@@ -86,24 +89,45 @@ final class Form {
 	 */
 	public function render( $atts = array() ): string {
 		unset( $atts );
-		\Linker\Commerce\Cache\DynamicHtml::forbid( 'contact form' );
 		LanguageDraft::enqueue();
-		$state = $this->state_message();
+		return $this->card( '' );
+	}
+
+	/**
+	 * The Contact form in an article dialog.
+	 *
+	 * @param string $back Absolute URL of the embedded view.
+	 */
+	public function render_embedded( string $back ): string {
+		return $this->card( $back );
+	}
+
+	/**
+	 * The form and the current submission state.
+	 *
+	 * @param string $back Embedded view URL, or an empty string on the Contact page.
+	 */
+	private function card( string $back ): string {
+		\Linker\Commerce\Cache\DynamicHtml::forbid( 'contact form' );
+		$state = $this->state_message( $back );
+		$rail  = '' === $back ? $this->rail() : '';
 		if ( str_contains( $state, 'linker-form-success' ) ) {
-			return '<div class="linker-contact-card"><div class="linker-contact-form linker-contact-receipt">' . $state . '</div>' . $this->rail() . '</div>';
+			return '<div class="linker-contact-card"><div class="linker-contact-form linker-contact-receipt">' . $state . '</div>' . $rail . '</div>';
 		}
 		if ( ! \Linker\Commerce\Protection\Identity::ensure_browser_cookie() ) {
 			return $this->notice( \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) );
 		}
-		return '<div class="linker-contact-card">' . $this->form( $state ) . $this->rail() . '</div>';
+		return '<div class="linker-contact-card">' . $this->form( $state, $back ) . $rail . '</div>';
 	}
 
 	/**
 	 * The enquiry card: the live card's blocks and fields.
 	 *
 	 * @param string $state The state message to show above the fields, '' on a fresh visit.
+	 * @param string $back  Embedded view URL, or an empty string on the Contact page.
 	 */
-	private function form( string $state ): string {
+	private function form( string $state, string $back ): string {
+		$embedded = '' !== $back;
 		$previous = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
 		$field    = 'linker-form-input';
 		$label    = 'lk-field linker-form-label';
@@ -116,10 +140,10 @@ final class Form {
 		// link still carries the current public URL context, not a private old JSON value.
 		$draft_context = ! $included && array() === $context ? SelectionContext::query( $query ) : $context;
 
-		$html  = '<form class="linker-contact-form"' . LanguageDraft::attributes( array() !== $previous, $draft_context ) . ' method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		$html  = '<form class="linker-contact-form"' . ( $embedded ? '' : LanguageDraft::attributes( array() !== $previous, $draft_context ) ) . ' method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
 		$html .= '<input type="hidden" name="lang" value="' . esc_attr( $this->locale() ) . '" />';
-		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
+		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $embedded ? $back : $this->current_url() ) . '" />';
 		// Selection transport is submitted only by the inclusion checkbox.
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
 		$html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_url( $this->posted_referer() ) . '" />';
@@ -129,14 +153,14 @@ final class Form {
 			$html .= $state;
 		}
 
-		$html .= '<div class="linker-contact-head">';
-		$html .= '<h2>' . esc_html__( 'What can we help with?', 'linker-commerce' ) . '</h2>';
-		$html .= \Linker\Commerce\Presentation\Shortcodes::form_assistant();
-		$html .= '</div>';
-
-		$html .= LanguageDraft::notice();
-
-		$html .= SelectionView::form( $context, $raw, $included );
+		if ( ! $embedded ) {
+			$html .= '<div class="linker-contact-head">';
+			$html .= '<h2>' . esc_html__( 'What can we help with?', 'linker-commerce' ) . '</h2>';
+			$html .= \Linker\Commerce\Presentation\Shortcodes::form_assistant();
+			$html .= '</div>';
+			$html .= LanguageDraft::notice();
+			$html .= SelectionView::form( $context, $raw, $included );
+		}
 
 		$html .= '<div class="linker-form-fields">';
 		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-name"><span class="lk-field-heading">' . esc_html__( 'Name', 'linker-commerce' ) . '<span class="lk-required" aria-hidden="true"> *</span></span>'
@@ -145,18 +169,21 @@ final class Form {
 			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-email" type="email" name="email" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="email" required /></label>';
 		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-company"><span class="lk-field-heading">' . esc_html__( 'Company', 'linker-commerce' ) . ' <small class="linker-form-optional">' . esc_html__( 'optional', 'linker-commerce' ) . '</small></span>'
 			. '<input class="' . esc_attr( $field ) . '" id="linker-contact-company" type="text" name="company" maxlength="' . esc_attr( (string) Submission::MAX_TEXT ) . '" autocomplete="organization" /></label>';
-		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-intent"><span class="lk-field-heading">' . esc_html__( 'This is about', 'linker-commerce' ) . '</span>'
-			. '<select class="' . esc_attr( $field ) . '" id="linker-contact-intent" name="' . esc_attr( Submission::INTENT_FIELD ) . '">' . $this->intent_options() . '</select></label>';
+		if ( ! $embedded ) {
+			$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-intent"><span class="lk-field-heading">' . esc_html__( 'This is about', 'linker-commerce' ) . '</span>'
+				. '<select class="' . esc_attr( $field ) . '" id="linker-contact-intent" name="' . esc_attr( Submission::INTENT_FIELD ) . '">' . $this->intent_options() . '</select></label>';
+		}
 		$html .= '</div>';
 		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-message"><span class="lk-field-heading">' . esc_html__( 'Your question', 'linker-commerce' ) . '<span class="lk-required" aria-hidden="true"> *</span></span>'
-			. '<textarea class="' . esc_attr( $field ) . '" id="linker-contact-message" name="message" rows="4" maxlength="' . esc_attr( (string) Submission::MAX_MESSAGE ) . '" placeholder="' . esc_attr__( 'What would you like to know?', 'linker-commerce' ) . '" required></textarea></label>';
+			. '<textarea class="' . esc_attr( $field ) . '" id="linker-contact-message" name="message" rows="4" maxlength="' . esc_attr( (string) Submission::MAX_MESSAGE ) . '"'
+			. ( $embedded ? '' : ' placeholder="' . esc_attr__( 'What would you like to know?', 'linker-commerce' ) . '"' ) . ' required></textarea></label>';
 
 		$html   .= '<div class="linker-contact-end">';
 		$privacy = get_privacy_policy_url();
 		$html   .= '<label class="linker-form-consent flex items-start gap-3 text-xs text-neutral-600"><input class="mt-1" type="checkbox" name="consent" value="1" required />'
 			. '<span>' . esc_html__( 'I agree that my details may be used to respond to this message.', 'linker-commerce' );
 		if ( '' !== $privacy ) {
-			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '">' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
+			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '"' . ( $embedded ? ' target="_blank" rel="noopener"' : '' ) . '>' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</span></label>';
 		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '' );
@@ -249,13 +276,15 @@ final class Form {
 
 	/**
 	 * The state message of the last submission, '' when the form opens fresh.
+	 *
+	 * @param string $back Embedded view URL, or an empty string on the Contact page.
 	 */
-	private function state_message(): string {
+	private function state_message( string $back ): string {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
 		if ( in_array( $state, array( 'sent', 'sent_no_receipt', 'receipt_pending', 'saved_review' ), true ) ) {
 			$order = $this->receipt_order( $state );
-			return $order instanceof \WC_Order ? $this->receipt_notice( $order ) : '';
+			return $order instanceof \WC_Order ? $this->receipt_notice( $order, $back ) : '';
 		}
 		return match ( $state ) {
 			'reception_full' => $this->notice( \Linker\Commerce\Protection\BusinessCapacity::message() ),
@@ -310,8 +339,9 @@ final class Form {
 	 * Confirm this saved inquiry using Woo's current order number and mail state.
 	 *
 	 * @param \WC_Order $order Contact inquiry identified by its key.
+	 * @param string    $back  Embedded view URL, or an empty string on the Contact page.
 	 */
-	private function receipt_notice( \WC_Order $order ): string {
+	private function receipt_notice( \WC_Order $order, string $back ): string {
 		if ( 'individual' === $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) && $order->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) && \Linker\Commerce\Mail\NotificationHold::held( $order ) ) {
 			$text = \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order );
 		} else {
@@ -325,7 +355,7 @@ final class Form {
 		return '<section class="linker-form-success woocommerce-message" role="status">'
 			. '<span class="linker-form-state-icon" aria-hidden="true">✓</span>'
 			. '<p>' . esc_html( $text ) . '</p>'
-			. '<a class="linker-form-primary" href="' . esc_url( $this->current_url() . '#' . self::ANCHOR ) . '">' . esc_html__( 'Send another message', 'linker-commerce' ) . '</a></section>';
+			. '<a class="linker-form-primary" href="' . esc_url( ( '' !== $back ? $back : $this->current_url() ) . '#' . self::ANCHOR ) . '">' . esc_html__( 'Send another message', 'linker-commerce' ) . '</a></section>';
 	}
 
 	/**
