@@ -169,6 +169,11 @@
 		return safe.href;
 	}
 	if (typeof window.gtag === 'function') {
+		// Enhanced measurement reads the raw query independently of page_location.
+		const searchKeys = ['q', 's', 'search', 'query', 'keyword'];
+		window.gtag('policy', 'get_url', function (_container, _permission, data) {
+			return data.component !== 'query' || !searchKeys.includes(data.queryKey);
+		});
 		const context = {
 			page_location: analyticsUrl(location.href, true),
 			page_referrer: analyticsUrl(document.referrer, false),

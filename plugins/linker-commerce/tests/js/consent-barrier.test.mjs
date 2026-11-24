@@ -121,6 +121,16 @@ test('search terms never reach GA page titles, locations, or the following page 
 	}
 });
 
+test('the Google tag can read campaign attribution but cannot collect a raw site search term', () => {
+	const window = page(held);
+	const policy = window.calls.find(call => call[0] === 'policy' && call[1] === 'get_url')[2];
+	for (const queryKey of ['q', 's', 'search', 'query', 'keyword']) {
+		assert.equal(policy('GT-TAG', 'get_url', {component: 'query', queryKey}), false);
+	}
+	assert.equal(policy('GT-TAG', 'get_url', {component: 'query', queryKey: 'utm_source'}), true);
+	assert.equal(policy('GT-TAG', 'get_url', {component: 'host'}), true);
+});
+
 test('Woo account-claim and password-reset parameters stay out of GA location and referrer', () => {
 	for (const path of [
 		'/my-account/register/?linker_inquiry=17&linker_key=wc_order_private',
