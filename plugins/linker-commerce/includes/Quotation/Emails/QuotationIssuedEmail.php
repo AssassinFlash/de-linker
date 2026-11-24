@@ -124,8 +124,21 @@ final class QuotationIssuedEmail extends CustomerOrderEmail {
 			return false;
 		}
 		$owner = get_userdata( $id );
+		if ( ! $owner instanceof \WP_User || 1 !== count( $message->to ) ) {
+			return false;
+		}
+		$recipient = $message->to[0];
+		$local     = strstr( $owner->user_email, '@', true );
+		if ( false === $local || strstr( $recipient, '@', true ) !== $local || 0 !== strcasecmp( $owner->user_email, $recipient ) ) {
+			return false;
+		}
+		foreach ( $message->headers as $header ) {
+			if ( preg_match( '/^(?:Cc|Bcc):\s*\S/i', $header ) ) {
+				return false;
+			}
+		}
 		$files = new PrivateFiles( Issuer::DIRECTORY );
-		return $owner instanceof \WP_User && array( $owner->user_email ) === $message->to && '' !== $files->path( (string) $order->get_meta( Issuer::FILE_META ) );
+		return '' !== $files->path( (string) $order->get_meta( Issuer::FILE_META ) );
 	}
 
 	/**

@@ -179,13 +179,13 @@ final class QuotationTest extends IntegrationTestCase {
 		self::assertNotNull( $job );
 		self::assertSame( $number, $job['message']->origin['number'] );
 		self::assertTrue( QuotationIssuedEmail::deliverable( $job['message'], $id ) );
-		$message = $job['message'];
-		$legacy  = \Linker\Commerce\Mail\NativeOrigin::seal(
+		$message            = $job['message'];
+		$legacy_notice      = static fn ( array $to, array $headers ) => \Linker\Commerce\Mail\NativeOrigin::seal(
 			new \Linker\Commerce\Mail\Message(
-				$message->to,
+				$to,
 				$message->subject,
 				$message->body,
-				$message->headers,
+				$headers,
 				$message->attachments,
 				$message->critical,
 				$message->category,
@@ -195,7 +195,14 @@ final class QuotationTest extends IntegrationTestCase {
 				)
 			)
 		);
-		self::assertTrue( QuotationIssuedEmail::deliverable( $legacy, $id ) );
+		[ $local, $domain ] = explode( '@', $message->to[0] );
+		$legacy             = $legacy_notice( array( $local . '@' . strtoupper( $domain ) ), $message->headers );
+		self::assertTrue( QuotationIssuedEmail::deliverable( $legacy, $id ), 'DNS domain case does not change the original recipient.' );
+		self::assertFalse( QuotationIssuedEmail::deliverable( $legacy_notice( array( strtoupper( $local ) . '@' . $domain ), $message->headers ), $id ) );
+		self::assertFalse( QuotationIssuedEmail::deliverable( $legacy_notice( array( $message->to[0], 'another@example.test' ), $message->headers ), $id ) );
+		foreach ( array( 'Cc: another@example.test', 'Bcc: another@example.test' ) as $copy ) {
+			self::assertFalse( QuotationIssuedEmail::deliverable( $legacy_notice( $message->to, array_merge( $message->headers, array( $copy ) ) ), $id ) );
+		}
 		if ( $reassign ) {
 			$order->set_customer_id( $other->get_id() );
 			$order->save();
