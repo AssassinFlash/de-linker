@@ -22,6 +22,8 @@ final class PageSchema {
 	}
 
 	/**
+	 * Use the translated homepage and its approved description.
+	 *
 	 * @param array<string,mixed> $node SEOPress's existing organization or website.
 	 * @return array<string,mixed>
 	 */
@@ -119,7 +121,11 @@ final class PageSchema {
 		}
 	}
 
-	/** @param array<string,mixed> $node Schema.org entity. */
+	/**
+	 * Encode a public structured-data block.
+	 *
+	 * @param array<string,mixed> $node Schema.org entity.
+	 */
 	private function print_node( array $node ): void {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON_HEX_TAG keeps JSON inside the script element.
 		echo '<script type="application/ld+json">' . wp_json_encode( array( '@context' => 'https://schema.org' ) + $node, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "</script>\n";

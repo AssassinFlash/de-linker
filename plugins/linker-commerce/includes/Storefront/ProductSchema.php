@@ -114,7 +114,11 @@ final class ProductSchema {
 		return $this->summary( $product, $this->term_name( $product->get_id(), 'pa_brand' ), $this->term_name( $product->get_id(), 'pa_model' ) );
 	}
 
-	/** @param string $tag Existing Open Graph or Twitter meta tag. */
+	/**
+	 * Use the product summary for default social sharing cards.
+	 *
+	 * @param string $tag Existing Open Graph or Twitter meta tag.
+	 */
 	public function social_description( string $tag ): string {
 		$product = $this->product();
 		if ( ! $product ) {
@@ -138,7 +142,7 @@ final class ProductSchema {
 	 */
 	private function summary( \WC_Product $product, string $brand, string $model ): string {
 		$name = $this->text( $product->get_name() );
-		if ( '' !== $model && ( $name === trim( $brand . ' ' . $model ) || $name === $model ) ) {
+		if ( '' !== $model && ( trim( $brand . ' ' . $model ) === $name || $name === $model ) ) {
 			$facts    = SelectionFacts::for_product( $product->get_id() );
 			$category = $this->term_name( $product->get_id(), 'product_cat' );
 			$details  = array_filter( array( $category ) );

@@ -22,6 +22,8 @@ final class PageIndexing {
 	}
 
 	/**
+	 * Keep transactional pages out of the index.
+	 *
 	 * @param mixed $value Current SEOPress indexing decision.
 	 * @return mixed
 	 */
@@ -30,6 +32,8 @@ final class PageIndexing {
 	}
 
 	/**
+	 * Set the SEOPress transaction directives.
+	 *
 	 * @param string[] $robots SEOPress directives.
 	 * @return string[]
 	 */
@@ -38,6 +42,8 @@ final class PageIndexing {
 	}
 
 	/**
+	 * Use the core directives when WordPress owns the robots tag.
+	 *
 	 * @param array<string,mixed> $robots Core directives.
 	 * @return array<string,mixed>
 	 */
@@ -51,6 +57,8 @@ final class PageIndexing {
 	}
 
 	/**
+	 * Omit alternate index URLs for private workspaces.
+	 *
 	 * @param array<string,string> $links Language alternates.
 	 * @return array<string,string>
 	 */
@@ -58,7 +66,11 @@ final class PageIndexing {
 		return $this->transaction() ? array() : $links;
 	}
 
-	/** @param bool $allow Canonical on noindex. */
+	/**
+	 * Leave transactional pages without a canonical link.
+	 *
+	 * @param bool $allow Canonical on noindex.
+	 */
 	public function canonical( bool $allow ): bool {
 		return $allow && ! $this->transaction();
 	}
@@ -84,12 +96,21 @@ final class PageIndexing {
 		return $post instanceof \WP_Post && 'page' === $post->post_type && $this->transaction_id( $this->source( $post->ID ) );
 	}
 
-	/** @param int $id Queried page ID. */
+	/**
+	 * Resolve the assigned English page for a translated post.
+	 *
+	 * @param int $id Queried page ID.
+	 */
 	private function source( int $id ): int {
-		return function_exists( 'pll_get_post' ) ? (int) ( pll_get_post( $id, 'en' ) ?: $id ) : $id;
+		$source = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $id, 'en' ) : 0;
+		return $source > 0 ? $source : $id;
 	}
 
-	/** @param int $id Source page ID. */
+	/**
+	 * Match one of the three native WooCommerce page assignments.
+	 *
+	 * @param int $id Source page ID.
+	 */
 	private function transaction_id( int $id ): bool {
 		return in_array( $id, array( (int) get_option( 'woocommerce_cart_page_id' ), (int) get_option( 'woocommerce_myaccount_page_id' ), (int) get_option( 'woocommerce_checkout_page_id' ) ), true );
 	}

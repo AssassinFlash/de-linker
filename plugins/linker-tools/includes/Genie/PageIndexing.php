@@ -92,6 +92,8 @@ final class PageIndexing {
 	}
 
 	/**
+	 * Omit alternate index URLs for private workspaces.
+	 *
 	 * @param array<string,string> $links Language alternates.
 	 * @return array<string,string>
 	 */
@@ -99,7 +101,11 @@ final class PageIndexing {
 		return $this->request_is_workspace() ? array() : $links;
 	}
 
-	/** @param string $description SEOPress description. */
+	/**
+	 * Describe the public tool in the page language.
+	 *
+	 * @param string $description SEOPress description.
+	 */
 	public function description( string $description ): string {
 		return $this->request_is_workspace() ? __( 'Ask Genie about inverter and battery compatibility, product specifications and manufacturer documents for your project.', 'linker-tools' ) : $description;
 	}
