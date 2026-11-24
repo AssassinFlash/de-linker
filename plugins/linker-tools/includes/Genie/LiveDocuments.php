@@ -46,18 +46,28 @@ final class LiveDocuments {
 				! in_array( $base, array_merge( array( $document['url'] ), $document['aliases'] ?? array() ), true ) ) {
 				continue;
 			}
-			$matches = array();
+			$matches     = array();
+			$cited       = null;
+			$file_models = array();
 			foreach ( $manifest['products'] as $product ) {
 				if ( ! in_array( $product['product_id'], $document['product_ids'], true ) ) {
 					continue;
 				}
-				$ids = array_merge( array( $product['product_id'] ), $product['published_locale_ids'] );
-				if ( null === $owner ? array_intersect( $ids, $shown ) : in_array( $owner, $ids, true ) ) {
-					$matches[] = $product;
+				$ids           = array_merge( array( $product['product_id'] ), $product['published_locale_ids'] );
+				$file_models[] = (string) ( $product['model'] ?? '' );
+				if ( in_array( $owner, $ids, true ) ) {
+					$cited = $product;
+				}
+				if ( array_intersect( $ids, $shown ) ) {
+					$matches[ $product['product_id'] ] = $product;
 				}
 			}
-			if ( null !== $owner && array() === $matches ) {
+			if ( ( null !== $owner && null === $cited ) || ( $shown && ! $matches ) ) {
 				return $block;
+			}
+			$target = $cited;
+			if ( $shown ) {
+				$target = 1 === count( $matches ) ? reset( $matches ) : ( $matches[ $cited['product_id'] ?? 0 ] ?? null );
 			}
 			$label = (string) ( $block['label'] ?? '' );
 			$pages = array();
@@ -70,12 +80,25 @@ final class LiveDocuments {
 			$title = trim( (string) ( $document['title'] ?? '' ) );
 			$local = 'de' === $locale && ! empty( $document['title_de'] ) ? trim( $document['title_de'] ) : $title;
 			$file  = rawurldecode( basename( $base ) );
-			if ( array() !== $matches ) {
-				$name = count( $matches ) > 1 ? $file : (string) ( $matches[0]['model'] ?? '' );
+			if ( $target ) {
+				$name = (string) ( $target['model'] ?? '' );
 				if ( '' === $name ) {
 					$name = '' !== $title ? $title : $label;
 				}
-				$kind = Materials::document_kind_label( in_array( $document['type'] ?? '', array( 'datasheet', 'manual', 'warranty', 'certificate', 'compatibility', 'brochure' ), true ) ? $document['type'] : 'document' );
+				$kind    = Materials::document_kind_label( in_array( $document['type'] ?? '', array( 'datasheet', 'manual', 'warranty', 'certificate', 'compatibility', 'brochure' ), true ) ? $document['type'] : 'document' );
+				$edition = Materials::document_edition( $base );
+				$parts   = explode( ' – ', (string) ( $edition[ $locale ] ?? '' ), 2 );
+				if ( isset( $parts[1] ) ) {
+					// Reviewed file titles carry a representative model in their edition notes.
+					$kind = preg_replace_callback(
+						'/ \(([^()]*)\)$/u',
+						static function ( array $note ) use ( $file_models ): string {
+							$qualifiers = array_diff( explode( ', ', $note[1] ), $file_models );
+							return $qualifiers ? ' (' . implode( ', ', $qualifiers ) . ')' : '';
+						},
+						$parts[1]
+					);
+				}
 				$lang = strtoupper( $document['lang'] ?? '' );
 				$text = $name . ' · ' . $kind . ( '' !== $lang ? ' (' . $lang . ')' : '' );
 			} else {
