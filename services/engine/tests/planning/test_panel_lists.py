@@ -101,3 +101,76 @@ def test_direction_only_exports_the_selected_scope_without_equipment(
         )
     )
     assert csv_rows[1] == ["bonn", "2", direction]
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+@pytest.mark.parametrize("with_bom", [True, False])
+def test_reissue_replaces_existing_site_tables_once_from_the_frozen_materials(
+    locale: str, with_bom: bool
+) -> None:
+    from typing import cast
+
+    from .test_project_materials import _source_data
+
+    raw = _source_data()
+    raw["declared_pv_panels"] = {"count": 16, "stc_power_w": 500}
+    materials = project_materials(cast(Object, raw))
+    if not with_bom:
+        materials["lines"] = [
+            line
+            for line in cast(list[Object], materials["lines"])
+            if line["handling"]
+            in (
+                "site_engineering_required",
+                "customer_supplied_required",
+                "pv_declared",
+            )
+        ]
+    archived = ReportSection(
+        id="site-materials",
+        title="Saved site materials",
+        table=ReportTable(
+            columns=["Quantity", "Item", "Reference"],
+            rows=[["1", "Terminal", "p. 43 · B MPPT1 PV input"]],
+        ),
+    )
+    sections = [ReportSection(id="project", title="Project")]
+    if with_bom:
+        sections.append(ReportSection(id="bom", title="Saved equipment"))
+    sections.extend(
+        [
+            archived,
+            ReportSection(id="site", title="Site"),
+            ReportSection(
+                id="material-evidence-1", tier="appendix", title="Old sources"
+            ),
+        ]
+    )
+    report = Report.model_validate(
+        dict(
+            locale=locale,
+            title="Saved report",
+            subtitle="",
+            generated_at="2026-11-24",
+            sections=sections,
+        )
+    )
+    original = report.model_dump_json()
+    csv_bytes = materials_csv(materials, "a" * 64, locale)
+    updated = separate_panel_lists(report, materials)
+    ids = [section.id for section in updated.sections]
+    assert ids.count("bom") == int(with_bom)
+    assert ids.count("site-materials") == ids.count("material-evidence-1") == 1
+    assert ids.index("project") < ids.index("site-materials") < ids.index("site")
+    assert "Old sources" not in str(updated.sections)
+    site = next(s for s in updated.sections if s.id == "site-materials")
+    assert site.table and any(
+        row[2] == ("Seite 12" if locale == "de" else "Page 12")
+        for row in site.table.rows
+    )
+    assert "B MPPT1" not in str(site)
+    evidence = next(s for s in updated.sections if s.id == "material-evidence-1")
+    assert "Recommended PV conductor 4-6 mm²" in str(evidence.rows)
+    assert materials_csv(materials, "a" * 64, locale) == csv_bytes
+    assert report.model_dump_json() == original
+    assert separate_panel_lists(updated, materials) == updated
