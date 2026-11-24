@@ -300,7 +300,7 @@ final class AuthTemplates {
 	 * @param string $name Woo template name.
 	 */
 	public function template( string $path, string $name ): string {
-		if ( 'myaccount/dashboard.php' === $name && AccountLink::awaiting_confirmation() ) {
+		if ( 'myaccount/dashboard.php' === $name && AccountLink::awaiting_confirmation() && is_account_page() ) {
 			return dirname( __DIR__, 2 ) . '/templates/myaccount/auth/confirm-inquiry.php';
 		}
 		if ( ! isset( self::FILES[ $name ] ) || ! function_exists( 'is_account_page' ) || ! is_account_page() ) {

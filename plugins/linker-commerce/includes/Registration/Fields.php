@@ -127,7 +127,7 @@ final class Fields {
 		);
 		foreach ( array( 'billing_first_name', 'billing_last_name' ) as $key ) {
 			if ( isset( $address[ $key ] ) && is_array( $address[ $key ] ) ) {
-				$fields[ $key ] = $address[ $key ];
+				$fields[ $key ]             = $address[ $key ];
 				$fields[ $key ]['required'] = true;
 			}
 		}

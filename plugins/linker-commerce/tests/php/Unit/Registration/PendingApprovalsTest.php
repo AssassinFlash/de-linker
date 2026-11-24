@@ -45,10 +45,10 @@ final class PendingApprovalsTest extends TestCase {
 			array(
 				'args'   => array(
 					array(
-						'role'    => 'customer',
-						'orderby' => 'registered',
-						'order'   => 'ASC',
-						'meta_query' => array(
+						'role'       => 'customer',
+						'orderby'    => 'registered',
+						'order'      => 'ASC',
+						'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Exclude resolved decisions before loading customer profiles.
 							'relation' => 'OR',
 							array(
 								'key'     => Approval::STATUS_META,
