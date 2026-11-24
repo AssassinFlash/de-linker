@@ -230,3 +230,29 @@ test('late CookieYes preferences receive focus and return to their real opener',
 	assert.equal(panel.querySelector('input').checked, true);
 	assert.equal(window.__reloads, 0);
 });
+
+test('an overflowing notice can be read by keyboard and loses its fade at the last line', async () => {
+	const window = page('<div class="cky-consent-container"><div class="cky-notice-des"><p>Notice</p></div></div><div class="cky-modal"><section id="ckyPreferenceCenter"></section></div>');
+	const reader = window.document.querySelector('.cky-notice-des');
+	let height = 180;
+	let resize;
+	Object.defineProperties(reader, {
+		clientHeight: { get: () => 80 },
+		scrollHeight: { get: () => height },
+	});
+	window.ResizeObserver = class {
+		constructor(callback) { resize = callback; }
+		observe() {}
+	};
+	await new Promise((resolve) => window.addEventListener('load', resolve));
+	assert.equal(reader.tabIndex, 0);
+	reader.focus();
+	assert.equal(window.document.activeElement, reader);
+	assert.ok(reader.hasAttribute('data-scroll-more'));
+	reader.scrollTop = 100;
+	reader.dispatchEvent(new window.Event('scroll'));
+	assert.ok(!reader.hasAttribute('data-scroll-more'));
+	height = 70;
+	resize();
+	assert.ok(!reader.hasAttribute('tabindex'));
+});

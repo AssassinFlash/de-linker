@@ -29,12 +29,34 @@
 			}
 		});
 	}
+	function connectNoticeReader() {
+		const reader = document.querySelector('.cky-notice-des');
+		if (!reader) return;
+
+		function showRemainingText() {
+			reader.toggleAttribute('data-scroll-more', reader.scrollHeight - reader.clientHeight - reader.scrollTop > 1);
+		}
+		function measure() {
+			if (reader.scrollHeight > reader.clientHeight) {
+				reader.tabIndex = 0;
+			} else {
+				reader.removeAttribute('tabindex');
+			}
+			showRemainingText();
+		}
+		const size = new ResizeObserver(measure);
+		size.observe(reader);
+		for (const paragraph of reader.children) size.observe(paragraph);
+		reader.addEventListener('scroll', showRemainingText, { passive: true });
+		measure();
+	}
 	function connectPreferences() {
 		const panel = document.querySelector('#ckyPreferenceCenter');
 		const modal = panel && panel.closest('.cky-modal');
 		if (!modal) {
 			return false;
 		}
+		connectNoticeReader();
 		let open = false;
 		let opener = null;
 		function focusPanel(event) {

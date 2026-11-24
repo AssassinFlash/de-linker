@@ -132,6 +132,47 @@ for (const lang of ['en', 'de'] as const) {
 	}
 }
 
+for (const lang of ['en', 'de'] as const) {
+	test(`${lang}: the notice leaves the Genie dock clear and the full text readable`, async ({ page }) => {
+		const path = lang === 'de'
+			? '/de/produkt/goodwe-gw80k-etr-g10-80-kw-dreiphasiger-hybridwechselrichter/'
+			: '/product/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/';
+		await page.goto(target.url + path);
+		const notice = page.locator('.cky-consent-container');
+		const dock = page.locator('.linker-genie > .linker-genie-open');
+		await expect(notice).toBeVisible();
+		const purposes = notice.locator('[data-cky-tag="settings-button"]');
+		const reject = notice.locator('[data-cky-tag="reject-button"]');
+		const accept = notice.locator('[data-cky-tag="accept-button"]');
+		const reader = notice.locator('.cky-notice-des');
+		for (const width of [1440, 1280, 390]) {
+			await page.setViewportSize({ width, height: width === 390 ? 844 : width === 1280 ? 800 : 900 });
+			await expect(dock).toHaveCSS('visibility', 'hidden');
+			await expect(reader).toHaveCSS('font-size', '13px');
+			await expect(reader).toHaveCSS('line-height', '20.15px');
+			const [r, a, p] = await Promise.all([reject.boundingBox(), accept.boundingBox(), purposes.boundingBox()]);
+			expect(r!.y).toBe(a!.y);
+			expect(r!.x).toBeLessThan(a!.x);
+			if (width === 390) {
+				expect(r!.width).toBeCloseTo(a!.width, 1);
+				expect(r!.height).toBe(a!.height);
+				expect(r!.height).toBeGreaterThanOrEqual(44);
+				expect(p!.y).toBeGreaterThanOrEqual(a!.y + a!.height);
+				await expect(reader).toHaveAttribute('tabindex', '0');
+				await reader.focus();
+				await page.keyboard.press('End');
+				await expect.poll(() => reader.evaluate(el => el.scrollHeight - el.scrollTop - el.clientHeight)).toBeLessThan(1);
+				await expect(reader).toHaveCSS('mask-image', 'none');
+			} else {
+				expect(p!.y).toBe(a!.y);
+				expect(p!.x).toBeLessThan(r!.x);
+			}
+		}
+		await reject.click();
+		await expect(dock).toBeVisible();
+	});
+}
+
 for (const purpose of ['statistics', 'marketing', 'both'] as const) {
 	test(`independent purposes: ${purpose}`, async ({ page }) => {
 		const requests = await observe(page);
