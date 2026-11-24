@@ -2025,10 +2025,10 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 	#tv-storefront-pdp .pdp-mobile-action .pdp-btn-dark {
 		flex: 0 0 auto;
 		width: auto;
-		max-width: 10.5rem;
+		max-width: 54%;
 		min-height: 44px;
 		margin: 0;
-		padding: 10px 16px;
+		padding: 10px 8px;
 		border-radius: var(--proto-radius-round);
 		font-size: 14px;
 		line-height: 1.15;
