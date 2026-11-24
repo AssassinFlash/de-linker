@@ -61,7 +61,7 @@ from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
 from .pvgis_reference_profile import prepared_reference_profile, reference_bundle
 from .records import Actor, Project, Run
 from .report_inputs import ReportOptions
-from .report_overview import profile_months, replay_months
+from .report_overview import comparison_months, profile_months, replay_months
 from .report_pv_components import pv_components, saved_roof_components
 from .report_pvlib import pvlib_reference
 from .workspace import Workspace
@@ -1498,8 +1498,19 @@ def report_sources(
                 for use in cast(list[Object], ref["used_by"])
             )
         ]
-        if len(retained_profiles) == 1:
-            source["monthly_energy"] = retained_profiles[0].get("monthly_energy")
+        monthly = (
+            retained_profiles[0].get("monthly_energy")
+            if len(retained_profiles) == 1
+            else None
+        )
+        if equipment_source_run and len(retained_profiles) <= 1:
+            monthly = comparison_months(
+                workspace.blobs,
+                _pinned_assets(equipment_source_run),
+                monthly if isinstance(monthly, dict) else None,
+            )
+        if monthly is not None:
+            source["monthly_energy"] = monthly
 
     if assessment is not None and "equipment" in bases:
         certificates = certificate_documents(

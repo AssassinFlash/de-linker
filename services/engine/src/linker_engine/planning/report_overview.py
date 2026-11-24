@@ -3,22 +3,27 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from datetime import UTC, datetime
+from datetime import UTC, datetime, tzinfo
 from typing import cast
 
 from linker_engine.models import ReportSummaryCard
 
 from .canonical import Json, Object
+from .energy_inputs import MappingDocument
+from .frozen_profiles import frozen_profile
 from .power_series import PowerSeries
 from .pv_dc_profile import DcPvProfile
 from .report_copy import text
 from .report_numbers import number
+from .storage import Blobs
+from .timezone_rules import TimezoneRules
 
 
 def calendar_totals(
     intervals: Iterable[tuple[datetime, datetime, float, float | None]],
+    zone: tzinfo = UTC,
 ) -> Object | None:
-    """Integrate mean interval power at UTC month boundaries over complete years."""
+    """Integrate mean interval power over complete reporting years."""
     start: datetime | None = None
     previous: datetime | None = None
     pv: list[Json] = [0.0] * 12
@@ -33,18 +38,20 @@ def calendar_totals(
         previous = end
         whole_site = whole_site and demand is not None
         while begin < end:
+            local = begin.astimezone(zone)
             boundary = datetime(
-                begin.year + (begin.month == 12), begin.month % 12 + 1, 1, tzinfo=UTC
-            )
+                local.year + (local.month == 12), local.month % 12 + 1, 1, tzinfo=zone
+            ).astimezone(UTC)
             cutoff = min(boundary, end)
             hours = (cutoff - begin).total_seconds() / 3600
-            idx = begin.month - 1
+            idx = local.month - 1
             pv[idx] = cast(float, pv[idx]) + generation * hours
             if demand is not None:
                 load[idx] = cast(float, load[idx]) + demand * hours
             begin = cutoff
     if not start or not previous or not any(pv):
         return None
+    start, previous = start.astimezone(zone), previous.astimezone(zone)
     years = previous.year - start.year
     if years < 1 or start.timetuple()[1:6] != previous.timetuple()[1:6]:
         return None
@@ -57,11 +64,53 @@ def calendar_totals(
     }
 
 
-def profile_months(profile: PowerSeries | DcPvProfile) -> Object | None:
+def profile_months(
+    profile: PowerSeries | DcPvProfile, zone: tzinfo = UTC
+) -> Object | None:
     return calendar_totals(
-        (i.start, i.end, kw, None)
-        for i, kw in zip(profile.intervals, profile.values_kw, strict=True)
+        (
+            (i.start, i.end, kw, None)
+            for i, kw in zip(profile.intervals, profile.values_kw, strict=True)
+        ),
+        zone,
     )
+
+
+def comparison_months(
+    blobs: Blobs, pinned: Object, monthly: Object | None
+) -> Object | None:
+    """Use the exact solar and consumption profiles in the chosen equipment comparison."""
+    for role in ("pv_available_ac", "gross_load"):
+        if role == "pv_available_ac" and monthly is not None:
+            continue
+        raw, metadata = pinned.get(f"{role}.raw"), pinned.get(f"{role}.metadata")
+        if not isinstance(raw, str) or not isinstance(metadata, str):
+            return monthly
+        tz = pinned.get(f"{role}.timezone")
+        timezone_key = tz if isinstance(tz, str) else None
+        profile = frozen_profile(blobs, raw, metadata, timezone_key)
+        if profile.measurement != role:
+            return monthly
+        if role == "pv_available_ac":
+            monthly = profile_months(profile)
+            if monthly is None:
+                return None
+        elif monthly is not None:
+            zone: tzinfo = UTC
+            if timezone_key is not None:
+                mapping = MappingDocument.read(blobs.object(metadata)["csv_mapping"])
+                zone = TimezoneRules(mapping.timezone, blobs.read(timezone_key)).zone()
+            load = profile_months(profile, zone)
+            if load and (monthly["start"], monthly["end"]) == (
+                load["start"],
+                load["end"],
+            ):
+                return {
+                    **monthly,
+                    "load_kwh": load["pv_kwh"],
+                    "load_timezone": str(zone),
+                }
+    return monthly
 
 
 def replay_months(trace: Object) -> Object | None:

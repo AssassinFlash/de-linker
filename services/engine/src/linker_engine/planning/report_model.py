@@ -1711,6 +1711,10 @@ def build_report(source: Object) -> Report:
                 else "PV reference profile · monthly means"
             )
         )
+        if monthly.get("load_timezone"):
+            dates += (
+                " · Lastprofil: " if locale == "de" else " · Load profile: "
+            ) + str(monthly["load_timezone"])
         report.monthly_chart = monthly_chart(
             locale,
             cast(list[float], monthly["pv_kwh"]),
