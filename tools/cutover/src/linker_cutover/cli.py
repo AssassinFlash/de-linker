@@ -106,7 +106,10 @@ def _parser() -> argparse.ArgumentParser:
         "maintenance", parents=[common], help="steps 2 and 7: the maintenance window"
     )
     maintenance.add_argument("state", choices=("on", "off"))
-    sub.add_parser("deploy", parents=[common], help="step 3: the files")
+    deploy = sub.add_parser("deploy", parents=[common], help="step 3: the files")
+    deploy.add_argument(
+        "--deploy-id", help="bind this batch to a prepared host snapshot"
+    )
     sub.add_parser(
         "snapshot",
         parents=[common],
@@ -308,6 +311,7 @@ def _run_steps(
                 staging=staging,
                 on_switch=lambda: print(probe.SWITCH_MARKER, flush=True),
                 snapshot_home=DATA_HOME,
+                deploy_id=args.deploy_id,
             )
             _print(deployed)
             assert deployed.publication is not None

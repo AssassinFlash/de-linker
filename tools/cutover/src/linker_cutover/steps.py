@@ -958,6 +958,14 @@ def rollback_deploy(target: Target, *, repository: Path) -> Result:
         for row in listed
         if isinstance(row, dict) and "name" in row
     }
+    if ".htaccess" in receipt.paths:
+        reset = target.shell(opcache_reset_script(target))
+        actions.extend(
+            line.removeprefix(atomic.AFTER_SWITCH_MARKER)
+            for line in reset.splitlines()
+            if line.startswith(atomic.AFTER_SWITCH_MARKER)
+        )
+        actions.extend(purge_page_cache(target, set(statuses)))
     notes: list[str] = []
     for slug in plan.NEW_PLUGINS:
         status = statuses.get(slug, "missing")
