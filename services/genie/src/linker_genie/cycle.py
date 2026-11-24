@@ -192,6 +192,7 @@ def _seal_and_finish(
         customer_message(request),
         request.page_context.type,
         original=original,
+        page_product_id=request.page_context.product_id,
     )
     sealed = _restore_qualified(sealed, replacements)
     if clearance_question(customer_message(request)) and not any(

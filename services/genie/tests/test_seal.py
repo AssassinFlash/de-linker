@@ -1563,7 +1563,7 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
     from linker_genie.hydrate import hydrate
     from linker_genie.manual_diagram_records import DIAGRAMS
     from linker_genie.manual_evidence import evidence_id
-    from linker_genie.template import fallback
+    from linker_genie.template import fallback, prepared_answer
 
     model = "CB2-100.3-HV5"
     diagram = next(
@@ -1594,10 +1594,38 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         "document_revision": "user-current",
         "title": "User manual",
         "page": 4,
-        "text": "See the installation guide.",
+        "text": "Only qualified electricians who have read and fully understood all safety regulations contained in this manual can install, maintain and repair the battery. Operators must be aware of the high-voltage device.",
         "figures": {},
     }
-    facts = collect("linker/search-knowledge", {"hits": [hit, manual]})
+    location = {
+        **hit,
+        "chunk_id": "location",
+        "figures": {},
+        "text": "The cabinet can be installed either indoors or outdoors. Reserve at least the following space around the whole battery system to ensure good air circulation at the installation area:",
+    }
+    facts = merge(
+        [
+            collect("linker/search-knowledge", {"hits": [hit, manual, location]}),
+            collect(
+                "linker/get-product",
+                {
+                    "product_id": 4106,
+                    "model": model,
+                    "documents": [
+                        {"url": hit["doc_url"], "title": "Quick installation guide"},
+                        {"url": manual["doc_url"], "title": "User manual"},
+                    ],
+                },
+            ),
+        ]
+    )
+    facts.tool_calls = [
+        {
+            "name": "linker/get-product",
+            "ok": True,
+            "result": {"product_id": 4106, "model": model},
+        }
+    ]
     route = Route("documents", named_models=(NamedModel(model, (4106,)),))
     for lang in ("en", "de"):
         locale: Literal["en", "de"] = "de" if lang == "de" else "en"
@@ -1609,16 +1637,28 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
             if locale == "en"
             else f"Halten Sie rechts {first} und vorn {side} frei."
         )
+        installation = (
+            "Only qualified electricians may install this cabinet."
+            if locale == "en"
+            else "Nur qualifizierte Elektrofachkräfte dürfen diesen Schrank installieren."
+        )
         original = TurnOutput(
             language=locale,
             blocks=[
-                TextBlock(text=text, refs=[cid]),
+                TextBlock(text=text, refs=[cid, "4106"]),
+                TextBlock(text=installation, refs=["u4"]),
+                CardsBlock(product_ids=[4106]),
                 DocumentBlock(ref="u4"),
             ],
         )
         hydrated = hydrate(original, facts, locale)
         delivered = seal(hydrated, facts, route, question, "other", original=original)
-        prose = _text(delivered)
+        prose = answer_text([b.model_dump() for b in delivered.blocks])
+        assert installation in prose
+        assert any(
+            isinstance(b, CardsBlock) and b.product_ids == [4106]
+            for b in delivered.blocks
+        )
         directions = (
             [
                 "1500 mm in front",
@@ -1637,6 +1677,32 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
             ]
         )
         assert all(pair in prose for pair in directions), prose
+        site_pages = [
+            (question, route),
+            (
+                "What clearance is required?"
+                if locale == "en"
+                else "Welche Mindestabstände sind nötig?",
+                Route("documents"),
+            ),
+        ]
+        for page_question, page_route in site_pages:
+            product_answer = seal(
+                hydrated,
+                facts,
+                page_route,
+                page_question,
+                "product",
+                original=original,
+                page_product_id=4106,
+            )
+            assert all(pair in _text(product_answer) for pair in directions)
+            assert installation in answer_text(
+                [b.model_dump() for b in product_answer.blocks]
+            )
+            assert (
+                "1500 mm on the right" if locale == "en" else "rechts 1500 mm"
+            ) not in _text(product_answer)
         if locale == "de":
             plural = seal(
                 hydrated,
@@ -1650,9 +1716,33 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         assert (
             "1500 mm on the right" if locale == "en" else "rechts 1500 mm"
         ) not in prose
+        fast = prepared_answer(facts, route, locale, question=question)
+        assert fast is not None
+        assert ground_check(fast, facts, route, question=question).ok
+        rendered = hydrate(fast, facts, locale)
+        fast_text = answer_text([b.model_dump() for b in rendered.blocks])
+        assert all(pair in fast_text for pair in directions)
+        assert ("outdoors" if locale == "en" else "Freien") in fast_text
+        assert ("electricians" if locale == "en" else "Elektrofachkräfte") in fast_text
+        assert any(
+            isinstance(b, DocumentBlock) and b.ref.startswith("p4106.document.")
+            for b in rendered.blocks
+        )
+        assert any(
+            isinstance(b, DocumentBlock)
+            and b.url
+            and b.url.endswith("user-manual.pdf#page=4")
+            for b in rendered.blocks
+        )
+        unknown_question = question + (
+            " What cable is required?"
+            if locale == "en"
+            else " Welches Kabel benötige ich?"
+        )
+        assert prepared_answer(facts, route, locale, question=unknown_question) is None
         recovered = fallback(facts, locale, route, question=question)
         assert all(pair in _text(recovered) for pair in directions)
-        assert {b.url for b in delivered.blocks if isinstance(b, DocumentBlock)} == {
+        assert {b.url for b in delivered.blocks if isinstance(b, DocumentBlock)} >= {
             "https://example.test/quick-guide.pdf#page=1",
             "https://example.test/user-manual.pdf#page=4",
         }
