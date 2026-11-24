@@ -17,7 +17,6 @@ use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Registration\Approval;
-use Linker\Commerce\Quotation\Emails\QuotationIssuedEmail;
 use RuntimeException;
 use WC_Order;
 
@@ -180,7 +179,7 @@ final class Issuer {
 				throw new RuntimeException( $blocker ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Escaped by the order screen.
 			}
 			if ( '' !== $previous && 'yes' === $order->get_meta( self::NOTICE_PENDING_META ) ) {
-				QuotationIssuedEmail::notify( $order->get_id() );
+				Notice::notify( $order->get_id() );
 				$order = wc_get_order( $order_id );
 				if ( ! $order instanceof WC_Order || 'yes' === $order->get_meta( self::NOTICE_PENDING_META ) ) {
 					throw new RuntimeException( __( 'The previous Quotation notification is still being queued. Please try again shortly.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
@@ -254,7 +253,7 @@ final class Issuer {
 			$order->save();
 			$order->add_order_note( $note );
 			if ( $order->get_customer_id() > 0 ) {
-				QuotationIssuedEmail::notify( $order->get_id() );
+				Notice::notify( $order->get_id() );
 			}
 		}
 		return $number;

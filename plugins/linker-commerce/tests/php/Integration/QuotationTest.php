@@ -18,6 +18,7 @@ use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Quotation\Emails\QuotationIssuedEmail;
+use Linker\Commerce\Quotation\Notice;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Quotation\Document;
 use Linker\Commerce\Quotation\Issuer;
@@ -178,7 +179,7 @@ final class QuotationTest extends IntegrationTestCase {
 		$job   = $store->load( $id );
 		self::assertNotNull( $job );
 		self::assertSame( $number, $job['message']->origin['number'] );
-		self::assertTrue( QuotationIssuedEmail::deliverable( $job['message'], $id ) );
+		self::assertTrue( Notice::deliverable( $job['message'], $id ) );
 		$message            = $job['message'];
 		$legacy_notice      = static fn ( array $to, array $headers ) => \Linker\Commerce\Mail\NativeOrigin::seal(
 			new \Linker\Commerce\Mail\Message(
@@ -197,11 +198,11 @@ final class QuotationTest extends IntegrationTestCase {
 		);
 		[ $local, $domain ] = explode( '@', $message->to[0] );
 		$legacy             = $legacy_notice( array( $local . '@' . strtoupper( $domain ) ), $message->headers );
-		self::assertTrue( QuotationIssuedEmail::deliverable( $legacy, $id ), 'DNS domain case does not change the original recipient.' );
-		self::assertFalse( QuotationIssuedEmail::deliverable( $legacy_notice( array( strtoupper( $local ) . '@' . $domain ), $message->headers ), $id ) );
-		self::assertFalse( QuotationIssuedEmail::deliverable( $legacy_notice( array( $message->to[0], 'another@example.test' ), $message->headers ), $id ) );
+		self::assertTrue( Notice::deliverable( $legacy, $id ), 'DNS domain case does not change the original recipient.' );
+		self::assertFalse( Notice::deliverable( $legacy_notice( array( strtoupper( $local ) . '@' . $domain ), $message->headers ), $id ) );
+		self::assertFalse( Notice::deliverable( $legacy_notice( array( $message->to[0], 'another@example.test' ), $message->headers ), $id ) );
 		foreach ( array( 'Cc: another@example.test', 'Bcc: another@example.test' ) as $copy ) {
-			self::assertFalse( QuotationIssuedEmail::deliverable( $legacy_notice( $message->to, array_merge( $message->headers, array( $copy ) ) ), $id ) );
+			self::assertFalse( Notice::deliverable( $legacy_notice( $message->to, array_merge( $message->headers, array( $copy ) ) ), $id ) );
 		}
 		if ( $reassign ) {
 			$order->set_customer_id( $other->get_id() );
@@ -209,7 +210,7 @@ final class QuotationTest extends IntegrationTestCase {
 		} else {
 			update_user_meta( $owner->get_id(), Approval::STATUS_META, Approval::RESTRICTED );
 		}
-		self::assertFalse( QuotationIssuedEmail::deliverable( $legacy, $id ) );
+		self::assertFalse( Notice::deliverable( $legacy, $id ) );
 		/** This action is documented in Mail\Module::register(). */
 		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Native retry action.
 		self::assertSame( JobStore::FAILED_STATUS, get_post_status( $id ) );

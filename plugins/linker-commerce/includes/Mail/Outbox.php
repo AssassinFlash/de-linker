@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Mail;
 
 use WP_Error;
-use Linker\Commerce\Quotation\Emails\QuotationIssuedEmail;
+use Linker\Commerce\Quotation\Notice;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -310,7 +310,7 @@ final class Outbox {
 			}
 			return false;
 		}
-		if ( QuotationIssuedEmail::ID === ( $message->origin['producer'] ?? '' ) && ! QuotationIssuedEmail::deliverable( $message, $job_id ) ) {
+		if ( Notice::ID === ( $message->origin['producer'] ?? '' ) && ! Notice::deliverable( $message, $job_id ) ) {
 			$this->jobs->fail( $job_id, $attempts, 'Quotation is no longer available to this recipient.' );
 			return false;
 		}
