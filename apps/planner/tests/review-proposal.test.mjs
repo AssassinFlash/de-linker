@@ -732,4 +732,17 @@ test("a guest can add a first selection to the draft from the inquiry review", a
 		),
 	);
 	assert.ok(add.isConnected, "an in-flight transfer keeps its mounted writer");
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, {
+				...value,
+				inquiry: React.createElement("form"),
+			}),
+		),
+	);
+	assert.equal(
+		add.closest("details").open,
+		true,
+		"the confirmed receipt stays visible",
+	);
 });
