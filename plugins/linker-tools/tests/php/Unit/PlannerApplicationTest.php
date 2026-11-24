@@ -35,26 +35,59 @@ final class PlannerApplicationTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** The pre-PHP cache rule covers both public routes and the private-cookie families checked by the mount. */
+	public function test_cache_rules_bypass_the_warm_page_for_private_requests(): void {
+		$app = new Application( dirname( __DIR__, 3 ) . '/linker-tools.php' );
+		$raw = $app->cache_rules( "RewriteEngine On\nRewriteRule . /index.php [L]" );
+		$this->assertStringContainsString( 'RewriteCond %{QUERY_STRING} !^$ [OR]', $raw );
+		$this->assertSame( 1, preg_match( '/^RewriteCond %\{HTTP_COOKIE\} (.+)$/m', $raw, $cookies ) );
+		$this->assertSame( 1, preg_match( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache\]$/m', $raw, $routes ) );
+		foreach ( array( 'wp_woocommerce_session_site', 'woocommerce_items_in_cart', 'linker_planner_transition_id', 'wordpress_logged_in_site' ) as $name ) {
+			$this->assertMatchesRegularExpression( '~' . $cookies[1] . '~', 'ordinary=value; ' . $name . '=value' );
+		}
+		$this->assertDoesNotMatchRegularExpression( '~' . $cookies[1] . '~', 'cookieyes-consent=analytics:yes' );
+		$this->assertMatchesRegularExpression( '~' . $routes[1] . '~', 'solution-configurator/' );
+		$this->assertMatchesRegularExpression( '~' . $routes[1] . '~', 'de/loesungskonfigurator/' );
+		$this->assertDoesNotMatchRegularExpression( '~' . $routes[1] . '~', 'products/' );
+	}
+
 	/**
-	 * Both visitor states the mount has to serve.
+	 * Public and private requests to the same landing page.
 	 *
-	 * @return array<string, array{bool}>
+	 * @return array<string,array{bool,array<string,string>,array<string,string>,bool}>
 	 */
 	public static function signed_in_visitor(): array {
 		return array(
-			'guest'     => array( false ),
-			'signed in' => array( true ),
+			'guest'          => array( false, array(), array(), false ),
+			'consent'        => array( false, array(), array( 'cookieyes-consent' => 'consent' ), false ),
+			'signed in'      => array( true, array(), array(), true ),
+			'login cookie'   => array( false, array(), array( 'wordpress_logged_in_site' => '' ), true ),
+			'Woo session'    => array( false, array(), array( 'wp_woocommerce_session_site' => 'session' ), true ),
+			'Woo cart'       => array( false, array(), array( 'woocommerce_items_in_cart' => '1' ), true ),
+			'planner ticket' => array( false, array(), array( 'linker_planner_transition_123' => 'ticket' ), true ),
+			'project'        => array( false, array( 'project' => '' ), array(), true ),
+			'PV input'       => array( false, array( 'pv_kwp' => '5' ), array(), true ),
+			'other query'    => array( false, array( 'campaign' => 'spring' ), array(), true ),
 		);
 	}
 
 	/**
 	 * The native mount and entry use the same reviewed build.
 	 *
-	 * @param bool $signed_in Whether the visitor carries a login cookie.
+	 * @param bool                 $signed_in Whether WordPress authenticated the visitor.
+	 * @param array<string,string> $query Request query.
+	 * @param array<string,string> $cookies Request cookies.
+	 * @param bool                 $expect_private Expected private response.
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 * @throws \RuntimeException If the native configuration is absent.
 	 * @dataProvider signed_in_visitor
 	 */
-	public function test_native_mount_exposes_the_current_reviewed_view_modules( bool $signed_in ): void {
+	public function test_native_mount_exposes_the_current_reviewed_view_modules( bool $signed_in, array $query, array $cookies, bool $expect_private ): void {
+		$_GET                   = $query;
+		$_COOKIE                = $cookies;
+		$_SERVER['REQUEST_URI'] = '/solution-configurator/';
+
 		$root     = dirname( __DIR__, 3 ) . '/';
 		$base     = 'https://fixture.invalid/wp-content/plugins/linker-tools/';
 		$manifest = json_decode( (string) file_get_contents( $root . 'build/planner/vite-manifest.json' ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- actual read-only build fixture.
@@ -122,6 +155,8 @@ final class PlannerApplicationTest extends TestCase {
 		$app = new Application( $root . 'linker-tools.php' );
 		$app->assets();
 		$html = $app->mount();
+		$this->assertSame( $expect_private, defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE );
+		$this->assertSame( 1, substr_count( $html, '<h1>Solution Configurator</h1>' ) );
 		$this->assertSame( 1, preg_match( '/data-planner-config="([^"]+)"/', $html, $matches ) );
 		$config = json_decode( html_entity_decode( $matches[1] ?? throw new \RuntimeException( 'Native planner configuration was not rendered.' ), ENT_QUOTES ), true );
 		$this->assertSame( $base . 'build/planner/' . $scene, $config['scene_module_url'] );

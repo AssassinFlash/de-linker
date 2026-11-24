@@ -117,6 +117,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( \Linker\Commerce\Presentation\LegalNavigation::class, 'enqueue' ) );
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
+		WP_Mock::expectFilterAdded( 'wp_preload_resources', array( $module, 'preload_resources' ) );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'trim_woo_assets' ), 30 );
 		$module->register();
 		self::assertSame( array_fill_keys( array_column( $family_hooks, 1 ), 1 ), $registered );
 

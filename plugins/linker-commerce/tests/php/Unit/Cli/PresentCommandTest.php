@@ -1090,6 +1090,34 @@ final class PresentCommandTest extends TestCase {
 		$this->assertArrayNotHasKey( self::BACKUP, $this->options, 'check stages no rollback backup' );
 	}
 
+	/** A legacy WindPress entry loses its DaisyUI inputs while retaining the site's other compiler inputs. */
+	public function test_present_retires_daisyui_and_preserves_the_entry_backup(): void {
+		$state   = $this->mock_synced_site();
+		$entry   = $state->uploads . '/windpress/data/main.css';
+		$imports = (string) file_get_contents( $entry );
+		$legacy  = <<<'CSS'
+/* Reserve the DaisyUI semantic layer we plan to use in LiveCanvas/Tangible packages. */
+@source inline("btn");
+@source inline("collapse");
+@source inline("carousel-center");
+
+@plugin "daisyui" {
+  themes: light --default;
+}
+@plugin 'daisyui';
+@import "daisyui/daisyui.css";
+@source inline("site-alert");
+@plugin "@tailwindcss/forms";
+CSS;
+		file_put_contents( $entry, $legacy . "\n" . $imports );
+		$volume = new WindPressVolume();
+		$this->assertSame( array( 'main.css' ), array_column( $volume->drift(), 'target' ) );
+		$volume->install();
+		$this->assertSame( $legacy . "\n" . $imports, file_get_contents( $entry . '.bak' ) );
+		$this->assertSame( '@source inline("site-alert");' . "\n" . '@plugin "@tailwindcss/forms";' . "\n" . rtrim( $imports ) . "\n", trim( (string) file_get_contents( $entry ) ) . "\n" );
+		$this->assertSame( array(), $volume->drift() );
+	}
+
 	/**
 	 * A template whose content drifted is one row naming it, and the command
 	 * exits non-zero: the deploy's own report cannot pass while the site

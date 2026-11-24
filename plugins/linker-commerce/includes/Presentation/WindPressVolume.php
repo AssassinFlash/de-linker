@@ -73,10 +73,20 @@ final class WindPressVolume {
 	private function import_from_entry( string $entry, array $imports ): void {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local volume file on disk, not a remote URL.
 		$current = is_readable( $entry ) ? (string) file_get_contents( $entry ) : '';
-		$missing = array();
+		// Retire the site's reserved DaisyUI sources and its configured plugin block.
+		$reserved = 'btn(?:-primary|-secondary|-sm)?|card(?:-body)?|badge(?:-outline)?|table(?:-sm)?|modal(?:-box|-backdrop)?|collapse(?:-title|-content)?|breadcrumbs|stats?|stat-(?:title|value)|carousel(?:-center)?';
+		$clean    = (string) preg_replace(
+			array(
+				'~^\h*/\* Reserve the DaisyUI semantic layer we plan to use in LiveCanvas/Tangible packages\. \*/\h*\R(?:\h*@source\h+inline\(["\'](?:' . $reserved . ')["\']\);\h*\R)*~m',
+				'~^\h*@(?:import|plugin)\s+(?:url\(\s*)?["\']daisyui(?:/[^"\']*)?["\'](?:\s*\))?\s*(?:;|\{[^{}]*\})\h*\R?~im',
+			),
+			'',
+			$current
+		);
+		$missing  = array();
 		foreach ( $imports as $import ) {
 			$rule = "@import \"{$import}\";";
-			if ( ! str_contains( $current, $import ) ) {
+			if ( ! str_contains( $clean, $import ) ) {
 				$missing[] = $rule;
 			}
 		}
@@ -86,8 +96,8 @@ final class WindPressVolume {
 		// otherwise ship both selector families.
 		$retired = array( './catalogue.css', './catalogue-mounts.css' );
 		$kept    = array();
-		$dropped = false;
-		$lines   = '' === $current ? array() : explode( "\n", str_replace( "\r\n", "\n", $current ) );
+		$dropped = $clean !== $current;
+		$lines   = '' === $clean ? array() : explode( "\n", str_replace( "\r\n", "\n", $clean ) );
 		foreach ( $lines as $line ) {
 			$retires = false;
 			foreach ( $retired as $old ) {
@@ -168,6 +178,13 @@ final class WindPressVolume {
 		}
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local volume file on disk, not a remote URL.
 		$entry = is_readable( $dir . '/' . self::ENTRY ) ? (string) file_get_contents( $dir . '/' . self::ENTRY ) : '';
+		if ( false !== stripos( $entry, 'daisyui' ) ) {
+			$rows[] = array(
+				'surface' => 'windpress volume',
+				'target'  => self::ENTRY,
+				'detail'  => 'the entry still contains DaisyUI inputs',
+			);
+		}
 		foreach ( $imports as $import ) {
 			if ( ! str_contains( $entry, $import ) ) {
 				$rows[] = array(

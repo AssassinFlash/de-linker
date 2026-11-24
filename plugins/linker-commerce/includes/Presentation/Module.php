@@ -58,8 +58,52 @@ final class Module {
 		$this->library->register();
 		$this->account->register();
 		$this->blog->register();
+		add_filter( 'wp_preload_resources', array( $this, 'preload_resources' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'trim_woo_assets' ), 30 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_account_scripts' ) );
+	}
+
+	/**
+	 * WordPress emits these hints in wp_head before the stylesheets.
+	 *
+	 * @param array<int,array<string,string>> $resources Existing preload hints.
+	 * @return array<int,array<string,string>>
+	 */
+	public function preload_resources( array $resources ): array {
+		$base = plugins_url( 'assets/fonts/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+		foreach ( array( 400, 600 ) as $weight ) {
+			$resources[] = array(
+				'href'        => $base . 'plus-jakarta-sans-' . $weight . '.woff2',
+				'as'          => 'font',
+				'type'        => 'font/woff2',
+				'crossorigin' => 'anonymous',
+			);
+		}
+		if ( is_front_page() ) {
+			$uploads = wp_get_upload_dir();
+			$hero    = '/2026/09/linker-linking-value-serving-you.webp';
+			if ( is_file( $uploads['basedir'] . $hero ) ) {
+				$resources[] = array(
+					'href'          => $uploads['baseurl'] . $hero,
+					'as'            => 'image',
+					'fetchpriority' => 'high',
+				);
+			}
+		}
+		return $resources;
+	}
+
+	/** Marketing and editorial pages have no Woo cart UI. Registered dependencies remain available to widgets. */
+	public function trim_woo_assets(): void {
+		if ( ! function_exists( 'is_woocommerce' ) || is_woocommerce() || is_cart() || is_checkout() || is_account_page() || ComparePage::is_comparison_page() ) {
+			return;
+		}
+		foreach ( array( 'woocommerce-layout', 'woocommerce-smallscreen', 'woocommerce-general' ) as $handle ) {
+			wp_dequeue_style( $handle );
+		}
+		wp_dequeue_script( 'wc-add-to-cart' );
+		wp_dequeue_script( 'woocommerce' );
 	}
 
 	/**
