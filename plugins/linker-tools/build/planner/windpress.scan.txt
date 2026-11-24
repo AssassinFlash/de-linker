@@ -157,6 +157,7 @@ sc-keepout-shape
 sc-layout
 sc-layout-panels
 sc-layout-review
+sc-loading
 sc-main
 sc-map-consent
 sc-map-drawing
@@ -187,6 +188,7 @@ sc-object-inspector
 sc-object-tree
 sc-obstacle-shape
 sc-open-layout
+sc-opening-error
 sc-option-body
 sc-option-card
 sc-option-figures

@@ -28,7 +28,7 @@
     "src/components/RoofStart.tsx": "5b4ddd39f9693eca17b57bd2a26a4b3df115f9b5a72516189e758d3a88734ab5",
     "src/components/SavedSolutionReference.tsx": "861af85ac08de6b204455e6e1dc80ce7af644c144793471e023de50b8fc696a4",
     "src/components/SavedSolutionStart.tsx": "d9418681c26513d8a6725fae0ae841a8b99e1915793463a5b2c8a49937c7f584",
-    "src/components/SessionBoundary.tsx": "642d8426031610c4ec76db9caef2566a2130c9850a54350ee3a26deaaa3ba6e0",
+    "src/components/SessionBoundary.tsx": "89761314251a9eeba96c4c9b1593f12452d59c7763241e1da7e762fe76d50637",
     "src/components/ToolIdentity.tsx": "bee77f0cb9ed66bd67d7c9e15acc41568997bf56c997a2e099a5c87be2efa63d",
     "src/components/Workspace.tsx": "8b2fe6b9588034c15702697ed2ac6182328594ff39ec40c5ac5b37448a2a7f19",
     "src/components/commercial/CommercialSizing.tsx": "8257e4250f43f7d402fe2558af848eeee3f86d80683a9c9d943a3e8bae27efc3",
@@ -352,14 +352,14 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-BlmqkUYp.js": "e80eaef5f34cff474e6a62d6584dddee12fd3a06d5372139d87a54b76f540498",
-    "assets/ProjectWorkbench-jMT12Qhm.js": "3aee7e04b3abf996780cb66bf646d038edc2571a0e1060f68a4dcbb6f1c91ac3",
-    "assets/SceneViewport-CbSiB0KG.js": "7b0fac21771ae58513cf456bac5c40955f114886b5447d1e64b54fb90bf6aa87",
-    "assets/planner-core-hFS0bjhI.js": "41e80d66bd492788b41b47031c3535375d594a8f7463e3cb029549fe41b73074",
-    "assets/planner.js": "30c64e421d64783a4acc47636e906f6458471dbf6208dfdbc255abf1fbd4bad8",
+    "assets/MapViewport-D7TB3_bT.js": "613c5eda77d365b4193da360bd4ad424c4155591d8c7e5c1ffa3e1a30b69b5d6",
+    "assets/ProjectWorkbench-D8QE4WpJ.js": "8316844ddeee2c99b8e92455fec8efc118bf948ee969fec61d59e3c487b27729",
+    "assets/SceneViewport-BpqAwQhl.js": "70d7be14a3fbc012cc61750c30642cee0b8ebd0eb0927990268f08e2e161e90e",
+    "assets/planner-core-C7HH0cO3.js": "4ee095dc67ea56ff87b7f93154ec43134eb631e7fa42f933bb372831087fa77e",
+    "assets/planner.js": "602c9034c59449efd30dfac9097c478b297b140a632218fee1ed7e2812c35041",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "11c5f154240a4f6f6d62d4cb303ebe592781419801f7a277b5aa92f3f0e02d21",
-    "windpress.scan.txt": "28ef3fbaa4d92070bf54e0e174bf8b4d5cbf76ab1f0f73c7a74cdbd9db7f0e69"
+    "vite-manifest.json": "da6c234573348450fba52524e366529abd7441b15c323ef5676be1531138b78d",
+    "windpress.scan.txt": "e05d76482a828abe4be1d65423fc88eaeed849add4bdcd2d9b8c82763bace96a"
   },
   "project_input_contracts": [
     "installation_pv_string_links_v1",

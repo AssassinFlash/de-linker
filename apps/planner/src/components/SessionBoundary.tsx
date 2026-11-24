@@ -183,14 +183,27 @@ export function SessionBoundary({
 	}, [verify]);
 
 	const recheck = useCallback(() => verify("full"), [verify]);
+	const OpeningTitle = session ? "p" : "h1";
 
 	return (
 		<>
 			{gate && (
-				<div className="sc-session-state">
-					<span className="sc-eyebrow">
-						{__("Solution Configurator", "linker-tools")}
-					</span>
+				<div
+					className={`sc-configurator sc-intake ${failed ? "sc-opening-error" : "sc-loading"}`}
+				>
+					<header className="sc-project-heading">
+						<div>
+							<OpeningTitle>
+								{__("Solution Configurator", "linker-tools")}
+							</OpeningTitle>
+							<p>
+								{__(
+									"A project can start with the information already available. Roof drawing is optional.",
+									"linker-tools",
+								)}
+							</p>
+						</div>
+					</header>
 					{failed ? (
 						<Notice error>
 							<p>
