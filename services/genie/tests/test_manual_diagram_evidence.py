@@ -41,8 +41,10 @@ FIXTURE = (
 )
 
 
-def fixture() -> tuple[dict[str, Any], list[Chunk], dict[str, bytes]]:
-    data = json.loads(gzip.decompress(FIXTURE.read_bytes()))
+def fixture(
+    path: Path = FIXTURE,
+) -> tuple[dict[str, Any], list[Chunk], dict[str, bytes]]:
+    data = json.loads(gzip.decompress(path.read_bytes()))
     return (
         data["manifest"],
         [Chunk(**chunk) for chunk in data["chunks"]],
@@ -105,7 +107,7 @@ class RenderedPDF:
 def compiled() -> tuple[dict[str, Any], list[Chunk], dict[str, Any]]:
     raw, chunks, images = fixture()
     evidence = []
-    for sha in {record["sha256"] for record in DIAGRAMS}:
+    for sha in {chunk.doc_sha256 for chunk in chunks}:
         pdf = RenderedPDF(sha, images)
         evidence += extract_diagram_evidence(pdf, sha, chunks)
         assert pdf.renders == (1 if sha.startswith("307b") else 2)
@@ -459,3 +461,45 @@ def test_figure_passages_reach_sqlite_and_withdrawals_are_enforced(
         )
     finally:
         loaded.close()
+
+
+def test_cb2_clearances_bind_five_directions_to_four_current_cabinets() -> None:
+    raw, chunks, images = fixture(FIXTURE.with_name("cb2-clearance-evidence.json.gz"))
+    sha = chunks[0].doc_sha256
+    pdf = RenderedPDF(sha, images)
+    pixels = extract_diagram_evidence(pdf, sha, chunks)
+    assert {part["kind"] for part in pixels} == {"manual_diagram", "manual_model_list"}
+    record = next(r for r in DIAGRAMS if r["sha256"] == sha)
+    roots = {
+        record["source_id"]: [
+            item["boundary"] for item in record["reviewed_reset"]["cleared"]
+        ]
+    }
+    source = Snapshot.read(raw)
+    checked = attach_physical_evidence(chunks, pixels)
+    units, proofs = compile_manual_evidence(
+        checked, source, Words(), 512, restricted_contexts=roots
+    )
+    assert {proofs[unit.id]["product_ids"][0] for unit in units} == {
+        4103,
+        4104,
+        4105,
+        4106,
+    }
+    for unit in units:
+        assert unit.page == 1
+        assert "1500 mm in front" in unit.text
+        assert "1000 mm on the right" in unit.text
+        assert "400 mm behind" in unit.text
+        assert "500 mm on the left" in unit.text
+        assert "500 mm above" in unit.text
+    images[record["figure"]] = images[record["anchor_figure"]]
+    changed = extract_diagram_evidence(RenderedPDF(sha, images), sha, chunks)
+    rejected, _ = compile_manual_evidence(
+        attach_physical_evidence(chunks, changed),
+        source,
+        Words(),
+        512,
+        restricted_contexts=roots,
+    )
+    assert rejected == []

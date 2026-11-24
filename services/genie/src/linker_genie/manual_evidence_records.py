@@ -7,6 +7,36 @@ retrieval. Addition requires source-page and authored-section review.
 
 from typing import Any
 
+CB2_QUICK_GUIDE_SUBJECT: dict[str, Any] = {
+    "sha256": "a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac",
+    "kind": "models",
+    "series": [],
+    "anchor_id": "a70cb4c39824-p1-954eb9fe",
+    "anchor_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
+    "anchor_quote": "This quick installation guide is applicable for the installation of "
+    "CB2-(57.3K-100.3K)-HV5. For detailed instructions, refer to the User Manual.",
+}
+
+CB2_SPACE_SECTION: dict[str, Any] = {
+    "id": "a70cb4c39824-p1-baa186e3",
+    "heading": "1. Installation space requirement",
+    "section": "1. Installation space requirement",
+    "text_sha256": "c09d36f93b277e4d719c76fdce54ee1ed07369c0e5c9ee411391cc30c86fabea",
+    "reason": "The cover heading states the CB2 HV5 range; section 1 "
+    "gives the cabinet installation space requirement.",
+    "cleared": [
+        {
+            "boundary": {
+                "kind": "heading",
+                "quote": "CB2-(57.3K-100.3K)-HV5 Quick Installation Guide",
+                "source_chunk_id": "a70cb4c39824-p1-954eb9fe",
+                "heading_path": [],
+            },
+            "source_text_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
+        }
+    ],
+}
+
 RECORDS: list[dict[str, Any]] = [
     {
         "sha256": "a470d6e1be68e843b42a11a2f4ba05c67b9a8d01bdb6abc1f58bce9762701ea6",
@@ -769,13 +799,7 @@ RECORDS: list[dict[str, Any]] = [
         "source_picture": "",
     },
     {
-        "sha256": "a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac",
-        "kind": "models",
-        "series": [],
-        "anchor_id": "a70cb4c39824-p1-954eb9fe",
-        "anchor_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
-        "anchor_quote": "This quick installation guide is applicable for the installation of "
-        "CB2-(57.3K-100.3K)-HV5. For detailed instructions, refer to the User Manual.",
+        **CB2_QUICK_GUIDE_SUBJECT,
         "source_id": "a70cb4c39824-p1-632eb7c1",
         "source_sha256": "cc97a0175f5c7a3d5ea72d9d2e762c959b0340f9636f66456974f332ab32c7fe",
         "source_page": 1,
@@ -784,34 +808,10 @@ RECORDS: list[dict[str, Any]] = [
         "the following space around the whole battery system to ensure good air circulation at "
         "the installation area:",
         "source_picture": "",
-        "reviewed_reset": {
-            "id": "a70cb4c39824-p1-baa186e3",
-            "heading": "1. Installation space requirement",
-            "section": "1. Installation space requirement",
-            "text_sha256": "c09d36f93b277e4d719c76fdce54ee1ed07369c0e5c9ee411391cc30c86fabea",
-            "reason": "The cover heading states the CB2 HV5 range; section 1 "
-            "gives the cabinet installation space requirement.",
-            "cleared": [
-                {
-                    "boundary": {
-                        "kind": "heading",
-                        "quote": "CB2-(57.3K-100.3K)-HV5 Quick Installation Guide",
-                        "source_chunk_id": "a70cb4c39824-p1-954eb9fe",
-                        "heading_path": [],
-                    },
-                    "source_text_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
-                }
-            ],
-        },
+        "reviewed_reset": CB2_SPACE_SECTION,
     },
     {
-        "sha256": "a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac",
-        "kind": "models",
-        "series": [],
-        "anchor_id": "a70cb4c39824-p1-954eb9fe",
-        "anchor_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
-        "anchor_quote": "This quick installation guide is applicable for the installation of "
-        "CB2-(57.3K-100.3K)-HV5. For detailed instructions, refer to the User Manual.",
+        **CB2_QUICK_GUIDE_SUBJECT,
         "source_id": "a70cb4c39824-p20-c67a91ad",
         "source_sha256": "bbbbdabbd678ee452d7352d34cd72fdb772927819394c9a3f0542ae6e88cb424",
         "source_page": 20,
