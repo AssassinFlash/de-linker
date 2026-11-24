@@ -1022,7 +1022,13 @@ def _answer(
         publication=publication,
     )
     catalog = (
-        prepared_answer(prepared.facts, prepared.route, language)
+        prepared_answer(
+            prepared.facts,
+            prepared.route,
+            language,
+            question=last_customer_message(body),
+            page_product_id=body.page_context.product_id,
+        )
         if not prepared.attachments and len(body.messages) == 1
         else None
     )
