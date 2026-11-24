@@ -97,6 +97,12 @@
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {
+		const revisit = document.querySelector('#tv-footer-v2 .cky-banner-element');
+		if (revisit) {
+			new IntersectionObserver(([entry]) => {
+				revisit.toggleAttribute('data-in-view', entry.isIntersecting);
+			}).observe(revisit);
+		}
 		queueMicrotask(function () {
 			labelPanels();
 			if (connectPreferences()) {

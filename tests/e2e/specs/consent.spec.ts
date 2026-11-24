@@ -170,6 +170,11 @@ for (const lang of ['en', 'de'] as const) {
 		}
 		await reject.click();
 		await expect(dock).toBeVisible();
+		const revisit = page.locator('#tv-footer-v2 .cky-banner-element');
+		await revisit.scrollIntoViewIfNeeded();
+		await revisit.click();
+		await expect(page.locator('#ckyPreferenceCenter')).toBeVisible();
+		await expect(dock).toBeVisible();
 	});
 }
 

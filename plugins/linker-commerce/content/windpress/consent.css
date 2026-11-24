@@ -54,6 +54,9 @@ body:has(.cky-consent-container:not(.cky-hide)) .linker-genie-peek {
   visibility: hidden;
   pointer-events: none;
 }
+body:has(#tv-footer-v2 .cky-banner-element[data-in-view]) .linker-genie-peek {
+  display: none;
+}
 body .cky-notice-btn-wrapper {
   display: flex;
   gap: 10px;
