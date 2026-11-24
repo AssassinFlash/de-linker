@@ -48,8 +48,6 @@ final class ProductSchemaTest extends TestCase {
 		$schema = new ProductSchema();
 		WP_Mock::expectActionAdded( 'wp_head', array( $schema, 'print_block' ) );
 		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( $schema, 'description' ), 45 );
-		WP_Mock::expectFilterAdded( 'seopress_social_og_desc', array( $schema, 'social_description' ), 45 );
-		WP_Mock::expectFilterAdded( 'seopress_social_twitter_card_desc', array( $schema, 'social_description' ), 45 );
 
 		$schema->register();
 
@@ -89,13 +87,13 @@ final class ProductSchemaTest extends TestCase {
 			)
 		);
 		$schema = new ProductSchema();
-		$value  = $schema->description( 'Editor’s expanded description' );
+		$value  = $schema->description( 'Project notes for GoodWe GW5.1-BAT-D-G21.' );
 		if ( $generated ) {
 			$this->assertSame( $schema->data( $product )['description'], $value );
 			$this->assertGreaterThanOrEqual( 125, mb_strlen( $value ) );
 			$this->assertLessThanOrEqual( 155, mb_strlen( $value ) );
 		} else {
-			$this->assertSame( 'Editor’s expanded description', $value );
+			$this->assertSame( 'Project notes for GoodWe GW5.1-BAT-D-G21.', $value );
 		}
 	}
 
@@ -107,7 +105,7 @@ final class ProductSchemaTest extends TestCase {
 	public static function meta_sources(): array {
 		return array(
 			'auto'   => array( '', true ),
-			'manual' => array( 'Editor’s own description', false ),
+			'manual' => array( 'Project notes for %%post_title%%.', false ),
 		);
 	}
 

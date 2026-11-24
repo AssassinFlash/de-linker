@@ -20,8 +20,6 @@ final class ProductSchema {
 	public function register(): void {
 		add_action( 'wp_head', array( $this, 'print_block' ) );
 		add_filter( 'seopress_titles_desc', array( $this, 'description' ), 45 );
-		add_filter( 'seopress_social_og_desc', array( $this, 'social_description' ), 45 );
-		add_filter( 'seopress_social_twitter_card_desc', array( $this, 'social_description' ), 45 );
 	}
 
 	/**
@@ -112,25 +110,6 @@ final class ProductSchema {
 			return $existing;
 		}
 		return $this->summary( $product, $this->term_name( $product->get_id(), 'pa_brand' ), $this->term_name( $product->get_id(), 'pa_model' ) );
-	}
-
-	/**
-	 * Use the product summary for default social sharing cards.
-	 *
-	 * @param string $tag Existing Open Graph or Twitter meta tag.
-	 */
-	public function social_description( string $tag ): string {
-		$product = $this->product();
-		if ( ! $product ) {
-			return $tag;
-		}
-		$twitter = 'seopress_social_twitter_card_desc' === current_filter();
-		$custom  = $twitter ? '_seopress_social_twitter_desc' : '_seopress_social_fb_desc';
-		if ( '' !== trim( (string) get_post_meta( $product->get_id(), $custom, true ) ) ) {
-			return $tag;
-		}
-		$description = $this->description( (string) get_post_meta( $product->get_id(), '_seopress_titles_desc', true ) );
-		return '<meta ' . ( $twitter ? 'name="twitter:description"' : 'property="og:description"' ) . ' content="' . esc_attr( $description ) . '">';
 	}
 
 	/**
