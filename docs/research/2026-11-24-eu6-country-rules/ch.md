@@ -1,0 +1,7 @@
+# Switzerland · low-voltage network operator control interfaces
+
+VSE/AES adopted NA/EEA-NE7 – CH 2025 on 27 June 2025 (printed p. 4). Section 1, paragraphs 9–11 (pp. 13–14), describes operator agreements and applicability for new and existing installations. On 24 November 2026 we inspected the published 73-page PDF, SHA-256 `c5fc0609423981a938cde75c1c091ad484c9dbc32828cb73025e3b39bd24ac61`. The separate text digest identifies the exact excerpt file. [VSE/AES publication](https://www.strom.ch/sites/default/files/media/documents/20250627-be-netzanschluss-ne7.pdf)
+
+Section 6.5.1(2–3), printed p. 40, concerns generating installations at network level 7 and up to 250 kW. The operator must be able to reduce feed-in to zero in an emergency. Above 30 kVA installed apparent power, equipment must also allow the operator to reduce active power. The comparison is strictly above 30 kVA. Section 6.5.2 covers installations above 250 kW separately. Check the applicability of this edition, the network level and the DSO's project-specific control arrangement. The adoption date is not proof of a statutory commencement date.
+
+ESTI confirms the old requirement for plan approval of large low-voltage generators was repealed on 1 July 2021. Installations affecting high-voltage installations remain a separate case. The handbook's 30 kVA interface boundary concerns control capability, not approval by ESTI. [ESTI plan-approval FAQ, question 2](https://www.esti.admin.ch/fr/themes/faq/approbation-des-plans-pour-les-installations-electriques)

@@ -1,0 +1,3 @@
+Schnittstellen für EEA ≤ 250 kW
+Binäreingang zur Abschaltung der EEA im Notfall
+Steuerung der Wirkleistung nach Sollwert für EEA > 30 kVA
