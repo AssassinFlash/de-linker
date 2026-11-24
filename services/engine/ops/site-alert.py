@@ -594,6 +594,8 @@ def run(
             f"site-alert: dropped {dropped} older undelivered alert(s); "
             f"the newest {PENDING_MAX} stay queued"
         )
+    outages = ", ".join(state.backend_outages) or "none"
+    status = f"WordPress/probe state {state.state}; active backend incidents: {outages}"
     if dry_run:
         latest = readings[-1] if readings else None
         verdicts = []
@@ -605,7 +607,6 @@ def run(
                     for name, code in zip(BACKENDS, latest.backends, strict=False)
                 ),
             ]
-        outages = ", ".join(state.backend_outages) or "none"
         emit(
             f"site-alert: dry run; WordPress/probe state {state.state}; "
             f"latest: {', '.join(verdicts) or 'no readings'}; "
@@ -615,9 +616,7 @@ def run(
         return 0
     if not state.pending:
         save_state(state_path, state)
-        emit(
-            f"site-alert: WordPress/probe state {state.state}; active backend incidents: {', '.join(state.backend_outages) or 'none'}; nothing to send"
-        )
+        emit(f"site-alert: {status}; nothing to send")
         return 0
 
     config = read_config(config_path)
@@ -645,10 +644,7 @@ def run(
         delivered += 1
         emit(f"site-alert: sent {message['kind']}: {message['subject']}")
     save_state(state_path, state)
-    emit(
-        f"site-alert: state {state.state}; sent {delivered}, "
-        f"{len(state.pending)} still pending"
-    )
+    emit(f"site-alert: {status}; sent {delivered}, {len(state.pending)} still pending")
     return 0 if not state.pending else 1
 
 

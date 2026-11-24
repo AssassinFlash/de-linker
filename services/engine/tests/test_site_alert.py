@@ -570,7 +570,9 @@ def test_backends_debounce_independently_across_probe_upgrade(
     for log in [[healthy, planner], [healthy, planner, planner]]:
         assert not run_alert(alert, tmp_path, record(log, end=t), now=t)[1].sent
     bad = [planner, planner, planner]
-    sent = run_alert(alert, tmp_path, record(bad, end=t), now=t)[1].sent
+    _, delivery, journal = run_alert(alert, tmp_path, record(bad, end=t), now=t)
+    assert "active backend incidents: Planner HTTP/worker" in journal[-1]
+    sent = delivery.sent
     assert len(sent) == 1 and "Planner HTTP/worker" in sent[0][0]
     assert "503" in sent[0][1]
     assert not run_alert(alert, tmp_path, record(bad, end=t), now=t)[1].sent
