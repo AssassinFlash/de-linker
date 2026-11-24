@@ -138,7 +138,11 @@ final class PublicationEvidenceTest extends IntegrationTestCase {
 			$id = wp_insert_attachment( array( 'post_mime_type' => 'application/pdf' ), $file['path'], 0, true );
 			$this->assertIsInt( $id );
 			update_attached_file( $id, $file['path'] );
-			$this->later( static fn () => wp_delete_attachment( $id, true ) );
+			$this->later(
+				static function () use ( $id ): void {
+					wp_delete_attachment( $id, true );
+				}
+			);
 			$ids[ $name ] = $id;
 		}
 		$url = $files['manual']['url'];
