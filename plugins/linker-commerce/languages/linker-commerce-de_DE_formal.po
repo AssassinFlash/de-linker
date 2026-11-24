@@ -913,6 +913,22 @@ msgstr "Ihre Frage"
 msgid "What would you like to know?"
 msgstr "Was möchten Sie wissen?"
 
+#: includes/Presentation/BlogShortcodes.php
+msgid "Talk to Chester"
+msgstr "Chester kontaktieren"
+
+#: includes/Presentation/BlogShortcodes.php
+msgid "Ask me a question or tell me what you’re working on."
+msgstr "Schreiben Sie mir, was Sie wissen möchten oder woran Sie gerade arbeiten."
+
+#: includes/Presentation/BlogShortcodes.php
+msgid "Loading the form…"
+msgstr "Das Formular wird geladen …"
+
+#: includes/Presentation/BlogShortcodes.php
+msgid "Open the contact form"
+msgstr "Kontaktformular öffnen"
+
 #: includes/Contact/Form.php:173
 #: includes/Inquiry/Assessment/EvidenceView.php:49
 msgid "This is about"

@@ -35,6 +35,7 @@ final class Module {
 		( new SelectionView() )->register();
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_language' ) );
 		add_action( 'template_redirect', array( $this, 'prepare_form_owner' ) );
+		add_action( 'template_redirect', array( $this, 'render_article_form' ), 100 );
 		// Before do_shortcode (priority 11 on the_content, WordPress default):
 		// the replacement has to be a shortcode by the time that filter runs.
 		add_filter( 'the_content', array( $this, 'mount_form' ), 9 );
@@ -47,6 +48,40 @@ final class Module {
 			\Linker\Commerce\Cache\DynamicHtml::forbid( 'contact form' );
 			\Linker\Commerce\Protection\Identity::ensure_browser_cookie();
 		}
+	}
+
+	/** Serve the same native form and receipt in the author's dialog. */
+	public function render_article_form(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Public view selector accepted only as the literal '1'.
+		if ( '1' !== ( $_GET[ Form::ARTICLE_VIEW ] ?? '' ) ) {
+			return;
+		}
+		$page = get_queried_object();
+		if ( ! $page instanceof \WP_Post || ! $this->is_contact_page( $page ) ) {
+			return;
+		}
+
+		$back = add_query_arg( Form::ARTICLE_VIEW, '1', (string) get_permalink( $page ) );
+		$form = ( new Form() )->render_embedded( $back );
+		header( 'X-Robots-Tag: noindex' );
+		header( 'X-Frame-Options: SAMEORIGIN' );
+		?>
+		<!doctype html>
+		<html <?php language_attributes(); ?>>
+		<head>
+			<meta charset="<?php bloginfo( 'charset' ); ?>">
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+			<?php wp_head(); ?>
+		</head>
+		<body class="linker-article-contact-frame">
+			<main id="<?php echo esc_attr( Form::ANCHOR ); ?>" class="linker-article-contact-main">
+				<?php echo $form; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Form renders escaped markup. ?>
+			</main>
+			<?php wp_print_footer_scripts(); ?>
+		</body>
+		</html>
+		<?php
+		exit;
 	}
 
 	/**

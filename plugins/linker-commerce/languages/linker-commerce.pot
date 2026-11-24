@@ -850,6 +850,22 @@ msgstr ""
 msgid "What would you like to know?"
 msgstr ""
 
+#: includes/Presentation/BlogShortcodes.php
+msgid "Talk to Chester"
+msgstr ""
+
+#: includes/Presentation/BlogShortcodes.php
+msgid "Ask me a question or tell me what you’re working on."
+msgstr ""
+
+#: includes/Presentation/BlogShortcodes.php
+msgid "Loading the form…"
+msgstr ""
+
+#: includes/Presentation/BlogShortcodes.php
+msgid "Open the contact form"
+msgstr ""
+
 #: includes/Contact/Form.php:173
 #: includes/Inquiry/Assessment/EvidenceView.php:49
 msgid "This is about"

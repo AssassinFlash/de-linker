@@ -15,6 +15,7 @@ use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 use WP_Post;
 use WP_Term;
+use WP_User;
 
 /**
  * Tests for BlogShortcodes.
@@ -79,12 +80,40 @@ final class BlogShortcodesTest extends TestCase {
 				'args'  => array( 'linker_blog_share', array( $codes, 'share' ) ),
 			)
 		);
+		WP_Mock::userFunction(
+			'add_shortcode',
+			array(
+				'times' => 1,
+				'args'  => array( 'linker_blog_author', array( $codes, 'author' ) ),
+			)
+		);
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $codes, 'enqueue_author_dialog' ) );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $codes, 'empty_search_title' ), 60 );
 		$codes->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/** Only Chester's articles link the byline to his profile card. */
+	public function test_only_chesters_byline_links_to_the_author_card(): void {
+		$post              = $this->post( 551, 'System design', 'system-design' );
+		$post->post_author = '12';
+		$chester           = new WP_User();
+		$guest             = new WP_User();
+
+		$chester->user_nicename = 'chester-john';
+		$chester->display_name  = 'Chester John';
+		$guest->user_nicename   = 'guest-editor';
+		$guest->display_name    = 'Guest Editor';
+
+		WP_Mock::userFunction( 'get_post' )->with()->andReturn( $post );
+		WP_Mock::userFunction( 'get_userdata' )->with( 12 )->andReturn( $guest, $guest, $chester );
+		$codes = new BlogShortcodes();
+		$this->assertSame( '', $codes->author() );
+		$this->assertSame( '<span>Guest Editor</span>', $codes->author( array( 'view' => 'byline' ) ) );
+		$this->assertSame( '<a class="reader-author-byline" href="#tv-blog-author">Chester John</a>', $codes->author( array( 'view' => 'byline' ) ) );
 	}
 
 	/**
