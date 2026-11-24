@@ -28,14 +28,12 @@ test.afterEach(async ({ page }, info) => {
 	}
 });
 
-// Live English at 1280 is folded, even though CSS enables desktop at 1280.
-// #229 keeps those pixels; 1440/1920 show the full row in both languages.
 // 900px is the viewport height fixed by the original #229 live/local captures
 // and the reviewer's boundary probe; changing it would change the baseline.
 const viewportHeight = 900;
 const navKeys = ['products', 'solutions', 'ai', 'partners', 'about'] as const;
 const viewports = [
-	[1280, false],
+	[1280, true],
 	[1440, true],
 	[1920, true],
 	[390, false],
@@ -50,8 +48,7 @@ test('German desktop retains cross-engine safety headroom', async ({
 	// Round 2 measured worst-engine width + inter-engine spread + 1px per
 	// padding side on six links. Bounds preserve usable spacing after that
 	// reserve: docs/acceptance/2026-10-18/229/round2/layout-metrics.json.
-	// 1288 is the first width above the review's protected boundary zone;
-	// 1940 is the sweep's upper endpoint, not a new responsive breakpoint.
+	// 1940 is the sweep's upper endpoint.
 	for (const [width, minimum] of [
 		[1288, 3.9],
 		[1300, 4.9],
@@ -107,17 +104,9 @@ test('German desktop retains cross-engine safety headroom', async ({
 
 test('EN/DE follow the ruled header fold boundaries', async ({
 	browser,
-	browserName,
 }, info) => {
 	const en = await browser.newPage();
 	const de = await browser.newPage();
-	// PR #294 round 3 rules exactly these Firefox widths: EN stays expanded,
-	// DE folds. Both the fold and visibility mismatch sets must match exactly.
-	// https://github.com/AssassinFlash/de-linker/pull/294#issuecomment-6244186438
-	const expectedMismatches =
-		browserName === 'firefox' ? [1283, 1284, 1285, 1286, 1287] : [];
-	// Review round 1: every pixel around the 1282 fold boundary, then every
-	// 10px through 1940, plus mobile. 1300 is included once: 95 widths total after #223 adds mobile and boundary neighbours.
 	const widths = [
 		389,
 		390,
@@ -242,27 +231,7 @@ test('EN/DE follow the ruled header fold boundaries', async ({
 					'/de/mein-konto/registrieren/',
 				]);
 			rows.push({ width, en: english, de: german });
-			if (expectedMismatches.includes(width)) {
-				expect
-					.soft(
-						english!.folded,
-						`${width}px: ruled EN stays unfolded`
-					)
-					.toBe(false);
-				expect
-					.soft(
-						english!.desktop,
-						`${width}px: ruled EN stays visible`
-					)
-					.toBe(true);
-				expect
-					.soft(german!.folded, `${width}px: ruled DE folds`)
-					.toBe(true);
-				expect
-					.soft(german!.desktop, `${width}px: ruled DE hides the row`)
-					.toBe(false);
-			}
-			if (width >= 1288) {
+			if (width >= 1280) {
 				// Independent measured spread + six links' 12px pressure reserve;
 				// round2/safety-margin.json records the precise source calculation.
 				expect
@@ -270,6 +239,12 @@ test('EN/DE follow the ruled header fold boundaries', async ({
 					.toBeGreaterThanOrEqual(12.35);
 			}
 			for (const state of states) {
+				expect
+					.soft(state.desktop, `${width}px: desktop navigation`)
+					.toBe(width >= 1280);
+				expect
+					.soft(state.folded, `${width}px: no overflow fallback`)
+					.toBe(false);
 				expect
 					.soft(
 						state.cta,
@@ -289,21 +264,6 @@ test('EN/DE follow the ruled header fold boundaries', async ({
 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
 					.toBe(false);
 			}
-			if (
-				browserName === 'firefox' &&
-				width === 1285 &&
-				process.env.LINKER_HEADER_CAPTURE
-			) {
-				for (const [locale, page] of [
-					['en', en],
-					['de', de],
-				] as const) {
-					await page.screenshot({
-						path: `${process.env.LINKER_HEADER_CAPTURE}/${info.project.name}/${locale}-1285-boundary.png`,
-						animations: 'disabled',
-					});
-				}
-			}
 		}
 		console.log(
 			'| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding | DE headroom |'
@@ -318,18 +278,6 @@ test('EN/DE follow the ruled header fold boundaries', async ({
 			body: JSON.stringify(rows, null, 2),
 			contentType: 'application/json',
 		});
-		expect(
-			rows
-				.filter((row) => row.en!.folded !== row.de!.folded)
-				.map((row) => row.width),
-			`${browserName}: exact ruled fold mismatch set`
-		).toEqual(expectedMismatches);
-		expect(
-			rows
-				.filter((row) => row.en!.desktop !== row.de!.desktop)
-				.map((row) => row.width),
-			`${browserName}: exact ruled visibility mismatch set`
-		).toEqual(expectedMismatches);
 	} finally {
 		await en.close();
 		await de.close();
@@ -371,6 +319,14 @@ for (const locale of ['en', 'de'] as const) {
 					);
 				}
 				const account = header.locator('.tv-b2b-acct-btn');
+				await expect(account).toHaveAccessibleName(
+					locale === 'de' ? 'Konto' : 'Account'
+				);
+				if (locale === 'en')
+					await expect(header).toHaveAttribute(
+						'data-tv-actions-compact',
+						'false'
+					);
 				await account.press('End');
 				await expect(
 					header.locator('.tv-b2b-acct-menu>.linker-create-account')
