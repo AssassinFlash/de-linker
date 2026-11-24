@@ -181,10 +181,14 @@ final class Context {
 	 */
 	public static function preflight( ?array $proposed = null ): ?WP_Error {
 		if ( null === $proposed ) {
+			$omit = isset( self::$submission_post[ DraftRecovery::FIELD ] ) ? DraftRecovery::confirmed_keys( self::$submission_post[ DraftRecovery::FIELD ] ) : array();
+			if ( $omit instanceof WP_Error ) {
+				return $omit;
+			}
 			$active = self::active();
-			foreach ( WC()->cart->get_cart() as $line ) {
+			foreach ( WC()->cart->get_cart() as $key => $line ) {
 				$id = $line[ DraftTransfer::LINE_META ] ?? null;
-				if ( null !== $id && ( ! is_string( $id ) || ! isset( $active[ $id ] ) ) ) {
+				if ( null !== $id && ( ! is_string( $id ) || ! isset( $active[ $id ] ) ) && ! in_array( $key, $omit, true ) ) {
 					return new WP_Error( 'planning_context_unavailable', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ), array( 'status' => 409 ) );
 				}
 			}

@@ -68,24 +68,19 @@ final class DraftRecovery {
 		return self::FIELD . ':' . implode( ',', $missing );
 	}
 
-	/** Remove only the links the buyer reviewed and the server still cannot resolve.
+	/** Confirm exactly the links to omit from this inquiry while retaining the complete cart until it is sent.
 	 *
-	 * @param string $nonce Confirmation from the inquiry form.
+	 * @param mixed $nonce Confirmation submitted with the customer’s original inquiry.
+	 * @return string[]|WP_Error Confirmed inaccessible cart line keys.
 	 */
-	public static function detach( string $nonce ): bool {
+	public static function confirmed_keys( mixed $nonce ): array|WP_Error {
 		$missing = self::review();
-		if ( $missing instanceof WP_Error || array() === $missing || ! wp_verify_nonce( $nonce, self::nonce_action( $missing ) ) ) {
-			return false;
+		if ( $missing instanceof WP_Error ) {
+			return $missing;
 		}
-		$cart  = WC()->cart;
-		$lines = $cart->get_cart();
-		foreach ( $missing as $key ) {
-			unset( $lines[ $key ][ DraftTransfer::LINE_META ] );
+		if ( array() === $missing || ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::nonce_action( $missing ) ) ) {
+			return new WP_Error( 'planning_context_unavailable', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ), array( 'status' => 409 ) );
 		}
-		$cart->set_cart_contents( $lines );
-		$session = new \WC_Cart_Session( $cart );
-		$session->set_session();
-		$session->persistent_cart_update();
-		return true;
+		return $missing;
 	}
 }

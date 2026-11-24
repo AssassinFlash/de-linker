@@ -257,29 +257,47 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingHookComment
 		$missing = DraftRecovery::review();
 		$this->assertSame( $unavailable ? array( $linked ) : array(), $missing );
-		if ( $unavailable ) {
-			$this->assertFalse( DraftRecovery::detach( 'unconfirmed' ) );
-			$this->assertTrue( DraftRecovery::detach( wp_create_nonce( DraftRecovery::nonce_action( $missing ) ) ) );
-			$this->assertArrayNotHasKey( DraftTransfer::LINE_META, $cart->get_cart()[ $linked ] );
-			$this->assertSame( 3, $cart->get_cart()[ $linked ]['quantity'] );
-		}
-		$details = Submission::from_post(
-			array(
-				'name'    => 'Partner',
-				'email'   => self::TESTER,
-				'message' => 'Please quote the entire draft.',
-				'consent' => '1',
-			),
-			false
+		$request = wp_generate_uuid4();
+		$post    = array(
+			'name'                 => 'Maria Richter',
+			'email'                => self::TESTER,
+			'company'              => 'Richter Solar',
+			'message'              => 'Please quote the entire draft.',
+			'consent'              => '1',
+			'linker_request_id'    => $request,
+			'linker_inquiry_nonce' => wp_create_nonce( \Linker\Commerce\Inquiry\Handler::nonce_action( '' ) ),
+			'linker_draft_hash'    => $cart->get_cart_hash(),
 		);
-		$this->assertInstanceOf( Submission::class, $details );
-		$order = ( new Sender() )->request( $details );
+		if ( $unavailable ) {
+			$handle = \Linker\Commerce\Inquiry\CheckoutRetry::remember( array( 'fields' => $post ), '' );
+			$this->assertIsString( $handle );
+			$post[ \Linker\Commerce\Inquiry\CheckoutRetry::HANDLE ] = $handle;
+			$html = ( new \Linker\Commerce\Inquiry\Form() )->render();
+			$dom  = new \DOMDocument();
+			$dom->loadHTML( $html, LIBXML_NOERROR | LIBXML_NOWARNING );
+			$fields = ( new \DOMXPath( $dom ) )->query( '//form[contains(@class,"linker-inquiry-form")]//input[@name="linker_detach_planning_links" and @type="checkbox"]' );
+			$this->assertInstanceOf( \DOMNodeList::class, $fields );
+			$field = $fields->item( 0 );
+			$this->assertInstanceOf( \DOMElement::class, $field );
+			$this->assertTrue( $field->hasAttribute( 'required' ) );
+			$this->assertFalse( $field->hasAttribute( 'checked' ) );
+			$post[ DraftRecovery::FIELD ] = 'unconfirmed';
+			$refused                      = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
+			$this->assertInstanceOf( \WP_Error::class, $refused );
+			$this->assertSame( $old['id'], $cart->get_cart()[ $linked ][ DraftTransfer::LINE_META ] );
+			$post[ DraftRecovery::FIELD ] = $field->getAttribute( 'value' );
+		}
+		$order = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_message() : '' );
 		$this->later(
 			static function () use ( $order ): void {
 				$order->delete( true );
 			}
 		);
+		$this->assertSame( $post['name'], $order->get_billing_first_name() );
+		$this->assertSame( $post['email'], $order->get_billing_email() );
+		$this->assertSame( $post['company'], $order->get_billing_company() );
+		$this->assertSame( $post['message'], $order->get_customer_note() );
 		$this->assertSame( $customer->get_id(), $order->get_customer_id() );
 		$this->assertSame( 6, $order->get_item_count() );
 		$this->assertCount( 3, $order->get_items() );
