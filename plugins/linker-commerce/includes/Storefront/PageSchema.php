@@ -43,7 +43,7 @@ final class PageSchema {
 		}
 
 		$url   = (string) get_permalink( $post );
-		$title = wp_strip_all_tags( get_the_title( $post ) );
+		$title = html_entity_decode( wp_strip_all_tags( get_the_title( $post ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 		$home  = PageUrls::home();
 		$trail = array();
 		if ( is_singular( 'product' ) ) {
@@ -108,7 +108,7 @@ final class PageSchema {
 				$items[] = array(
 					'@type'    => 'ListItem',
 					'position' => $index + 1,
-					'name'     => $crumb['label'],
+					'name'     => html_entity_decode( $crumb['label'], ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
 					'item'     => $crumb['url'] ?? $url,
 				);
 			}

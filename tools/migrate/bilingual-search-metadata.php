@@ -57,4 +57,4 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 			WP_CLI::log( ( $write ? 'Updated ' : 'Would update ' ) . $slug . ' ' . $meta_key );
 		}
 	}
-} )( $args );
+} )( $args ?? array() );
