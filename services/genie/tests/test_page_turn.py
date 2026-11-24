@@ -132,7 +132,10 @@ def test_a_message_not_about_the_page_does_not_read_it(vocabulary: Vocabulary) -
 def test_this_one_on_a_product_page_is_the_page_product(vocabulary: Vocabulary) -> None:
     pages = Pages({**PAGE_RESULT, "type": "product"})
     understander = Understander(
-        lambda: vocabulary, Jev("documents_specs", 0.98), pages=pages
+        lambda: vocabulary,
+        Jev("documents_specs", 0.98),
+        pages=pages,
+        search=lambda _: {"hits": []},
     )
     product = {
         "type": "product",
@@ -310,7 +313,10 @@ def test_delivery_asked_on_a_page_goes_to_the_team_whatever_jev_says(
 ) -> None:
     pages = Pages(PAGE_RESULT)
     understander = Understander(
-        lambda: vocabulary, Jev("documents_specs", 0.95), pages=pages
+        lambda: vocabulary,
+        Jev("documents_specs", 0.95),
+        pages=pages,
+        search=lambda _: {"hits": []},
     )
     product = {
         "type": "product",
@@ -333,7 +339,10 @@ def test_a_documents_question_on_the_draft_keeps_the_subjects_calls(
 ) -> None:
     pages = Pages({"type": "draft", "products": []})
     understander = Understander(
-        lambda: vocabulary, Jev("documents_specs", 0.95), pages=pages
+        lambda: vocabulary,
+        Jev("documents_specs", 0.95),
+        pages=pages,
+        search=lambda _: {"hits": []},
     )
     draft = {"type": "draft", "url": "/cart/", "draft_ids": [6528, 6520]}
     prepared = understander.prepare(
@@ -361,7 +370,10 @@ def test_a_documents_route_with_two_products_keeps_both_get_product_calls(
     vocabulary: Vocabulary,
 ) -> None:
     understander = Understander(
-        lambda: vocabulary, Jev("documents_specs", 0.95), pages=Pages(PAGE_RESULT)
+        lambda: vocabulary,
+        Jev("documents_specs", 0.95),
+        pages=Pages(PAGE_RESULT),
+        search=lambda _: {"hits": []},
     )
     product = {
         "type": "product",

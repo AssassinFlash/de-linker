@@ -36,6 +36,7 @@ from linker_genie.language import (
     turn_language,
 )
 from linker_genie.prices import Lookup, fill
+from linker_genie.publication import PublicationUnavailable
 from linker_genie.route import SEARCH_LIMIT, Route
 from linker_genie.schema import (
     HandoffBlock,
@@ -422,6 +423,8 @@ def run(
                 timing.phase(clock, timing.attempt_key(attempt)),
             ):
                 output, facts = generate(request, retry_reason)
+        except PublicationUnavailable:
+            raise
         except (ValueError, TypeError, RuntimeError) as error:
             raised = True
             # The live list first: a tool recorded its class, then a wrapper
