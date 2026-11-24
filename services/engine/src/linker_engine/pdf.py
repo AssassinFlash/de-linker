@@ -144,7 +144,7 @@ def _value(row: ReportRow, appendix: bool) -> str:
         return _linked(row.value)
     href = _escape(row.href)
     label = f'<link href="{href}" color="{ACCENT_HEX}">{_text(row.value)}</link>'
-    if appendix:
+    if appendix and row.value != row.href:
         label += f'<br/><font size="6.8" color="{MUTED_HEX}">{_text(row.href)}</font>'
     return label
 

@@ -558,3 +558,24 @@ def test_quick_proposal_leaves_site_materials_to_the_measured_layout(
     materials = next(s for s in sections if s.id == "bom").table
     assert materials and sum(row[0] == site for row in materials.rows) == 3
     assert "Proforma" not in str(sections)
+
+
+def test_the_appendix_prints_a_document_url_once_per_reference() -> None:
+    link = "https://de-linker.com/documents/manual.pdf"
+    entry = ReportSection(
+        id="sources",
+        tier="appendix",
+        title="Source documents",
+        rows=[ReportRow(label="Manual", value=link, href=link)],
+    )
+    report = Report.model_validate(
+        dict(
+            title="Proposal",
+            subtitle="",
+            locale="en",
+            generated_at="2026-11-24",
+            sections=[entry],
+        )
+    )
+    result = text_of(pdf.render(report))
+    assert result.count(link) == 1
