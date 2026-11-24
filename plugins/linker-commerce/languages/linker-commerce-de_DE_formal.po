@@ -6923,6 +6923,91 @@ msgstr ""
 "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. "
 "Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
 
+#: includes/Quotation/Issuer.php
+msgid "Approve this account before issuing its Quotation. The customer needs approval to download the PDF."
+msgstr "Geben Sie dieses Konto vor der Ausstellung des Angebots frei. Erst nach der Freigabe kann der Kunde das PDF herunterladen."
+
+#: includes/Quotation/Issuer.php
+msgid "Reload this inquiry to revise its current Quotation."
+msgstr "Laden Sie diese Anfrage erneut, um das aktuelle Angebot zu korrigieren."
+
+#: includes/Quotation/Issuer.php
+msgid "The previous Quotation notification is still being queued. Please try again shortly."
+msgstr "Die Benachrichtigung zum vorherigen Angebot wird noch für den Versand vorbereitet. Bitte versuchen Sie es in Kürze erneut."
+
+#: includes/Quotation/Issuer.php
+msgid "Inquiry not found."
+msgstr "Anfrage nicht gefunden."
+
+#: includes/Quotation/AdminBox.php
+msgid "The billing address is incomplete. You can add it under Billing."
+msgstr "Die Rechnungsadresse ist unvollständig. Sie können sie unter Rechnungsdetails ergänzen."
+
+#: includes/Quotation/AdminBox.php
+msgid "No buyer VAT ID is recorded. Add it under Billing if available."
+msgstr "Für den Käufer ist keine USt-IdNr. hinterlegt. Falls vorhanden, ergänzen Sie sie unter Rechnungsdetails."
+
+#: includes/Quotation/AdminBox.php
+msgid "Preview PDF"
+msgstr "PDF-Vorschau"
+
+#: includes/Quotation/AdminBox.php
+msgid "Issue revised Quotation"
+msgstr "Korrigiertes Angebot ausstellen"
+
+#: includes/Quotation/AdminBox.php includes/Inquiry/AccountLink.php includes/Inquiry/Assessment/EvidenceView.php
+msgid "Guest inquiry"
+msgstr "Gastanfrage"
+
+#: includes/Quotation/AdminBox.php
+msgid "Pending approval"
+msgstr "Freigabe ausstehend"
+
+#: includes/Quotation/AdminBox.php
+msgid "An account uses this email address. This inquiry is still unlinked."
+msgstr "Zu dieser E-Mail-Adresse gibt es bereits ein Konto. Die Anfrage ist diesem Konto noch nicht zugeordnet."
+
+#: templates/quotation/quotation.php
+msgid "Quotation — DRAFT"
+msgstr "Angebot – ENTWURF"
+
+#: includes/Quotation/AdminBox.php
+msgid "Issue the PDF for offline delivery. Download it here and send it to the guest yourself."
+msgstr "Stellen Sie das Angebot als PDF aus. Laden Sie es hier herunter und senden Sie es direkt an den Gast."
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php
+msgid "Revised Quotation {quotation_number} for inquiry #{order_number}"
+msgstr "Korrigiertes Angebot {quotation_number} zu Ihrer Anfrage Nr. {order_number}"
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php
+msgid "Your revised Quotation is ready"
+msgstr "Ihr korrigiertes Angebot liegt vor"
+
+#: includes/Account/AuthTemplates.php includes/Presentation/AccountTemplates.php
+msgid "Confirm inquiry"
+msgstr "Anfrage bestätigen"
+
+#: includes/Account/AuthTemplates.php
+msgid "Sign in to your partner account"
+msgstr "Beim Partnerkonto anmelden"
+
+#: includes/Inquiry/Form.php
+msgid "A planning report is unavailable for these products:"
+msgstr "Für diese Produkte ist ein Planungsbericht nicht verfügbar:"
+
+#: includes/Inquiry/Form.php
+msgid "You can keep all products and quantities in your inquiry."
+msgstr "Alle Produkte und Mengen können in Ihrer Anfrage bleiben."
+
+#: includes/Inquiry/Form.php
+msgid "Remove unavailable report links"
+msgstr "Nicht verfügbare Berichtsverknüpfungen entfernen"
+
+#: includes/Planning/Context.php
+#, php-format
+msgid "The planning project “%s” is no longer accessible. Remove the unavailable report link on the inquiry form to keep its products."
+msgstr "Das Planungsprojekt „%s“ ist nicht mehr zugänglich. Entfernen Sie die Verknüpfung zum Bericht im Anfrageformular, um die Produkte zu behalten."
+
 #~ msgid "Update the solution draft before sending your inquiry."
 #~ msgstr ""
 #~ "Aktualisieren Sie den Lösungsentwurf, bevor Sie Ihre Anfrage senden."
