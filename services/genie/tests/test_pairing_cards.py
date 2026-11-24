@@ -1052,6 +1052,9 @@ def test_searching_a_retired_pair_partner_keeps_the_available_battery_grounded(
         )
     answer = prepared_answer(facts, route, lang)
     assert answer is not None
+    text = next(b for b in answer.blocks if isinstance(b, TextBlock))
+    assert "catalog.absent.HD-P3-15K" in text.refs
+    assert facts.facts["catalog.absent.HD-P3-15K"].source == "search-products"
     result = run(_request(lang), lambda *_: (answer, TurnFacts()), route, facts)
     assert result.grounded and not result.fallback, result.failures
     assert any(

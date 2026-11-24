@@ -618,6 +618,7 @@ def prepared_answer(
                 call["arguments"].get("text")
                 for call in facts.tool_calls
                 if call["name"] == "linker/search-products"
+                and call.get("ok") is True
                 and call["result"].get("qualified") == []
             }
             if (
@@ -632,9 +633,19 @@ def prepared_answer(
                     if language == "de"
                     else " There is no documented pairing for this combination."
                 )
-                blocks: list[Block] = [
-                    TextBlock(text=sentence, refs=[str(pid) for pid in known_ids])
-                ]
+                refs = [str(pid) for pid in known_ids]
+                for code in missing:
+                    ref = f"catalog.absent.{code}"
+                    facts.add(
+                        Fact(
+                            id=ref,
+                            value=f"Published product search for {code}: no qualified product. "
+                            "No released pairing with this model.",
+                            source="search-products",
+                        )
+                    )
+                    refs.append(ref)
+                blocks: list[Block] = [TextBlock(text=sentence, refs=refs)]
                 if known_ids:
                     blocks.append(CardsBlock(product_ids=known_ids))
                 return TurnOutput(language=language, blocks=blocks)
