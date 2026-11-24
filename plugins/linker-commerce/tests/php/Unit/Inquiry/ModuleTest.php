@@ -36,6 +36,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'linker_commerce_planning_inquiry_form', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Planning\Module::class ), 'inquiry_form' ), 10, 4 );
 		// @phpstan-ignore argument.type (WP_Mock callback matcher)
 		WP_Mock::expectFilterAdded( 'linker_commerce_planning_inquiry_retry', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Planning\Module::class ), 'inquiry_retry' ), 10, 4 );
+		// @phpstan-ignore argument.type (WP_Mock accepts an AnyInstance matcher for array callbacks.)
+		WP_Mock::expectFilterAdded( 'woocommerce_session_handler', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Planning\Module::class ), 'session_handler' ) );
 		foreach ( array( array( 'linker_commerce_planning_draft_apply', \Linker\Commerce\Planning\DraftTransfer::class, 'apply', 3 ), array( 'linker_commerce_planning_draft_preview', \Linker\Commerce\Planning\DraftPreview::class, 'read', 3 ), array( 'linker_commerce_planning_draft_read', \Linker\Commerce\Planning\DraftTransfer::class, 'receipt', 3 ), array( 'woocommerce_get_item_data', \Linker\Commerce\Planning\Context::class, 'item_data', 2 ) ) as [ $hook, $class, $method, $args ] ) {
 			WP_Mock::expectFilterAdded( $hook, array( new WP_Mock\Matcher\AnyInstance( $class ), $method ), 10, $args ); // @phpstan-ignore argument.type (WP_Mock callback matcher)
 		}
