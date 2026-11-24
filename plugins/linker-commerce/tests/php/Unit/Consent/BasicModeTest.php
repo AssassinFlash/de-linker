@@ -34,7 +34,12 @@ final class BasicModeTest extends TestCase {
 		}
 	}
 
-	/** Reloading a signup confirmation consumes no second event or opt-out exception. */
+	/**
+	 * Reloading a signup confirmation consumes no second event or opt-out exception.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
 	public function test_consented_registration_is_carried_across_one_redirect(): void {
 		$_COOKIE['cookieyes-consent'] = 'analytics:yes,advertisement:no';
 		try {
