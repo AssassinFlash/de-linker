@@ -80,6 +80,7 @@ final class EntriesTest extends TestCase {
 
 		$this->assertStringContainsString( 'data-linker-genie-open', $html );
 		$this->assertStringContainsString( 'Ask Genie', $html );
+		$this->assertStringNotContainsString( 'class="linker-genie-peek__prompt"', $html );
 		$this->assertStringContainsString( 'data-linker-app="genie"', $html );
 		$this->assertStringContainsString( 'data-page-type="product"', $html );
 		$this->assertStringContainsString( "I'm Genie, Linker's AI assistant", $html );
@@ -204,6 +205,7 @@ final class EntriesTest extends TestCase {
 		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
 		$this->assertStringContainsString( 'data-linker-genie-open', $html );
+		$this->assertSame( 2, substr_count( $html, 'class="linker-genie-peek__prompt"' ) );
 		$this->assertStringContainsString( 'data-surface="helper"', $html );
 		$this->assertStringNotContainsString( 'data-surface="workspace"', $html );
 		$this->assertConditionsMet();
