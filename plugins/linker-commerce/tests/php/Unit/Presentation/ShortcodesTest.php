@@ -38,6 +38,7 @@ final class ShortcodesTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		WP_Mock::userFunction( 'is_product', array( 'return' => false ) );
 	}
 
 	/**

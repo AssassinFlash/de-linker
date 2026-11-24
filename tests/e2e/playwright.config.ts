@@ -51,7 +51,9 @@ export default defineConfig({
 			use: {
 				...devices['Desktop Firefox'],
 				// The header fixture runs entirely on the local WordPress instance.
-				launchOptions: { firefoxUserPrefs: { 'network.proxy.type': 0 } },
+				launchOptions: {
+					firefoxUserPrefs: { 'network.proxy.type': 0 },
+				},
 			},
 		},
 	],
