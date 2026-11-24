@@ -7,6 +7,7 @@ export interface ProductPresentation {
 	product_id: number;
 	model?: string | null;
 	documents?: Array< {
+		display_purpose?: string;
 		url?: string;
 		title?: string;
 		type?: string;

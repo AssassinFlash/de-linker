@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Abilities;
 
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\Materials;
 use WC_Product;
 
 /**
@@ -157,11 +158,20 @@ final class GetProduct {
 	 * @return array{model:?string,brand:?string,series:?string,documents:list<array<string,mixed>>,commerce:array<string,mixed>}
 	 */
 	public function customer_fields( int $id, string $lang, array $manifest, ?WC_Product $product = null ): array {
+		$documents = $this->publication->documents( $id, $manifest );
+		$models    = array_column( $manifest['products'], 'model' );
+		foreach ( $documents as &$document ) {
+			$purpose = Materials::document_purpose( $document['url'], $lang, $models );
+			if ( '' !== $purpose ) {
+				$document['display_purpose'] = $purpose;
+			}
+		}
+		unset( $document );
 		return array(
 			'model'     => ProductText::term_name( $id, 'pa_model' ),
 			'brand'     => ProductText::term_name( $id, 'pa_brand' ),
 			'series'    => ProductText::term_name( $id, 'pa_series' ),
-			'documents' => $this->publication->documents( $id, $manifest ),
+			'documents' => $documents,
 			'commerce'  => ProductCommerce::of( $id, $product, $lang ),
 		);
 	}

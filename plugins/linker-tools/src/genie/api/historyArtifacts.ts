@@ -88,12 +88,7 @@ function documentLabel(
 	}
 	const baseUrl = block.url.split( '#' )[ 0 ];
 	const { title, suffix } = documentPages( block, locale );
-	const owner = documentOwner( block );
-	const candidates =
-		owner === undefined
-			? products
-			: products.filter( ( product ) => product.product_id === owner );
-	const matches = candidates.filter( ( product ) =>
+	const matches = products.filter( ( product ) =>
 		product.documents?.some(
 			( document ) => document.url?.split( '#' )[ 0 ] === baseUrl
 		)
@@ -112,7 +107,7 @@ function documentLabel(
 				: product.model || document.title || title;
 		return {
 			...block,
-			label: `${ name } · ${ documentKind( document.type ) }${ language ? ` (${ language })` : '' }${ suffix }`,
+			label: `${ name } · ${ document.display_purpose || documentKind( document.type ) }${ language ? ` (${ language })` : '' }${ suffix }`,
 			sourceTitle: document.title || title,
 		};
 	}
@@ -217,10 +212,19 @@ export async function restoreArtifacts(
 	fetcher: typeof fetch
 ): Promise< Turn > {
 	const ids = new Set< number >();
+	const cardTargets = new Set< number >();
+	const documentTargets = new Set< number >();
 	for ( const block of turn.blocks ) {
+		if ( block.type === 'cards' || block.type === 'compare' ) {
+			block.product_ids.forEach( ( id ) => cardTargets.add( id ) );
+		}
 		if ( block.type === 'cards' ) {
 			block.product_ids.forEach( ( id ) => ids.add( id ) );
 		} else if ( block.type === 'document' ) {
+			const explicit = block.ref.match( /^p(\d+)\.document\.\d+$/ );
+			if ( explicit ) {
+				documentTargets.add( Number( explicit[ 1 ] ) );
+			}
 			const owner = documentOwner( block );
 			if ( owner !== undefined ) {
 				ids.add( owner );
@@ -247,6 +251,10 @@ export async function restoreArtifacts(
 			allowed.set( id, product.product_id );
 		}
 	}
+	const targets = Array.from(
+		cardTargets.size ? cardTargets : documentTargets,
+		( id ) => allowed.get( id ) ?? id
+	);
 	const singletons = new Set< number >();
 	for ( const block of turn.blocks ) {
 		if ( block.type === 'compare' ) {
@@ -331,16 +339,34 @@ export async function restoreArtifacts(
 							block.url?.split( '#' )[ 0 ] ?? ''
 						)
 				);
-				return current
-					? documentLabel(
-							block,
-							products,
-							context.locale,
-							context.locale === 'de' && current.title_de?.trim()
-								? current.title_de
-								: current.title
-						)
-					: { ...block, url: null };
+				if ( ! current ) {
+					return { ...block, url: null };
+				}
+				const shown = targets.filter( ( id ) =>
+					current.product_ids?.includes( id )
+				);
+				if ( targets.length && ! shown.length ) {
+					return { ...block, url: null };
+				}
+				const target = shown.length === 1 ? shown[ 0 ] : canonical;
+				const preferred =
+					target !== undefined &&
+					( ! shown.length || shown.includes( target ) );
+				const candidates = products.filter( ( product ) => {
+					const id =
+						allowed.get( product.product_id ) ?? product.product_id;
+					return preferred
+						? id === target
+						: ! shown.length || shown.includes( id );
+				} );
+				return documentLabel(
+					block,
+					preferred ? candidates.slice( 0, 1 ) : candidates,
+					context.locale,
+					context.locale === 'de' && current.title_de?.trim()
+						? current.title_de
+						: current.title
+				);
 			}
 			return block;
 		} ),

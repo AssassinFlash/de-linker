@@ -86,21 +86,10 @@ final class LiveDocuments {
 					$name = '' !== $title ? $title : $label;
 				}
 				$kind    = Materials::document_kind_label( in_array( $document['type'] ?? '', array( 'datasheet', 'manual', 'warranty', 'certificate', 'compatibility', 'brochure' ), true ) ? $document['type'] : 'document' );
-				$edition = Materials::document_edition( $base );
-				$parts   = explode( ' – ', (string) ( $edition[ $locale ] ?? '' ), 2 );
-				if ( isset( $parts[1] ) ) {
-					// Reviewed file titles carry a representative model in their edition notes.
-					$kind = preg_replace_callback(
-						'/ \(([^()]*)\)$/u',
-						static function ( array $note ) use ( $file_models ): string {
-							$qualifiers = array_diff( explode( ', ', $note[1] ), $file_models );
-							return $qualifiers ? ' (' . implode( ', ', $qualifiers ) . ')' : '';
-						},
-						$parts[1]
-					);
-				}
-				$lang = strtoupper( $document['lang'] ?? '' );
-				$text = $name . ' · ' . $kind . ( '' !== $lang ? ' (' . $lang . ')' : '' );
+				$purpose = Materials::document_purpose( $base, $locale, $file_models );
+				$kind    = '' === $purpose ? $kind : $purpose;
+				$lang    = strtoupper( $document['lang'] ?? '' );
+				$text    = $name . ' · ' . $kind . ( '' !== $lang ? ' (' . $lang . ')' : '' );
 			} else {
 				$text = '' !== $local ? $local : Materials::document_kind_label( 'document' ) . ' · ' . $file;
 			}
