@@ -722,4 +722,14 @@ test("a guest can add a first selection to the draft from the inquiry review", a
 		add.closest("details").querySelector("summary").textContent,
 		"Project report",
 	);
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, {
+				...value,
+				inquiry: React.createElement("form"),
+				recoverTransfer: true,
+			}),
+		),
+	);
+	assert.ok(add.isConnected, "an in-flight transfer keeps its mounted writer");
 });

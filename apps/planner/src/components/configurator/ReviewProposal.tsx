@@ -868,10 +868,13 @@ export function ReviewProposal({
 					)}
 				</InquiryExportBar>
 				{inquiry}
-				{recoverTransfer && draftTransfer}
-				<details className="sc-card sc-review-details">
+				{reportOnly && recoverTransfer && draftTransfer}
+				<details
+					className="sc-card sc-review-details"
+					open={recoverTransfer || undefined}
+				>
 					<summary>{__("Project report", "linker-tools")}</summary>
-					{ready && !reportOnly && !recoverTransfer && draftTransfer}
+					{ready && !reportOnly && draftTransfer}
 					{ready &&
 						report.sections.map((section) => (
 							<section key={section.id}>
