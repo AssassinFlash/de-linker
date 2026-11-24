@@ -1474,6 +1474,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
 						owner: turnOwner,
+						surface: config.surface,
 						...trackTurn( lease, {
 							conversationId: stored.conversationId ?? 0,
 							locale: config.locale,
@@ -1652,6 +1653,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				const pageWitness = JSON.stringify( postedPage );
 				const request = {
 					owner: turnOwner,
+					surface: config.surface,
 					...trackTurn( lease, {
 						conversationId: stored.conversationId ?? 0,
 						locale: config.locale,
@@ -3107,6 +3109,7 @@ export function App( { config }: { config: GenieConfig } ) {
 								! currentInquiry ? (
 									<a
 										className="linker-genie-app__prompt"
+										data-genie-handoff=""
 										href={ config.requestPageUrl }
 									>
 										{ __(
@@ -3386,6 +3389,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									<>
 										{ ' ' }
 										<a
+											data-genie-handoff=""
 											href={ config.requestPageUrl }
 											onClick={ () => {
 												if (

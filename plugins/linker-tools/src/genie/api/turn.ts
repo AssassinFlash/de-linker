@@ -389,6 +389,7 @@ export interface ConversationList {
 
 /** One turn. The test seams sit on the object, not further positional arguments. */
 export interface TurnRequest {
+	surface?: 'hero' | 'helper' | 'workspace';
 	/** Current mounted surface, pre-dispatch cancellation and actual transport stage. */
 	owner?: TurnOwner;
 	onStage?: ( stage: TurnStage ) => void;
@@ -602,6 +603,14 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 					await request.owner?.beforeDispatch();
 					signal.throwIfAborted();
 					request.owner?.onDispatch();
+					if ( request.surface ) {
+						window.linkerTrack?.( 'genie_ask', {
+							surface:
+								request.surface === 'helper'
+									? 'floating'
+									: request.surface,
+						} );
+					}
 					return fetcher( ...args );
 				},
 				turnRoute( request.turnUrl, 'start' ),

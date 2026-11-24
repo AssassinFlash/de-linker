@@ -350,7 +350,7 @@ final class LibraryPage {
 				$rows .= '<div class="linker-library-qa-a"><p>' . wp_kses_post( $answer['answer'] ) . '</p>';
 				$rows .= '<p class="linker-library-qa-source"><a href="' . esc_url( $answer['url'] ) . '">' . esc_html( $answer['product'] ) . '</a>';
 				if ( '' !== $answer['source'] ) {
-					$rows .= ' — <a href="' . esc_url( $answer['source_url'] ) . '">' . esc_html( $answer['source'] ) . '</a>';
+					$rows .= ' — <a data-doc-kind="document" data-doc-brand="' . esc_attr( $brand['name'] ) . '" href="' . esc_url( $answer['source_url'] ) . '">' . esc_html( $answer['source'] ) . '</a>';
 				}
 				$rows .= '</p></div></details>';
 			}
@@ -383,7 +383,7 @@ final class LibraryPage {
 			$documents = $brand['documents'] ?? array();
 			$rows      = '';
 			foreach ( $documents as $document ) {
-				$rows .= $this->document( $document );
+				$rows .= $this->document( $document, $brand['name'] );
 			}
 			$cards .= $this->card( $brand['documents_id'], 'document', $brand['name'], count( $documents ), $brand['logo'], $rows, $brand['mark'] );
 		}
@@ -497,8 +497,9 @@ final class LibraryPage {
 	 * its title, what it covers, its language and its download.
 	 *
 	 * @param array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null} $document Document.
+	 * @param string                                                                                                                                                                                                                                     $brand Manufacturer name.
 	 */
-	private function document( array $document ): string {
+	private function document( array $document, string $brand ): string {
 		// `has-tile` is constant: the design gives every row the same 52x72
 		// slot, and what varies is only whether a page image fills it (the
 		// fragments' `has-src`) or the type tile stands alone.
@@ -515,7 +516,7 @@ final class LibraryPage {
 		$out .= '<span class="linker-library-doc-title">' . esc_html( $document['title'] ) . '</span></span>';
 		$out .= '<p class="linker-library-doc-meta"><span class="linker-library-doc-covers">' . esc_html( $document['covers'] ) . '</span>';
 		$out .= '<span class="linker-library-lang"><span aria-hidden="true">' . esc_html( $document['language'] ) . '</span><span class="linker-library-sr">' . esc_html( $document['language_label'] ) . '</span></span></p>';
-		$out .= '<a class="linker-library-dl" href="' . esc_url( $document['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) __( 'Download', 'linker-commerce' ) ) . '<span class="linker-library-sr"> ' . esc_html( $document['title'] ) . '</span>' . self::DOWNLOAD_ICON . '</a>';
+		$out .= '<a class="linker-library-dl" data-doc-kind="' . esc_attr( $document['type'] ) . '" data-doc-brand="' . esc_attr( $brand ) . '" href="' . esc_url( $document['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) __( 'Download', 'linker-commerce' ) ) . '<span class="linker-library-sr"> ' . esc_html( $document['title'] ) . '</span>' . self::DOWNLOAD_ICON . '</a>';
 		$out .= '</li>';
 
 		return $out;

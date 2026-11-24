@@ -313,6 +313,9 @@ export function InquiryCard( {
 			fetcher
 		);
 		if ( result.ok ) {
+			window.linkerTrack?.( 'generate_lead', {
+				lead_surface: 'inquiry',
+			} );
 			setSent( result.inquiry );
 			setPhase( 'ready' );
 			notify.current?.( result.inquiry );
@@ -563,6 +566,7 @@ export function InquiryCard( {
 				{ state?.pageUrl ? (
 					<a
 						className="linker-genie-inquiry__edit"
+						data-genie-handoff=""
 						href={ state.pageUrl }
 					>
 						{ __( 'Open the inquiry page', 'linker-tools' ) }

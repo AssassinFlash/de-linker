@@ -296,7 +296,11 @@ export function PlanningSourcesCard( {
 				</div>
 			) ) }
 			{ href && (
-				<a className="linker-genie-app__document" href={ href }>
+				<a
+					className="linker-genie-app__document"
+					data-genie-handoff=""
+					href={ href }
+				>
 					{ __( 'Open saved result', 'linker-tools' ) }
 				</a>
 			) }

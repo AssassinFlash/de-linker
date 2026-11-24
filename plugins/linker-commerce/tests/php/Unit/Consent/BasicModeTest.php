@@ -21,6 +21,53 @@ use WP_Mock;
  */
 final class BasicModeTest extends TestCase {
 
+	/** A refused or unanswered submission never creates a measurement session. */
+	public function test_no_conversion_is_remembered_without_statistics(): void {
+		$_COOKIE['cookieyes-consent'] = 'analytics:no,advertisement:yes';
+		try {
+			WP_Mock::passthruFunction( 'wp_unslash' );
+			WP_Mock::userFunction( 'WC', array( 'times' => 0 ) );
+			BasicMode::remember_conversion( 'generate_lead', array( 'lead_surface' => 'contact' ) );
+			$this->assertConditionsMet();
+		} finally {
+			unset( $_COOKIE['cookieyes-consent'] );
+		}
+	}
+
+	/** Reloading a signup confirmation consumes no second event or opt-out exception. */
+	public function test_consented_registration_is_carried_across_one_redirect(): void {
+		$_COOKIE['cookieyes-consent'] = 'analytics:yes,advertisement:no';
+		try {
+			WP_Mock::passthruFunction( 'wp_unslash' );
+			WP_Mock::userFunction( 'wp_json_encode', array( 'return' => 'json_encode' ) );
+			$session      = Mockery::mock( \WC_Session_Handler::class );
+			$woo          = Mockery::mock( \WooCommerce::class );
+			$woo->session = $session;
+			$woo->expects( 'initialize_session' )->once();
+			WP_Mock::userFunction( 'WC' )->andReturn( $woo );
+			$dimensions = array(
+				'business_type' => 'epc',
+				'country'       => 'DE',
+			);
+			$event      = array(
+				'name'   => 'sign_up',
+				'params' => $dimensions,
+			);
+			$session->expects( 'set' )->with( 'linker_analytics_conversion', $event );
+			$session->expects( 'set_customer_session_cookie' )->with( true );
+			BasicMode::remember_conversion( 'sign_up', $dimensions );
+
+			$session->expects( 'get' )->twice()->with( 'linker_analytics_conversion' )->andReturn( $event, null );
+			$session->expects( 'set' )->once()->with( 'linker_analytics_conversion', null );
+			WP_Mock::expectFilterAdded( 'googlesitekit_analytics_tracking_disabled', '__return_false' );
+			( new BasicMode() )->read_conversion();
+			( new BasicMode() )->read_conversion();
+			$this->assertConditionsMet();
+		} finally {
+			unset( $_COOKIE['cookieyes-consent'] );
+		}
+	}
+
 	/** Region-scoped defaults are unsafe for a worldwide opt-in banner. */
 	public function test_first_visit_has_denied_defaults_without_a_region(): void {
 		$defaults = ( new BasicMode() )->deny_everywhere(

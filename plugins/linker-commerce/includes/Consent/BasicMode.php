@@ -27,8 +27,19 @@ final class BasicMode {
 	 */
 	private bool $alerted = false;
 
+	/** One conversion carried across its native form's success redirect. */
+	private const FLASH = 'linker_analytics_conversion';
+
+	/**
+	 * Dispatch the consented conversion once on its redirected browser page.
+	 *
+	 * @var string
+	 */
+	private string $conversion_script = '';
+
 	/** Registers the gaps verified against CookieYes 3.5.7 / Site Kit 1.189.0. */
 	public function register(): void {
+		add_action( 'template_redirect', array( $this, 'read_conversion' ), 99 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_withdrawal' ), 0 );
 		add_filter( 'wp_get_consent_type', array( $this, 'opt_in' ) );
 		add_filter( 'script_loader_tag', array( $this, 'hold_google_tag' ), 30, 2 );
@@ -46,6 +57,58 @@ final class BasicMode {
 		return defined( 'CLI_VERSION' ) ? 'optin' : $type;
 	}
 
+	/**
+	 * Keep only the successful action and its categorical dimensions in the Woo session.
+	 *
+	 * @param string               $name Conversion name.
+	 * @param array<string,string> $params Server-validated event dimensions.
+	 */
+	public static function remember_conversion( string $name, array $params ): void {
+		if ( ! self::statistics_allowed() ) {
+			return;
+		}
+		WC()->initialize_session();
+		WC()->session->set(
+			self::FLASH,
+			array(
+				'name'   => $name,
+				'params' => $params,
+			)
+		);
+		if ( WC()->session instanceof \WC_Session_Handler ) {
+			WC()->session->set_customer_session_cookie( true );
+		}
+	}
+
+	/** Consume the event on its confirmation page before Site Kit prints its opt-out. */
+	public function read_conversion(): void {
+		$session = WC()->session;
+		if ( ! $session instanceof \WC_Session_Handler ) {
+			return;
+		}
+		$event = $session->get( self::FLASH );
+		if ( ! is_array( $event ) ) {
+			return;
+		}
+		$session->set( self::FLASH, null );
+		if ( ! self::statistics_allowed() ) {
+			return;
+		}
+		$this->conversion_script = 'document.addEventListener("DOMContentLoaded", function () { window.linkerTrack(' . wp_json_encode( $event['name'] ) . ', ' . wp_json_encode( $event['params'] ) . '); }, { once: true });';
+		\Linker\Commerce\Cache\DynamicHtml::forbid( 'conversion confirmation' );
+		// Woo signs the new partner in before redirecting; Site Kit normally opts logged-in users out.
+		if ( 'sign_up' === $event['name'] ) {
+			add_filter( 'googlesitekit_analytics_tracking_disabled', '__return_false' );
+		}
+	}
+
+	/** CookieYes stores comma-separated categories in the same first-party cookie on every page. */
+	private static function statistics_allowed(): bool {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Comparing an exact CMP category; no request text is stored or printed.
+		$choice = isset( $_COOKIE['cookieyes-consent'] ) && is_string( $_COOKIE['cookieyes-consent'] ) ? wp_unslash( $_COOKIE['cookieyes-consent'] ) : '';
+		return in_array( 'analytics:yes', explode( ',', $choice ), true );
+	}
+
 	/** Enqueues before Site Kit's consent-update listener. */
 	public function enqueue_withdrawal(): void {
 		if ( ! defined( 'WP_CONSENT_API_VERSION' ) || ! defined( 'CLI_VERSION' ) ) {
@@ -61,6 +124,9 @@ final class BasicMode {
 		$settings = get_option( 'googlesitekit_analytics-4_settings', array() );
 		$id       = is_array( $settings ) && is_string( $settings['measurementID'] ?? null ) ? $settings['measurementID'] : '';
 		wp_add_inline_script( 'linker-consent-withdrawal', 'window.linkerConsentMeasurementID = ' . wp_json_encode( $id ) . ';', 'before' );
+		if ( '' !== $this->conversion_script ) {
+			wp_add_inline_script( 'linker-consent-withdrawal', $this->conversion_script );
+		}
 	}
 
 	/**

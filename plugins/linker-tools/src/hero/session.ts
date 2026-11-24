@@ -323,6 +323,7 @@ export class HeroSession {
 		this.requestWitness = null;
 		const page = this.config.page;
 		const request = {
+			surface: 'hero' as const,
 			...( current?.owner ? { owner: current.owner } : {} ),
 			turnUrl: this.config.turnUrl,
 			nonce: this.config.nonce,

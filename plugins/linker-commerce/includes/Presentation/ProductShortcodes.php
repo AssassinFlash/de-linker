@@ -1523,7 +1523,7 @@ final class ProductShortcodes {
 				),
 				static fn( string $part ): bool => '' !== $part
 			);
-			$html    .= '<a class="pdp-doc" href="' . esc_url( (string) $document['url'] ) . '" target="_blank" rel="noopener">';
+			$html    .= '<a class="pdp-doc" data-doc-kind="' . esc_attr( $kind ) . '" data-doc-brand="' . esc_attr( (string) $view['brand'] ) . '" href="' . esc_url( (string) $document['url'] ) . '" target="_blank" rel="noopener">';
 			$html    .= '<span class="pdp-doc-icon">' . self::icon( 'file' ) . '</span>';
 			$html    .= '<span class="grow">' . esc_html( $title )
 				. '<span class="pdp-doc-meta">' . esc_html( implode( ' · ', $meta ) ) . '</span>'

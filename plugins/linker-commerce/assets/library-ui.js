@@ -918,6 +918,7 @@
 		if (hit.kind === "document") {
 			var link = hit.el.querySelector(".linker-library-dl");
 			if (link && /^https?:/i.test(link.href)) {
+				scope.linkerTrack?.("datasheet_download", { brand: link.dataset.docBrand, doc_kind: link.dataset.docKind });
 				scope.open(link.href, "_blank", "noopener");
 			}
 			return;
