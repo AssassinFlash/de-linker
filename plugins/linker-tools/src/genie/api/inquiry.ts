@@ -41,6 +41,7 @@ export interface SentInquiry {
 	number: string;
 	/** The Woo status without the `wc-` prefix (InquiryRequest::STATUSES). */
 	status: string;
+	issued?: boolean;
 	receipt: boolean | null;
 	email: string;
 	/** The account's inquiry view, or a guest's receipt. */
@@ -95,6 +96,7 @@ function sent( raw: unknown ): SentInquiry | null {
 		order: Number( value.order ) || 0,
 		number: value.number,
 		status: value.status,
+		...( value.issued === true ? { issued: true } : {} ),
 		receipt: typeof value.receipt === 'boolean' ? value.receipt : null,
 		email: typeof value.email === 'string' ? value.email : '',
 		url: typeof value.url === 'string' ? value.url : '',

@@ -42,13 +42,16 @@ type Phase = 'loading' | 'ready' | 'sending';
  * own; AGENTS.md §3 fixes the German words).
  *
  * @param status WooCommerce status without the `wc-` prefix.
+ * @param issued Whether the inquiry has an issued document.
  */
-export function statusLabel( status: string ): string {
+export function statusLabel( status: string, issued = false ): string {
 	switch ( status ) {
 		case 'inquiry-received':
 			return __( 'Inquiry received', 'linker-tools' );
 		case 'quotation-issued':
-			return __( 'Quotation in preparation', 'linker-tools' );
+			return issued
+				? __( 'Quotation issued', 'linker-tools' )
+				: __( 'Quotation in preparation', 'linker-tools' );
 		case 'completed':
 			return __( 'Completed', 'linker-tools' );
 		case 'cancelled':
@@ -68,7 +71,7 @@ export function statusLabel( status: string ): string {
  * @param props.inquiry The record's number, status and address.
  */
 export function InquirySent( { inquiry }: { inquiry: SentInquiry } ) {
-	const label = statusLabel( inquiry.status );
+	const label = statusLabel( inquiry.status, inquiry.issued );
 	return (
 		<section className="linker-genie-inquiry linker-genie-inquiry--sent">
 			<p className="linker-genie-inquiry__title">

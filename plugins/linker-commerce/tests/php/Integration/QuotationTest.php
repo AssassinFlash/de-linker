@@ -15,6 +15,11 @@ use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\Outbox;
+use Linker\Commerce\Quotation\Emails\QuotationIssuedEmail;
+use Linker\Commerce\Quotation\Notice;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Quotation\Document;
 use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Quotation\Renderer;
@@ -93,6 +98,135 @@ final class QuotationTest extends IntegrationTestCase {
 		$this->expectException( RuntimeException::class );
 		$this->expectExceptionMessage( 'This inquiry already has a Quotation.' );
 		$issuer->issue( $order );
+	}
+
+	/** A preview is an unnumbered PDF. Reissues retain their private predecessors. */
+	public function test_preview_and_revisions(): void {
+		$order  = $this->send_inquiry( $this->customer(), array( array( $this->product( '1200' ), 2 ) ) );
+		$issuer = $this->issuer();
+		$files  = new PrivateFiles( Issuer::DIRECTORY );
+		$year   = (int) wp_date( 'Y' );
+		$next   = ( new Sequence() )->next( $year );
+		$before = self::newest_mail_job();
+		$draft  = $issuer->preview( $order );
+		self::assertStringStartsWith( '%PDF-', $draft );
+		self::assertMatchesRegularExpression( '#/Subtype\s*/Image#', $draft );
+		$renderer = new Renderer( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
+		$html     = $renderer->html( ( new Document( new Options() ) )->data( $order, '', new \DateTimeImmutable() ) );
+		self::assertStringContainsString( 'DRAFT', $html );
+		self::assertStringContainsString( 'data:image/png;base64,', $html );
+		self::assertDoesNotMatchRegularExpression( '/\b(IBAN|BIC|bank transfer|payment instructions)\b/i', $html );
+		self::assertSame( $next, ( new Sequence() )->next( $year ) );
+		self::assertSame( $before, self::newest_mail_job() );
+		$order = wc_get_order( $order->get_id() );
+		self::assertInstanceOf( WC_Order::class, $order );
+		self::assertSame( '', $order->get_meta( Issuer::NUMBER_META ) );
+		self::assertSame( Statuses::RECEIVED, $order->get_status() );
+
+		$number   = $issuer->issue( $order );
+		$previous = $number;
+		$archive  = array();
+		foreach ( array( 1, 2, 3 ) as $version ) {
+			if ( $version > 1 ) {
+				self::assertSame( $number . '-R' . $version, $issuer->revise( $order, $previous ) );
+				$previous = $number . '-R' . $version;
+			}
+			$order = wc_get_order( $order->get_id() );
+			self::assertInstanceOf( WC_Order::class, $order );
+			$file = (string) $order->get_meta( Issuer::FILE_META );
+			$this->later( static fn () => $files->delete( $file ) );
+			self::assertSame( $previous, $order->get_meta( Issuer::NUMBER_META ) );
+			self::assertSame( $previous, $order->get_meta( \Linker\Commerce\Quotation\Emails\QuotationIssuedEmail::ACCEPTED ) );
+			$history = $order->get_meta( Issuer::HISTORY_META );
+			self::assertSame( array_keys( $archive ), array_column( is_array( $history ) ? $history : array(), 'number' ) );
+			foreach ( $archive as $old ) {
+				self::assertSame( $old['bytes'], file_get_contents( $files->path( $old['file'] ) ) );
+			}
+			$archive[ $previous ] = array(
+				'file'  => $file,
+				'bytes' => file_get_contents( $files->path( $file ) ),
+			);
+		}
+		self::assertSame( $next + 1, ( new Sequence() )->next( $year ) );
+		$this->expectException( RuntimeException::class );
+		$this->expectExceptionMessage( 'Reload this inquiry' );
+		$issuer->revise( $order, $number );
+	}
+
+	/**
+	 * A queued priced notice remains bound to its approved owner on retry.
+	 *
+	 * @dataProvider revoked_destinations
+	 * @param bool $reassign Whether staff change ownership or restrict the owner.
+	 */
+	public function test_delayed_quotation_checks_current_recipient( bool $reassign ): void {
+		$owner = $this->customer();
+		$other = $this->customer();
+		$order = $this->send_inquiry( $owner, array( array( $this->product( '1200' ), 1 ) ) );
+		$hook  = $GLOBALS['wp_filter'][ Outbox::HOOK ];
+		unset( $GLOBALS['wp_filter'][ Outbox::HOOK ] );
+		try {
+			$number = $this->issuer()->issue( $order );
+		} finally {
+			$GLOBALS['wp_filter'][ Outbox::HOOK ] = $hook;
+		}
+		$order = wc_get_order( $order->get_id() );
+		self::assertInstanceOf( WC_Order::class, $order );
+		$file = (string) $order->get_meta( Issuer::FILE_META );
+		$this->later( static fn () => ( new PrivateFiles( Issuer::DIRECTORY ) )->delete( $file ) );
+		$store = new JobStore();
+		$id    = (int) $order->get_meta( QuotationIssuedEmail::JOB );
+		$job   = $store->load( $id );
+		self::assertNotNull( $job );
+		self::assertSame( $number, $job['message']->origin['number'] );
+		self::assertTrue( Notice::deliverable( $job['message'], $id ) );
+		$message            = $job['message'];
+		$legacy_notice      = static fn ( array $to, array $headers ) => \Linker\Commerce\Mail\NativeOrigin::seal(
+			new \Linker\Commerce\Mail\Message(
+				$to,
+				$message->subject,
+				$message->body,
+				$headers,
+				$message->attachments,
+				$message->critical,
+				$message->category,
+				array(
+					'kind'     => 'transaction',
+					'producer' => QuotationIssuedEmail::ID,
+				)
+			)
+		);
+		[ $local, $domain ] = explode( '@', $message->to[0] );
+		$legacy             = $legacy_notice( array( $local . '@' . strtoupper( $domain ) ), $message->headers );
+		self::assertTrue( Notice::deliverable( $legacy, $id ), 'DNS domain case does not change the original recipient.' );
+		self::assertFalse( Notice::deliverable( $legacy_notice( array( strtoupper( $local ) . '@' . $domain ), $message->headers ), $id ) );
+		self::assertFalse( Notice::deliverable( $legacy_notice( array( $message->to[0], 'another@example.test' ), $message->headers ), $id ) );
+		foreach ( array( 'Cc: another@example.test', 'Bcc: another@example.test' ) as $copy ) {
+			self::assertFalse( Notice::deliverable( $legacy_notice( $message->to, array_merge( $message->headers, array( $copy ) ) ), $id ) );
+		}
+		if ( $reassign ) {
+			$order->set_customer_id( $other->get_id() );
+			$order->save();
+		} else {
+			update_user_meta( $owner->get_id(), Approval::STATUS_META, Approval::RESTRICTED );
+		}
+		self::assertFalse( Notice::deliverable( $legacy, $id ) );
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Native retry action.
+		self::assertSame( JobStore::FAILED_STATUS, get_post_status( $id ) );
+		self::assertSame( 'Quotation is no longer available to this recipient.', $store->error( $id ) );
+	}
+
+	/**
+	 * Independent changes between acceptance and delivery.
+	 *
+	 * @return array<string,array{bool}>
+	 */
+	public static function revoked_destinations(): array {
+		return array(
+			'reassigned' => array( true ),
+			'restricted' => array( false ),
+		);
 	}
 
 	/** A real Issuer interruption after issued persistence still has a durable notice source. */

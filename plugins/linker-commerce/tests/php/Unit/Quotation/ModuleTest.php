@@ -39,6 +39,7 @@ final class ModuleTest extends TestCase {
 		$issuer  = new Issuer( $options, new Sequence(), new Document( $options ), new Renderer( '/plugin/linker-commerce.php' ), new PrivateFiles( Issuer::DIRECTORY ), new PriceDisplay( $this->approved_state() ) );
 		$module  = new Module( '/plugin/linker-commerce.php', $box, $issuer );
 
+		WP_Mock::expectActionAdded( 'admin_post_linker_staff_quotation', array( $box, 'pdf' ) );
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $box, 'add' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_process_shop_order_meta', array( $box, 'process' ), 60 );
 		WP_Mock::expectActionAdded( 'woocommerce_order_status_quotation-issued', array( $issuer, 'ensure_issued' ), 20 );

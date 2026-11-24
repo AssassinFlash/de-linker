@@ -114,9 +114,21 @@ final class PendingApprovals implements Block {
 		$this->restricted = 0;
 		foreach ( get_users(
 			array(
-				'role'    => 'customer',
-				'orderby' => 'registered',
-				'order'   => 'ASC',
+				'role'       => 'customer',
+				'orderby'    => 'registered',
+				'order'      => 'ASC',
+				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Exclude resolved decisions before loading customer profiles.
+					'relation' => 'OR',
+					array(
+						'key'     => Approval::STATUS_META,
+						'compare' => 'NOT EXISTS',
+					),
+					array(
+						'key'     => Approval::STATUS_META,
+						'value'   => array( Approval::APPROVED, Approval::REJECTED ),
+						'compare' => 'NOT IN',
+					),
+				),
 			)
 		) as $customer ) {
 			if ( ! $customer instanceof WP_User || ! $this->approval->is_subject( $customer->ID ) ) {

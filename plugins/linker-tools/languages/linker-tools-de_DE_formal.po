@@ -17924,3 +17924,7 @@ msgstr "Antwort wird erstellt…"
 #: build/genie.js build/hero.js
 msgid "Verifying figures and sources…"
 msgstr "Angaben und Quellen werden geprüft…"
+
+#: build/genie.js build/hero.js
+msgid "Quotation issued"
+msgstr "Angebot ausgestellt"

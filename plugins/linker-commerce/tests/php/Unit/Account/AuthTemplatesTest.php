@@ -32,11 +32,10 @@ final class AuthTemplatesTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_login_redirect', array( $auth, 'product_login_destination' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $auth, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
-		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $auth, 'document_title' ), 40 );
-		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $auth, 'document_title' ), 40 );
+		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $auth, 'document_title' ), 45 );
+		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $auth, 'document_title' ), 45 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'register_redirect' ) );
-		WP_Mock::expectActionAdded( 'woocommerce_account_register_endpoint', array( $auth, 'confirm_inquiry' ) );
 		$auth->register();
 		$this->assertConditionsMet();
 	}
@@ -497,15 +496,54 @@ final class AuthTemplatesTest extends TestCase {
 		}
 	}
 
-	/** Login marketing copy and unrelated account endpoints keep their own titles. */
-	public function test_other_english_account_titles_remain_unchanged(): void {
+	/** A signed-in receipt holder sees one confirmation in the account workspace. */
+	public function test_matching_guest_receipt_names_the_confirmation_and_selects_its_form(): void {
+		$this->plain_text();
+		$previous = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Restore the request.
+		try {
+			$_GET = array(
+				'linker_inquiry' => '31',
+				'linker_key'     => 'receipt-fixture',
+			);
+			WP_Mock::userFunction( 'absint', array( 'return' => 31 ) );
+			WP_Mock::userFunction( 'wp_unslash', array( 'return' => 'receipt-fixture' ) );
+			WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => 'receipt-fixture' ) );
+			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+			WP_Mock::userFunction( 'get_userdata', array( 'return' => (object) array( 'user_email' => 'claim@example.test' ) ) );
+			WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+			WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+			WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+			WP_Mock::userFunction( 'get_bloginfo', array( 'return' => 'Linker' ) );
+			$order = \Mockery::mock( \WC_Order::class );
+			$order->allows( 'get_order_key' )->andReturn( 'receipt-fixture' );
+			$order->allows( 'get_customer_id' )->andReturn( 0 );
+			$order->allows( 'get_billing_email' )->andReturn( 'claim@example.test' );
+			WP_Mock::userFunction(
+				'wc_get_order',
+				array(
+					'args'   => array( 31 ),
+					'return' => $order,
+				)
+			);
+			$auth = new AuthTemplates();
+			$this->assertSame( 'Confirm inquiry | Linker', $auth->document_title( 'Partner Account' ) );
+			$this->assertStringEndsWith( '/auth/confirm-inquiry.php', $auth->template( 'native.php', 'myaccount/dashboard.php' ) );
+		} finally {
+			$_GET = $previous;
+		}
+	}
+
+	/** The English account root describes the dedicated sign-in form. */
+	public function test_english_guest_account_title_opens_sign_in(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
 		$existing = 'Partner Account: Sign In or Register | Linker';
-		$this->assertSame( $existing, ( new AuthTemplates() )->document_title( $existing ) );
+		WP_Mock::userFunction( 'get_bloginfo', array( 'return' => 'Linker' ) );
+		$this->plain_text();
+		$this->assertSame( 'Sign in to your partner account | Linker', ( new AuthTemplates() )->document_title( $existing ) );
 	}
 
 	/** German and any other page language preserve their independent title owner. */

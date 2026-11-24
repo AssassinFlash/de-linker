@@ -15,6 +15,8 @@
  * @var WC_Email $email              The email.
  */
 
+use Linker\Commerce\Settings\Options;
+
 defined( 'ABSPATH' ) || exit;
 
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
@@ -24,7 +26,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 <?php if ( '' !== $reason ) : ?>
 	<p><strong><?php esc_html_e( 'Our reason:', 'linker-commerce' ); ?></strong><br /><?php echo esc_html( $reason ); ?></p>
 <?php endif; ?>
-<p><?php esc_html_e( 'If you have questions, write to sales@de-linker.com.', 'linker-commerce' ); ?></p>
+<p><?php /* translators: %s: public team email address. */ echo esc_html( sprintf( __( 'If you have questions, write to %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ); ?></p>
 <?php
 if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );

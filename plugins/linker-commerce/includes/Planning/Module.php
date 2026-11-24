@@ -19,6 +19,7 @@ final class Module {
 	/** Register native product/context lifecycle and private file access. */
 	public function register(): void {
 		$context = new Context();
+		add_filter( 'woocommerce_session_handler', array( $this, 'session_handler' ) );
 		add_filter( 'linker_commerce_planning_inquiry_form', array( $this, 'inquiry_form' ), 10, 4 );
 		add_filter( 'linker_commerce_planning_inquiry_retry', array( $this, 'inquiry_retry' ), 10, 4 );
 		add_filter( 'linker_commerce_planning_draft_apply', array( new DraftTransfer(), 'apply' ), 10, 3 );
@@ -32,6 +33,15 @@ final class Module {
 		add_action( 'woocommerce_email_after_order_table', array( $context, 'email' ), 10, 3 );
 		add_action( 'woocommerce_cart_emptied', array( $context, 'emptied' ) );
 		add_action( 'rest_api_init', array( new ReportDownload(), 'register' ) );
+	}
+
+	/** Woo validates cart tokens and decides whether to clone or restore.
+	 *
+	 * @param string $handler Woo's configured session handler.
+	 */
+	public function session_handler( string $handler ): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only selects the adapter; Woo validates its own token.
+		return isset( $_GET['session'] ) && \WC_Session_Handler::class === $handler ? SharedCartSession::class : $handler;
 	}
 
 	/** Native inquiry form and the current draft it will send.

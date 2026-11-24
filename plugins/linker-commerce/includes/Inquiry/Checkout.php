@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Inquiry;
 
+use Linker\Commerce\Settings\Options;
 use Automattic\WooCommerce\Internal\Utilities\Users;
 use Linker\Commerce\Planning\InquiryTransfer;
 use Linker\Commerce\Presentation\PageUrls;
@@ -208,7 +209,8 @@ final class Checkout {
 				'{{promise}}'        => $individual ? esc_html( \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order ) ) : esc_html__( 'We reply within one business day to the email address you provided.', 'linker-commerce' ),
 				'{{url}}'            => esc_url( $guest ? AccountLink::url( $order ) : wc_get_account_endpoint_url( 'orders' ) ),
 				'{{action}}'         => $guest ? esc_html__( 'Create an account with this email', 'linker-commerce' ) : esc_html__( 'View inquiries', 'linker-commerce' ),
-				'{{receipt_notice}}' => $individual ? esc_html__( 'You can also email sales@de-linker.com and quote this inquiry number.', 'linker-commerce' ) : ( 'omitted' === ReceiptLimit::delivery_state( $order )
+				/* translators: %s: public team email address. */
+				'{{receipt_notice}}' => $individual ? esc_html( sprintf( __( 'You can also email %s and quote this inquiry number.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ) : ( 'omitted' === ReceiptLimit::delivery_state( $order )
 					? esc_html__( 'We have not sent a confirmation email.', 'linker-commerce' ) : '' ),
 			)
 		);

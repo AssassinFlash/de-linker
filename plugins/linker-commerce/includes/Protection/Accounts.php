@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use Linker\Commerce\Settings\Options;
 use WP_Error;
 use WP_User;
 use Linker\Commerce\Registration\BotGuard;
@@ -157,7 +158,8 @@ final class Accounts {
 		try {
 			$transaction = new NativeTransaction();
 		} catch ( \Throwable $error ) {
-			$errors->add( 'linker_registration_capacity', __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+			/* translators: %s: public team email address. */
+			$errors->add( 'linker_registration_capacity', sprintf( __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) );
 			return $this->registration_errors( $errors, $core );
 		}
 		$values    = $payload;
@@ -217,13 +219,15 @@ final class Accounts {
 			}
 			if ( ! $profile_ok || get_user_meta( $id, RegistrationNotices::PENDING, true ) !== 'yes' || get_user_meta( $id, RegistrationSlots::META, true ) !== $active['slot'] || RegistrationNotices::read( $id ) !== $active['notices'] ) {
 				$this->unfinished();
-				throw new \RuntimeException( esc_html__( 'The registration status could not be confirmed. Please try signing in before registering again, or email sales@de-linker.com. You can send inquiries without an account.', 'linker-commerce' ) );
+				/* translators: %s: public team email address. */
+				throw new \RuntimeException( esc_html( sprintf( __( 'The registration status could not be confirmed. Please try signing in before registering again, or email %s. You can send inquiries without an account.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ) );
 			}
 			$active['transaction']->commit();
 			$this->registration = null;
 		} catch ( \Throwable $error ) {
 			$this->unfinished();
-			throw new \RuntimeException( esc_html__( 'The registration status could not be confirmed. Please try signing in before registering again, or email sales@de-linker.com. You can send inquiries without an account.', 'linker-commerce' ) );
+			/* translators: %s: public team email address. */
+			throw new \RuntimeException( esc_html( sprintf( __( 'The registration status could not be confirmed. Please try signing in before registering again, or email %s. You can send inquiries without an account.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ) );
 		}
 	}
 
@@ -351,7 +355,8 @@ final class Accounts {
 		}
 		$reserved = \Linker\Commerce\Mail\ResetNotice::reserve( $user, wp_generate_uuid4() );
 		if ( is_wp_error( $reserved ) ) {
-			$errors->add( 'linker_reset_capacity', __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+			/* translators: %s: public team email address. */
+			$errors->add( 'linker_reset_capacity', sprintf( __( 'Password reset is temporarily unavailable. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) );
 		}
 	}
 

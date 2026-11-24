@@ -77,7 +77,7 @@ final class StatusesTest extends TestCase {
 	}
 
 	/**
-	 * Staff may change a received inquiry; one with a Proforma stays as issued.
+	 * Staff can price open inquiries and revise issued quotations.
 	 */
 	public function test_editable(): void {
 		$received = Mockery::mock( WC_Order::class );
@@ -87,7 +87,12 @@ final class StatusesTest extends TestCase {
 		$statuses = new Statuses();
 
 		$this->assertTrue( $statuses->editable( false, $received ) );
-		$this->assertFalse( $statuses->editable( false, $issued ) );
+		$this->assertTrue( $statuses->editable( false, $issued ) );
+		foreach ( array( 'completed', 'cancelled' ) as $terminal ) {
+			$closed = Mockery::mock( WC_Order::class );
+			$closed->allows( 'get_status' )->andReturn( $terminal );
+			$this->assertFalse( $statuses->editable( true, $closed ) );
+		}
 		$this->assertTrue( $statuses->editable( true, $issued ) );
 	}
 

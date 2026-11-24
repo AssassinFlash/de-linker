@@ -568,7 +568,25 @@ final class Gateway {
 	public function inquiry_handoff( mixed $previous, string $handoff_id ): array|WP_Error {
 		unset( $previous );
 		$principal = $this->identity->inquiry_submitter();
-		return $principal instanceof WP_Error ? $principal : $this->read_inquiry_handoff( $principal, $handoff_id );
+		if ( $principal instanceof WP_Error ) {
+			return $principal;
+		}
+		$result = $this->read_inquiry_handoff( $principal, $handoff_id );
+		if ( 'user' === $principal->kind && $result instanceof WP_Error && 'linker_planner_handoff_not_found' === $result->get_error_code() ) {
+			// Woo may have just migrated this guest while its Planner claim is still queued.
+			if ( ! $this->claims->recover() ) {
+				return Failure::make( 'unavailable', 503 );
+			}
+			$user = get_current_user_id();
+			if ( $this->claims->pending( $user ) ) {
+				$this->claims->settle( $user );
+				$result = $this->read_inquiry_handoff( $principal, $handoff_id );
+				if ( $result instanceof WP_Error && $this->claims->pending( $user ) ) {
+					return Failure::make( 'unavailable', 503 );
+				}
+			}
+		}
+		return $result;
 	}
 
 	/** Read exactly the owned report handoff, without starting another preparation.

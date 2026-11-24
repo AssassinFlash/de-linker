@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+use Linker\Commerce\Tests\Fixtures\GenieVerificationFixture;
 
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Inquiry\Sender;
@@ -17,9 +18,11 @@ use Linker\Commerce\Inquiry\PublicGuard;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Planning\Context;
 use Linker\Commerce\Planning\DraftPreview;
+use Linker\Commerce\Planning\DraftRecovery;
 use Linker\Commerce\Planning\DraftTransfer;
 use Linker\Commerce\Planning\InquiryTransfer;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Protection\Identity;
 use WC_Order;
 
 /**
@@ -45,6 +48,35 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 * @var NormalMailAuthorizationFixture
 	 */
 	private NormalMailAuthorizationFixture $authorization;
+
+	/**
+	 * Browser transport submitted alongside the fields under test.
+	 *
+	 * @return array<string,string> Native idempotency, cart and guest verification fields.
+	 */
+	private function form_transport(): array {
+		$cookie                      = $_COOKIE;
+		$_COOKIE[ Identity::COOKIE ] = bin2hex( random_bytes( 16 ) );
+		$this->later(
+			static function () use ( $cookie ): void {
+				$_COOKIE = $cookie;
+			}
+		);
+		$fields = array(
+			'linker_request_id' => wp_generate_uuid4(),
+			'linker_draft_hash' => WC()->cart->get_cart_hash(),
+		);
+		if ( ! is_user_logged_in() ) {
+			require_once dirname( __DIR__, 2 ) . '/fixtures/GenieVerificationFixture.php';
+			GenieVerificationFixture::install(
+				function ( callable $remove ): void {
+					$this->later( $remove );
+				}
+			);
+			$fields['cf-turnstile-response'] = 'XXXX.DUMMY.TOKEN.XXXX';
+		}
+		return $fields;
+	}
 
 	/** Review exposes the native checkout fields and signs exactly the revision shown. */
 	public function test_preliminary_review_form_binds_the_native_nonce(): void {
@@ -121,6 +153,167 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				$this->assertContains( $value, $values );
 			}
 		}
+	}
+
+	/**
+	 * Woo migrates a guest transfer and merges a pre-existing partner cart before inquiry.
+	 *
+	 * @dataProvider restored_report_states
+	 * @param bool $unavailable Whether the older account project is inaccessible.
+	 */
+	public function test_guest_transfer_and_saved_account_lines_reach_one_inquiry( bool $unavailable ): void {
+		$customer = $this->customer();
+		$product  = $this->product( '99' );
+		$product->set_short_description( 'Published equipment for a project.' );
+		$product->save();
+		$id                               = $product->get_id();
+		$manifest                         = Publication::manifest();
+		$products                         = array_column( $manifest['products'], null, 'product_id' );
+		$guest                            = $this->planning_report();
+		$guest['snapshot']['kind']        = 'planning_products_v1';
+		$guest['snapshot']['items']       = array(
+			array(
+				'product_id' => $id,
+				'quantity'   => 2,
+				'label'      => $product->get_name(),
+			),
+		);
+		$guest['snapshot']['publication'] = array(
+			'engineering_contract'   => 2,
+			'reference_inputs'       => array(),
+			'products'               => array(
+				array(
+					'product_id'       => $id,
+					'product_revision' => $products[ $id ]['product_revision'],
+				),
+			),
+			'documents'              => array(),
+			'compatibility_revision' => $manifest['compatibility_revision'],
+		);
+		$old                              = $guest;
+		$old['id']                        = bin2hex( random_bytes( 16 ) );
+		$old['snapshot']['project_id']    = bin2hex( random_bytes( 16 ) );
+		$this->as_user( $customer->get_id() );
+		wc_load_cart();
+		$cart = WC()->cart;
+		$cart->empty_cart();
+		$manual = $cart->add_to_cart( $id, 1 );
+		$linked = $cart->add_to_cart( $id, 3, 0, array(), array( DraftTransfer::LINE_META => $old['id'] ) );
+		$this->assertIsString( $manual );
+		$this->assertIsString( $linked );
+		( new \WC_Cart_Session( $cart ) )->persistent_cart_update();
+		$cart->empty_cart( false );
+
+		$this->as_user( 0 );
+		$cookies = $_COOKIE;
+		$present = static function ( $enabled, $name, $value ) {
+			$_COOKIE[ $name ] = $value;
+			return false;
+		};
+		add_filter( 'woocommerce_set_cookie_enabled', $present, 10, 3 );
+		$this->later(
+			static function () use ( $cookies, $present ): void {
+				remove_filter( 'woocommerce_set_cookie_enabled', $present );
+				$_COOKIE = $cookies;
+			}
+		);
+		$session = WC()->session;
+		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
+		$session->destroy_session();
+		$session->set_customer_session_cookie( true );
+		$session->set( 'linker_planner_seen', true );
+		$session->save_data();
+		$command = array(
+			'project_id'            => $guest['snapshot']['project_id'],
+			'report_run_id'         => $guest['snapshot']['report_run_id'],
+			'expected_revision'     => 1,
+			'expected_draft_sha256' => DraftPreview::fingerprint(),
+			'key'                   => wp_generate_uuid4(),
+		);
+		$receipt = ( new DraftTransfer() )->apply( null, $command, $guest );
+		$this->assertIsArray( $receipt, $receipt instanceof \WP_Error ? $receipt->get_error_message() : '' );
+
+		$this->as_user( $customer->get_id() );
+		WC()->customer = $customer;
+		wc_user_logged_in( $customer->get_username(), wp_get_current_user() );
+		$session->init_session_cookie();
+		( new \WC_Cart_Session( $cart ) )->get_cart_from_session();
+		$this->assertSame( (string) $customer->get_id(), $session->get_customer_id() );
+		$this->assertSame( $receipt, $session->get( DraftTransfer::RECEIPTS )[ $command['key'] ] );
+		$this->assertCount( 3, $cart->get_cart() );
+		$this->assertArrayNotHasKey( $old['id'], $session->get( DraftTransfer::CONTEXTS ) );
+
+		$read  = static fn ( $previous, $handoff ) => $guest['id'] === $handoff ? $guest : ( $unavailable ? new \WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) ) : $old );
+		$admit = static fn (): bool => true;
+		// phpcs:disable WooCommerce.Commenting.CommentHooks.MissingHookComment -- Owned Planner responses at the existing private boundaries.
+		add_filter( 'linker_tools_planning_inquiry_handoff', $read, 11, 2 );
+		add_filter( 'linker_tools_planning_admit_inquiry', $admit, 11 );
+		$this->later(
+			static function () use ( $read, $admit ): void {
+				remove_filter( 'linker_tools_planning_inquiry_handoff', $read, 11 );
+				remove_filter( 'linker_tools_planning_admit_inquiry', $admit, 11 );
+			}
+		);
+		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingHookComment
+		$missing = DraftRecovery::review();
+		$this->assertSame( $unavailable ? array( $linked ) : array(), $missing );
+		$request = wp_generate_uuid4();
+		$post    = array(
+			'name'                 => 'Maria Richter',
+			'email'                => self::TESTER,
+			'company'              => 'Richter Solar',
+			'message'              => 'Please quote the entire draft.',
+			'consent'              => '1',
+			'linker_request_id'    => $request,
+			'linker_inquiry_nonce' => wp_create_nonce( \Linker\Commerce\Inquiry\Handler::nonce_action( '' ) ),
+			'linker_draft_hash'    => $cart->get_cart_hash(),
+		);
+		if ( $unavailable ) {
+			$handle = \Linker\Commerce\Inquiry\CheckoutRetry::remember( array( 'fields' => $post ), '' );
+			$this->assertIsString( $handle );
+			$post[ \Linker\Commerce\Inquiry\CheckoutRetry::HANDLE ] = $handle;
+			$html = ( new \Linker\Commerce\Inquiry\Form() )->render();
+			$dom  = new \DOMDocument();
+			$dom->loadHTML( $html, LIBXML_NOERROR | LIBXML_NOWARNING );
+			$fields = ( new \DOMXPath( $dom ) )->query( '//form[contains(@class,"linker-inquiry-form")]//input[@name="linker_detach_planning_links" and @type="checkbox"]' );
+			$this->assertInstanceOf( \DOMNodeList::class, $fields );
+			$field = $fields->item( 0 );
+			$this->assertInstanceOf( \DOMElement::class, $field );
+			$this->assertTrue( $field->hasAttribute( 'required' ) );
+			$this->assertFalse( $field->hasAttribute( 'checked' ) );
+			$post[ DraftRecovery::FIELD ] = 'unconfirmed';
+			$refused                      = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
+			$this->assertInstanceOf( \WP_Error::class, $refused );
+			$this->assertSame( $old['id'], $cart->get_cart()[ $linked ][ DraftTransfer::LINE_META ] );
+			$post[ DraftRecovery::FIELD ] = $field->getAttribute( 'value' );
+		}
+		$order = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
+		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_message() : '' );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$this->assertSame( $post['name'], $order->get_billing_first_name() );
+		$this->assertSame( $post['email'], $order->get_billing_email() );
+		$this->assertSame( $post['company'], $order->get_billing_company() );
+		$this->assertSame( $post['message'], $order->get_customer_note() );
+		$this->assertSame( $customer->get_id(), $order->get_customer_id() );
+		$this->assertSame( 6, $order->get_item_count() );
+		$this->assertCount( 3, $order->get_items() );
+		$this->assertArrayHasKey( $guest['id'], Context::stored( $order ) );
+		$this->assertSame( ! $unavailable, isset( Context::stored( $order )[ $old['id'] ] ) );
+	}
+
+	/** Owned and unavailable older projects.
+	 *
+	 * @return array<string,array{bool}>
+	 */
+	public function restored_report_states(): array {
+		return array(
+			'owned account project'        => array( false ),
+			'inaccessible account project' => array( true ),
+		);
 	}
 
 	/**
@@ -290,7 +483,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'name'                          => 'Guided Fixture',
 			'email'                         => 'plan-' . self::tag() . '@example.test',
 			'consent'                       => '1',
-		);
+		) + $this->form_transport();
 		$handler                           = new \Linker\Commerce\Inquiry\Handler();
 		$altered                           = $post;
 		$altered['linker_report_transfer'] = substr_replace( ( $token[1] ?? '' ), str_repeat( '9', 32 ), 0, 32 );
@@ -520,7 +713,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'message'                    => 'Please call about my roof.',
 			'email'                      => $email,
 			'consent'                    => '1',
-		);
+		) + $this->form_transport();
 		$form    = new \Linker\Commerce\Inquiry\Form();
 		$handler = new \Linker\Commerce\Inquiry\Handler( $form );
 		$form->register();
@@ -693,7 +886,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'name'                       => 'Marta Becker',
 			'email'                      => 'reviewed-project@example.test',
 			'consent'                    => '1',
-		);
+		) + $this->form_transport();
 		foreach ( array( 'off', 'observe' ) as $mode ) {
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=' . $mode ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Restore the isolated PHP fixture environment.
 			$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
@@ -760,7 +953,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '<title>' . $title . ' | Linker</title>', $html );
 		$this->assertSame( 1, preg_match( '/<form class="linker-inquiry-form".*?<\/form>/s', $html, $matches ) );
 		$form = $matches[0] ?? '';
-		$this->assertStringContainsString( $message, $form );
+		$this->assertSame( 1, preg_match( '/<label[^>]*for="inquiry-message"[^>]*>(.*?)<textarea/s', $form, $field ) );
+		$this->assertSame( $message, trim( wp_strip_all_tags( $field[1] ?? '' ) ) );
 		$this->assertStringContainsString( 'action="' . admin_url( 'admin-post.php' ) . '"', $form );
 		$this->assertStringNotContainsString( '[linker_', $form );
 		$this->assertStringNotContainsString( 'name="billing_country"', $form );
@@ -774,8 +968,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 */
 	public static function request_languages(): array {
 		return array(
-			'en' => array( '/proforma-request/', 'Send an inquiry', 'Message (optional)' ),
-			'de' => array( '/de/proforma-anfrage/', 'Anfrage senden', 'Nachricht (optional)' ),
+			'en' => array( '/proforma-request/', 'Send an inquiry', 'Project message optional' ),
+			'de' => array( '/de/proforma-anfrage/', 'Anfrage senden', 'Projektnachricht optional' ),
 		);
 	}
 
@@ -890,7 +1084,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				'consent'              => '1',
 				'lang'                 => 'de',
 				'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			)
+			) + $this->form_transport()
 		);
 		$this->assertInstanceOf( WC_Order::class, $order );
 		$this->later(
@@ -1134,7 +1328,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'message'              => 'A contact question.',
 			'consent'              => '1',
 			'linker_contact_nonce' => wp_create_nonce( 'linker_contact_form' ),
-		);
+		) + $this->form_transport();
 		WC()->mailer();
 		$address                = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Preserve the exact test runner value for restoration.
 		$_SERVER['REMOTE_ADDR'] = '127.246.0.1';
@@ -1201,7 +1395,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'email'                => $customer->get_billing_email(),
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-		);
+		) + $this->form_transport();
 		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $result );
 		$this->later(
@@ -1269,7 +1463,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'email'                => $customer->get_billing_email(),
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-		);
+		) + $this->form_transport();
 		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $result );
 		$this->later(
@@ -1319,7 +1513,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				'billing_address_1'    => 'Teststraße 246',
 				'billing_vat_id'       => $vat,
 				'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			)
+			) + $this->form_transport()
 		);
 		$this->assertInstanceOf( WC_Order::class, $result );
 		$this->later(

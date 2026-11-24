@@ -127,7 +127,8 @@ final class Fields {
 		);
 		foreach ( array( 'billing_first_name', 'billing_last_name' ) as $key ) {
 			if ( isset( $address[ $key ] ) && is_array( $address[ $key ] ) ) {
-				$fields[ $key ] = $address[ $key ];
+				$fields[ $key ]             = $address[ $key ];
+				$fields[ $key ]['required'] = true;
 			}
 		}
 		return $fields;
@@ -140,6 +141,9 @@ final class Fields {
 		$country = $this->posted( 'billing_country' );
 		$country = '' !== $country ? $country : CountryOptions::default_country();
 		foreach ( $this->fields( $country ) as $key => $field ) {
+			if ( in_array( $key, array( 'billing_company', 'billing_first_name', 'billing_last_name' ), true ) ) {
+				$field['custom_attributes']['required'] = 'required';
+			}
 			woocommerce_form_field( $key, $field, 'billing_country' === $key ? $country : $this->posted( $key ) );
 		}
 	}

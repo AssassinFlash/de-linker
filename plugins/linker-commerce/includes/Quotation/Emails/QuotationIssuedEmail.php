@@ -21,14 +21,11 @@ use Linker\Commerce\Inquiry\Assessment\CurrentSource;
 use Linker\Commerce\Quotation\Document;
 use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Vocabulary\LocaleFormat;
+use Linker\Commerce\Quotation\Notice;
+use Linker\Commerce\Registration\Approval;
 use WC_Order;
 
-/**
- * Sent when staff issue the Quotation: number, validity and a link to the PDF in
- * the account. The PDF is not attached and the email names no bank account:
- * the account copy is the one a customer can trust for the bank details
- * (docs/specs/11-commerce.md, journey step 5; account-workspace.md §0.2).
- */
+/** Notifies the approved owner of an issued or revised quotation. */
 final class QuotationIssuedEmail extends CustomerOrderEmail {
 	/** Short native writer; unit template tests supply an explicit memory callback.
 	 *
@@ -49,10 +46,10 @@ final class QuotationIssuedEmail extends CustomerOrderEmail {
 	/**
 	 * Email id.
 	 */
-	public const ID       = 'linker_quotation_issued';
+	public const ID       = Notice::ID;
 	public const PENDING  = Issuer::NOTICE_PENDING_META;
-	public const ACCEPTED = '_linker_quotation_notice_number';
-	public const JOB      = '_linker_quotation_notice_job';
+	public const ACCEPTED = Notice::ACCEPTED;
+	public const JOB      = Notice::JOB;
 
 	/**
 	 * Sets up the email.
@@ -78,15 +75,21 @@ final class QuotationIssuedEmail extends CustomerOrderEmail {
 	}
 
 	/**
-	 * Sends the email about an inquiry that already has a Quotation number.
+	 * Only the approved owner's login can follow the private link.
 	 *
-	 * WooCommerce fires this on the status transition, before Issuer::ensure_issued()
-	 * writes the number (woocommerce_order_status_{to} runs first; the email action
-	 * is the from_to hook). A blocked inquiry — no bank account, an empty inquiry,
-	 * a line without a price — keeps the new status and never gets a number. Sending
-	 * then names an empty number, a validity of 1970-01-30 (issued meta 0 plus the
-	 * 30-day term) and a download that 404s. No number, no mail. The Issue button
-	 * writes the number before it changes the status, so that path still sends.
+	 * @param WC_Order $order Inquiry.
+	 */
+	protected function recipient_for_order( WC_Order $order ): string {
+		$id = $order->get_customer_id();
+		if ( ! $id || ! ( new Approval() )->sees_prices( $id ) ) {
+			return '';
+		}
+		$owner = get_userdata( $id );
+		return $owner instanceof \WP_User ? $owner->user_email : '';
+	}
+
+	/**
+	 * Accept one notice for the pending document revision.
 	 *
 	 * @param int                $order_id Order id.
 	 * @param WC_Order|false|int $order    Order, when the caller has it.
@@ -116,13 +119,13 @@ final class QuotationIssuedEmail extends CustomerOrderEmail {
 								}
 								return;
 							}
-							if ( '' === $number ) {
+							if ( '' === $number || 'yes' !== $order->get_meta( self::PENDING ) ) {
 								return;
 							}
 							$this->placeholders['{quotation_number}'] = $number;
 							$order->update_meta_data( self::PENDING, 'yes' );
 							$order->save_meta_data();
-							$message = Prepared::capture( fn () => parent::trigger( $order_id, $order ) );
+							$message = '' === $this->recipient_for_order( $order ) ? null : Prepared::capture( fn () => parent::trigger( $order_id, $order ) );
 							if ( null === $message ) {
 								// Native disabled/no-recipient policy explicitly skipped this notice.
 								$order->update_meta_data( self::PENDING, 'no' );
@@ -139,7 +142,7 @@ final class QuotationIssuedEmail extends CustomerOrderEmail {
 										throw new \RuntimeException( 'quotation_notice_source_missing' );
 									}
 									$fresh->read_meta_data( true );
-									if ( ! $fresh->has_status( Statuses::QUOTATION ) || $fresh->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $number !== $fresh->get_meta( Issuer::NUMBER_META ) || $number === $fresh->get_meta( self::ACCEPTED ) ) {
+									if ( $fresh->get_customer_id() !== $order->get_customer_id() || ! $fresh->has_status( Statuses::QUOTATION ) || $fresh->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $number !== $fresh->get_meta( Issuer::NUMBER_META ) || $number === $fresh->get_meta( self::ACCEPTED ) ) {
 										throw new \RuntimeException( 'quotation_notice_source_changed' );
 									}
 									$fresh->update_meta_data( self::PENDING, 'no' );
@@ -230,24 +233,25 @@ final class QuotationIssuedEmail extends CustomerOrderEmail {
 	 */
 	public function get_default_subject() {
 		/* translators: {quotation_number}: Quotation number, {order_number}: inquiry number. */
-		return __( 'Your Quotation {quotation_number} for inquiry #{order_number}', 'linker-commerce' );
+		return $this->is_revision()
+			? __( 'Revised Quotation {quotation_number} for inquiry #{order_number}', 'linker-commerce' )
+			: __( 'Your Quotation {quotation_number} for inquiry #{order_number}', 'linker-commerce' );
 	}
 
 	/**
 	 * Default heading.
 	 */
 	public function get_default_heading() {
-		return __( 'Your Quotation is ready', 'linker-commerce' );
+		return $this->is_revision() ? __( 'Your revised Quotation is ready', 'linker-commerce' ) : __( 'Your Quotation is ready', 'linker-commerce' );
+	}
+
+	/** A revision ends in the numeric suffix assigned by Issuer. */
+	private function is_revision(): bool {
+		return 1 === preg_match( '/-R[0-9]+$/D', $this->placeholders['{quotation_number}'] );
 	}
 
 	/**
 	 * Number, validity and link for the template.
-	 *
-	 * An inquiry that reached "Quotation issued" without a number (no
-	 * bank account, an empty inquiry, a line without a price) must not render
-	 * the letter: issued meta 0 plus the 30-day term is 1970-01-30, and the
-	 * download answers 404. trigger() already refuses to send; this is the
-	 * same refusal for any other caller of the body.
 	 *
 	 * @return array<string, mixed>
 	 */

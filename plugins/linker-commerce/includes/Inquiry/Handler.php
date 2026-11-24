@@ -283,7 +283,7 @@ final class Handler {
 				WC()->session->set_customer_session_cookie( true );
 			}
 			$fields = array();
-			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_inquiry_receipt_only', 'linker_individual_review', \Linker\Commerce\Planning\Context::PRESENT_FIELD ) as $key ) {
+			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_inquiry_receipt_only', 'linker_individual_review', \Linker\Commerce\Planning\DraftRecovery::FIELD, \Linker\Commerce\Planning\Context::PRESENT_FIELD ) as $key ) {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
 			$fields['consent'] = '1' === ( $post['consent'] ?? '' ) ? '1' : '';

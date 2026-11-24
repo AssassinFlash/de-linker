@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Registration;
 
+use Linker\Commerce\Settings\Options;
 use WP_Error;
 use WP_User;
 
@@ -295,7 +296,8 @@ final class Approval {
 		if ( ! $user instanceof WP_User || self::REJECTED !== $this->status( $user->ID ) ) {
 			return $user;
 		}
-		$this->refusal = __( 'This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again.', 'linker-commerce' );
+		/* translators: %s: public team email address. */
+		$this->refusal = sprintf( __( 'This account is not approved for sign-in. We have emailed you the reason. Write to %s and we will look at it again.', 'linker-commerce' ), ( new Options() )->team_mailbox() );
 		return new WP_Error( 'linker_approval_rejected', $this->refusal );
 	}
 }

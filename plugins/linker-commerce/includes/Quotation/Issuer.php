@@ -16,19 +16,11 @@ use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Account\PrivateFiles;
+use Linker\Commerce\Registration\Approval;
 use RuntimeException;
 use WC_Order;
 
-/**
- * Staff issue a Quotation for a received inquiry with one button: the
- * PDF is rendered in the inquiry's language with the next number, stored, and
- * the inquiry moves to "Quotation issued", which emails the customer a
- * link (docs/specs/11-commerce.md, journey step 5). An inquiry gets one Quotation.
- *
- * The customer account reads the number and the PDF, not the status word. A
- * status set to "Quotation issued" without those (the order screen's
- * status dropdown) therefore issues the same document, once, on the way in.
- */
+/** Issues and revises priced documents in the inquiry's language. */
 final class Issuer {
 
 	/**
@@ -40,9 +32,10 @@ final class Issuer {
 	/**
 	 * Order meta of an issued Quotation.
 	 */
-	public const NUMBER_META = '_linker_quotation_number';
-	public const ISSUED_META = '_linker_quotation_issued';
-	public const FILE_META   = '_linker_quotation_file';
+	public const NUMBER_META  = '_linker_quotation_number';
+	public const ISSUED_META  = '_linker_quotation_issued';
+	public const FILE_META    = '_linker_quotation_file';
+	public const HISTORY_META = '_linker_quotation_history';
 	/** Durable source index is owned by Issuer even before WC's mailer is loaded. */
 	public const NOTICE_PENDING_META = '_linker_quotation_notice_pending';
 
@@ -81,12 +74,8 @@ final class Issuer {
 	/**
 	 * Issues the Quotation of an inquiry that has just been marked issued.
 	 *
-	 * WooCommerce's order screen can set the status without the Issue button.
-	 * The customer account then has a "Quotation issued" inquiry and
-	 * nothing to download, because the number and the PDF are written only
-	 * here. Called from the status transition, after the status is already
-	 * the new one, so the received-status check of issue() does not apply.
-	 * One number, one PDF: an inquiry that already has either is left as it is.
+	 * The status selector and the issue button share the same approval, pricing
+	 * and numbering rules. A transition never creates a revision.
 	 *
 	 * @param int $order_id Inquiry.
 	 */
@@ -98,36 +87,15 @@ final class Issuer {
 		if ( '' !== (string) $order->get_meta( self::NUMBER_META ) || '' !== (string) $order->get_meta( self::FILE_META ) ) {
 			return;
 		}
-		$reason = $this->material_blocker( $order );
-		if ( '' !== $reason ) {
-			$order->add_order_note( $reason );
-			$order->save();
-			return;
-		}
-		if ( ! $this->claim( $order->get_id() ) ) {
-			return;
-		}
 		try {
-			$this->create( $order, false );
+			$this->issue( $order );
 		} catch ( RuntimeException $error ) {
 			$order->add_order_note( $error->getMessage() );
-			$order->save();
-		} finally {
-			delete_option( self::CLAIM_PREFIX . $order->get_id() );
 		}
 	}
 
 	/**
 	 * Why an inquiry cannot get a Quotation now, or '' when it can.
-	 *
-	 * An inquiry that already has a Quotation is refused with that reason before
-	 * the received-status rule: issuing moves the inquiry to "Quotation
-	 * issued", so a second issue() would otherwise answer with the status error
-	 * although "already has one" is the truth. Both errors stay reachable — a
-	 * non-received inquiry without a Quotation still gets the status error. The
-	 * status rule itself stays: the Issue button is only for a received inquiry,
-	 * and a status change into "Quotation issued" is the other way in,
-	 * checked by ensure_issued() instead of this rule.
 	 *
 	 * @param WC_Order $order Inquiry.
 	 */
@@ -135,7 +103,7 @@ final class Issuer {
 		if ( '' !== (string) $order->get_meta( self::NUMBER_META ) || '' !== (string) $order->get_meta( self::FILE_META ) ) {
 			return __( 'This inquiry already has a Quotation.', 'linker-commerce' );
 		}
-		if ( Statuses::RECEIVED !== $order->get_status() ) {
+		if ( ! in_array( $order->get_status(), array( Statuses::RECEIVED, Statuses::QUOTATION ), true ) ) {
 			return __( 'Only a received inquiry gets a Quotation.', 'linker-commerce' );
 		}
 		return $this->material_blocker( $order );
@@ -144,16 +112,12 @@ final class Issuer {
 	/**
 	 * Why the document itself cannot be built, or '' when it can.
 	 *
-	 * Shared by the Issue button and a status change into "Quotation
-	 * issued": an empty inquiry or a line without a price. A quotation names
-	 * no bank account (owner ruling 2026-11-08): payment terms are agreed
-	 * Inquiries); it is never invented. An inquiry that already has a Quotation
-	 * never reaches these checks: blocker() refuses it first, and
-	 * ensure_issued() leaves it alone.
-	 *
 	 * @param WC_Order $order Inquiry.
 	 */
 	private function material_blocker( WC_Order $order ): string {
+		if ( $order->get_customer_id() > 0 && ( ! ( new Approval() )->sees_prices( $order->get_customer_id() ) || ! get_userdata( $order->get_customer_id() ) ) ) {
+			return __( 'Approve this account before issuing its Quotation. The customer needs approval to download the PDF.', 'linker-commerce' );
+		}
 		if ( array() === $order->get_items() ) {
 			return __( 'The inquiry has no products.', 'linker-commerce' );
 		}
@@ -172,68 +136,149 @@ final class Issuer {
 	 * @throws RuntimeException When the inquiry cannot get one, or the PDF cannot be stored.
 	 */
 	public function issue( WC_Order $order ): string {
-		$blocker = $this->blocker( $order );
-		if ( '' !== $blocker ) {
-			throw new RuntimeException( $blocker ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- shown escaped by the caller.
+		return $this->publish( $order, '' );
+	}
+
+	/**
+	 * Issue a correction against the version staff actually reviewed.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 * @param string   $previous Number shown on the order screen.
+	 * @throws RuntimeException When the reviewed revision has no number.
+	 */
+	public function revise( WC_Order $order, string $previous ): string {
+		if ( '' === $previous ) {
+			throw new RuntimeException( __( 'Reload this inquiry to revise its current Quotation.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Escaped by the order screen.
 		}
-		if ( ! $this->claim( $order->get_id() ) ) {
+		return $this->publish( $order, $previous );
+	}
+
+	/**
+	 * Check all issue conditions while holding the native per-inquiry claim.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 * @param string   $previous Expected revision parent, empty for first issue.
+	 * @throws RuntimeException When another issue won or the inquiry is ineligible.
+	 */
+	private function publish( WC_Order $order, string $previous ): string {
+		$order_id = $order->get_id();
+		if ( ! $this->claim( $order_id ) ) {
 			// Two staff pressing the button at once: without this, both pass
 			// blocker() before either writes the number, and two Quotations with
 			// neighbouring numbers and two emails leave (review 2026-10-10).
 			throw new RuntimeException( __( 'This inquiry is being issued a Quotation right now; please reload the page in a moment.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- shown escaped by the caller.
 		}
 		try {
-			return $this->create( $order );
+			$order = wc_get_order( $order->get_id() );
+			if ( ! $order instanceof WC_Order ) {
+				throw new RuntimeException( __( 'Inquiry not found.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			}
+			$order->read_meta_data( true );
+			$blocker = '' === $previous ? $this->blocker( $order ) : $this->revision_blocker( $order, $previous );
+			if ( '' !== $blocker ) {
+				throw new RuntimeException( $blocker ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Escaped by the order screen.
+			}
+			if ( '' !== $previous && 'yes' === $order->get_meta( self::NOTICE_PENDING_META ) ) {
+				Notice::notify( $order->get_id() );
+				$order = wc_get_order( $order_id );
+				if ( ! $order instanceof WC_Order || 'yes' === $order->get_meta( self::NOTICE_PENDING_META ) ) {
+					throw new RuntimeException( __( 'The previous Quotation notification is still being queued. Please try again shortly.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+				}
+			}
+			return $this->create( $order, $previous );
 		} finally {
-			delete_option( self::CLAIM_PREFIX . $order->get_id() );
+			delete_option( self::CLAIM_PREFIX . $order_id );
 		}
 	}
 
 	/**
-	 * Creates the Quotation; called with the inquiry claimed.
+	 * Why a correction cannot be issued against this document.
 	 *
-	 * @param WC_Order $order       Inquiry.
-	 * @param bool     $move_status Whether to move the inquiry to "Quotation issued".
-	 *                              False when the status transition already did that.
-	 * @return string The Quotation number.
-	 * @throws RuntimeException When no number can be reserved or the PDF cannot be stored.
+	 * @param WC_Order $order Inquiry.
+	 * @param string   $previous Previously issued number.
 	 */
-	private function create( WC_Order $order, bool $move_status = true ): string {
+	public function revision_blocker( WC_Order $order, string $previous ): string {
+		if ( Statuses::QUOTATION !== $order->get_status() || '' === $previous || $previous !== $order->get_meta( self::NUMBER_META ) || ! $order->get_meta( self::FILE_META ) ) {
+			return __( 'Reload this inquiry to revise its current Quotation.', 'linker-commerce' );
+		}
+		return $this->material_blocker( $order );
+	}
+
+	/**
+	 * PDF of the saved order. Preview never reserves a number or recalculates the order.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public function preview( WC_Order $order ): string {
+		return $this->render( $order, '', new DateTimeImmutable( 'now', wp_timezone() ) );
+	}
+
+	/**
+	 * Store the next document while holding the per-inquiry claim.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 * @param string   $previous Previously issued number, empty for the first issue.
+	 * @throws RuntimeException When no number can be reserved.
+	 */
+	private function create( WC_Order $order, string $previous ): string {
 		// The VAT on the document follows WooCommerce's tax settings for the prices
 		// staff set (docs/specs/11-commerce.md, Quotation); a price changed without
 		// "Recalculate" would otherwise leave the earlier VAT on the inquiry.
 		$order->calculate_totals( true );
 
 		$issued = new DateTimeImmutable( 'now', wp_timezone() );
-		$year   = (int) $issued->format( 'Y' );
+		if ( '' !== $previous ) {
+			$history   = $order->get_meta( self::HISTORY_META );
+			$history   = is_array( $history ) ? $history : array();
+			$history[] = array(
+				'number' => $previous,
+				'issued' => (string) $order->get_meta( self::ISSUED_META ),
+				'file'   => (string) $order->get_meta( self::FILE_META ),
+			);
+			$number    = $history[0]['number'] . '-R' . ( count( $history ) + 1 );
+			$file      = $this->files->write( $order->get_id(), $number, $this->render( $order, $number, $issued ) );
+			$order->update_meta_data( self::HISTORY_META, $history );
+		} else {
+			[ $number, $file ] = $this->first_document( $order, $issued );
+		}
+		$order->update_meta_data( self::NOTICE_PENDING_META, $order->get_customer_id() > 0 ? 'yes' : 'no' );
+		$order->update_meta_data( self::NUMBER_META, $number );
+		$order->update_meta_data( self::ISSUED_META, (string) $issued->getTimestamp() );
+		$order->update_meta_data( self::FILE_META, $file );
+		/* translators: %s: Quotation number. */
+		$note = sprintf( __( 'Quotation %s issued.', 'linker-commerce' ), $number );
+		if ( Statuses::RECEIVED === $order->get_status() ) {
+			$order->update_status( Statuses::QUOTATION, $note );
+		} else {
+			$order->save();
+			$order->add_order_note( $note );
+			if ( $order->get_customer_id() > 0 ) {
+				Notice::notify( $order->get_id() );
+			}
+		}
+		return $number;
+	}
+
+	/**
+	 * Allocate one annual number for an inquiry's first PDF.
+	 *
+	 * @param WC_Order          $order Inquiry.
+	 * @param DateTimeImmutable $issued Date of issue.
+	 * @return array{string,string} Number and private path.
+	 * @throws RuntimeException When no number can be reserved.
+	 */
+	private function first_document( WC_Order $order, DateTimeImmutable $issued ): array {
+		$year = (int) $issued->format( 'Y' );
 		for ( $attempt = 0; $attempt < self::NUMBER_ATTEMPTS; ++$attempt ) {
 			$next   = $this->sequence->next( $year );
 			$number = Sequence::format( $this->options->quotation_prefix(), $year, $next );
 			$file   = $this->files->write( $order->get_id(), $number, $this->render( $order, $number, $issued ) );
 			if ( $this->sequence->commit( $year, $next ) ) {
-				// The issued native source is recoverable before any status listener
-				// can interrupt execution; never depend on reaching an email callback.
-				$order->update_meta_data( self::NOTICE_PENDING_META, 'yes' );
-				$order->update_meta_data( self::NUMBER_META, $number );
-				$order->update_meta_data( self::ISSUED_META, (string) $issued->getTimestamp() );
-				$order->update_meta_data( self::FILE_META, $file );
-				/* translators: %s: Quotation number. */
-				$note = sprintf( __( 'Quotation %s issued.', 'linker-commerce' ), $number );
-				// The Issue button moves the status, which is what emails the customer.
-				// A status that is already issued must be saved, or the number and
-				// the PDF exist only in this request and the account still has neither.
-				if ( $move_status ) {
-					$order->update_status( Statuses::QUOTATION, $note );
-				} else {
-					$order->add_order_note( $note );
-					$order->save();
-				}
-				return $number;
+				return array( $number, $file );
 			}
-			// Another request took the number meanwhile; this PDF is discarded.
 			$this->files->delete( $file );
 		}
-		throw new RuntimeException( __( 'No Quotation number could be reserved; please try again.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- shown escaped by the caller.
+		throw new RuntimeException( __( 'No Quotation number could be reserved; please try again.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Escaped by the caller.
 	}
 
 	/**

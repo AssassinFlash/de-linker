@@ -325,6 +325,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 					'order'   => $record->get_id(),
 					'number'  => $record->get_order_number(),
 					'status'  => Statuses::RECEIVED,
+					'issued'  => false,
 					'receipt' => true,
 					'email'   => $guest,
 					'url'     => $record->get_checkout_order_received_url(),

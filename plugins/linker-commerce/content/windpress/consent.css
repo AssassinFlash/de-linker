@@ -11,13 +11,13 @@ body .cky-consent-container {
   font-family: var(--proto-font-sans);
 }
 body .cky-consent-container .cky-consent-bar {
-  padding: 8px 16px;
+  padding: 16px 22px;
   border: 1px solid var(--proto-line-journal);
   border-radius: var(--proto-radius-panel);
   box-shadow: 0 12px 48px rgb(12 40 36 / 14%);
 }
 body .cky-notice .cky-title {
-  margin-bottom: 3px;
+  margin-bottom: 6px;
   padding: 0;
   font-family: var(--proto-font-sans);
   font-size: 16px;
@@ -37,11 +37,29 @@ body .cky-notice-des p {
   padding: 0;
   font-family: var(--proto-font-sans);
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.55;
+}
+body .cky-notice-des {
+  max-height: 88px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+body .cky-notice-des[data-scroll-more] {
+  mask-image: linear-gradient(to bottom, black calc(100% - 10px), transparent);
+}
+body:has(.cky-consent-container:not(.cky-hide)) .linker-genie:has(> .linker-genie-open[aria-expanded="false"]),
+body:has(.cky-consent-container:not(.cky-hide)) .linker-genie-peek {
+  visibility: hidden;
+  pointer-events: none;
+}
+body:has(#tv-footer-v2 .cky-banner-element[data-in-view]) .linker-genie-peek {
+  display: none;
 }
 body .cky-notice-btn-wrapper {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin: 0;
   flex-wrap: nowrap;
   padding: 0;
@@ -69,6 +87,7 @@ body .cky-preference-center .cky-btn-close {
   width: var(--proto-control-height);
   height: var(--proto-control-height);
 }
+body .cky-notice-des:focus-visible,
 body .cky-btn:focus-visible,
 body .cky-btn-close:focus-visible {
   outline: 2px solid var(--proto-accent);
@@ -104,40 +123,49 @@ body .cky-accordion-header-des {
 }
 @media (max-width: 600px) {
   body .cky-consent-container {
-    left: 6px;
-    bottom: 6px;
-    width: calc(100% - 12px);
+    left: 12px;
+    bottom: 12px;
+    width: calc(100% - 24px);
     transform: none;
   }
   body .cky-consent-container .cky-consent-bar {
-    padding: 5px 8px;
-    border-radius: 14px;
+    padding: 16px 16px 12px;
+    border-radius: 16px;
   }
   body .cky-notice .cky-title {
-    margin-bottom: 2px;
-    font-size: 14px;
-    line-height: 1.2;
+    margin-bottom: 8px;
+    font-size: 15px;
   }
-  body .cky-notice-des,
-  body .cky-notice-des p {
-    font-size: 12px;
-    line-height: 1.24;
+  body .cky-notice-des {
+    max-height: 80px;
   }
   body .cky-notice-group {
-    gap: 4px;
+    gap: 12px;
   }
   body .cky-notice-btn-wrapper {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 5px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "reject accept" "purposes purposes";
+    gap: 2px 10px;
+    reading-flow: grid-rows;
   }
   body .cky-notice-btn-wrapper .cky-btn {
     min-width: 0;
     min-height: 44px;
-    padding: 4px;
-    font-size: 12px;
-    line-height: 1.2;
-    white-space: normal;
+    margin: 0;
+    padding: 6px 8px;
+    white-space: nowrap;
+  }
+  body .cky-notice-btn-wrapper .cky-btn-reject {
+    grid-area: reject;
+  }
+  body .cky-notice-btn-wrapper .cky-btn-accept {
+    grid-area: accept;
+  }
+  body .cky-notice-btn-wrapper .cky-btn-customize {
+    grid-area: purposes;
+    justify-self: center;
+    border-color: transparent !important;
   }
   body .cky-prefrence-btn-wrapper .cky-btn {
     min-width: 0;

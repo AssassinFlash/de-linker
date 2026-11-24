@@ -1018,34 +1018,33 @@ msgid "Explore with Genie"
 msgstr "Mit Genie weiterdenken"
 
 #: includes/Contact/Form.php:300 includes/Protection/Intake.php:73
+#, php-format
 msgid ""
 "This request is too large to save for review. Your entries and solution "
-"draft are still here. Please email sales@de-linker.com."
+"draft are still here. Please email %s."
 msgstr ""
 "Diese Anfrage ist zu umfangreich, um sie zur Prüfung zu speichern. Ihre "
 "Eingaben und Ihr Lösungsentwurf bleiben erhalten. Bitte schreiben Sie an "
-"sales@de-linker.com."
+"%s."
 
 #: includes/Contact/Form.php:301 includes/Protection/Intake.php:369
+#, php-format
 msgid ""
 "Your request has not been saved because the review queue is full. Your "
-"entries are still here. Please try again later or email sales@de-linker.com."
+"entries are still here. Please try again later or email %s."
 msgstr ""
 "Ihre Anfrage wurde nicht gespeichert, da die Warteliste für die Prüfung voll "
 "ist. Ihre Eingaben bleiben erhalten. Sie können es später erneut versuchen "
-"oder an sales@de-linker.com schreiben."
+"oder an %s schreiben."
 
 #: includes/Contact/Form.php:302 includes/Protection/Intake.php:378
-msgid ""
-"This message matches a repeated spam submission. We have not saved a "
-"separate inquiry or sent an email. Your entries are still here. For an "
-"individual review, select the review option in this form or email sales@de-"
-"linker.com."
+#, php-format
+msgid "This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email %s."
 msgstr ""
 "Diese Nachricht entspricht einer wiederholten Spam-Einsendung. Wir haben "
 "keine eigene Anfrage gespeichert und keine E-Mail versendet. Ihre Eingaben "
 "bleiben erhalten. Für eine Einzelprüfung können Sie die Prüfungsoption im "
-"Formular auswählen oder an sales@de-linker.com schreiben."
+"Formular auswählen oder an %s schreiben."
 
 #: includes/Contact/Form.php:303
 msgid ""
@@ -1066,12 +1065,13 @@ msgid "Please check your entries and send the form again."
 msgstr "Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut."
 
 #: includes/Contact/Form.php:307 includes/Protection/Intake.php:312
+#, php-format
 msgid ""
 "The message limit has been reached. Your entries are still here. You can try "
-"again later or email sales@de-linker.com."
+"again later or email %s."
 msgstr ""
 "Die Nachrichtenbegrenzung ist erreicht. Ihre Angaben bleiben erhalten. Sie "
-"können es später erneut versuchen oder uns unter sales@de-linker.com "
+"können es später erneut versuchen oder uns unter %s "
 "schreiben."
 
 #: includes/Contact/Form.php:310 includes/Inquiry/Form.php:126
@@ -2397,9 +2397,10 @@ msgid "View inquiries"
 msgstr "Anfragen ansehen"
 
 #: includes/Inquiry/Checkout.php:127
-msgid "You can also email sales@de-linker.com and quote this inquiry number."
+#, php-format
+msgid "You can also email %s and quote this inquiry number."
 msgstr ""
-"Sie können auch an sales@de-linker.com schreiben und diese Anfragenummer "
+"Sie können auch an %s schreiben und diese Anfragenummer "
 "angeben."
 
 #: includes/Inquiry/Checkout.php:128
@@ -2720,12 +2721,13 @@ msgstr ""
 "neu, bevor Sie es erneut versuchen."
 
 #: includes/Mail/ResetNotice.php:146 includes/Protection/Accounts.php:413
+#, php-format
 msgid ""
 "Password reset is temporarily unavailable. Please try again later or email "
-"sales@de-linker.com."
+"%s."
 msgstr ""
 "Das Zurücksetzen des Passworts ist derzeit nicht möglich. Bitte versuchen "
-"Sie es später erneut oder schreiben Sie an sales@de-linker.com."
+"Sie es später erneut oder schreiben Sie an %s."
 
 #: includes/Mail/SmtpHealth.php:58
 msgid "SMTP configured"
@@ -4784,27 +4786,29 @@ msgstr ""
 #: includes/Protection/RegistrationSlots.php:691
 #: includes/Registration/RegistrationMessage.php:462
 #: includes/Registration/RegistrationNotices.php:561
+#, php-format
 msgid ""
 "Registration is currently unavailable. Your account has not been created. "
-"Please try again later or email sales@de-linker.com."
+"Please try again later or email %s."
 msgstr ""
 "Eine Registrierung ist derzeit nicht möglich. Ihr Konto wurde nicht "
 "angelegt. Bitte versuchen Sie es später erneut oder schreiben Sie an "
-"sales@de-linker.com."
+"%s."
 
 #: includes/Protection/Accounts.php:224
 msgid "Please re-enter your password."
 msgstr "Bitte geben Sie Ihr Passwort erneut ein."
 
 #: includes/Protection/Accounts.php:260 includes/Protection/Accounts.php:271
+#, php-format
 msgid ""
 "The registration status could not be confirmed. Please try signing in before "
-"registering again, or email sales@de-linker.com. You can send inquiries "
+"registering again, or email %s. You can send inquiries "
 "without an account."
 msgstr ""
 "Der Status Ihrer Registrierung konnte nicht bestätigt werden. Versuchen Sie "
 "bitte, sich anzumelden, bevor Sie sich erneut registrieren, oder schreiben "
-"Sie an sales@de-linker.com. Anfragen können Sie auch ohne Konto senden."
+"Sie an %s. Anfragen können Sie auch ohne Konto senden."
 
 #: includes/Protection/Accounts.php:404
 msgid "Please verify your request and try again."
@@ -4817,14 +4821,12 @@ msgstr ""
 "Ihre Anfrage konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut."
 
 #: includes/Protection/Business.php:150
-msgid ""
-"Verification is temporarily unavailable. No request has been sent in this "
-"attempt. Your entries are still here. Please try again or email sales@de-"
-"linker.com."
+#, php-format
+msgid "Verification is temporarily unavailable. No request has been sent in this attempt. Your entries are still here. Please try again or email %s."
 msgstr ""
 "Die Sicherheitsprüfung ist vorübergehend nicht verfügbar. Bei diesem Versuch "
 "wurde noch keine Anfrage gesendet. Ihre Angaben bleiben erhalten. Sie können "
-"es erneut versuchen oder uns unter sales@de-linker.com schreiben."
+"es erneut versuchen oder uns unter %s schreiben."
 
 #: includes/Protection/Business.php:151
 msgid ""
@@ -4836,15 +4838,16 @@ msgstr ""
 "es erneut."
 
 #: includes/Protection/BusinessCapacity.php:491
+#, php-format
 msgid ""
 "Your request has not been saved. We cannot accept new requests on this "
 "website right now. Your entries and solution draft are still here. Please "
-"try again later or email sales@de-linker.com."
+"try again later or email %s."
 msgstr ""
 "Ihre Anfrage wurde nicht gespeichert. Über diese Website können wir derzeit "
 "keine weiteren Anfragen annehmen. Ihre Eingaben und Ihr Lösungsentwurf sind "
 "weiterhin vorhanden. Bitte versuchen Sie es später erneut oder schreiben Sie "
-"an sales@de-linker.com."
+"an %s."
 
 #: includes/Protection/Comments.php:58
 msgid "Please verify your comment and try again."
@@ -4867,12 +4870,11 @@ msgid "Please sign in to use your saved solution."
 msgstr "Bitte melden Sie sich an, um Ihre gespeicherte Lösung zu verwenden."
 
 #: includes/Protection/FormFields.php:30
-msgid ""
-"Please enable JavaScript to verify this request, or email sales@de-"
-"linker.com."
+#, php-format
+msgid "Please enable JavaScript to verify this request, or email %s."
 msgstr ""
 "Für die Sicherheitsprüfung muss JavaScript aktiviert sein. Sie erreichen uns "
-"auch unter sales@de-linker.com."
+"auch unter %s."
 
 #: includes/Protection/FormFields.php:33
 msgid "Request individual review of this message"
@@ -5384,12 +5386,13 @@ msgid "No decision yet"
 msgstr "Noch nicht entschieden"
 
 #: includes/Registration/Approval.php:298
+#, php-format
 msgid ""
 "This account is not approved for sign-in. We have emailed you the reason. "
-"Write to sales@de-linker.com and we will look at it again."
+"Write to %s and we will look at it again."
 msgstr ""
 "Dieses Konto ist nicht zur Anmeldung freigegeben. Den Grund haben wir Ihnen "
-"per E-Mail geschickt. Schreiben Sie an sales@de-linker.com; wir sehen uns "
+"per E-Mail geschickt. Schreiben Sie an %s; wir sehen uns "
 "Ihr Konto erneut an."
 
 #: includes/Registration/ApprovalAdmin.php:92
@@ -6004,13 +6007,14 @@ msgid "Energy capacity"
 msgstr "Nutzbare Energie"
 
 #: includes/Vocabulary/Labels.php:54
+#, php-format
 msgid ""
 "This confirmation link did not open. Please use the link from your inquiry "
-"confirmation email, or write to sales@de-linker.com and we will send it "
+"confirmation email, or write to %s and we will send it "
 "again."
 msgstr ""
 "Dieser Bestätigungslink ließ sich nicht öffnen. Bitte verwenden Sie den Link "
-"aus Ihrer Anfragebestätigung, oder schreiben Sie an sales@de-linker.com. Wir "
+"aus Ihrer Anfragebestätigung, oder schreiben Sie an %s. Wir "
 "senden Ihnen den Link gerne erneut."
 
 #: includes/Vocabulary/Labels.php:56 includes/Vocabulary/Terms.php:104
@@ -6465,21 +6469,23 @@ msgstr ""
 "Konto nicht anmelden."
 
 #: templates/emails/linker-approval-rejected.php:27
-msgid "If you have questions, write to sales@de-linker.com."
-msgstr "Bei Fragen schreiben Sie an sales@de-linker.com."
+#, php-format
+msgid "If you have questions, write to %s."
+msgstr "Bei Fragen schreiben Sie an %s."
 
 #: templates/emails/linker-approval-restricted.php:23
 msgid "Your partner account has been limited for now."
 msgstr "Ihr Partner-Konto ist vorerst eingeschränkt."
 
 #: templates/emails/linker-approval-restricted.php:24
+#, php-format
 msgid ""
 "You can browse products and send inquiries. Net prices remain unavailable "
-"while your account is limited. You can also reach us at sales@de-linker.com."
+"while your account is limited. You can also reach us at %s."
 msgstr ""
 "Sie können Produkte ansehen und Anfragen senden. Solange Ihr Konto "
 "eingeschränkt ist, werden keine Nettopreise angezeigt. Sie erreichen uns "
-"auch unter sales@de-linker.com."
+"auch unter %s."
 
 #: templates/emails/linker-approval-restricted.php:28
 msgid "Write to us and we will look at your account again."
@@ -6922,6 +6928,91 @@ msgid ""
 msgstr ""
 "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. "
 "Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
+
+#: includes/Quotation/Issuer.php
+msgid "Approve this account before issuing its Quotation. The customer needs approval to download the PDF."
+msgstr "Geben Sie dieses Konto vor der Ausstellung des Angebots frei. Erst nach der Freigabe kann der Kunde das PDF herunterladen."
+
+#: includes/Quotation/Issuer.php
+msgid "Reload this inquiry to revise its current Quotation."
+msgstr "Laden Sie diese Anfrage erneut, um das aktuelle Angebot zu korrigieren."
+
+#: includes/Quotation/Issuer.php
+msgid "The previous Quotation notification is still being queued. Please try again shortly."
+msgstr "Die Benachrichtigung zum vorherigen Angebot ist noch in der Warteschlange. Bitte versuchen Sie es in Kürze erneut."
+
+#: includes/Quotation/Issuer.php
+msgid "Inquiry not found."
+msgstr "Anfrage nicht gefunden."
+
+#: includes/Quotation/AdminBox.php
+msgid "The billing address is incomplete. You can add it under Billing."
+msgstr "Die Rechnungsadresse ist unvollständig. Sie können sie unter Rechnungsdetails ergänzen."
+
+#: includes/Quotation/AdminBox.php
+msgid "No buyer VAT ID is recorded. Add it under Billing if available."
+msgstr "Für den Käufer ist keine USt-IdNr. hinterlegt. Falls vorhanden, ergänzen Sie sie unter Rechnungsdetails."
+
+#: includes/Quotation/AdminBox.php
+msgid "Preview PDF"
+msgstr "PDF-Vorschau"
+
+#: includes/Quotation/AdminBox.php
+msgid "Issue revised Quotation"
+msgstr "Korrigiertes Angebot ausstellen"
+
+#: includes/Quotation/AdminBox.php includes/Inquiry/AccountLink.php includes/Inquiry/Assessment/EvidenceView.php
+msgid "Guest inquiry"
+msgstr "Gastanfrage"
+
+#: includes/Quotation/AdminBox.php
+msgid "Pending approval"
+msgstr "Freigabe ausstehend"
+
+#: includes/Quotation/AdminBox.php
+msgid "An account uses this email address. This inquiry is still unlinked."
+msgstr "Zu dieser E-Mail-Adresse gibt es bereits ein Konto. Die Anfrage ist diesem Konto noch nicht zugeordnet."
+
+#: templates/quotation/quotation.php
+msgid "Quotation — DRAFT"
+msgstr "Angebot – ENTWURF"
+
+#: includes/Quotation/AdminBox.php
+msgid "Issue the PDF for offline delivery. Download it here and send it to the guest yourself."
+msgstr "Stellen Sie das Angebot als PDF aus. Laden Sie es hier herunter und senden Sie es direkt an den Gast."
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php
+msgid "Revised Quotation {quotation_number} for inquiry #{order_number}"
+msgstr "Korrigiertes Angebot {quotation_number} zu Ihrer Anfrage Nr. {order_number}"
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php
+msgid "Your revised Quotation is ready"
+msgstr "Ihr korrigiertes Angebot liegt vor"
+
+#: includes/Account/AuthTemplates.php includes/Presentation/AccountTemplates.php
+msgid "Confirm inquiry"
+msgstr "Anfrage bestätigen"
+
+#: includes/Account/AuthTemplates.php
+msgid "Sign in to your partner account"
+msgstr "Beim Partnerkonto anmelden"
+
+#: includes/Inquiry/Form.php
+msgid "A planning report is unavailable for these products:"
+msgstr "Für diese Produkte ist ein Planungsbericht nicht verfügbar:"
+
+#: includes/Inquiry/Form.php
+msgid "You can keep all products and quantities in your inquiry."
+msgstr "Alle Produkte und Mengen können in Ihrer Anfrage bleiben."
+
+#: includes/Inquiry/Form.php
+msgid "Remove unavailable report links"
+msgstr "Nicht verfügbare Berichtsverknüpfungen entfernen"
+
+#: includes/Planning/Context.php
+#, php-format
+msgid "The planning project “%s” is no longer accessible. Remove the unavailable report link on the inquiry form to keep its products."
+msgstr "Das Planungsprojekt „%s“ ist nicht mehr zugänglich. Entfernen Sie die Verknüpfung zum Bericht im Anfrageformular, um die Produkte zu behalten."
 
 #~ msgid "Update the solution draft before sending your inquiry."
 #~ msgstr ""

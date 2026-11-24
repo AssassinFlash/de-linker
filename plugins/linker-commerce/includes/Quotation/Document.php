@@ -70,8 +70,9 @@ final class Document {
 				'total'    => wc_price( (float) $item->get_total(), $currency ),
 			);
 		}
-		$fees = array();
-		foreach ( $order->get_fees() as $fee ) {
+		$fees     = array();
+		$shipping = array_filter( $order->get_shipping_methods(), static fn ( $method ): bool => 0.0 !== (float) $method->get_total() );
+		foreach ( array_merge( $order->get_fees(), $shipping ) as $fee ) {
 			$fees[] = array(
 				'name'  => $fee->get_name(),
 				'total' => wc_price( (float) $fee->get_total(), $currency ),

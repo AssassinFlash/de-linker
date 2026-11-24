@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Mail\NotificationHold;
@@ -44,7 +45,8 @@ final class Intake {
 		}
 		$json = wp_json_encode( $payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		if ( ! is_string( $json ) || strlen( $json ) > self::MAX_BYTES || ( 'inquiry' === $action && WC()->cart->get_cart_contents_count() > 0 && count( WC()->cart->get_cart() ) > self::MAX_LINES ) ) {
-			return new WP_Error( 'linker_intake_size', __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) );
+			/* translators: %s: public team email address. */
+			return new WP_Error( 'linker_intake_size', sprintf( __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) );
 		}
 		$defer_slot = 'verification' === $lane && 'inquiry' === $action && array() !== \Linker\Commerce\Planning\Context::submitted_handoffs();
 		$result     = self::problem( new WP_Error( 'linker_intake_busy' ) );
@@ -283,7 +285,8 @@ final class Intake {
 	 */
 	private static function problem( WP_Error $error ): WP_Error {
 		$message = 'linker_admission_quota' === $error->get_error_code()
-			? __( 'The message limit has been reached. Your entries are still here. You can try again later or email sales@de-linker.com.', 'linker-commerce' )
+			/* translators: %s: public team email address. */
+			? sprintf( __( 'The message limit has been reached. Your entries are still here. You can try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() )
 			: __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' );
 		return new WP_Error( $error->get_error_code(), $message, $error->get_error_data() );
 	}
@@ -340,7 +343,8 @@ final class Intake {
 
 	/** Capacity refusal is honest and retains the native form fields. */
 	private static function full(): WP_Error {
-		return new WP_Error( 'linker_intake_full', __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+		/* translators: %s: public team email address. */
+		return new WP_Error( 'linker_intake_full', sprintf( __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) );
 	}
 
 	/**
@@ -349,6 +353,7 @@ final class Intake {
 	 * @param string $id Actual attempt UUID, not a representative order key.
 	 */
 	private static function grouped( string $id ): WP_Error {
-		return new WP_Error( 'linker_intake_grouped', __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email sales@de-linker.com.', 'linker-commerce' ), array( 'reference' => $id ) );
+		/* translators: %s: public team email address. */
+		return new WP_Error( 'linker_intake_grouped', sprintf( __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ), array( 'reference' => $id ) );
 	}
 }

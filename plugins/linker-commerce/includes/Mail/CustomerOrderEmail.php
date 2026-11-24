@@ -51,7 +51,7 @@ abstract class CustomerOrderEmail extends WC_Email {
 			return;
 		}
 		$this->object                         = $order;
-		$this->recipient                      = $order->get_billing_email();
+		$this->recipient                      = $this->recipient_for_order( $order );
 		$this->placeholders['{order_number}'] = $order->get_order_number();
 
 		$this->locale_switch->to( OrderLocale::of( $order ) );
@@ -60,6 +60,15 @@ abstract class CustomerOrderEmail extends WC_Email {
 		} finally {
 			$this->locale_switch->back();
 		}
+	}
+
+	/**
+	 * Reply address supplied for this inquiry.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	protected function recipient_for_order( WC_Order $order ): string {
+		return $order->get_billing_email();
 	}
 
 	/**

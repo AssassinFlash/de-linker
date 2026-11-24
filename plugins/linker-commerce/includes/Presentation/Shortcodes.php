@@ -37,12 +37,18 @@ final class Shortcodes {
 		add_shortcode( 'linker_faq_rows', array( $this, 'faq_rows' ) );
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
 		add_shortcode( 'linker_contact_invitation', array( $this, 'contact_invitation' ) );
+		add_shortcode( 'linker_team_email', array( $this, 'team_email' ) );
 		add_shortcode( 'linker_site_url', array( $this, 'site_url' ) );
 		add_shortcode( 'linker_form_assistant', array( $this, 'form_assistant' ) );
 		// The cart template's [lc_if] conditions are the global functions in
 		// template-functions.php (linker_commerce_draft_empty/_filled):
 		// LiveCanvas resolves a condition with function_exists(), never a
 		// filter under the condition's name.
+	}
+
+	/** Public team address for LC contact links and the footer copy button. */
+	public function team_email(): string {
+		return esc_attr( ( new Options() )->team_mailbox() );
 	}
 
 	/**

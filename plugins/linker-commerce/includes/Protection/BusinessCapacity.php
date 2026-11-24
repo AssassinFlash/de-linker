@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Inquiry\Statuses;
 use WC_Order;
 use WP_Error;
@@ -267,6 +268,7 @@ final class BusinessCapacity {
 
 	/** The ordinary form and tool consumers share the honest unsaved result. */
 	public static function message(): string {
-		return __( 'Your request has not been saved. We cannot accept new requests on this website right now. Your entries and solution draft are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' );
+		/* translators: %s: public team email address. */
+		return sprintf( __( 'Your request has not been saved. We cannot accept new requests on this website right now. Your entries and solution draft are still here. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() );
 	}
 }

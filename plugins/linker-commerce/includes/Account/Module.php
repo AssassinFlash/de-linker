@@ -61,6 +61,7 @@ final class Module {
 		$this->auth->register();
 		$this->admin_access->register();
 
+		add_action( 'woocommerce_my_account_my_orders_column_order-status', array( $this->inquiries, 'status_column' ) );
 		add_filter( 'woocommerce_account_orders_columns', array( $this->inquiries, 'columns' ) );
 		add_filter( 'woocommerce_my_account_my_orders_actions', array( $this->inquiries, 'actions' ), 10, 2 );
 		add_filter( 'woocommerce_get_order_item_totals', array( $this->inquiries, 'customer_totals' ), 20 );
