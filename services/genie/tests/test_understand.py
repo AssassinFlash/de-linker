@@ -324,7 +324,7 @@ def test_a_failed_route_call_is_recorded_and_the_turn_goes_on(
 
 def test_jev_sees_the_page_product_by_name(vocabulary: Vocabulary) -> None:
     jev = FakeJev(_reading("documents_specs"))
-    understander = Understander(lambda: vocabulary, jev)
+    understander = Understander(lambda: vocabulary, jev, search=lambda _: {"hits": []})
     h2 = next(p["id"] for p in FIXTURE["en"]["products"] if "H2-10K-T3" in p["name"])
     prepared = understander.prepare(
         _request("datasheet please", type="product", product_id=h2), _abilities([])
@@ -610,3 +610,34 @@ def test_a_nameplate_naming_an_unavailable_model_is_still_captured(
     prepared = understander.prepare(request, _abilities([]))
     assert prepared.route.name == "scripted"
     assert prepared.log["publication"] == "upload_identification_only"
+
+
+def test_jev_and_subject_matching_can_overlap_without_changing_the_route(
+    vocabulary: Vocabulary, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from threading import Barrier
+
+    from linker_genie import understand
+
+    gate = Barrier(2)
+    original = understand._subject
+
+    def subject(request, matches, words):  # type: ignore[no-untyped-def]
+        gate.wait(timeout=2)
+        return original(request, matches, words)
+
+    class ConcurrentJev(FakeJev):
+        def read(
+            self,
+            message: str,
+            page: dict[str, Any],
+            history: Sequence[tuple[str, str]] = (),
+        ) -> Reading:
+            gate.wait(timeout=2)
+            return super().read(message, page, history)
+
+    monkeypatch.setattr(understand, "_subject", subject)
+    outcome = Understander(
+        lambda: vocabulary, ConcurrentJev(_reading("general"))
+    ).prepare(_request("Tell me about the stored equipment"), _abilities([]))
+    assert outcome.log["jev"]

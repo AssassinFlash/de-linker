@@ -182,13 +182,27 @@ class Understander:
             route = person([f"person phrase: {phrase}"])
             log.update(route.as_log())
             return Prepared(route=route, log=log, timing=clock)
-        with timing.phase(clock, timing.VOCABULARY):
-            vocabulary = self._load_vocabulary(log, get_vocabulary)
-        matches = vocabulary.match(message) if vocabulary else []
-        log["matches"] = [
-            {"kind": m.kind, "value": m.value, "words": m.words} for m in matches
-        ]
-        subject = _subject(request, matches, vocabulary)
+
+        def load_words() -> Vocabulary | None:
+            with timing.phase(clock, timing.VOCABULARY):
+                return self._load_vocabulary(log, get_vocabulary)
+
+        if self._publication is not None and message:
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                identification = pool.submit(_text_statuses, message, self._publication)
+                vocabulary = load_words()
+                typed_statuses = identification.result()
+        else:
+            vocabulary = load_words()
+            typed_statuses = {}
+
+        def match_words() -> list[Match]:
+            found = vocabulary.match(message) if vocabulary else []
+            log["matches"] = [
+                {"kind": m.kind, "value": m.value, "words": m.words} for m in found
+            ]
+            return found
+
         # This turn's files are read first (#236): a nameplate decides the route.
         fresh: list[AttachmentReading] = []
         if request.attachments:
@@ -214,11 +228,6 @@ class Understander:
                 }
             )
         plate = _first_nameplate(fresh, vocabulary)
-        typed_statuses = (
-            _text_statuses(message, self._publication)
-            if self._publication and message
-            else {}
-        )
         source = (
             None
             if plate is not None or vocabulary is None
@@ -328,6 +337,7 @@ class Understander:
                     timing=clock,
                 )
         if source is not None:
+            match_words()
             # A parts list is code's whole turn (#251): the rows are matched here,
             # the answer and the card are parts.answer's, and the model does not
             # run. Jev is not asked, as for a nameplate: the list decides.
@@ -371,6 +381,7 @@ class Understander:
             message, request.previous_card_quantities, vocabulary
         )
         if selection and not request.attachments:
+            match_words()
             route = Route("card_selection", no_handoff=True)
             log.update(route.as_log())
             return Prepared(
@@ -380,18 +391,28 @@ class Understander:
         if plate is not None:
             # A nameplate is confirmed before anything else is answered about it, so
             # Jev is not asked: the route is the nameplate's (route.nameplate).
+            matches = match_words()
+            subject = _subject(request, matches, vocabulary)
             route = nameplate(plate, language, subject, [])
         elif fresh and all(item.kind == "document" for item in fresh) and not message:
             # These are the upload labels the shell appends, not a catalogue query.
+            matches = match_words()
+            subject = _subject(request, matches, vocabulary)
             route = Route("model", no_handoff=True)
         else:
-            reading = self._read(request, message, vocabulary, log, clock)
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                classification = pool.submit(
+                    self._read, request, message, vocabulary, log, clock
+                )
+                matches = match_words()
+                subject = _subject(request, matches, vocabulary)
+                bare = vocabulary.bare(message) if vocabulary else False
+                reading = classification.result()
             # Jev's yes/no answers count from 0.5, the cut the measurement scored
             # about_this_page by (59 of 60 right, docs/research/2026-10-17-jev-intent/).
             about_page = reading is not None and reading.about_this_page >= 0.5
             if about_page and request.page_context.product_id:
                 subject = _with_page_product(subject, request, vocabulary)
-            bare = vocabulary.bare(message) if vocabulary else False
             route = plan(
                 message,
                 matches,
