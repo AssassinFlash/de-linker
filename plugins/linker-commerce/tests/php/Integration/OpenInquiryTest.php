@@ -936,7 +936,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( 1, preg_match( '/<form class="linker-inquiry-form".*?<\/form>/s', $html, $matches ) );
 		$form = $matches[0] ?? '';
 		$this->assertSame( 1, preg_match( '/<label[^>]*for="inquiry-message"[^>]*>(.*?)<textarea/s', $form, $field ) );
-		$this->assertSame( $message, trim( wp_strip_all_tags( $field[1] ) ) );
+		$this->assertSame( $message, trim( wp_strip_all_tags( $field[1] ?? '' ) ) );
 		$this->assertStringContainsString( 'action="' . admin_url( 'admin-post.php' ) . '"', $form );
 		$this->assertStringNotContainsString( '[linker_', $form );
 		$this->assertStringNotContainsString( 'name="billing_country"', $form );
