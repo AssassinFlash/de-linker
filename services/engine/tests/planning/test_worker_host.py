@@ -353,6 +353,9 @@ def test_duplicate_ready_path_cannot_replace_a_live_worker(tmp_path: Path) -> No
     try:
         wait_for(lambda: ready_generation(ready), lambda value: value == generation)
         original = ready.read_bytes()
+        previous_pulse = ready.stat().st_mtime_ns
+        wait_for(lambda: ready.stat().st_mtime_ns, lambda pulse: pulse > previous_pulse)
+
         b, _, _ = launch(
             tmp_path / "processes", settings, label="duplicate", ready=ready
         )
@@ -484,7 +487,10 @@ def test_readiness_write_failure_removes_owned_temporary_file(
         raise OSError("fixture fsync failure")
 
     monkeypatch.setattr(os, "fsync", fail_sync)
-    with pytest.raises(OSError, match="fsync failure"):
-        worker_host.publish_ready(ready, {"pid": 42})
+    with (
+        pytest.raises(OSError, match="fsync failure"),
+        worker_host.publish_ready(ready, {"pid": 42}),
+    ):
+        pytest.fail("an unsynced readiness record was published")
     assert ready.read_bytes() == b"previous-ready"
     assert sorted(p.name for p in tmp_path.iterdir()) == [ready.name]

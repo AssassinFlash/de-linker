@@ -122,6 +122,7 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     assert ("Delegate=cpu memory pids" in worker_unit) is expanded
     assert ("DelegateSubgroup=supervisor" in worker_unit) is expanded
     assert set(ops.environment(private / "http.env")) == {
+        "LINKER_PLANNER_WORKER_CONFIG",
         "GENIE_SERVICE_TOKEN",
         "LINKER_ENGINE_FEED",
         "LINKER_ENGINE_COMPATIBILITY",
@@ -262,7 +263,8 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     monkeypatch.setattr(target, "check_http_process", lambda: None)
     with pytest.raises(RuntimeError, match="refused"):
         target.probe()
-    assert requests == [("127.0.0.1", 18911)]
+    assert target.health("new-runtime") == {}
+    assert requests == [("127.0.0.1", 18911)] * 2
     (private / "worker.json").write_text((private / "worker.json").read_text() + " ")
     with pytest.raises(RuntimeError, match="configuration changed"):
         target.preflight()

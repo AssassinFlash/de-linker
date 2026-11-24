@@ -16,7 +16,7 @@ import { expect, test, vi } from 'vitest';
 /**
  * Internal dependencies
  */
-import type { storeClient } from '../configurator/api/store';
+import type { storeClient } from './api/store';
 
 vi.mock( './api/turn', async ( importOriginal ) => {
 	const actual = await importOriginal< typeof import( './api/turn' ) >();
@@ -33,9 +33,6 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendVote: vi.fn( async () => true ),
 	};
 } );
-vi.mock( '../configurator/api/solutions', () => ( {
-	saveSolution: vi.fn(),
-} ) );
 
 import { sendTurn } from './api/turn';
 import { App } from './App';
@@ -43,7 +40,7 @@ import type { GenieConfig } from './config';
 
 const addAll = vi.fn( async () => true );
 
-vi.mock( '../configurator/api/store', () => ( {
+vi.mock( './api/store', () => ( {
 	storeClient: () =>
 		( {
 			products: vi.fn( async () => [] ),
@@ -143,6 +140,6 @@ test( 'the parts block reaches the card and its add is one store call', async ()
 			{ productId: 3556, quantity: 3 },
 		],
 		expect.any( Function ),
-		{ kind: 'genie', token: '' }
+		''
 	);
 } );

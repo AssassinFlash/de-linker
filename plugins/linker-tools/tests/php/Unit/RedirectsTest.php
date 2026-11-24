@@ -309,7 +309,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 261, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-			$this->assertCount( 5, $maps['retired_tools'] );
+		$this->assertCount( 6, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
 	}
@@ -896,6 +896,20 @@ final class RedirectsTest extends TestCase {
 		$this->assertSame( self::HOME . '/solution-configurator/?step=roof', ( new Redirects() )->target( '/design-canvas/' ) );
 		$this->assertSame( self::HOME . '/de/loesungskonfigurator/?step=roof', ( new Redirects() )->target( '/de/design-canvas/' ) );
 		$this->assertSame( self::HOME . '/de/loesungskonfigurator/?step=roof', ( new Redirects() )->target( '/de/entwurfsflache/' ) );
+	}
+
+	/** The unprefixed German entry retains the visitor's selected task. */
+	public function test_unprefixed_german_configurator_opens_the_german_page(): void {
+		$this->wordpress();
+		try {
+			$_SERVER['QUERY_STRING'] = 'projects=1';
+			$this->assertSame(
+				self::HOME . '/de/loesungskonfigurator/?projects=1',
+				( new Redirects() )->target( '/loesungskonfigurator/' )
+			);
+		} finally {
+			unset( $_SERVER['QUERY_STRING'] );
+		}
 	}
 
 	/**

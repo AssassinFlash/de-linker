@@ -2,10 +2,8 @@
  * A product in a proposal: what it is, how many, why it is there, and the
  * feedback of an action on it, all inside the card.
  *
- * Shared by the Solution Configurator and Genie (docs/specs/13-genie.md:
- * pending / added / unverified / retry shown in the card, the card's height
- * stable). The caller supplies every text, so the card carries no wording of
- * its own and serves both apps' translations.
+ * Genie and its homepage entry supply the text and status for each card.
+ * See docs/specs/13-genie.md for the draft and save outcomes.
  */
 
 /**

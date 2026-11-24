@@ -45,6 +45,8 @@ description = "Non-secret identifiers, capture hashes and synthetic fixtures doc
 regexTarget = "match"
 
 regexes = [
+  # TransportTest command idempotency UUID in 251c2388; exact PHP match.
+  """^key' => 'be0e47ad-800d-49bd-bc38-a0efce1eff92'$""",
   # Apify run / dataset / actor / build / key-value-store ids. These name a run
   # on someone else's account; access still needs APIFY_TOKEN, which is read
   # from the environment and never written to the repository.

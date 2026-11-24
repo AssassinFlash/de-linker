@@ -1,7 +1,7 @@
 # A3 终局像素包验收记录（2026-10-16）
 
 对应登记册 `docs/debt/REGISTRY-CLOSEOUT-2026-10-15.md` §2 的执行包。执行者：执行会话
-（分支 `docs/a3-final-package`）；执行日 2026-10-16。证据工作区：`.scratch/a3-final/`
+（分支 `docs/a3-final-package`）；执行日 2026-10-16。证据工作区：[a3-final](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/a3-final)
 （`README.md`＝执行包说明与掩膜逐项；`metrics.json`＝67 面数字；PNG 留本地不入库）。
 
 ## 1. 口径与两侧状态
@@ -12,7 +12,7 @@
 | 修复印证口径 | **旧线上参考 vs 新树上线上**（deploy 前 2026-10-14 的 `shots-20261014-before` 对照 2026-10-16 重拍） |
 | 本地侧 | t73 `http://127.0.0.1:8939`，插件软链→main `621a9005`；快照 20261015-1852；拍摄前 `just present t73` + `just windpress-compile t73` |
 | 线上侧 | `https://de-linker.com`（2026-10-16 部署后；拍摄期间 11:00–11:15 前后一次维护窗，维护期帧全部作废重拍） |
-| 拍面 | **67**（登记册 §2 清单 63 + A4 复核 4）；逐面数字 `.scratch/a3-final/metrics.json` |
+| 拍面 | **67**（登记册 §2 清单 63 + A4 复核 4）；逐面数字 [metrics.json](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/a3-final/metrics.json) |
 | 阈值 | >2/255（max-channel），条带口径 -300..300 步进 1 最优位移 |
 
 ## 2. 结果

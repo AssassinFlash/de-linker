@@ -11,7 +11,7 @@ import re
 import signal
 import tempfile
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 from threading import Event, Thread
 
@@ -45,22 +45,26 @@ def readiness_owner(path: Path) -> Iterator[None]:
         os.close(descriptor)
 
 
-def publish_ready(path: Path, value: Object) -> None:
+@contextmanager
+def publish_ready(path: Path, value: Object) -> Iterator[None]:
+    """Hold the published record's lock for exactly this ready worker's lifetime."""
     temporary: Path | None = None
     try:
         with tempfile.NamedTemporaryFile(
             dir=path.parent, prefix="." + path.name + ".incoming-", delete=False
         ) as stream:
             temporary = Path(stream.name)
+            fcntl.flock(stream, fcntl.LOCK_EX)
             stream.write(encode(value))
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, path)
-        descriptor = os.open(path.parent, os.O_RDONLY)
-        try:
-            os.fsync(descriptor)
-        finally:
-            os.close(descriptor)
+            os.replace(temporary, path)
+            descriptor = os.open(path.parent, os.O_RDONLY)
+            try:
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+            yield
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
@@ -78,7 +82,7 @@ def serve(
     # Operational files do not belong in immutable customer/source storage.
     if ready.resolve().is_relative_to(Path(settings.directory).resolve()):
         raise ValueError("worker readiness must be outside the project workspace")
-    with readiness_owner(ready):
+    with readiness_owner(ready), ExitStack() as lifecycle:
         workspace, energy = settings.open()
         pv = settings.pv_service(workspace)
         weather = settings.weather_service(workspace)
@@ -180,8 +184,15 @@ def serve(
             "storage_binding": expected_storage,
             "name": policy.name,
         }
+
+        def pulse() -> None:
+            while not stop.wait(policy.heartbeat_seconds):
+                os.utime(ready, None)
+
+        heartbeat = Thread(target=pulse, name="planner-readiness", daemon=True)
         try:
-            publish_ready(ready, identity)
+            lifecycle.enter_context(publish_ready(ready, identity))
+            heartbeat.start()
             LOG.info("planning worker ready: %s", policy.name)
             if expanded_thread is not None:
                 expanded_thread.start()
@@ -193,6 +204,8 @@ def serve(
             return 0
         finally:
             stop.set()
+            if heartbeat.ident is not None:
+                heartbeat.join()
             expanded_stuck = False
             if expanded_thread is not None and expanded_thread.ident is not None:
                 expanded_thread.join(timeout=policy.drain_timeout_seconds)

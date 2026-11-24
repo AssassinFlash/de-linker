@@ -14,7 +14,6 @@ import webpackConfig from '../webpack.config.js';
 // nothing (the preview card's rules, ticket #249, have their own tests).
 const titles: Record< string, string > = {
 	genie: "Genie – Linker's AI assistant",
-	configurator: 'Solution Configurator',
 };
 const scripts: Record< string, string > = {
 	marketing: './src/marketing/index.ts',

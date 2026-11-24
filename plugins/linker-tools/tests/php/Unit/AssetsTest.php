@@ -45,7 +45,7 @@ final class AssetsTest extends TestCase {
 			)
 		);
 
-		foreach ( array( 'configurator', 'genie', 'hero', 'marketing', 'inquiry-handoff', 'preview' ) as $entry ) {
+		foreach ( array( 'genie', 'hero', 'marketing', 'inquiry-handoff', 'preview' ) as $entry ) {
 			$asset = require $plugin_dir . 'build/' . $entry . '.asset.php';
 
 			if ( 'marketing' === $entry ) {
@@ -106,7 +106,7 @@ final class AssetsTest extends TestCase {
 			);
 		}
 
-		$this->assertFileExists( $plugin_dir . 'build/configurator.css' );
+		$this->assertFileDoesNotExist( $plugin_dir . 'build/configurator.js' );
 
 		( new Assets( $plugin_file ) )->register();
 

@@ -6,9 +6,7 @@ engine from the stored design and writes the figures as `[nK=…]` tags, the way
 the page reader writes a page's (#234). The model cites `{fact:solution.nK}` and
 hydration fills the value.
 
-The fixture values are the recorded answer of the Munich design of
-`tests/fixtures/configurator/residential-en.json` (the engine's fixture feed),
-reduced to what the ability returns.
+The fixture is the Munich residential design projected by the saved-solution ability.
 """
 
 from __future__ import annotations

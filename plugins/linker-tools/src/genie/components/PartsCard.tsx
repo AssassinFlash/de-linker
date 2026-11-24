@@ -20,7 +20,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useState } from '@wordpress/element';
 import type { PartsBlock, PartsRow } from '../api/turn';
-import { additionUnconfirmedText } from '../../configurator/publication';
+import { additionUnconfirmedText } from '../publication';
 
 /** How the one draft write ended, for the card's own line. */
 export type PartsAddResult = 'added' | 'unverified' | 'retry' | 'stale';

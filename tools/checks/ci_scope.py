@@ -183,7 +183,6 @@ COMMERCE_COMPATIBILITY = "plugins/linker-commerce/data/compatibility.json"
 PLANNER_CHUNK = re.compile(
     r"plugins/linker-tools/build/planner/assets/([A-Za-z0-9_-]+)-[A-Za-z0-9_-]{8}\.js"
 )
-ENGINE_TOOLS_SCHEMAS = "plugins/linker-tools/src/configurator/schema/"
 
 
 def under(path, roots):
@@ -395,8 +394,6 @@ def selected_modules(changes, base="", head=""):
                 if path == COMMERCE_PROTECTION_CLIENT:
                     selected.add("js:tools")
                 selected.update(native)
-                if under(path, (ENGINE_TOOLS_SCHEMAS,)):
-                    selected.add("engine")
                 if name == "tools" and relative.startswith("src/genie/"):
                     selected.add("genie")
             elif (
@@ -610,7 +607,6 @@ def module_inputs(module):
             "fixtures/planning/",
             COMMERCE_COMPATIBILITY,
             *ENGINE_PUBLICATION_INPUTS,
-            ENGINE_TOOLS_SCHEMAS,
             *ENGINE_DOC_INPUTS,
         )
     if lane == "genie":
@@ -733,6 +729,25 @@ def _module_fingerprint(commit, module, cache):
 
 def git(*args):
     return subprocess.check_output(["git", *args], stderr=subprocess.DEVNULL)
+
+
+def new_acceptance_binaries(base, head):
+    """Keep new binary evidence outside the repo while preserving archived records."""
+    records = git(
+        "diff", "--no-renames", "--diff-filter=A", "--numstat", "-z",
+        base, head, "--", "docs/acceptance/",
+    )
+    result = []
+    for record in records.split(b"\0"):
+        if not record:
+            continue
+        added, _, name = record.split(b"\t", 2)
+        path = os.fsdecode(name)
+        if added == b"-" or Path(path).suffix.lower() in {
+            ".pdf", ".png", ".jpeg", ".jpg", ".webp", ".gif", ".avif", ".svg",
+        }:
+            result.append(path)
+    return result
 
 
 def document(path):
@@ -1001,6 +1016,11 @@ def diff_changes(base, head):
         if status not in {"A", "M", "D"}
     ]
     return structural + changes
+
+
+def changes_digest(changes):
+    """Bind the complete name-status list without passing it in the runner environment."""
+    return hashlib.sha256(json.dumps(changes, separators=(",", ":")).encode()).hexdigest()
 
 
 def change_flags(changes):
@@ -1500,6 +1520,12 @@ def plan():
             formatting = subprocess.run(["git", "diff", "--check", base, head])
             if formatting.returncode:
                 raise SystemExit(formatting.returncode)
+            assets = new_acceptance_binaries(base, head)
+            if assets:
+                raise SystemExit(
+                    "Store new acceptance media in ~/de-linker-data/acceptance/: "
+                    + ", ".join(assets)
+                )
             changes = diff_changes(base, head)
             candidate = classify(changes, base, head)
             if event == "pull_request":
@@ -1576,7 +1602,7 @@ def plan():
         "lanes": selected,
         "modules": required_modules,
         "reused": reused,
-        "changes": [{"status": status, "path": path} for status, path in changes],
+        "changes_sha256": changes_digest(changes),
     }
     if error:
         ledger["error"] = error
@@ -1629,8 +1655,7 @@ def audit_gate(ledger, results, changes):
         "head"
     ) != os.environ.get("HEAD_SHA"):
         errors.append("plan and gate use different commits")
-    recorded = [(item["status"], item["path"]) for item in ledger.get("changes", [])]
-    if recorded != changes:
+    if ledger.get("changes_sha256") != changes_digest(changes):
         errors.append("the changed-path ledger is incomplete or different")
     candidate = classify(changes, ledger.get("base", ""), ledger.get("head", ""))
     if ledger.get("candidate") != candidate:

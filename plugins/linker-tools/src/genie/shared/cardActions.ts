@@ -14,11 +14,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SolutionWriteError } from '../../configurator/api/solutions';
-import { saveGenieSolution, GenieSaveUnconfirmedError } from '../api/solution';
-import { additionStatusText } from '../../configurator/publication';
-import type { storeClient } from '../../configurator/api/store';
-import type { Locale } from '../../configurator/types';
+import {
+	saveGenieSolution,
+	GenieSaveUnconfirmedError,
+	SolutionWriteError,
+} from '../api/solution';
+import { additionStatusText } from '../publication';
+import type { storeClient } from '../api/store';
+import type { Locale } from '../types';
 import type { PartsAddResult } from '../components/PartsCard';
 import type { CardState } from '../../shared/ProductCard';
 
@@ -99,7 +102,7 @@ export function useCardActions( {
 							),
 						}[ state ]
 					),
-				token ? { kind: 'genie', token } : undefined
+				token || undefined
 			);
 		},
 		[ status, store ]
@@ -132,7 +135,7 @@ export function useCardActions( {
 						result = 'unverified';
 					}
 				},
-				{ kind: 'genie', token }
+				token
 			);
 			return complete && result === 'added' ? 'added' : result;
 		},

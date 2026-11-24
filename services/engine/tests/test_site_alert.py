@@ -556,3 +556,75 @@ def test_undelivered_alerts_stay_bounded(alert: ModuleType, tmp_path: Path) -> N
     assert recorder.sent == []
     # Every round flipped; the cap keeps only the newest verdicts.
     assert len(pending) == alert.PENDING_MAX
+
+
+def test_backends_debounce_independently_across_probe_upgrade(
+    alert: ModuleType, tmp_path: Path
+) -> None:
+    from datetime import timedelta
+
+    run_alert(alert, tmp_path, record(["200"]))
+    t = NOW + timedelta(seconds=3 * CYCLE)
+    healthy = "200 200 200 200"
+    planner = "200 200 503 200"
+    for log in [[healthy, planner], [healthy, planner, planner]]:
+        assert not run_alert(alert, tmp_path, record(log, end=t), now=t)[1].sent
+    bad = [planner, planner, planner]
+    _, delivery, journal = run_alert(alert, tmp_path, record(bad, end=t), now=t)
+    assert "active backend incidents: Planner HTTP/worker" in journal[-1]
+    sent = delivery.sent
+    assert len(sent) == 1 and "Planner HTTP/worker" in sent[0][0]
+    assert "503" in sent[0][1]
+    assert not run_alert(alert, tmp_path, record(bad, end=t), now=t)[1].sent
+    later = t + timedelta(seconds=3 * CYCLE)
+    both = bad + ["200 000 503 200"] * 3
+    sent = run_alert(alert, tmp_path, record(both, end=later), now=later)[1].sent
+    assert len(sent) == 1 and "Quick Engine" in sent[0][0]
+    recovered = run_alert(
+        alert, tmp_path, record(both + ["200 000 200 200"], end=later), now=later
+    )[1].sent
+    assert len(recovered) == 1 and "Planner HTTP/worker recovered" in recovered[0][0]
+    assert not run_alert(
+        alert, tmp_path, record(both + ["200 000 200 200"], end=later), now=later
+    )[1].sent
+
+
+def test_dry_run_reports_each_endpoint_and_named_incidents_without_sending(
+    alert: ModuleType, tmp_path: Path
+) -> None:
+    log = tmp_path / "site-probe.log"
+    state = tmp_path / "site-alert.json"
+    run_alert(alert, tmp_path, record(["200"]))
+    original = state.read_bytes()
+    log.write_text(record(["200 200 503 200"] * 3))
+    emitted: list[str] = []
+    assert (
+        alert.run(
+            log_path=log,
+            state_path=state,
+            now=NOW,
+            dry_run=True,
+            deliver=lambda *_: pytest.fail("dry preview sent mail"),
+            emit=emitted.append,
+        )
+        == 0
+    )
+    assert state.read_bytes() == original
+    assert all(
+        v in emitted[-1]
+        for v in [
+            "WordPress=200",
+            "Quick Engine=200",
+            "Planner HTTP/worker=503",
+            "Genie API=200",
+            "active backend incidents: Planner HTTP/worker",
+        ]
+    )
+    run_alert(alert, tmp_path, log.read_text())
+    log.write_text(record(["200 200 200 200"]))
+    emitted.clear()
+    alert.run(
+        log_path=log, state_path=state, now=NOW, dry_run=True, emit=emitted.append
+    )
+    assert any("Planner HTTP/worker recovered" in line for line in emitted)
+    assert "active backend incidents: none" in emitted[-1]

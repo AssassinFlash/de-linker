@@ -10,10 +10,9 @@ import export_schemas  # noqa: E402
 
 
 def test_exported_schemas_are_current() -> None:
-    for target in export_schemas.TARGETS:
-        for name, text in export_schemas.documents().items():
-            path = target / name
-            assert path.exists(), f"run scripts/export_schemas.py ({path} is missing)"
-            assert path.read_text() == text, (
-                f"run scripts/export_schemas.py ({path} is stale)"
-            )
+    for name, text in export_schemas.documents().items():
+        path = export_schemas.TARGET / name
+        assert path.exists(), f"run scripts/export_schemas.py ({path} is missing)"
+        assert path.read_text() == text, (
+            f"run scripts/export_schemas.py ({path} is stale)"
+        )

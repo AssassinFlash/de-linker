@@ -29,7 +29,7 @@
 |---|---|---|---|---|
 | A1 | 页头与线上差异 | closed | Q5a 收口（ADJUDICATION 族 24 收口段，`docs/acceptance/2026-10-12/header-live-sync/ACCEPTANCE.md:5`）：五点位重量后两非差异（激活色、字重），三属重建件内部视觉微调（下划线几何、分隔线、390 位移）判 intentional；切换后线上页头即新树形态（cutover ⑦-4 present+WindPress 编译）。 | 无；若业主日后要求与旧线上逐像素对齐，一条独立小修回改 |
 | A2 | 页头/页脚 `[linker_contact_link]` 两侧行为 | closed | 本轮 curl 实测：live 首页/imprint/privacy/impressum/datenschutz 五页 `linker_contact_link` 字面量计数 **0**；live 渲染 `<a class="tv-header-cta"…>Contact Linker</a>`、`tv-header-cta tv-mobile-cta`、`<a class="footer-contact-link"…>` 三处（与新树 shortcode 输出同形）。代码：`Shortcodes.php:39,71-111`；placement 三处 `partials/header.html:199,281` + `partials/footer.html`（de 孪生同）；单测 `ShortcodesTest.php:617-671+`。补拍包同结论：`docs/acceptance/2026-10-15/coverage/README.md` §3 H·A2（两侧均渲染设计化链接、shortcodes 探针空数组）。 | 无 |
-| A3 | 复刻像素门缺可复核终局包 | **closed** | **终局包已执行并回填（2026-10-16，执行会话）**：§2 全清单执行完毕——67 面（A3 63 + A4 复核 4），门槛口径 local|live 同协议；0px 面 22/67；掩膜面 38（M1 demo 视频播放帧 8 面 / M2 Gravatar 槽位 4 面 / M3 live 侧运行间栅格抖动 26 面，逐项申报见执行包 README §3）；缺陷候选 14 条（DT-1…DT-14，稳定子像素/AA 级残差 ≤61/255，不得写成通过，见 §2 与 `docs/acceptance/2026-10-16/a3-final/README.md`）。repair 面「旧线上 vs 新树线上」印证全量数字在 `.scratch/a3-final/metrics.json`。判据类：`/de/category/system-design/` 200 + lang=de-DE（修复已部署并验证、差异像素 0）；短代码字面量全站 0；搜索面博客卡无产品无分页；筛选 1-24/38。**两点记录**：① PDP 面作废（#174 业主裁定 2026-10-15，PDP 验收基准改为原型变体 A，`docs/specs/174-pdp.md`），不参与本包；② 拍摄中发现 live 侧动态事实——A3 面内 demo `<video>` 播放帧与 live 页高竞态（EPC/installer 面 9 404↔9 467 等翻转，见缺陷台账旁证），以及 Gravatar 头像在本地被隔离 CSP 拦截（本地隔离件从不部署，仅本地现象）——前者进掩膜（M1）、后者进掩膜（M2）、本身非交付缺陷；live 页高竞态记缺陷台账旁证。**过门结论本身仍须业主对掩膜与允许差异的裁定**（掩膜逐项在表，未声明差异像素即 FAIL 的口径下本包不自行判 PASS）。 | 本文件 §2；`.scratch/a3-final/README.md`（掩膜+复跑）、`docs/acceptance/2026-10-16/a3-final/README.md`（DT 台账）；`docs/acceptance/2026-10-15/coverage/README.md` §3 H·A3、§6-4；`docs/specs/174-pdp.md` |
+| A3 | 复刻像素门缺可复核终局包 | **closed** | **终局包已执行并回填（2026-10-16，执行会话）**：§2 全清单执行完毕——67 面（A3 63 + A4 复核 4），门槛口径 local|live 同协议；0px 面 22/67；掩膜面 38（M1 demo 视频播放帧 8 面 / M2 Gravatar 槽位 4 面 / M3 live 侧运行间栅格抖动 26 面，逐项申报见执行包 README §3）；缺陷候选 14 条（DT-1…DT-14，稳定子像素/AA 级残差 ≤61/255，不得写成通过，见 §2 与 `docs/acceptance/2026-10-16/a3-final/README.md`）。repair 面「旧线上 vs 新树线上」印证全量数字在 [metrics.json](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/a3-final/metrics.json)。判据类：`/de/category/system-design/` 200 + lang=de-DE（修复已部署并验证、差异像素 0）；短代码字面量全站 0；搜索面博客卡无产品无分页；筛选 1-24/38。**两点记录**：① PDP 面作废（#174 业主裁定 2026-10-15，PDP 验收基准改为原型变体 A，`docs/specs/174-pdp.md`），不参与本包；② 拍摄中发现 live 侧动态事实——A3 面内 demo `<video>` 播放帧与 live 页高竞态（EPC/installer 面 9 404↔9 467 等翻转，见缺陷台账旁证），以及 Gravatar 头像在本地被隔离 CSP 拦截（本地隔离件从不部署，仅本地现象）——前者进掩膜（M1）、后者进掩膜（M2）、本身非交付缺陷；live 页高竞态记缺陷台账旁证。**过门结论本身仍须业主对掩膜与允许差异的裁定**（掩膜逐项在表，未声明差异像素即 FAIL 的口径下本包不自行判 PASS）。 | 本文件 §2；[README.md](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/a3-final/README.md)（掩膜+复跑）、`docs/acceptance/2026-10-16/a3-final/README.md`（DT 台账）；`docs/acceptance/2026-10-15/coverage/README.md` §3 H·A3、§6-4；`docs/specs/174-pdp.md` |
 | A4 | 列表页 390 终局像素门判定 | closed | 四个默认态 390 面 local vs live **差异像素 = 0（0.0000%）**、页高逐格相等（12252/12590/12270/12619）：`coverage/README.md` §3 H·A4 + `h-pairs-metrics.json`。 | 无 |
 | A6 | 条带对齐 vs 全页像素门口径 | closed | 两口径逐项呈报（9 面）：5 面两口径同为 0；PDP 四面最优位移=0、两口径数值相同：`coverage/README.md` §3 H·A6 表。与 A3 同根不相加。 | 无 |
 | B1 | Genie/配置器三屏可重设计 | closed（记录） | 裁定 8（工具页免像素门+已重设计）：Genie PR #123/#139、配置器 PR #126/#122/#121 + configurator-mobile 已并。 | 无 |
@@ -85,7 +85,7 @@
 ## 2. A3/A4/A6 部署后终局包清单（主会话执行并回填 —— **已执行**）
 
 **回填记录**：执行者 = 执行会话（分支 `docs/a3-final-package`，worktree `de-linker-worktrees/de-linker-a3`）；
-回填日期 = **2026-10-16**。执行包：`.scratch/a3-final/`（README 含掩膜逐项申报与复跑命令；metrics.json 为
+回填日期 = **2026-10-16**。执行包：[a3-final](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/a3-final)（README 含掩膜逐项申报与复跑命令；metrics.json 为
 67 面数字；PNG 证据留本地不入库）。逐面归因表见下（§2-3 表头逐列）；缺陷候选台账
 `docs/acceptance/2026-10-16/a3-final/README.md` §4（DT-1…DT-14，逐条不写成通过）。
 
@@ -118,11 +118,11 @@ M3 live 侧运行间栅格抖动 26 面，含四向重拍实证）；缺陷候�
   差异像素 0）**。
 - 搜索面：`?s=PV` EN/DE 两视口（判据=博客文章卡、无产品条目、无分页——线上实测 7 卡无分页，两侧同）。
 - 另：`/de/blog/` 与搜索面随 #175/#189 于 2026-10-16 收编进仓库（博客面已收编是本轮的事实变更；
-  其像素证据在 `docs/specs/175-blog-legacy-templates.md` §6 与 `.scratch/175/`，本轮复拍确认两侧同）。
+  其像素证据在 `docs/specs/175-blog-legacy-templates.md` §6 与 [175](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/175)，本轮复拍确认两侧同）。
 
 ### 2-2 协议（执行记录）
 
-`.scratch/live-recheck/shoot.mjs` 同一套，逐面数字在 `.scratch/a3-final/metrics.json`。新树 id 选择器
+`.scratch/live-recheck/shoot.mjs` 同一套，逐面数字在 [metrics.json](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/a3-final/metrics.json)。新树 id 选择器
 （closure 决策 7）已在工具中：抽屉 `#product-filter-open`、compare 控件 `[data-compare-product]`
 （旧 `[data-compare-article]` 兼容保留）。补充面（shoot.mjs 不载的 blog-390 ×6、cat-inv-de-390、
 A4 四 390 面）由 `.scratch/a3-final/shoot-set.mjs` 以逐字复制的协议拍摄。拍摄期间线上一次维护窗
@@ -200,7 +200,7 @@ A4 四 390 面）由 `.scratch/a3-final/shoot-set.mjs` 以逐字复制的协议�
 | a4-archive-en-390（A4 复核） | 0 | 0.0 | 0 | 0 | 0.0 | 12270/12270 | 通过（0px） | 差异像素 = 0 |
 | a4-archive-de-390（A4 复核） | 156 | 0.0032 | 0 | 156 | 0.0032 | 12619/12619 | 掩膜 M3 | 156 px 同形态 |
 
-修复印证（旧线上 vs 新树线上，摘要；67 面全量数字在 `.scratch/a3-final/metrics.json` 的
+修复印证（旧线上 vs 新树线上，摘要；67 面全量数字在 [metrics.json](https://github.com/AssassinFlash/de-linker/blob/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/a3-final/metrics.json) 的
 `repair_oldlive_vs_newlive`，逐面表在 `.scratch/a3-final/attribution-table.md`）：
 
 修复印证表（旧线上参考 2026-10-14 vs 新树上线上 2026-10-16）：

@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import unittest
+from contextlib import chdir
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -17,6 +18,35 @@ import i18n_sources
 ROOT = Path(__file__).resolve().parents[2]
 TEXT = (ROOT / ".github/workflows/check.yml").read_text()
 JUSTFILE = (ROOT / "justfile").read_text()
+
+
+class AcceptanceAssetsTest(unittest.TestCase):
+    def test_new_acceptance_images_pdfs_and_binary_blobs_stay_outside_git(self):
+        with TemporaryDirectory() as directory, chdir(directory):
+            def git(*args):
+                return subprocess.check_output(["git", *args], text=True).strip()
+
+            git("init", "-q")
+            git("config", "user.name", "Fixture")
+            git("config", "user.email", "fixture@example.test")
+            folder = Path("docs/acceptance")
+            folder.mkdir(parents=True)
+            original = folder / "existing.png"
+            original.write_bytes(b"\x00archived")
+            git("add", ".")
+            git("commit", "-qm", "archive")
+            original.write_bytes(b"\x00updated")
+            (folder / "report.md").write_text("Site readback.\n")
+            (folder / "result.json").write_text("{}")
+            (folder / "view.PNG").write_bytes(b"image")
+            (folder / "report.pdf").write_bytes(b"%PDF-1.4")
+            (folder / "capture.bin").write_bytes(b"capture\x00data")
+            git("add", ".")
+            git("commit", "-qm", "record")
+            self.assertEqual(
+                ci_scope.new_acceptance_binaries("HEAD^", "HEAD"),
+                [str(folder / name) for name in ("capture.bin", "report.pdf", "view.PNG")],
+            )
 
 
 class ScopeTest(unittest.TestCase):
@@ -83,7 +113,7 @@ class ScopeTest(unittest.TestCase):
                 "plugins/linker-tools/src/genie/verificationIdentity.consumer.test.tsx",
                 "tools",
             ),
-            ("plugins/linker-tools/src/configurator/roof.test.ts", "tools"),
+            ("plugins/linker-tools/src/hero/session.test.ts", "tools"),
             ("plugins/linker-commerce/src/protection/client.test.ts", "commerce"),
             ("plugins/linker-commerce/tests/js/library-ui.test.mjs", "commerce"),
             ("plugins/linker-tools/tests/e2e/failure.spec.ts", "tools"),
@@ -107,7 +137,6 @@ class ScopeTest(unittest.TestCase):
         for path in (
             "plugins/linker-tools/tests/js/genie-loader-failure.mjs",
             "plugins/linker-tools/src/genie/verificationIdentity.ts",
-            "plugins/linker-tools/src/configurator/schema/request.json",
             "plugins/linker-tools/vitest.config.mts",
             "plugins/linker-tools/package-lock.json",
         ):
@@ -353,8 +382,6 @@ class ScopeTest(unittest.TestCase):
         ):
             with self.subTest(path=path):
                 self.assertIn("genie", ci_scope.selected_modules([("M", path)]))
-        path = "plugins/linker-tools/src/configurator/schema/roof.schema.json"
-        self.assertIn("engine", ci_scope.selected_modules([("M", path)]))
         path = "plugins/linker-tools/src/genie/attachments/prepare.ts"
         self.assertIn("genie", ci_scope.selected_modules([("M", path)]))
         path = "plugins/linker-commerce/includes/Account/AuthTemplates.php"
@@ -773,7 +800,7 @@ class ScopeTest(unittest.TestCase):
                 list(ci_scope.FULL_LANES),
             )
 
-    def run_plan(self, event, candidate, proven=True, reused=None):
+    def run_plan(self, event, candidate, proven=True, reused=None, changes=None):
         with TemporaryDirectory() as folder:
             output = Path(folder) / "output"
             output.write_text("")
@@ -790,7 +817,7 @@ class ScopeTest(unittest.TestCase):
                 patch.object(
                     ci_scope,
                     "diff_changes",
-                    return_value=[("M", "services/genie/app.py")],
+                    return_value=changes if changes is not None else [("M", "services/genie/app.py")],
                 ),
                 patch.object(ci_scope, "classify", return_value=candidate),
                 patch.object(ci_scope, "checked_base", return_value=proven) as checked,
@@ -905,6 +932,26 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(ledger["lanes"], list(ci_scope.FULL_LANES))
         self.assertEqual(self.audit(ledger, self.results(ledger["lanes"])), [])
 
+    def test_bulk_archive_retirement_keeps_the_gate_environment_small(self):
+        changes = [
+            ("D", f".scratch/visual/archived-comparison-{i:04d}/desktop.png")
+            for i in range(3000)
+        ]
+        with patch("builtins.print") as report:
+            output, _ = self.run_plan(
+                "pull_request", list(ci_scope.FULL_LANES), changes=changes
+            )
+        summary = report.call_args.args[0]
+        ledger = next(
+            line.removeprefix("ledger=")
+            for line in output.splitlines()
+            if line.startswith("ledger=")
+        )
+        # A Linux runner cannot start bash with a single argument of 128 KiB.
+        self.assertLess(len(ledger.encode()), 128 * 1024)
+        self.assertIn(changes[0][1], summary)
+        self.assertIn(changes[-1][1], summary)
+
     def test_a_changed_tree_cannot_pass_with_every_lane_skipped(self):
         # The exact PR #1121 result: every required module carried a reuse
         # proof, no lane executed, and the gate reported success. Replaying that
@@ -925,7 +972,7 @@ class ScopeTest(unittest.TestCase):
                     "inputs": "f" * 64,
                 }
             },
-            "changes": [{"status": "M", "path": "services/genie/app.py"}],
+            "changes_sha256": ci_scope.changes_digest([("M", "services/genie/app.py")]),
         }
         errors = self.audit(ledger, self.results([]))
         self.assertTrue(errors)
@@ -957,7 +1004,7 @@ class ScopeTest(unittest.TestCase):
             if mode == "scoped"
             else [],
             "reused": {},
-            "changes": [{"status": "M", "path": "services/genie/app.py"}],
+            "changes_sha256": ci_scope.changes_digest([("M", "services/genie/app.py")]),
         }
 
     def results(self, selected):
@@ -1033,7 +1080,7 @@ class ScopeTest(unittest.TestCase):
 
     def test_gate_recomputes_the_whole_ledger(self):
         ledger = self.ledger()
-        ledger["changes"] = []
+        ledger["changes_sha256"] = ci_scope.changes_digest([])
         self.assertIn(
             "the changed-path ledger is incomplete or different",
             self.audit(ledger, self.results(["genie"])),
@@ -2631,7 +2678,6 @@ class ModuleReuseTest(unittest.TestCase):
                 ("apps/planner/src/contracts/geometry.schema.json", {"engine"}),
                 ("apps/planner/package-lock.json", {"engine"}),
                 ("apps/planner/bin/echarts-types.mjs", {"engine"}),
-                ("plugins/linker-tools/src/configurator/schema/roof.json", {"engine"}),
                 (
                     "plugins/linker-commerce/includes/Account/AuthTemplates.php",
                     {"php:commerce"},

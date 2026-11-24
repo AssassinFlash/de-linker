@@ -85,6 +85,7 @@ SMTP_TIMEOUT_S = 20
 DEFAULT_RECIPIENT = "sales@sunriverinverter.com"
 
 WITNESS_LINES = 8
+BACKENDS = ("Quick Engine", "Planner HTTP/worker", "Genie API")
 
 
 @dataclass(frozen=True)
@@ -105,6 +106,7 @@ class Reading:
 
     when: dt.datetime
     code: str
+    backends: tuple[str, ...] = ()
 
     @property
     def healthy(self) -> bool:
@@ -123,6 +125,7 @@ class State:
     failures: int = 0
     last_heartbeat: str = ""
     pending: list[dict[str, str]] = field(default_factory=list)
+    backend_outages: dict[str, str] = field(default_factory=dict)
 
 
 Deliver = Callable[[Config, str, str], None]
@@ -151,9 +154,12 @@ def duration(seconds: float) -> str:
 
 
 def parse_reading(line: str) -> Reading | None:
-    """One `TIMESTAMP CODE` line; anything else is ignored, not guessed at."""
+    """Read complete four-target cycles and the original WordPress-only records."""
     parts = line.split()
-    if len(parts) != 2 or not parts[1].isdigit():
+    if len(parts) not in (2, 5) or not all(
+        (value.isascii() and value.isdigit()) or value == "200/invalid"
+        for value in parts[1:]
+    ):
         return None
     try:
         when = dt.datetime.strptime(parts[0], "%Y-%m-%dT%H:%M:%SZ").replace(
@@ -161,7 +167,7 @@ def parse_reading(line: str) -> Reading | None:
         )
     except ValueError:
         return None
-    return Reading(when, parts[1])
+    return Reading(when, parts[1], tuple(parts[2:]))
 
 
 def read_tail(path: Path) -> list[Reading]:
@@ -238,6 +244,13 @@ def load_state(path: Path) -> State:
     failures = raw.get("failures", 0)
     state.failures = failures if isinstance(failures, int) else 0
     state.last_heartbeat = str(raw.get("last_heartbeat", ""))
+    outages = raw.get("backend_outages")
+    if isinstance(outages, dict):
+        state.backend_outages = {
+            name: outages[name]
+            for name in BACKENDS
+            if isinstance(outages.get(name), str)
+        }
     pending = raw.get("pending", [])
     if isinstance(pending, list):
         state.pending = [
@@ -257,6 +270,7 @@ def save_state(path: Path, state: State) -> None:
             "failures": state.failures,
             "last_heartbeat": state.last_heartbeat,
             "pending": state.pending,
+            "backend_outages": state.backend_outages,
         },
         indent=1,
         sort_keys=True,
@@ -389,7 +403,11 @@ def resumed_message(
 def heartbeat_message(readings: Sequence[Reading], now: dt.datetime) -> tuple[str, str]:
     window = now - dt.timedelta(seconds=HEARTBEAT_S)
     recent = [reading for reading in readings if reading.when >= window]
-    healthy = sum(1 for reading in recent if reading.healthy)
+    healthy = sum(
+        1
+        for reading in recent
+        if reading.healthy and all(code == "200" for code in reading.backends)
+    )
     failed = len(recent) - healthy
     latest = readings[-1] if readings else None
     lines = [
@@ -462,11 +480,41 @@ def advance(
             state.failures = 0
         state.state = observed
 
+    if not silent and last is not None:
+        for index, name in enumerate(BACKENDS[: len(last.backends)]):
+            since = state.backend_outages.get(name)
+            if last.backends[index] == "200":
+                if since:
+                    subject = f"[de-linker] {name} recovered"
+                    body = f"{name} answered 200 at {iso(last.when)}. First failure: {since}."
+                    events.append(("recovered", subject, body + trailer(now)))
+                    del state.backend_outages[name]
+            elif not since:
+                failed = []
+                for sample in reversed(readings):
+                    if not sample.backends or sample.backends[index] == "200":
+                        break
+                    failed.append(sample)
+                if len(failed) >= FAILURES_BEFORE_ALERT:
+                    first_failure = iso(failed[-1].when)
+                    state.backend_outages[name] = first_failure
+                    codes = ", ".join(
+                        row.backends[index] for row in reversed(failed[:WITNESS_LINES])
+                    )
+                    subject = f"[de-linker] {name} DOWN: {len(failed)} consecutive failed probes"
+                    body = f"First failure: {first_failure}\nLatest: {iso(last.when)}\nRecent {name} probe results: {codes}."
+                    events.append(("down", subject, body + trailer(now)))
+
     # Any mail proves the channel is alive, so a state change also resets the
     # heartbeat clock: one message per run, never an alert plus a heartbeat.
     if events:
         state.last_heartbeat = iso(now)
-    elif observed == "ok":
+    elif (
+        observed == "ok"
+        and not state.backend_outages
+        and last is not None
+        and all(code == "200" for code in last.backends)
+    ):
         previous_beat = parse_iso(state.last_heartbeat)
         if previous_beat is None or (now - previous_beat).total_seconds() >= (
             HEARTBEAT_S
@@ -546,15 +594,29 @@ def run(
             f"site-alert: dropped {dropped} older undelivered alert(s); "
             f"the newest {PENDING_MAX} stay queued"
         )
+    outages = ", ".join(state.backend_outages) or "none"
+    status = f"WordPress/probe state {state.state}; active backend incidents: {outages}"
     if dry_run:
+        latest = readings[-1] if readings else None
+        verdicts = []
+        if latest is not None:
+            verdicts = [
+                f"WordPress={latest.code}",
+                *(
+                    f"{name}={code}"
+                    for name, code in zip(BACKENDS, latest.backends, strict=False)
+                ),
+            ]
         emit(
-            f"site-alert: dry run; state {state.state}, "
+            f"site-alert: dry run; WordPress/probe state {state.state}; "
+            f"latest: {', '.join(verdicts) or 'no readings'}; "
+            f"active backend incidents: {outages}; "
             f"{len(readings)} readings, {len(state.pending)} pending"
         )
         return 0
     if not state.pending:
         save_state(state_path, state)
-        emit(f"site-alert: state {state.state}; nothing to send")
+        emit(f"site-alert: {status}; nothing to send")
         return 0
 
     config = read_config(config_path)
@@ -582,10 +644,7 @@ def run(
         delivered += 1
         emit(f"site-alert: sent {message['kind']}: {message['subject']}")
     save_state(state_path, state)
-    emit(
-        f"site-alert: state {state.state}; sent {delivered}, "
-        f"{len(state.pending)} still pending"
-    )
+    emit(f"site-alert: {status}; sent {delivered}, {len(state.pending)} still pending")
     return 0 if not state.pending else 1
 
 

@@ -1,4 +1,4 @@
-import type { Locale } from '../../configurator/types';
+import type { Locale } from '../types';
 
 type Fetch = typeof fetch;
 

@@ -3,7 +3,7 @@ import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import type { ReactNode } from 'react';
 import type { CardState } from '../../shared/ProductCard';
-import type { Locale } from '../../configurator/types';
+import type { Locale } from '../types';
 import { brandSeries } from '../shared/brandSeries';
 import './catalog.css';
 

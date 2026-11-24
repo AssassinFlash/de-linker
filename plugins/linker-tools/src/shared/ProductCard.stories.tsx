@@ -37,10 +37,7 @@ const meta = {
 	},
 	decorators: [
 		( Story ) => (
-			<div
-				className="linker-configurator"
-				style={ { maxWidth: '32rem' } }
-			>
+			<div className="linker-genie" style={ { maxWidth: '32rem' } }>
 				<Story />
 			</div>
 		),

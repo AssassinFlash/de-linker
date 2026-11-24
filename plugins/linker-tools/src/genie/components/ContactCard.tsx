@@ -20,7 +20,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useTransferWidget } from '../shared/useTransferWidget';
-import type { Locale } from '../../configurator/types';
+import type { Locale } from '../types';
 import {
 	readContact,
 	sendContact,

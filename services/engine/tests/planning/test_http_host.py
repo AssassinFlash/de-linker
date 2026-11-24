@@ -318,3 +318,92 @@ def test_config_rejects_nonfinite_arithmetic_and_relative_storage(
     ):
         with pytest.raises(ValidationError):
             RuntimeConfig.model_validate({**values, **patch})
+
+
+def test_dedicated_health_checks_store_and_worker_without_opening_rpc(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import json
+    import os
+    import time
+
+    from linker_engine.planning.execution_identity import storage_binding
+    from linker_engine.planning.worker_host import publish_ready, readiness_owner
+
+    monkeypatch.setenv("GENIE_SERVICE_TOKEN", TOKEN)
+    work = tmp_path / "workspace"
+    ready = tmp_path / "run" / "worker.ready.json"
+    config = tmp_path / "worker.json"
+    config.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "name": "qa-worker",
+                "ready_file": str(ready),
+                "lease_seconds": 30,
+                "heartbeat_seconds": 5,
+                "retry_seconds": 5,
+                "poll_seconds": 1,
+                "routing_batch_size": 10,
+                "drain_timeout_seconds": 60,
+            }
+        )
+    )
+    monkeypatch.setenv("LINKER_PLANNER_WORKER_CONFIG", str(config))
+    app = configured_private_app(settings(work), dedicated=True)
+    database = work / "workspace.sqlite"
+    with TestClient(app) as client:
+        version = client.post(
+            "/planning/version", headers=authority(), json={"schema_version": 1}
+        ).json()
+        verb = client.get("/health")
+        assert verb.status_code == 503
+        assert verb.json() == {
+            "status": "degraded",
+            "service": "linker-planner-http",
+            "revision": version["runtime_sha256"],
+            "workspace_readable": True,
+            "worker_alive": False,
+        }
+        assert client.get("/planning/health").status_code == 401
+        assert (
+            client.post(
+                "/planning/projects/list", json={"schema_version": 1}
+            ).status_code
+            == 401
+        )
+        # SIGKILL releases process locks but leaves a fresh record on disk.
+        ready.parent.mkdir(exist_ok=True)
+        ready.write_text(
+            json.dumps(
+                {
+                    "pid": os.getpid(),
+                    "runtime_sha256": version["runtime_sha256"],
+                    "storage_binding": storage_binding(database),
+                }
+            )
+        )
+        with readiness_owner(ready):
+            assert client.get("/health").status_code == 503
+            with publish_ready(
+                ready,
+                {
+                    "pid": os.getpid(),
+                    "runtime_sha256": version["runtime_sha256"],
+                    "execution_key": version["execution_key"],
+                    "storage_binding": storage_binding(database),
+                },
+            ):
+                assert client.get("/health").status_code == 200
+                assert client.get("/health").json()["worker_alive"] is True
+                old = time.time() - 32
+                os.utime(ready, (old, old))
+                assert client.get("/health").status_code == 503
+                os.utime(ready, None)
+                assert client.get("/health").status_code == 200
+                database.unlink()
+                unavailable = client.get("/health")
+                assert unavailable.status_code == 503
+                assert unavailable.json()["workspace_readable"] is False
+                assert not database.exists()
+        assert client.get("/health").json()["worker_alive"] is False

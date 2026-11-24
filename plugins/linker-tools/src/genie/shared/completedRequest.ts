@@ -9,7 +9,7 @@ import {
 	type Turn,
 	type TurnMessage,
 } from '../api/turn';
-import type { Locale } from '../../configurator/types';
+import type { Locale } from '../types';
 import type { Upload } from '../attachments/prepare';
 
 /** In-memory evidence from an actual send; never inferred from a saved question. */

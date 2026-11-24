@@ -76,7 +76,7 @@ design-canvas（301）、entwurfsflache（301）——**全部 `[woocommerce_`=0
 
 ## 7. 未解问题清单
 
-1. **像素门未证，保持未证。** 本包页级数字（PDP 1440 28.7–31.1%、390 67.3–69.4%；shop 43.4–44.5%/49.5%；archive 34.1–41.6%/46.8–54.7%；ETA 31.4/38.3%）是 2026-10-11 工作包实测，不是一份按掩膜与批准变更分解过的终局过门包。后来的成对截图（`.scratch/t16-verdict/final4/`，12 对）也不替代该判定。不把本行改成 PASS，也不用后来的代码改动倒写成「这些百分比今天仍是页面的差」。9 项逐项证据与 5 条块差杠杆见 `working/replica-r4/EVIDENCE.md` §3/§4。
+1. **像素门未证，保持未证。** 本包页级数字（PDP 1440 28.7–31.1%、390 67.3–69.4%；shop 43.4–44.5%/49.5%；archive 34.1–41.6%/46.8–54.7%；ETA 31.4/38.3%）是 2026-10-11 工作包实测，不是一份按掩膜与批准变更分解过的终局过门包。后来的成对截图（[final4](https://github.com/AssassinFlash/de-linker/tree/48888e6576dd6b011875614ec6cd285f1f5676ac/.scratch/t16-verdict/final4)，12 对）也不替代该判定。不把本行改成 PASS，也不用后来的代码改动倒写成「这些百分比今天仍是页面的差」。9 项逐项证据与 5 条块差杠杆见 `working/replica-r4/EVIDENCE.md` §3/§4。
 2. **e2e：套件已在 main，本索引的运行没有执行它。** 「套件未合并」是过期字样，更正见 §1。未跑 `just e2e`，无通过结论。
 3. **Genie 入口（商城 chips）**：本包实测 live 4 条 vs t16 2 条。其后 main 的目录芯片是 Filters（模板按钮）+ Ask Genie（`Entries::chips_for()` 的 category 组一条）。live 4 条里的 Batch import / Nameplate photo 对应业主终裁不做的两项（面清单 GAP-11/14），不是漏建；本行不改写成像素对齐。
 4. `design-canvas`/`entwurfsflache`：t16 **301 → /linker-planner/?step=roof**。这是本站自己退役的工具入口，现已在 `legacy-redirects.json` 的 `retired_tools`（5 条）里，由 `Redirects` 分发。live 当时保留独立 Site-Detail 页；是否算允许的工具页重设计，仍按允许偏差清单，不在本次改成已验收。

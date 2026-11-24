@@ -1,6 +1,6 @@
 """The alert installer: streamed backup, reviewed apply, native rollback.
 
-Nothing here starts a real unit. The script writes only its three managed
+Nothing here starts a real unit. The script writes only its managed
 paths and reads the private env file, so a temporary root plus a recording
 `systemctl` proves both that the files land and that nothing else is touched.
 """
@@ -22,6 +22,9 @@ MANAGED = (
     "opt/linker-engine/ops/site-alert.py",
     "etc/systemd/system/linker-site-alert.service",
     "etc/systemd/system/linker-site-alert.timer",
+    "opt/linker-engine/ops/site-probe.sh",
+    "etc/systemd/system/linker-site-probe.service",
+    "etc/systemd/system/linker-site-probe.timer",
 )
 
 
@@ -37,7 +40,7 @@ def setup(tmp_path: Path) -> tuple[dict[str, str], Path, Path]:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"previous {relative}\n")
-        path.chmod(0o755 if relative.endswith(".py") else 0o644)
+        path.chmod(0o755 if relative.endswith((".py", ".sh")) else 0o644)
     config = root / CONFIG
     config.parent.mkdir(parents=True, exist_ok=True)
     config.write_text(
@@ -81,8 +84,14 @@ def test_backup_streams_managed_paths_and_config(tmp_path: Path) -> None:
 
     with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
         names = set(tar.getnames())
-    assert names == set(MANAGED) | {CONFIG}
-    assert not calls.exists()
+        state = tar.extractfile("timer-state")
+        assert state is not None
+        assert state.read().splitlines() == [
+            b"linker-site-probe.timer 1 1",
+            b"linker-site-alert.timer 1 1",
+        ]
+    assert names == set(MANAGED) | {CONFIG, "timer-state"}
+    assert all("is-" in line for line in calls.read_text().splitlines())
 
 
 def test_apply_installs_reviewed_files_and_enables_the_timer(tmp_path: Path) -> None:
@@ -96,6 +105,11 @@ def test_apply_installs_reviewed_files_and_enables_the_timer(tmp_path: Path) -> 
     assert (root / MANAGED[2]).read_bytes() == (
         OPS / "linker-site-alert.timer"
     ).read_bytes()
+    for relative in MANAGED[3:]:
+        assert (root / relative).read_bytes() == (
+            OPS / Path(relative).name
+        ).read_bytes()
+    assert "systemctl start linker-site-probe.timer" in calls.read_text()
     assert (root / MANAGED[0]).stat().st_mode & 0o777 == 0o755
     # The private file is never rewritten by the installer.
     assert (root / CONFIG).stat().st_mode & 0o777 == 0o600
@@ -135,12 +149,32 @@ def test_rollback_stops_the_timer_and_restores_the_previous_files(
     assert [(root / relative).read_bytes() for relative in MANAGED] == original
     assert all(
         (root / relative).stat().st_mode & 0o777
-        == (0o755 if relative.endswith(".py") else 0o644)
+        == (0o755 if relative.endswith((".py", ".sh")) else 0o644)
         for relative in MANAGED
     )
     recorded = calls.read_text()
     assert "systemctl disable --quiet --now linker-site-alert.timer" in recorded
-    assert "systemctl daemon-reload" in recorded
+    restored = recorded[recorded.index("systemctl daemon-reload") :]
+    assert restored.index("systemctl start linker-site-probe.service") < restored.index(
+        "systemctl start linker-site-alert.timer"
+    )
+    for name in ("probe", "alert"):
+        assert f"systemctl enable --quiet linker-site-{name}.timer" in restored
+        assert f"systemctl start linker-site-{name}.timer" in restored
+
+
+def test_inactive_disabled_timers_stay_off_when_rolling_back(tmp_path: Path) -> None:
+    env, _, calls = setup(tmp_path)
+    tool = tmp_path / "bin/systemctl"
+    tool.write_text(
+        tool.read_text() + 'case "$1" in is-active|is-enabled) exit 1;; esac\n'
+    )
+    backup = run(env, "backup")
+    run(env, "apply")
+    calls.unlink()
+    run(env, "rollback", backup)
+    restored = calls.read_text().split("systemctl daemon-reload")[-1]
+    assert "systemctl start " not in restored and "systemctl enable " not in restored
 
 
 def test_backup_of_a_fresh_host_reports_nothing_installed(tmp_path: Path) -> None:
@@ -174,3 +208,70 @@ def test_unknown_command_is_refused(tmp_path: Path) -> None:
 def test_shipped_units_match_what_the_installer_copies(path: str) -> None:
     """The files the installer installs are the ones under review."""
     assert (OPS / path).is_file()
+
+
+def test_old_notifier_gets_a_fresh_two_column_probe_before_resuming(
+    tmp_path: Path,
+) -> None:
+    env, root, _ = setup(tmp_path)
+    state = root / "opt/linker-engine/state"
+    state.mkdir()
+    record = state / "site-probe.log"
+    record.write_text(
+        "2026-11-10T01:00:00Z 200\n2026-11-11T02:00:00Z 200 200 200 200\n"
+    )
+    probe = root / "opt/linker-engine/ops/site-probe.sh"
+    probe.write_text(
+        f"#!/bin/bash\nprintf '2026-11-11T02:01:00Z 200\\n' >> '{record}'\n"
+    )
+    systemctl = tmp_path / "bin/systemctl"
+    systemctl.write_text(
+        systemctl.read_text()
+        + f'''
+case "$*" in
+"start linker-site-probe.service") bash "{probe}" ;;
+"start linker-site-alert.timer") if [ -e "{tmp_path}/old-notifier" ]; then
+     test "$(tail -1 '{record}')" = '2026-11-11T02:01:00Z 200' || exit 17
+     echo healthy > "{tmp_path}/observed"
+ fi ;;
+esac
+'''
+    )
+    backup = run(env, "backup")
+    run(env, "apply")
+    (tmp_path / "old-notifier").touch()
+    run(env, "rollback", backup)
+    assert (tmp_path / "observed").read_text().strip() == "healthy"
+
+
+@pytest.mark.parametrize("omitted", ["pre-wave-six", "timer-state", *MANAGED])
+def test_incomplete_restore_keeps_live_files_and_running_timers(
+    tmp_path: Path, omitted: str
+) -> None:
+    env, root, calls = setup(tmp_path)
+    snapshot = run(env, "backup")
+    incomplete = io.BytesIO()
+    with (
+        tarfile.open(fileobj=io.BytesIO(snapshot)) as old,
+        tarfile.open(fileobj=incomplete, mode="w") as out,
+    ):
+        for member in old:
+            if member.name == omitted or (
+                omitted == "pre-wave-six"
+                and (member.name == "timer-state" or "probe" in member.name)
+            ):
+                continue
+            out.addfile(member, old.extractfile(member))
+    run(env, "apply")
+    current = [(root / p).read_bytes() for p in MANAGED]
+    calls.unlink()
+    result = subprocess.run(
+        ["bash", str(SCRIPT), "rollback"],
+        env=env,
+        input=incomplete.getvalue(),
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    assert not calls.exists()
+    assert [(root / p).read_bytes() for p in MANAGED] == current

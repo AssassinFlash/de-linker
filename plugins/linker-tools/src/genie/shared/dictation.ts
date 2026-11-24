@@ -8,7 +8,7 @@
 /**
  * Internal dependencies
  */
-import type { Locale } from '../../configurator/types';
+import type { Locale } from '../types';
 
 /** The browser's speech recognition, structurally (lib.dom's interface). */
 export interface Dictation {

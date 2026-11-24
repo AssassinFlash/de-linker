@@ -17,10 +17,7 @@ namespace Linker\Commerce\Registration;
  * with the input and the input itself — focusable, clickable, its checked
  * state announced — is the pill's hit area. WooCommerce's own radio markup
  * keeps the input a sibling of the label, which the pill design could only
- * dress by hiding the input off pointer events; the nesting is the
- * configurator's established pattern for its choice cards
- * (plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx and
- * configurator.css, .linker-form__choice label).
+ * dress by hiding the input off pointer events.
  */
 final class RoleField {
 

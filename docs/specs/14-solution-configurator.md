@@ -22,21 +22,14 @@
 - 常量集中 `rules.py`，每条带来源；无来源标 `unverified planning assumption` 并在报告"假设"里披露。
 - 不做：经济性、上网电价、CAPEX。
 
-## 前端（`plugins/linker-tools` React 入口 `configurator`）
-表单 `react-hook-form` + 由 ability/引擎 JSON Schema 生成的校验；地图 `maplibre-gl` + `terra-draw`；状态：空、计算中、无合格候选（说明原因与可放宽的条件）、方案、已保存；"Add all" 走 Store API 并读回；保存经 `linker/v1/solutions`（登录或 claim cookie）。
+## 前端工作台
 
-### 脚本译文（#302）
+`apps/planner` 的 Vite/React 工作台由 `[linker_planner]` 渲染。顾客输入、自选设备和报告共用工作台的项目修订。经由历史短代码 `[linker_configurator]` 进入时，`includes/Configurator/Mount.php` 委托同一工作台。Quick Engine 的服务端接口与工作台独立发布。
 
-德语唯一编辑源为 `plugins/linker-tools/languages/linker-tools-de_DE_formal.po`。
-`just i18n-tools` 用 `wp i18n make-json --no-purge` 生成按入口路径 MD5 命名的脚本 JSON，
-并用 `msgfmt --check` 编译 PHP 的 MO；不手改 JSON，不清除 PO 中的脚本消息。
-配置器条目保留真实源码引用，并通过 `build/configurator.js` 引用归到已 enqueue 的入口，
-因此懒加载屋顶组件也使用入口预载的同一组译文。
-`Assets::register()` 的 `wp_set_script_translations()` 沿 WordPress 原生路径读取该文件。
+### 脚本译文
 
-配置器与 Genie 已有的不同德语措辞通过 `configurator` gettext context 保留：
-`Sent, but the draft does not show it yet. Please check.`、`Not added. Try again.`、
-`Saved to your account.`；两侧 EN/DE 正文均不改写。
+正式德语编辑源为 `plugins/linker-tools/languages/linker-tools-de_DE_formal.po`。配置器消息的构建引用为 `build/planner/assets/planner.js`。运行 `just i18n-tools` 生成按脚本路径命名的 WordPress 翻译 JSON，并由 `msgfmt --check` 编译 MO。工作台使用 `Planner/Application.php` 装配对应页面语言的模块译文。
+
 `just i18n-coverage` 检查 linker-tools 运行时 PHP、JS、TS 的消息是否进入 PO，
 并在临时目录调用原生 `make-json --no-purge`，逐字节比较所有随插件发布的 JSON；
 缺失、多余或改动的 JSON 都失败。CI 安装与本地栈一致的 WP-CLI 版本运行此门。
@@ -51,7 +44,7 @@
 ## 页面装配（工具页归一，2026-10-13）
 配置器页 `/solution-configurator/`（德语 `/de/loesungskonfigurator/`）与对比页、Genie 工作区同一条路：LiveCanvas 每页模板 + 数据短代码，页面正文不再承载应用。
 - 模板文件 `plugins/linker-commerce/content/livecanvas/configurator_page.html`（EN/DE 共用一个文件：模板只是挂载点，页面上每个字都由应用自己按页面 `lang` 出），模板 slug `linker-configurator` / `linker-configurator-de`，模板文章由 `present` 从文件建立，`Templates::assign_pages()` 把 `/solution-configurator/`（en）、`/de/loesungskonfigurator/`（de）分别指派到各自语言的模板。
-- 挂载点由 `linker-tools` 的短代码 `[linker_configurator]` 打印（`includes/Configurator/Mount.php`）：`data-linker-app="configurator"`、引擎地址（选项 `linker_engine_url`）、REST 根与 `wp_rest` nonce，并 enqueue 构建条目 `linker-tools-configurator`。零设计、零文案——应用自己的 `build/configurator.css` 决定尺寸与颜色。
+- 模板通过 `[linker_planner]` 输出 `data-linker-planner` 挂载点。应用来自 `plugins/linker-tools/build/planner/`，页面样式来自 WindPress。
 - 在此之前，本机实例的挂载靠实例本地 mu-plugin（`100-t109-configurator-mount.php`，从不部署），没有它的实例（如 t110）该页渲染的是页面正文里旧项目的 Planner 应用。装配进入 `present` 后，任何实例 `just present <name>` 即得同一页面。
 
 ## 变更记录

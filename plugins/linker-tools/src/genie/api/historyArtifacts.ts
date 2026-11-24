@@ -1,6 +1,6 @@
 /** Current artifact presentation for live and restored turns; transcript stays intact. */
 import { __ } from '@wordpress/i18n';
-import type { Locale } from '../../configurator/types';
+import type { Locale } from '../types';
 import {
 	ARTIFACT_TIMEOUT_MS,
 	productPresentation,

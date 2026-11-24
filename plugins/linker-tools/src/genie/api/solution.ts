@@ -1,10 +1,18 @@
 /** Saving a current signed Genie product list without engineering input. */
-import type { Locale } from '../../configurator/types';
-import {
-	SolutionWriteError,
-	type SavedSolution,
-} from '../../configurator/api/solutions';
+import type { Locale } from '../types';
 import { resourceFetch } from '../../protection/request';
+
+export interface SavedSolution {
+	id: number;
+	url: string;
+}
+
+export class SolutionWriteError extends Error {
+	constructor( public readonly changed: boolean ) {
+		super( changed ? 'solution_changed' : 'solution_write_failed' );
+		this.name = 'SolutionWriteError';
+	}
+}
 
 export class GenieSaveUnconfirmedError extends Error {
 	constructor() {

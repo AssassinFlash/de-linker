@@ -10,7 +10,7 @@
 /**
  * Internal dependencies
  */
-import type { Locale } from '../configurator/types';
+import type { Locale } from '../genie/types';
 import {
 	assistantMessage,
 	readThread,
