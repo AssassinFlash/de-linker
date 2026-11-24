@@ -29,6 +29,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
+from baseline.evidence import absent_models, pairing_prose
 from linker_genie.figures import digits_are_regulation, is_code, regulation_number_spans
 
 # AGENTS.md §3: these words are not this shop's vocabulary, in either language.
@@ -71,6 +72,7 @@ class Turn:
     meta: dict[str, Any] = field(default_factory=dict)
     blocks: list[dict[str, Any]] = field(default_factory=list)
     done: bool = False
+    tool_calls: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _field(line: str, name: str) -> str | None:
@@ -1030,6 +1032,15 @@ def check(
     types = block_types(blocks)
     shown = shown_ids(blocks)
 
+    if expect.get("absent_model") and not any(
+        item["published_model_lookup"] == expect["absent_model"]
+        for item in absent_models(turn.tool_calls, blocks)
+    ):
+        failures.append(
+            f"missing published catalogue lookup for {expect['absent_model']}"
+        )
+    for pid in sorted(shown.intersection(expect.get("excluded_products", []))):
+        failures.append(f"withdrawn product {pid} is shown")
     for product_id in expect.get("products", []):
         if int(product_id) not in shown:
             failures.append(f"product {product_id} is not in a cards or compare block")
@@ -1136,7 +1147,29 @@ def check(
         for value in expect.get("numbers") or []
         if str(value) not in restricted
     ]
-    for token in untraceable_numbers(text, [*allowed, *licensed], catalog, governed):
+    numeric_text = text
+    if row.get("category") == "pairing" and turn.tool_calls:
+        condition = pairing_prose(
+            turn.tool_calls, blocks, "de" if row["lang"] == "de" else "en"
+        )
+        if condition is not None:
+            numeric_text = answer_text(
+                [
+                    b
+                    for b in blocks
+                    if b.get("type") != "text" or b.get("text") != condition
+                ]
+            )
+    if expect.get("named_model"):
+        numeric_text = re.sub(
+            r"(?<!\w)" + re.escape(expect["named_model"]) + r"(?!\w)",
+            "",
+            numeric_text,
+            flags=re.I,
+        )
+    for token in untraceable_numbers(
+        numeric_text, [*allowed, *licensed], catalog, governed
+    ):
         failures.append(f"number {token} is in no expected fact")
 
     failures.extend(repeated_signed_copy(text))

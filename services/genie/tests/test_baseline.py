@@ -1075,13 +1075,53 @@ def test_the_wrong_power_fails_the_number_check() -> None:
     assert any("15000" in failure for failure in failures)
 
 
+def phase_row(lang: str) -> dict[str, Any]:
+    """A two-family fixture for phase binding, independent of current listings."""
+    return {
+        "id": "phase-" + lang,
+        "lang": lang,
+        "expect": {
+            "products_any": [6483],
+            "numbers": [
+                "3",
+                "3.68",
+                "4.6",
+                "5",
+                "5.75",
+                "6",
+                "8",
+                "10",
+                "12",
+                "15",
+                "2",
+                "9",
+                "9.68",
+                "10.6",
+                "16",
+            ],
+            "phase_powers": [
+                {
+                    "phase": "single",
+                    "label": r"(?i)single[- ]phase|1-phase|einphasig",
+                    "powers": ["3", "3.68", "4.6", "5", "5.75", "6", "8", "10", "12"],
+                },
+                {
+                    "phase": "three",
+                    "label": r"(?i)three[- ]phase|3-phase|dreiphasig",
+                    "powers": ["5", "6", "8", "10", "12", "15"],
+                },
+            ],
+        },
+    }
+
+
 def test_products_count_as_shown_only_by_a_card_or_compare_block() -> None:
     bare = next(item for item in ROWS if item["id"] == "b01-en")
     cards = turn(
         [text("Here is the SAJ range."), {"type": "cards", "product_ids": [4107]}]
     )
     assert check(bare, cards, FEED_TOKENS) == []
-    phase = next(item for item in ROWS if item["id"] == "b02-en")
+    phase = phase_row("en")
     shown = turn(
         [
             text("Single-phase 3.68 kW and three-phase 15 kW."),
@@ -1185,11 +1225,11 @@ def test_b14_export_limit_zero_is_the_manual_range() -> None:
     assert check(english, shown, FEED_TOKENS) == []
 
 
-def test_b02_without_a_card_fails() -> None:
+def test_phase_binding_without_a_card_fails() -> None:
     """A text ref is not a product the customer can see, and an action is not
     a card. Hard row b02 requires the product in a cards or compare block."""
 
-    row = next(item for item in ROWS if item["id"] == "b02-en")
+    row = phase_row("en")
     cited = turn(
         [
             text(
@@ -1204,8 +1244,8 @@ def test_b02_without_a_card_fails() -> None:
     assert shown_ids(cited.blocks) == set()
 
 
-def test_b02_rejects_powers_tied_to_the_wrong_phase() -> None:
-    row = next(item for item in ROWS if item["id"] == "b02-en")
+def test_phase_binding_rejects_powers_tied_to_the_wrong_phase() -> None:
+    row = phase_row("en")
     swapped = turn(
         [
             text("It is single-phase 15 kW and three-phase 3.68 kW."),
@@ -1215,7 +1255,7 @@ def test_b02_rejects_powers_tied_to_the_wrong_phase() -> None:
     failures = check(row, swapped, FEED_TOKENS)
     assert any("15" in failure and "single" in failure for failure in failures)
     assert any("3.68" in failure and "three" in failure for failure in failures)
-    german = next(item for item in ROWS if item["id"] == "b02-de")
+    german = phase_row("de")
     swapped_de = turn(
         [
             text("Einphasig 15 kW, dreiphasig 3,68 kW."),
@@ -1226,12 +1266,12 @@ def test_b02_rejects_powers_tied_to_the_wrong_phase() -> None:
     assert check(german, swapped_de, FEED_TOKENS)
 
 
-def test_b02_binds_each_bullets_powers_to_that_bullet() -> None:
+def test_phase_binding_binds_each_bullets_powers_to_that_bullet() -> None:
     """The labels sit on their own bullet lines; the next bullet's label is
     not nearer just because a newline is a short character span. The r6 run
     read "4.6 kW" as three-phase and failed a correct answer."""
 
-    row = next(item for item in ROWS if item["id"] == "b02-en")
+    row = phase_row("en")
     answer = turn(
         [
             text(
@@ -1285,7 +1325,7 @@ def test_b02_binds_each_bullets_powers_to_that_bullet() -> None:
     )
     assert check(row, predicate, FEED_TOKENS) == []
 
-    german = next(item for item in ROWS if item["id"] == "b02-de")
+    german = phase_row("de")
     answer_de = turn(
         [
             text(
@@ -2094,3 +2134,25 @@ def test_ask_reuses_one_connection_and_retries_a_dead_socket() -> None:
         server.shutdown()
         server.server_close()
         thread.join(timeout=5)
+
+
+def test_retired_model_reference_does_not_authorize_a_card_or_a_rating() -> None:
+    row = next(r for r in ROWS if r["id"] == "b02-en")
+    missing = text("EcoFlow OCEAN 2 is not in our product range.")
+    next_step: dict[str, object] = {
+        "type": "ask",
+        "field": "goal",
+        "options": ["Storage"],
+    }
+    assert check(row, turn([missing, next_step]), FEED_TOKENS) == []
+    false_card: dict[str, object] = {"type": "cards", "product_ids": [6483]}
+    assert any(
+        "withdrawn product" in f
+        for f in check(row, turn([missing, false_card]), FEED_TOKENS)
+    )
+    assert any(
+        "42" in f
+        for f in check(
+            row, turn([missing, text("Rated at 42 kW."), next_step]), FEED_TOKENS
+        )
+    )

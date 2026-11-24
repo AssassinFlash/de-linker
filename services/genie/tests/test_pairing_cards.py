@@ -1061,3 +1061,64 @@ def test_searching_a_retired_pair_partner_keeps_the_available_battery_grounded(
         isinstance(b, CardsBlock) and b.product_ids == [3612]
         for b in result.output.blocks
     )
+
+
+def test_numeric_grading_requires_this_turns_exact_condition_cards_and_document() -> (
+    None
+):
+    from baseline.grade import Turn, check
+
+    from linker_genie.hydrate import hydrate
+    from linker_genie.template import prepared_answer
+
+    payload = _payload()
+    condition = "The documented range is 179.2 to 230.4 V (p. 2)."
+    payload["qualified"][0]["pairings"][0].update(
+        {
+            "conditions": [{"en": condition}],
+            "documents": [
+                {
+                    "url": "https://de-linker.com/report.pdf",
+                    "label": "SAJ manual",
+                    "page": 2,
+                    "document_id": "doc-manual",
+                    "document_revision": "v2",
+                    "product_id": INVERTER,
+                }
+            ],
+        }
+    )
+    facts = collect("linker/search-products", payload, "en")
+    calls = [
+        {
+            "name": "linker/search-products",
+            "arguments": {"with_pairings": True},
+            "ok": True,
+            "result": payload,
+        }
+    ]
+    facts.tool_calls = calls
+    draft = prepared_answer(facts, Route("pairing", catalog_only=True), "en")
+    assert draft
+    blocks = [b.model_dump() for b in hydrate(draft, facts).blocks]
+    doc = next(b for b in blocks if b["type"] == "document")
+    doc.update(
+        {
+            "document_id": "doc-manual",
+            "document_revision": "v2",
+            "evidence_product_id": INVERTER,
+        }
+    )
+    row = {"category": "pairing", "lang": "en", "expect": {"numbers": []}}
+    turn = Turn({"grounded": True, "language": "en"}, blocks, True, calls)
+    assert not check(row, turn)
+    blocks.append({"type": "text", "text": "Extra 230.4 kWh (p. 2)."})
+    failures = check(row, turn)
+    assert any("number 230.4" in f for f in failures)
+    assert any("number 2 " in f for f in failures)
+    blocks.pop()
+    doc["document_revision"] = "older"
+    assert any("number 179.2" in f for f in check(row, turn))
+    doc["document_revision"] = "v2"
+    turn.tool_calls = []
+    assert any("number 179.2" in f for f in check(row, turn))

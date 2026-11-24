@@ -52,12 +52,14 @@ from urllib.parse import urlparse
 # case. One line makes both work; mypy resolves baseline.grade without it.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from baseline.evidence import absent_models  # noqa: E402
 from baseline.grade import (  # noqa: E402
     Turn,
     answer_text,
     check,
     parse_stream,
 )
+from linker_genie.quality.turns import TurnSource  # noqa: E402
 
 SET = Path(__file__).with_name("baseline100.jsonl")
 QUALITATIVE = Path(__file__).with_name("qualitative.jsonl")
@@ -261,6 +263,21 @@ def ask(wp: str, row: dict[str, Any]) -> tuple[Turn, str | None]:
     return parse_stream(stream), None
 
 
+def attach_logged_evidence(source: TurnSource, row: dict[str, Any], turn: Turn) -> None:
+    """Bind proof to the exact answered question in this target's private log."""
+    identifier = turn.meta.get("turn_id")
+    if not isinstance(identifier, int):
+        raise ValueError("The captured turn has no log ID")
+    logged = source.by_ids([identifier])
+    if (
+        not logged
+        or logged[0].question != row["question"]
+        or logged[0].locale != row["lang"]
+    ):
+        raise ValueError(f"No matching logged question for {row['id']}")
+    turn.tool_calls = logged[0].tool_calls
+
+
 def judge_row(
     row: dict[str, Any], turn: Turn
 ) -> tuple[str, list[str], dict[str, Any] | None]:
@@ -290,6 +307,12 @@ def judge_row(
             }
         ),
     }
+    checked = absent_models(turn.tool_calls, turn.blocks)
+    if checked:
+        item["reference"] = {
+            "task": item["reference"],
+            "published_catalogue_checks": checked,
+        }
     cascade = run_cascade(
         item, JUDGES["jev"], JUDGES["deepseek"], QA_QUESTIONS[:2], TURN_THRESHOLDS
     )
@@ -502,6 +525,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, help="only the first N rows (smoke)")
     parser.add_argument("--only", nargs="*", help="row ids")
     parser.add_argument("--lang", choices=("en", "de"))
+    parser.add_argument(
+        "--turn-log",
+        type=Path,
+        help="Read verified facts from this target’s local Genie turn log",
+    )
     parser.add_argument("--category")
     parser.add_argument(
         "--judge",
@@ -542,6 +570,8 @@ def main(argv: list[str] | None = None) -> int:
                 verdict = "fail"
                 meta: dict[str, Any] = {}
             else:
+                if args.turn_log:
+                    attach_logged_evidence(TurnSource(args.turn_log), row, turn)
                 failures = check(row, turn, catalog)
                 meta = turn.meta
                 judged: tuple[str, list[str]] | None = None
