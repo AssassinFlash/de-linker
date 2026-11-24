@@ -61,3 +61,17 @@ body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-pa
 @media print {
   #seopress-beacon-universal-metabox{display:none!important}
 }
+
+/* Keep control labels and announcements in the accessibility tree. */
+.screen-reader-text:not(:focus) {
+	border: 0;
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	white-space: nowrap;
+	word-wrap: normal;
+}
