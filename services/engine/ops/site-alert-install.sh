@@ -25,6 +25,17 @@ CONFIG="$ROOT/etc/linker-site-alert.env"
 usage() { echo "usage: $0 backup | apply | verify | rollback < backup.tar" >&2; exit 2; }
 [[ $# == 1 ]] || usage
 
+timer_state() {
+    local unit enabled active
+    for unit in linker-site-probe.timer linker-site-alert.timer; do
+        enabled=0
+        active=0
+        if systemctl is-enabled --quiet "$unit"; then enabled=1; fi
+        if systemctl is-active --quiet "$unit"; then active=1; fi
+        printf '%s %s %s\n' "$unit" "$enabled" "$active"
+    done
+}
+
 case "$1" in
     backup)
         # One archive of the managed paths that exist, modes preserved, streamed
@@ -34,7 +45,10 @@ case "$1" in
             [[ -e "$ROOT/$relative" ]] && existing+=("$relative")
         done
         [[ ${#existing[@]} -gt 0 ]] || { echo "nothing installed yet" >&2; exit 0; }
-        tar -C "$ROOT" -cpf - "${existing[@]}"
+        saved=$(mktemp -d)
+        trap 'rm -rf "$saved"' EXIT
+        timer_state > "$saved/timer-state"
+        tar -C "$ROOT" -cpf - "${existing[@]}" -C "$saved" timer-state
         ;;
     apply)
         [[ -f "$CONFIG" ]] || {
@@ -45,6 +59,10 @@ case "$1" in
             echo "mode 600, then rerun apply." >&2
             exit 1
         }
+        if [[ "$HERE/site-probe.sh" -ef "$ROOT/$OPS_DIR/site-probe.sh" ]]; then
+            echo "Run apply from a separate directory containing the reviewed release files." >&2
+            exit 1
+        fi
         install -m 755 "$HERE/site-probe.sh" "$ROOT/$OPS_DIR/site-probe.sh"
         install -m 644 "$HERE/linker-site-probe.service" "$ROOT/$SYSTEMD/linker-site-probe.service"
         install -m 644 "$HERE/linker-site-probe.timer" "$ROOT/$SYSTEMD/linker-site-probe.timer"
@@ -68,11 +86,38 @@ case "$1" in
         systemctl list-timers linker-site-probe.timer linker-site-alert.timer --no-pager
         ;;
     rollback)
-        # Stop first: a restored unit must not keep running the new code.
-        systemctl stop linker-site-probe.timer
-        systemctl disable --quiet --now linker-site-alert.timer 2>/dev/null || true
-        tar -C "$ROOT" -xpf -
+        saved=$(mktemp -d)
+        trap 'rm -rf "$saved"' EXIT
+        tar -C "$saved" -xpf -
+        if [[ ! -f "$saved/timer-state" ]]; then
+            # Older archives have no timer metadata. Preserve the installation's
+            # current timer settings and restore only the files in that archive.
+            timer_state > "$saved/timer-state"
+        fi
+        systemctl disable --quiet --now linker-site-alert.timer
+        systemctl disable --quiet --now linker-site-probe.timer
+        systemctl stop linker-site-alert.service linker-site-probe.service
+        for relative in "${MANAGED[@]}"; do
+            if [[ -f "$saved/$relative" ]]; then
+                cp -p "$saved/$relative" "$ROOT/$relative"
+            fi
+        done
         systemctl daemon-reload
+        while read -r unit enabled active; do
+            if [[ "$enabled" == 1 ]]; then systemctl enable --quiet "$unit"; fi
+            if [[ "$active" != 1 ]]; then continue; fi
+            if [[ "$unit" == linker-site-alert.timer ]]; then
+                # Give a restored two-column notifier a current reading before
+                # it can see only obsolete lines and send a silence alert.
+                last="$ROOT/$OPS_DIR/../state/site-probe.last"
+                previous=$(cat "$last" 2>/dev/null || true)
+                if ! systemctl start linker-site-probe.service; then
+                    # A real HTTP outage exits 1 after recording its result.
+                    [[ -s "$last" && "$(< "$last")" != "$previous" ]] || exit 1
+                fi
+            fi
+            systemctl start "$unit"
+        done < "$saved/timer-state"
         ;;
     *) usage ;;
 esac

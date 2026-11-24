@@ -487,7 +487,10 @@ def test_readiness_write_failure_removes_owned_temporary_file(
         raise OSError("fixture fsync failure")
 
     monkeypatch.setattr(os, "fsync", fail_sync)
-    with pytest.raises(OSError, match="fsync failure"):
-        worker_host.publish_ready(ready, {"pid": 42})
+    with (
+        pytest.raises(OSError, match="fsync failure"),
+        worker_host.publish_ready(ready, {"pid": 42}),
+    ):
+        pytest.fail("an unsynced readiness record was published")
     assert ready.read_bytes() == b"previous-ready"
     assert sorted(p.name for p in tmp_path.iterdir()) == [ready.name]

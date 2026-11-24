@@ -19,9 +19,8 @@ Older two-column lines remain WordPress observations. A connection failure is
 | Planner HTTP and worker | `http://127.0.0.1:8911/health` | HTTP 200 with a readable SQLite schema and a live worker on the same runtime and workspace |
 | Genie API | `http://127.0.0.1:8902/health` | HTTP 200 with `status: ok` |
 
-The Planner worker updates its readiness file at the configured heartbeat
-interval while idle or executing a job. Its process owns the readiness lock.
-A missing worker, a heartbeat older than its lease, or an unreadable
+The Planner worker holds a lock on the file it publishes after initialization and updates it at the configured heartbeat
+interval while idle or executing a job. A missing worker, a heartbeat older than its lease, or an unreadable
 workspace returns 503. The response includes the running computation version.
 The probe uses the dedicated loopback listener; the public proxy keeps
 `/planning/` behind the private project RPC boundary.
@@ -84,35 +83,47 @@ message the same way and exits non-zero, so the journal shows it. Every run
 prints its decision, which is what `journalctl -u linker-site-alert.service`
 reads.
 
-## Install
+## First installation
 
-The private SMTP block already exists on the shared host at
-`~/.config/terravolt-builder/sunriver-smtp.env` (mode 600, PHP transport of
-#297). Copy the four `LINKER_SMTP_*` lines to `/etc/linker-site-alert.env` on
-the engine host, mode 600, and add `LINKER_ALERT_TO` only if it differs from the
-ruling:
+Create `/etc/linker-site-alert.env` only if it is missing. Install the private
+`LINKER_SMTP_*` values from the provisioned #297 credentials using the operator's
+secret channel. The file belongs to root with mode 600.
 
 ```sh
-ssh linker-services
-umask 077 && install -m 600 /dev/null /etc/linker-site-alert.env
-# paste LINKER_SMTP_HOST/PORT/USER/PASS; never echo the file back
-/opt/linker-engine/ops/site-alert-install.sh verify   # identity + decision, no send
-/opt/linker-engine/ops/site-alert-install.sh apply
+if [ ! -e /etc/linker-site-alert.env ]; then
+    (umask 077; set -C; : > /etc/linker-site-alert.env)
+fi
 ```
 
-`verify` runs `--check-config` (prints the host, port, TLS mode, user and
-recipient, never the password) and `--dry-run` (prints the decision for the
-current record without sending or writing state). `install.sh backup` before
-apply streams the managed paths to the operator machine; `rollback` stops the
-timer and restores that archive.
+Run the initial probe once and verify a healthy reading before enabling the
+notifier. The first healthy installation sends its normal daily heartbeat.
 
-The first run after install sends one message and it is not silent: either the
-daily heartbeat (the record is healthy) or a "stopped reporting" alert (the
-probe has never written here). The heartbeat is deliberate — it proves the
-channel works before anyone depends on it, and a notifier that only spoke during
-outages could never tell anyone it had stopped working. The silence alert is
-equally deliberate: an empty record means nothing is watching, which on a fresh
-host is true until the probe's first cycle lands.
+## Updating an existing VPS
+
+Stage the six reviewed files (both scripts and both service/timer pairs)
+and `site-alert-install.sh` from the merged revision in a separate temporary
+directory on the VPS. Keep the existing SMTP environment and notifier state.
+Run the following from the operator machine, substituting the actual stage
+path. The backup contains private SMTP configuration and belongs in restricted
+recovery storage.
+
+```sh
+umask 077
+stage=/absolute/path/to/reviewed/stage
+ssh linker-services "bash '$stage/site-alert-install.sh' backup" > monitor-backup.tar
+ssh linker-services "bash '$stage/site-alert-install.sh' apply"
+ssh linker-services "bash '$stage/site-alert-install.sh' verify"
+```
+
+On rollback, use the **same staged installer**. It restores files and each
+timer's recorded enabled and active settings. When the prior alert timer was
+active, the restored probe records a fresh observation in its native format
+before the restored notifier resumes. Archives from older installers have no
+timer metadata; in that case rollback preserves the settings seen at entry.
+
+```sh
+ssh linker-services "bash '$stage/site-alert-install.sh' rollback" < monitor-backup.tar
+```
 
 ## Verify
 

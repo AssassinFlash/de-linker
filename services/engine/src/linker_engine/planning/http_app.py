@@ -356,13 +356,12 @@ def health_route(workspace: Workspace, worker: WorkerPolicy) -> Route:
 
     def worker_alive() -> bool:
         try:
-            with Path(str(ready) + ".lock").open("rb") as lock:
+            with ready.open("rb") as record:
                 try:
-                    fcntl.flock(lock, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                    fcntl.flock(record, fcntl.LOCK_SH | fcntl.LOCK_NB)
                 except BlockingIOError:
-                    with ready.open("rb") as record:
-                        updated = os.fstat(record.fileno()).st_mtime
-                        identity = json.load(record)
+                    updated = os.fstat(record.fileno()).st_mtime
+                    identity = json.load(record)
                     return (
                         time.time() - updated < worker.lease_seconds
                         and isinstance(identity, dict)

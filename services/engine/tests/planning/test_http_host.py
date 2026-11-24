@@ -372,8 +372,20 @@ def test_dedicated_health_checks_store_and_worker_without_opening_rpc(
             ).status_code
             == 401
         )
+        # SIGKILL releases process locks but leaves a fresh record on disk.
+        ready.parent.mkdir(exist_ok=True)
+        ready.write_text(
+            json.dumps(
+                {
+                    "pid": os.getpid(),
+                    "runtime_sha256": version["runtime_sha256"],
+                    "storage_binding": storage_binding(database),
+                }
+            )
+        )
         with readiness_owner(ready):
-            publish_ready(
+            assert client.get("/health").status_code == 503
+            with publish_ready(
                 ready,
                 {
                     "pid": os.getpid(),
@@ -381,17 +393,17 @@ def test_dedicated_health_checks_store_and_worker_without_opening_rpc(
                     "execution_key": version["execution_key"],
                     "storage_binding": storage_binding(database),
                 },
-            )
-            assert client.get("/health").status_code == 200
-            assert client.get("/health").json()["worker_alive"] is True
-            old = time.time() - 32
-            os.utime(ready, (old, old))
-            assert client.get("/health").status_code == 503
-            os.utime(ready, None)
-            assert client.get("/health").status_code == 200
-            database.unlink()
-            unavailable = client.get("/health")
-            assert unavailable.status_code == 503
-            assert unavailable.json()["workspace_readable"] is False
-            assert not database.exists()
+            ):
+                assert client.get("/health").status_code == 200
+                assert client.get("/health").json()["worker_alive"] is True
+                old = time.time() - 32
+                os.utime(ready, (old, old))
+                assert client.get("/health").status_code == 503
+                os.utime(ready, None)
+                assert client.get("/health").status_code == 200
+                database.unlink()
+                unavailable = client.get("/health")
+                assert unavailable.status_code == 503
+                assert unavailable.json()["workspace_readable"] is False
+                assert not database.exists()
         assert client.get("/health").json()["worker_alive"] is False

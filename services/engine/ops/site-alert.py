@@ -595,8 +595,21 @@ def run(
             f"the newest {PENDING_MAX} stay queued"
         )
     if dry_run:
+        latest = readings[-1] if readings else None
+        verdicts = []
+        if latest is not None:
+            verdicts = [
+                f"WordPress={latest.code}",
+                *(
+                    f"{name}={code}"
+                    for name, code in zip(BACKENDS, latest.backends, strict=False)
+                ),
+            ]
+        outages = ", ".join(state.backend_outages) or "none"
         emit(
-            f"site-alert: dry run; state {state.state}, "
+            f"site-alert: dry run; WordPress/probe state {state.state}; "
+            f"latest: {', '.join(verdicts) or 'no readings'}; "
+            f"active backend incidents: {outages}; "
             f"{len(readings)} readings, {len(state.pending)} pending"
         )
         return 0

@@ -585,3 +585,44 @@ def test_backends_debounce_independently_across_probe_upgrade(
     assert not run_alert(
         alert, tmp_path, record(both + ["200 000 200 200"], end=later), now=later
     )[1].sent
+
+
+def test_dry_run_reports_each_endpoint_and_named_incidents_without_sending(
+    alert: ModuleType, tmp_path: Path
+) -> None:
+    log = tmp_path / "site-probe.log"
+    state = tmp_path / "site-alert.json"
+    run_alert(alert, tmp_path, record(["200"]))
+    original = state.read_bytes()
+    log.write_text(record(["200 200 503 200"] * 3))
+    emitted: list[str] = []
+    assert (
+        alert.run(
+            log_path=log,
+            state_path=state,
+            now=NOW,
+            dry_run=True,
+            deliver=lambda *_: pytest.fail("dry preview sent mail"),
+            emit=emitted.append,
+        )
+        == 0
+    )
+    assert state.read_bytes() == original
+    assert all(
+        v in emitted[-1]
+        for v in [
+            "WordPress=200",
+            "Quick Engine=200",
+            "Planner HTTP/worker=503",
+            "Genie API=200",
+            "active backend incidents: Planner HTTP/worker",
+        ]
+    )
+    run_alert(alert, tmp_path, log.read_text())
+    log.write_text(record(["200 200 200 200"]))
+    emitted.clear()
+    alert.run(
+        log_path=log, state_path=state, now=NOW, dry_run=True, emit=emitted.append
+    )
+    assert any("Planner HTTP/worker recovered" in line for line in emitted)
+    assert "active backend incidents: none" in emitted[-1]
