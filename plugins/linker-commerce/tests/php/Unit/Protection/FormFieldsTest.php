@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Protection;
 
 use Linker\Commerce\Protection\FormFields;
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
@@ -23,6 +24,8 @@ final class FormFieldsTest extends TestCase {
 	/** A native form keeps its request identity and exposes the action of its widget. */
 	public function test_guest_inquiry_has_a_widget_and_preserves_the_request_id(): void {
 		$this->plain_text();
+		$this->options( array( Options::TEAM_TO => 'partners@example.test' ) );
+		WP_Mock::passthruFunction( 'sanitize_email' );
 		$id = '01234567-0123-4123-8123-0123456789ab';
 		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( false );
 		WP_Mock::userFunction( 'wp_is_uuid' )->with( $id, 4 )->andReturn( true );
@@ -30,7 +33,7 @@ final class FormFieldsTest extends TestCase {
 		$html = FormFields::render( 'inquiry', $id );
 		$this->assertStringContainsString( 'name="linker_request_id" value="' . $id . '"', $html );
 		$this->assertStringContainsString( 'data-linker-turnstile="inquiry"', $html );
-		$this->assertStringContainsString( 'sales@de-linker.com', $html );
+		$this->assertStringContainsString( 'partners@example.test', $html );
 		$this->assertStringNotContainsString( 'linker_proof', $html );
 	}
 

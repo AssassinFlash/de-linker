@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use Linker\Commerce\Settings\Options;
+
 /** Anonymous visitors verify when they send a message or register. */
 final class FormFields {
 	/**
@@ -30,6 +32,7 @@ final class FormFields {
 			return $html;
 		}
 		do_action( 'linker_commerce_public_protection_assets' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Shared native client registered by Protection\Module.
-		return $html . '<div data-linker-turnstile="' . esc_attr( $action ) . '"></div><noscript><p>' . esc_html__( 'Please enable JavaScript to verify this request, or email sales@de-linker.com.', 'linker-commerce' ) . '</p></noscript>';
+		/* translators: %s: public team email address. */
+		return $html . '<div data-linker-turnstile="' . esc_attr( $action ) . '"></div><noscript><p>' . esc_html( sprintf( __( 'Please enable JavaScript to verify this request, or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ) . '</p></noscript>';
 	}
 }

@@ -15,6 +15,8 @@
  * @var WC_Email $email              The email.
  */
 
+use Linker\Commerce\Settings\Options;
+
 defined( 'ABSPATH' ) || exit;
 
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
@@ -36,7 +38,7 @@ printf(
 	sprintf(
 		/* translators: %s: the team's email address. */
 		esc_html__( 'Until then, browse the products and write to %s with any question.', 'linker-commerce' ),
-		esc_html( 'sales@de-linker.com' )
+		esc_html( ( new Options() )->team_mailbox() )
 	)
 );
 ?>

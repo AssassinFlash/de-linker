@@ -15,13 +15,15 @@
  * @var WC_Email $email              The email.
  */
 
+use Linker\Commerce\Settings\Options;
+
 defined( 'ABSPATH' ) || exit;
 
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 <p><?php esc_html_e( 'Your partner account has been limited for now.', 'linker-commerce' ); ?></p>
-<p><?php esc_html_e( 'You can browse products and send inquiries. Net prices remain unavailable while your account is limited. You can also reach us at sales@de-linker.com.', 'linker-commerce' ); ?></p>
+<p><?php /* translators: %s: public team email address. */ echo esc_html( sprintf( __( 'You can browse products and send inquiries. Net prices remain unavailable while your account is limited. You can also reach us at %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ); ?></p>
 <?php if ( '' !== $reason ) : ?>
 	<p><strong><?php esc_html_e( 'Our reason:', 'linker-commerce' ); ?></strong><br /><?php echo esc_html( $reason ); ?></p>
 <?php endif; ?>

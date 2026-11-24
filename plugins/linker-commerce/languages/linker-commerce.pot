@@ -949,23 +949,22 @@ msgid "Explore with Genie"
 msgstr ""
 
 #: includes/Contact/Form.php:300 includes/Protection/Intake.php:73
+#, php-format
 msgid ""
 "This request is too large to save for review. Your entries and solution "
-"draft are still here. Please email sales@de-linker.com."
+"draft are still here. Please email %s."
 msgstr ""
 
 #: includes/Contact/Form.php:301 includes/Protection/Intake.php:369
+#, php-format
 msgid ""
 "Your request has not been saved because the review queue is full. Your "
-"entries are still here. Please try again later or email sales@de-linker.com."
+"entries are still here. Please try again later or email %s."
 msgstr ""
 
 #: includes/Contact/Form.php:302 includes/Protection/Intake.php:378
-msgid ""
-"This message matches a repeated spam submission. We have not saved a "
-"separate inquiry or sent an email. Your entries are still here. For an "
-"individual review, select the review option in this form or email sales@de-"
-"linker.com."
+#, php-format
+msgid "This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email %s."
 msgstr ""
 
 #: includes/Contact/Form.php:303
@@ -985,9 +984,10 @@ msgid "Please check your entries and send the form again."
 msgstr ""
 
 #: includes/Contact/Form.php:307 includes/Protection/Intake.php:312
+#, php-format
 msgid ""
 "The message limit has been reached. Your entries are still here. You can try "
-"again later or email sales@de-linker.com."
+"again later or email %s."
 msgstr ""
 
 #: includes/Contact/Form.php:310 includes/Inquiry/Form.php:126
@@ -2205,7 +2205,8 @@ msgid "View inquiries"
 msgstr ""
 
 #: includes/Inquiry/Checkout.php:127
-msgid "You can also email sales@de-linker.com and quote this inquiry number."
+#, php-format
+msgid "You can also email %s and quote this inquiry number."
 msgstr ""
 
 #: includes/Inquiry/Checkout.php:128
@@ -2506,9 +2507,10 @@ msgid ""
 msgstr ""
 
 #: includes/Mail/ResetNotice.php:146 includes/Protection/Accounts.php:413
+#, php-format
 msgid ""
 "Password reset is temporarily unavailable. Please try again later or email "
-"sales@de-linker.com."
+"%s."
 msgstr ""
 
 #: includes/Mail/SmtpHealth.php:58
@@ -4428,9 +4430,10 @@ msgstr ""
 #: includes/Protection/RegistrationSlots.php:691
 #: includes/Registration/RegistrationMessage.php:462
 #: includes/Registration/RegistrationNotices.php:561
+#, php-format
 msgid ""
 "Registration is currently unavailable. Your account has not been created. "
-"Please try again later or email sales@de-linker.com."
+"Please try again later or email %s."
 msgstr ""
 
 #: includes/Protection/Accounts.php:224
@@ -4438,9 +4441,10 @@ msgid "Please re-enter your password."
 msgstr ""
 
 #: includes/Protection/Accounts.php:260 includes/Protection/Accounts.php:271
+#, php-format
 msgid ""
 "The registration status could not be confirmed. Please try signing in before "
-"registering again, or email sales@de-linker.com. You can send inquiries "
+"registering again, or email %s. You can send inquiries "
 "without an account."
 msgstr ""
 
@@ -4453,10 +4457,8 @@ msgid "Your request could not be processed. Please try again."
 msgstr ""
 
 #: includes/Protection/Business.php:150
-msgid ""
-"Verification is temporarily unavailable. No request has been sent in this "
-"attempt. Your entries are still here. Please try again or email sales@de-"
-"linker.com."
+#, php-format
+msgid "Verification is temporarily unavailable. No request has been sent in this attempt. Your entries are still here. Please try again or email %s."
 msgstr ""
 
 #: includes/Protection/Business.php:151
@@ -4466,10 +4468,11 @@ msgid ""
 msgstr ""
 
 #: includes/Protection/BusinessCapacity.php:491
+#, php-format
 msgid ""
 "Your request has not been saved. We cannot accept new requests on this "
 "website right now. Your entries and solution draft are still here. Please "
-"try again later or email sales@de-linker.com."
+"try again later or email %s."
 msgstr ""
 
 #: includes/Protection/Comments.php:58
@@ -4489,9 +4492,8 @@ msgid "Please sign in to use your saved solution."
 msgstr ""
 
 #: includes/Protection/FormFields.php:30
-msgid ""
-"Please enable JavaScript to verify this request, or email sales@de-"
-"linker.com."
+#, php-format
+msgid "Please enable JavaScript to verify this request, or email %s."
 msgstr ""
 
 #: includes/Protection/FormFields.php:33
@@ -4954,9 +4956,10 @@ msgid "No decision yet"
 msgstr ""
 
 #: includes/Registration/Approval.php:298
+#, php-format
 msgid ""
 "This account is not approved for sign-in. We have emailed you the reason. "
-"Write to sales@de-linker.com and we will look at it again."
+"Write to %s and we will look at it again."
 msgstr ""
 
 #: includes/Registration/ApprovalAdmin.php:92
@@ -5525,9 +5528,10 @@ msgid "Energy capacity"
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:54
+#, php-format
 msgid ""
 "This confirmation link did not open. Please use the link from your inquiry "
-"confirmation email, or write to sales@de-linker.com and we will send it "
+"confirmation email, or write to %s and we will send it "
 "again."
 msgstr ""
 
@@ -5927,7 +5931,8 @@ msgid ""
 msgstr ""
 
 #: templates/emails/linker-approval-rejected.php:27
-msgid "If you have questions, write to sales@de-linker.com."
+#, php-format
+msgid "If you have questions, write to %s."
 msgstr ""
 
 #: templates/emails/linker-approval-restricted.php:23
@@ -5935,9 +5940,10 @@ msgid "Your partner account has been limited for now."
 msgstr ""
 
 #: templates/emails/linker-approval-restricted.php:24
+#, php-format
 msgid ""
 "You can browse products and send inquiries. Net prices remain unavailable "
-"while your account is limited. You can also reach us at sales@de-linker.com."
+"while your account is limited. You can also reach us at %s."
 msgstr ""
 
 #: templates/emails/linker-approval-restricted.php:28

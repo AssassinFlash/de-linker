@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Registration;
 
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\Producer;
@@ -501,6 +502,7 @@ final class RegistrationMessage {
 	 * A template override that cannot preserve typed holes cannot be pre-reserved.
 	 */
 	private static function problem(): WP_Error {
-		return new WP_Error( 'linker_registration_capacity', __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+		/* translators: %s: public team email address. */
+		return new WP_Error( 'linker_registration_capacity', sprintf( __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) );
 	}
 }

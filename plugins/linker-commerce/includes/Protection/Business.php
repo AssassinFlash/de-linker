@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Mail\ConnectionFence;
 use WC_Order;
@@ -177,7 +178,8 @@ final class Business {
 	 */
 	public static function verification_message( string $outcome ): string {
 		return 'unavailable' === $outcome
-			? __( 'Verification is temporarily unavailable. No request has been sent in this attempt. Your entries are still here. Please try again or email sales@de-linker.com.', 'linker-commerce' )
+			/* translators: %s: public team email address. */
+			? sprintf( __( 'Verification is temporarily unavailable. No request has been sent in this attempt. Your entries are still here. Please try again or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() )
 			: __( 'Verification could not be completed. No request has been sent in this attempt. Your entries are still here. Please try again.', 'linker-commerce' );
 	}
 

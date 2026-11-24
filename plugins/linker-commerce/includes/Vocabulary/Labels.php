@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Vocabulary;
 
+use Linker\Commerce\Settings\Options;
 use WC_Product;
 
 /**
@@ -51,7 +52,8 @@ final class Labels {
 	 */
 	public function inquiry_received( $text = null, $order = null ): string {
 		if ( false === $order ) {
-			return __( 'This confirmation link did not open. Please use the link from your inquiry confirmation email, or write to sales@de-linker.com and we will send it again.', 'linker-commerce' );
+			/* translators: %s: public team email address. */
+			return sprintf( __( 'This confirmation link did not open. Please use the link from your inquiry confirmation email, or write to %s and we will send it again.', 'linker-commerce' ), ( new Options() )->team_mailbox() );
 		}
 		return __( 'Thank you. Your inquiry has been received.', 'linker-commerce' );
 	}

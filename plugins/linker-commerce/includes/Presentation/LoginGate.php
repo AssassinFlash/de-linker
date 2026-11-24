@@ -10,15 +10,10 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Settings\Options;
 
 /** Account notices and the native empty-checkout redirect rule. */
 final class LoginGate {
-
-	/**
-	 * The public mailbox every gate names (the site's sales address, the same
-	 * one the refusal notice and the contact form print).
-	 */
-	private const TEAM_ADDRESS = 'sales@de-linker.com';
 
 	/**
 	 * Sets up the gate.
@@ -28,19 +23,19 @@ final class LoginGate {
 	public function __construct( private readonly Approval $approval = new Approval() ) {}
 
 	/**
-	 * Stops WooCommerce sending an empty Proforma request to the cart.
+	 * Stops WooCommerce sending an empty inquiry to the cart.
 	 */
 	public function register(): void {
 		add_filter( 'woocommerce_checkout_redirect_empty_cart', array( $this, 'keep_empty_checkout' ) );
 	}
 
 	/**
-	 * Keep the empty Proforma request on its own page; leave other checkouts alone.
+	 * Keep the empty inquiry on its own page; leave other checkouts alone.
 	 *
 	 * @param bool $redirect WooCommerce's default.
 	 */
 	public function keep_empty_checkout( bool $redirect ): bool {
-		return $this->is_proforma_request() ? false : $redirect;
+		return $this->is_inquiry_page() ? false : $redirect;
 	}
 
 	/** Pending and restricted status within the usable account, using the live card design. */
@@ -90,9 +85,10 @@ final class LoginGate {
 	 * @param string $message The translated sentence with one %s for the address.
 	 */
 	private function mailto_sentence( string $message ): string {
+		$email = ( new Options() )->team_mailbox();
 		return sprintf(
 			esc_html( $message ),
-			'<a href="mailto:' . esc_attr( self::TEAM_ADDRESS ) . '">' . esc_html( self::TEAM_ADDRESS ) . '</a>'
+			'<a href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a>'
 		);
 	}
 
@@ -124,11 +120,11 @@ final class LoginGate {
 	/**
 	 * Whether the current request is the site's checkout page or one of its
 	 * translations: WooCommerce's checkout is a single (English) page whose
-	 * translations — the German Proforma-Anfrage — must keep the same
+	 * translations must keep the same
 	 * empty-draft behavior, so the check reads the translation group of the
 	 * checkout page id instead of matching a slug.
 	 */
-	private function is_proforma_request(): bool {
+	private function is_inquiry_page(): bool {
 		$checkout_id = (int) wc_get_page_id( 'checkout' );
 		if ( $checkout_id <= 0 ) {
 			return false;

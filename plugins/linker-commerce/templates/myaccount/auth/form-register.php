@@ -28,6 +28,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Account\AuthTemplates;
 use Linker\Commerce\Registration\Fields;
 
@@ -152,7 +153,7 @@ $active_step     = Fields::active_step();
 						do_action( 'woocommerce_register_form' );
 						?>
 
-						<p class="linker-auth-error" role="alert" data-registration-error data-failure="<?php esc_attr_e( 'The registration status could not be confirmed. Please try signing in before registering again, or email sales@de-linker.com. You can send inquiries without an account.', 'linker-commerce' ); ?>" hidden></p>
+						<p class="linker-auth-error" role="alert" data-registration-error data-failure="<?php /* translators: %s: public team email address. */ echo esc_attr( sprintf( __( 'The registration status could not be confirmed. Please try signing in before registering again, or email %s. You can send inquiries without an account.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ); ?>" hidden></p>
 						<p class="woocommerce-form-row form-row linker-auth-submit">
 							<?php wp_nonce_field( 'woocommerce-register', 'woocommerce-register-nonce' ); ?>
 							<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */ ?>

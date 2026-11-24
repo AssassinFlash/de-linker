@@ -24,6 +24,8 @@ abstract class TestCase extends WP_Mock\Tools\TestCase {
 	/** The optional language companion is unconfigured unless a fixture opts in. */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'get_option' )->with( \Linker\Commerce\Settings\Options::TEAM_TO, '' )->andReturn( '' )->byDefault();
+		WP_Mock::userFunction( 'sanitize_email' )->with( '' )->andReturn( '' )->byDefault();
 		WP_Mock::userFunction( 'pll_languages_list' )->andReturn( array() )->byDefault();
 		// PageUrls asks for a page by its English path; a fixture names the
 		// pages it has, every other test has none. The language functions are

@@ -23,6 +23,8 @@ use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Presentation\ProductShortcodes;
+use Linker\Commerce\Presentation\Shortcodes;
+use Linker\Commerce\Presentation\Tokens;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
 use Linker\Commerce\Registration\Emails\VatReviewEmail;
 use Linker\Commerce\Registration\VatProfile;
@@ -408,6 +410,27 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 			$this->assertStringContainsString( 'mailto:' . self::PUBLIC, $html, "{$shortcode} links the team mailbox." );
 			$this->assertStringNotContainsString( self::INTERNAL, $html, "{$shortcode} never shows the internal address." );
 		}
+	}
+
+	/** A configured public address reaches both footer cards and the native inquiry form. */
+	public function test_configured_team_mailbox_in_public_templates(): void {
+		$mailbox = 'partners@example.test';
+		update_option( Options::TEAM_TO, $mailbox );
+		add_shortcode( 'linker_team_email', array( new Shortcodes(), 'team_email' ) );
+
+		$templates = dirname( __DIR__, 3 ) . '/content/livecanvas/';
+		foreach ( array( 'partials/footer.html', 'partials/de/footer.html', 'inquiry/fields.html' ) as $path ) {
+			$source = Tokens::read( $templates . $path );
+			// Only run the address-bearing fragment; other shortcodes require a page or cart.
+			preg_match( '/<(?:div class="footer-email-card"|p class="linker-inquiry-promise")>.*?<\/(?:div|p)>/', $source, $fragment );
+			$html = do_shortcode( $fragment[0] );
+			$this->assertStringContainsString( 'href="mailto:' . $mailbox . '"', $html, $path );
+			$this->assertStringContainsString( '>' . $mailbox . '<', $html, $path );
+			if ( str_contains( $path, 'footer' ) ) {
+				$this->assertStringContainsString( 'data-footer-copy="' . $mailbox . '"', $html, $path );
+			}
+		}
+		$this->assertSame( self::INTERNAL, ( new Options() )->notify_to() );
 	}
 
 	/**

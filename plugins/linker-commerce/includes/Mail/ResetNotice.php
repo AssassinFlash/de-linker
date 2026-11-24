@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Mail;
 
+use Linker\Commerce\Settings\Options;
 use WP_Error;
 use WP_User;
 
@@ -143,7 +144,8 @@ final class ResetNotice {
 			return;
 		}
 		self::remember( '' !== self::$retry_login ? self::$retry_login : (string) $email->user_login );
-		wc_add_notice( __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ), 'error' );
+		/* translators: %s: public team email address. */
+		wc_add_notice( sprintf( __( 'Password reset is temporarily unavailable. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ), 'error' );
 		wp_safe_redirect( wc_lostpassword_url(), 303 );
 		exit;
 	}
@@ -198,7 +200,8 @@ final class ResetNotice {
 	 * @return array<string,mixed>|WP_Error
 	 */
 	public static function reserve( WP_User $user, string $operation ): array|WP_Error {
-		$unavailable = new WP_Error( 'linker_reset_capacity', __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+		/* translators: %s: public team email address. */
+		$unavailable = new WP_Error( 'linker_reset_capacity', sprintf( __( 'Password reset is temporarily unavailable. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) );
 		if ( '' !== \Linker\Commerce\Protection\ReceiptRecipients::password_reset( $user->user_email, $operation, false ) ) {
 			return $unavailable;
 		}

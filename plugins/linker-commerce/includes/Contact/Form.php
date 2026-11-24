@@ -259,11 +259,15 @@ final class Form {
 		}
 		return match ( $state ) {
 			'reception_full' => $this->notice( \Linker\Commerce\Protection\BusinessCapacity::message() ),
-			'review_size' => $this->notice( __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) ),
-			'review_full' => $this->notice( __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
-			'grouped' => $this->notice( __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email sales@de-linker.com.', 'linker-commerce' ) ),
+			/* translators: %s: public team email address. */
+			'review_size' => $this->notice( sprintf( __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ),
+			/* translators: %s: public team email address. */
+			'review_full' => $this->notice( sprintf( __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ),
+			/* translators: %s: public team email address. */
+			'grouped' => $this->notice( sprintf( __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ),
 			'invalid'   => $this->notice( __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
-			'throttled' => $this->notice( __( 'The message limit has been reached. Your entries are still here. You can try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
+			/* translators: %s: public team email address. */
+			'throttled' => $this->notice( sprintf( __( 'The message limit has been reached. Your entries are still here. You can try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ),
 			'verification_failed' => $this->notice( \Linker\Commerce\Protection\Business::verification_message( 'failed' ) ),
 			'verification_unavailable' => $this->notice( \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) ),
 			'pending' => $this->notice( __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) ),

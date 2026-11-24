@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Registration\Approval;
 use WP_Error;
@@ -419,6 +420,7 @@ final class RegistrationSlots {
 	 * Honest pre-create refusal; no claim that an account has been made.
 	 */
 	private static function unavailable(): WP_Error {
-		return new WP_Error( 'linker_registration_capacity', __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+		/* translators: %s: public team email address. */
+		return new WP_Error( 'linker_registration_capacity', sprintf( __( 'Registration is currently unavailable. Your account has not been created. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) );
 	}
 }
