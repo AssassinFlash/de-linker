@@ -345,6 +345,26 @@ final class ComparePageTest extends TestCase {
 				preg_match_all( '/<td[^>]*>(.*?)<\/td>/s', $row[1] ?? '', $cells );
 				$this->assertSame( array( '—', $value ), $cells[1], $language );
 			}
+			// The other STS model states the same 30 kW rating for all four ports.
+			$this->spec_tables[1832] = array(
+				array(
+					'spec_group_title' => 'en' === $language ? 'Ratings (grid, back-up, smart port, inverter)' : 'Bemessung (Netz, Notstrom, Smart Port, Wechselrichter)',
+					'spec_rows'        => array(
+						array(
+							'spec_label' => 'en' === $language ? 'Rated power' : 'Nennleistung',
+							'spec_value' => '30',
+							'spec_unit'  => 'kW',
+						),
+					),
+				),
+			);
+			$html = ( new ComparePage( $this->comparison() ) )->table();
+			foreach ( $case['rows'] as $label => $value ) {
+				self::assertSame( 1, preg_match( '/<tr[^>]*><th[^>]*>' . preg_quote( $label, '/' ) . '<\/th>(.*?)<\/tr>/s', $html, $row ) );
+				preg_match_all( '/<td[^>]*>(.*?)<\/td>/s', $row[1] ?? '', $cells );
+				self::assertSame( array( '30 kW', $value ), $cells[1] );
+			}
+			unset( $this->spec_tables[1832] );
 		}
 		unset( $_GET['ids'] );
 	}

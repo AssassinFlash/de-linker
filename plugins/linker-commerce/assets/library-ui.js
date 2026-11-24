@@ -318,7 +318,7 @@
 				order: index.length,
 				kind: card.kind,
 				type: row.getAttribute("data-library-type") || "",
-				group: row.getAttribute("data-library-group") || card.title,
+				group: card.title,
 				product: (row.querySelector(".linker-library-qa-product") || {}).textContent || "",
 				title: title ? title.textContent : row.textContent,
 				text: row.textContent + " " + products.join(" "),
@@ -401,9 +401,11 @@
 		if (clone.tagName === "DETAILS") {
 			clone.open = !!state.open[hit.order];
 			var question = clone.querySelector(".linker-library-qa-q");
-			var where = clone.querySelector(".linker-library-qa-where");
-			if (where) {
-				where.hidden = !query || !!(question && matches(question.textContent, query));
+			if (question && query && !matches(question.textContent, query)) {
+				var where = document.createElement("span");
+				where.className = "linker-library-qa-where";
+				where.textContent = label("inAnswer");
+				question.after(where);
 			}
 		}
 		var product = matchedProduct(hit, query);

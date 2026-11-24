@@ -234,8 +234,8 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( 'ESA battery manual, p. 12', $html );
 		$this->assertStringContainsString( 'href="https://de-linker.test/media/901.pdf#page=12"', $html );
 		$this->assertStringContainsString( 'data-library-card-count', $html );
-		$this->assertStringContainsString( 'data-library-group="GoodWe"', $html );
-		$this->assertStringContainsString( 'linker-library-qa-where', $html );
+		$this->assertStringNotContainsString( 'data-library-group=', $html );
+		$this->assertStringNotContainsString( 'linker-library-qa-where', $html );
 		$this->assertStringNotContainsString( '<script', $html );
 		$this->assertStringNotContainsString( ' style="', $html );
 	}

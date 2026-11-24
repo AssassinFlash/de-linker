@@ -328,15 +328,14 @@ final class LibraryPage {
 	public function faq( $atts = array() ): string {
 		unset( $atts );
 		$model = $this->model();
-		$where = '<span class="linker-library-qa-where" hidden>' . esc_html( (string) __( 'In the answer', 'linker-commerce' ) ) . '</span>';
 
 		$cards = '';
 		foreach ( $model['trade'] as $category ) {
 			$rows = '';
 			foreach ( $category['questions'] as $question ) {
-				$rows  .= '<details class="linker-library-qa" data-library-item data-library-group="' . esc_attr( $category['name'] ) . '">';
+				$rows  .= '<details class="linker-library-qa" data-library-item>';
 				$rows  .= '<summary class="linker-library-qa-head"><span class="linker-library-qa-text">';
-				$rows  .= '<span class="linker-library-qa-q">' . esc_html( $question['question'] ) . '</span>' . $where;
+				$rows  .= '<span class="linker-library-qa-q">' . esc_html( $question['question'] ) . '</span>';
 				$rows  .= '</span></summary>';
 				$answer = $question['answer'];
 				if ( str_contains( $answer, '?intent=support"' ) ) {
@@ -357,10 +356,10 @@ final class LibraryPage {
 			$answers = $brand['answers'];
 			$rows    = '';
 			foreach ( $answers as $answer ) {
-				$rows .= '<details class="linker-library-qa" data-library-item data-library-group="' . esc_attr( $brand['name'] ) . '">';
+				$rows .= '<details class="linker-library-qa" data-library-item>';
 				$rows .= '<summary class="linker-library-qa-head"><span class="linker-library-qa-text">';
 				$rows .= '<span class="linker-library-qa-product">' . esc_html( $answer['product'] ) . '</span>';
-				$rows .= '<span class="linker-library-qa-q">' . esc_html( $answer['question'] ) . '</span>' . $where;
+				$rows .= '<span class="linker-library-qa-q">' . esc_html( $answer['question'] ) . '</span>';
 				$rows .= '</span></summary>';
 				$rows .= '<div class="linker-library-qa-a"><p>' . wp_kses_post( $answer['answer'] ) . '</p>';
 				$rows .= '<p class="linker-library-qa-source"><a href="' . esc_url( $answer['url'] ) . '">' . esc_html( $answer['product'] ) . '</a>';
@@ -440,6 +439,7 @@ final class LibraryPage {
 				'resultsOne'    => __( '%d result', 'linker-commerce' ),
 				/* translators: %d: number of matching entries. */
 				'resultsOther'  => __( '%d results', 'linker-commerce' ),
+				'inAnswer'      => __( 'In the answer', 'linker-commerce' ),
 				/* translators: %d: number of questions and documents on file. */
 				'onFile'        => __( '%d on file', 'linker-commerce' ),
 				'empty'         => __( 'Nothing on file matches that search.', 'linker-commerce' ),
