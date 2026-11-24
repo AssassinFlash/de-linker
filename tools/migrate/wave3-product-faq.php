@@ -92,13 +92,14 @@ use Linker\Commerce\Products\Publication\EvidenceBindings;
 		}
 	}
 	WP_CLI::log(
-		wp_json_encode(
+		json_encode( // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- CLI output uses throwing JSON encoding.
 			array(
 				'mode'          => $mode,
 				'product_pairs' => count( $changes ),
 				'faq_rows'      => array_sum( $changes ),
 				'changes'       => $changes,
-			)
+			),
+			JSON_THROW_ON_ERROR
 		)
 	);
 } )( $args ?? array() );
