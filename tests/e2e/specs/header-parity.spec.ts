@@ -14,9 +14,8 @@ import { expect, test } from '@playwright/test';
  */
 import { instance } from '../lib/instance';
 
-// Header-only checks never wait for a model. The 95-width sweep takes ~7s;
-// 45s also allows snapshot page loads, instead of the suite's 300s model budget.
-test.describe.configure({ timeout: 45_000 });
+// The sweep loads both localized homepages from the snapshot before measuring.
+test.describe.configure({ timeout: 120_000 });
 
 test.afterEach(async ({ page }, info) => {
 	if (process.env.LINKER_HEADER_CAPTURE && page.url() !== 'about:blank') {
