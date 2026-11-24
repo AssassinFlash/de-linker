@@ -2,8 +2,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from linker_engine.planning.report_overview import calendar_totals, replay_months
 from linker_engine.planning.records import Actor
+from linker_engine.planning.report_overview import calendar_totals, replay_months
 from linker_engine.planning.workspace import Workspace
 
 
@@ -72,12 +72,14 @@ def test_equipment_comparison_plots_both_frozen_profiles_in_their_calendar_month
     workspace: Workspace, owner: Actor
 ) -> None:
     from datetime import timedelta
+
     from linker_engine.planning.assets import Assets
     from linker_engine.planning.canonical import Object
-    from linker_engine.planning.profile_assets import profile_dependencies
-    from linker_engine.planning.report_overview import comparison_months
-    from linker_engine.planning.profile_import import ProfileImport
     from linker_engine.planning.power_series import Measurement
+    from linker_engine.planning.profile_assets import profile_dependencies
+    from linker_engine.planning.profile_import import ProfileImport
+    from linker_engine.planning.report_overview import comparison_months
+
     from .test_energy_kernel import PROVENANCE, mapping
 
     project = workspace.create(owner, "Monthly chart", {}, key="monthly")

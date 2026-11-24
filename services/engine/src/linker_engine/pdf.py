@@ -435,7 +435,8 @@ def render(
     location = (
         site.rows[0].value
         if site
-        and site.rows[0].label in ("Location", "Standort", t("row.postcode", report.locale))
+        and site.rows[0].label
+        in ("Location", "Standort", t("row.postcode", report.locale))
         else ""
     )
     language = "Deutsch" if report.locale == "de" else "English"
