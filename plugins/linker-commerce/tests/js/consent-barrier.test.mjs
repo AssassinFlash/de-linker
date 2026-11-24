@@ -256,3 +256,28 @@ test('an overflowing notice can be read by keyboard and loses its fade at the la
 	resize();
 	assert.ok(!reader.hasAttribute('tabindex'));
 });
+
+test('Genie yields to the first-visit banner and its prompts yield to the footer settings', async () => {
+	const css = readFileSync(new URL('../../content/windpress/consent.css', import.meta.url), 'utf8');
+	const window = page(`<style>${css}</style>
+		<div class="cky-consent-container"></div>
+		<div class="linker-genie"><button class="linker-genie-open" aria-expanded="false">Ask Genie</button>
+			<div class="linker-genie-peek">Suggested questions</div></div>
+		<footer id="tv-footer-v2"><button class="cky-banner-element">Cookie settings</button></footer>`);
+	let visibilityChanged;
+	window.IntersectionObserver = class {
+		constructor(callback) { visibilityChanged = callback; }
+		observe() {}
+	};
+	await new Promise((resolve) => window.addEventListener('load', resolve));
+	const dock = window.document.querySelector('.linker-genie');
+	const prompts = dock.querySelector('.linker-genie-peek');
+	assert.equal(window.getComputedStyle(dock).visibility, 'hidden');
+	window.document.querySelector('.cky-consent-container').classList.add('cky-hide');
+	assert.equal(window.getComputedStyle(dock).visibility, 'visible');
+	visibilityChanged([{ isIntersecting: true }]);
+	assert.equal(window.getComputedStyle(prompts).display, 'none');
+	assert.equal(window.getComputedStyle(dock).visibility, 'visible');
+	visibilityChanged([{ isIntersecting: false }]);
+	assert.notEqual(window.getComputedStyle(prompts).display, 'none');
+});
