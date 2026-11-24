@@ -1412,6 +1412,23 @@ final class Materials {
 	}
 
 	/**
+	 * The editorial record for this specific published file.
+	 *
+	 * @param string $url Published original.
+	 * @return array<string,mixed>
+	 */
+	public static function document_edition( string $url ): array {
+		if ( '' === $url ) {
+			return array();
+		}
+		self::$document_titles ??= self::read( 'document-titles.json' );
+		$path                    = (string) wp_parse_url( $url, PHP_URL_PATH );
+		$key                     = explode( '/wp-content/uploads/', rawurldecode( $path ), 2 )[1] ?? '';
+		$edition                 = self::$document_titles[ $key ] ?? array();
+		return is_array( $edition ) ? $edition : array();
+	}
+
+	/**
 	 * Use the file’s reviewed display title in the current language. Other files
 	 * keep their published title or its existing German editorial translation.
 	 *
@@ -1421,14 +1438,9 @@ final class Materials {
 	 */
 	public static function localized_document_title( string $title, ?bool $german = null, string $url = '' ): string {
 		$german = $german ?? self::is_de();
-		if ( '' !== $url ) {
-			$path                    = (string) wp_parse_url( $url, PHP_URL_PATH );
-			$key                     = explode( '/wp-content/uploads/', rawurldecode( $path ), 2 )[1] ?? '';
-			self::$document_titles ??= self::read( 'document-titles.json' );
-			$label                   = self::$document_titles[ $key ][ $german ? 'de' : 'en' ] ?? '';
-			if ( is_string( $label ) && '' !== $label ) {
-				return $label;
-			}
+		$label  = self::document_edition( $url )[ $german ? 'de' : 'en' ] ?? '';
+		if ( is_string( $label ) && '' !== $label ) {
+			return $label;
 		}
 		if ( ! $german ) {
 			return $title;

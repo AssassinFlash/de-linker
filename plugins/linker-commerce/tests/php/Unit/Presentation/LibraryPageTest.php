@@ -379,7 +379,7 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( '"empty":"Nothing on file matches that search."', $html );
 		$this->assertStringContainsString( '"pages":"Pages"', $html );
 		$this->assertStringNotContainsString( '"clear"', $html, 'the template owns the clear button\'s label' );
-		$this->assertStringNotContainsString( '"inAnswer"', $html, 'the fragment owns the hint' );
+		$this->assertStringContainsString( 'In the answer', $html );
 	}
 
 	/**

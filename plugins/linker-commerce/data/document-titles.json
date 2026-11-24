@@ -9,7 +9,8 @@
 	},
 	"2026/07/delinker-goodwe_batc208-datasheet.pdf": {
 		"de": "GoodWe BAT-C 208,9–261,2 kWh – Datenblatt (EMEA, frühere Fassung V1.0)",
-		"en": "GoodWe BAT-C 208.9–261.2 kWh – Datasheet (EMEA, earlier edition V1.0)"
+		"en": "GoodWe BAT-C 208.9–261.2 kWh – Datasheet (EMEA, earlier edition V1.0)",
+		"previous": true
 	},
 	"2026/07/delinker-goodwe_batc60-datasheet.pdf": {
 		"de": "GoodWe BAT-C 61,4–112,6 kWh – Datenblatt (EMEA)",
@@ -101,7 +102,8 @@
 	},
 	"2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf": {
 		"de": "GoodWe ESA 5–30 kW – Benutzerhandbuch (frühere Fassung V1.4)",
-		"en": "GoodWe ESA 5–30 kW – User manual (earlier edition V1.4)"
+		"en": "GoodWe ESA 5–30 kW – User manual (earlier edition V1.4)",
+		"previous": true
 	},
 	"2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf": {
 		"de": "GoodWe ET 50–100 kW – Systemhandbuch (V1.3)",
