@@ -11,6 +11,7 @@ namespace Linker\Commerce\Inquiry;
 
 use Linker\Commerce\Presentation\Tokens;
 use Linker\Commerce\Planning\InquiryTransfer;
+use Linker\Commerce\Planning\DraftRecovery;
 use WC_Customer;
 
 /**
@@ -47,6 +48,10 @@ final class Form {
 		if ( is_checkout() && ! is_wc_endpoint_url() ) {
 			\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
 			\Linker\Commerce\Protection\Identity::ensure_browser_cookie();
+			if ( isset( $_POST[ DraftRecovery::FIELD ] ) && is_string( $_POST[ DraftRecovery::FIELD ] ) && DraftRecovery::detach( sanitize_text_field( wp_unslash( $_POST[ DraftRecovery::FIELD ] ) ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- detach verifies the nonce against the current inaccessible cart lines.
+				wp_safe_redirect( Checkout::request_url( OrderLocale::current( $this->submission_language() ) ), 303 );
+				exit;
+			}
 		}
 	}
 
@@ -130,6 +135,10 @@ final class Form {
 		if ( ! \Linker\Commerce\Protection\Identity::ensure_browser_cookie() ) {
 			return '<p role="alert">' . esc_html( \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) ) . '</p>';
 		}
+		$missing = DraftRecovery::review();
+		if ( $missing instanceof \WP_Error ) {
+			return '<p class="woocommerce-info" role="alert">' . esc_html( $missing->get_error_message() ) . '</p>';
+		}
 		// This opaque handle reads only server-validated fields from the current Woo session.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only recovery in the native session.
 		if ( array() === $this->flash && isset( $_GET[ CheckoutRetry::HANDLE ] ) ) {
@@ -148,13 +157,28 @@ final class Form {
 			}
 		}
 		try {
-			$template = do_shortcode( str_replace( '{{inquiry-fields}}', self::fields_template(), Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) ) );
+			$template = str_replace( '{{inquiry-fields}}', self::fields_template(), Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) );
+			$template = do_shortcode( $template );
 			// Core intentionally refuses shortcode expansion in form actions and empty attributes.
 			// Insert customer text last so a message can never execute shortcodes.
-			return preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => $this->value( array( 'key' => $token[1] ) ), $template ) ?? '';
+			return preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => 'draft-recovery' === $token[1] ? $this->draft_recovery( $missing ) : $this->value( array( 'key' => $token[1] ) ), $template ) ?? '';
 		} finally {
 			$this->flash = array();
 		}
+	}
+
+	/** The buyer can detach unavailable reports before filling out the inquiry.
+	 *
+	 * @param string[] $missing Keys in the native draft.
+	 */
+	private function draft_recovery( array $missing ): string {
+		if ( array() === $missing ) {
+			return '';
+		}
+		$cart  = WC()->cart->get_cart();
+		$names = array_map( static fn ( string $key ): string => $cart[ $key ]['data']->get_name(), $missing );
+		return '<form class="woocommerce-info" method="post"><p>' . esc_html__( 'A planning report is unavailable for these products:', 'linker-commerce' ) . ' ' . esc_html( implode( ', ', array_unique( $names ) ) ) . '</p><p>' . esc_html__( 'You can keep all products and quantities in your inquiry.', 'linker-commerce' ) . '</p>'
+			. '<button class="button" type="submit" name="' . esc_attr( DraftRecovery::FIELD ) . '" value="' . esc_attr( wp_create_nonce( DraftRecovery::nonce_action( $missing ) ) ) . '">' . esc_html__( 'Remove unavailable report links', 'linker-commerce' ) . '</button></form>';
 	}
 
 	/** One set of native reply, consent and submit fields. */

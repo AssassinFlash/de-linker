@@ -419,7 +419,7 @@ final class Context {
 						/* translators: %s: planning project title. */
 						? __( 'The planning project “%s” is no longer accessible. Clear the “Include planning reports and project notes with this inquiry” checkbox, then send your inquiry again.', 'linker-commerce' )
 						/* translators: %s: planning project title. */
-						: __( 'The planning project “%s” is no longer accessible. Remove its products from your solution draft, then send your inquiry again.', 'linker-commerce' );
+						: __( 'The planning project “%s” is no longer accessible. Remove the unavailable report link on the inquiry form to keep its products.', 'linker-commerce' );
 					$result = new WP_Error( 'planning_project_deleted', sprintf( $message, $reference['title'] ), array( 'status' => 409 ) );
 				}
 				return;

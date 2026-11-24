@@ -162,6 +162,10 @@ final class Transport {
 		}
 		$value = json_decode( $reply['body'], true, 64 );
 		if ( $reply['status'] >= 400 ) {
+			// Only the engine's explicit denial identifies a missing or unowned handoff.
+			if ( 'handoffs/read' === $path && 404 === $reply['status'] && 'not_found' === ( $value['error']['code'] ?? null ) ) {
+				return Failure::make( 'handoff_not_found', 404 );
+			}
 			return Failure::make( self::refusal_code( $reply['status'], $value ), $reply['status'] );
 		}
 		return is_array( $value ) && str_starts_with( $reply['type'], 'application/json' ) ? $value : Failure::make( 'invalid_reply', 502 );

@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Planning;
 
 use Linker\Commerce\Planning\Context;
 use Linker\Commerce\Planning\DraftPreview;
+use Linker\Commerce\Planning\DraftRecovery;
 use Linker\Commerce\Planning\DraftTransfer;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Tests\TestCase;
@@ -188,6 +189,34 @@ final class ProjectNotesTest extends TestCase {
 			}
 		};
 		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
+	}
+
+	/** A restored cart resolves each report once under the current planning identity. */
+	public function test_restored_cart_recovers_owned_reports_and_flags_only_missing_links(): void {
+		$this->plain_text();
+		$owned      = $this->handoff();
+		$gone       = str_repeat( 'a', 32 );
+		$this->cart = array(
+			'first'  => array( DraftTransfer::LINE_META => $owned['id'] ),
+			'second' => array( DraftTransfer::LINE_META => $owned['id'] ),
+			'old'    => array( DraftTransfer::LINE_META => $gone ),
+			'manual' => array( 'quantity' => 3 ),
+		);
+		WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $owned['id'] )->reply( $owned );
+		WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $gone )->reply( new \WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) ) );
+		$this->assertSame( array( 'old' ), DraftRecovery::review() );
+		$this->assertSame( array( $owned['id'] => DraftTransfer::native_context( $owned ) ), Context::active() );
+		$this->assertSame( $gone, $this->cart['old'][ DraftTransfer::LINE_META ] );
+	}
+
+	/** A service outage leaves the link available for a later retry. */
+	public function test_temporary_lookup_failure_cannot_offer_to_remove_a_link(): void {
+		$this->plain_text();
+		$id         = str_repeat( 'a', 32 );
+		$this->cart = array( 'old' => array( DraftTransfer::LINE_META => $id ) );
+		WP_Mock::onFilter( 'linker_tools_planning_inquiry_handoff' )->with( null, $id )->reply( new \WP_Error( 'linker_planner_unavailable', '', array( 'status' => 503 ) ) );
+		$this->assertInstanceOf( \WP_Error::class, DraftRecovery::review() );
+		$this->assertSame( $id, $this->cart['old'][ DraftTransfer::LINE_META ] );
 	}
 
 	/**
