@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+use Linker\Commerce\Tests\Fixtures\GenieVerificationFixture;
 
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Inquiry\Sender;
@@ -21,6 +22,7 @@ use Linker\Commerce\Planning\DraftRecovery;
 use Linker\Commerce\Planning\DraftTransfer;
 use Linker\Commerce\Planning\InquiryTransfer;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Protection\Identity;
 use WC_Order;
 
 /**
@@ -46,6 +48,35 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 * @var NormalMailAuthorizationFixture
 	 */
 	private NormalMailAuthorizationFixture $authorization;
+
+	/**
+	 * Browser transport submitted alongside the fields under test.
+	 *
+	 * @return array<string,string> Native idempotency, cart and guest verification fields.
+	 */
+	private function form_transport(): array {
+		$cookie                      = $_COOKIE;
+		$_COOKIE[ Identity::COOKIE ] = bin2hex( random_bytes( 16 ) );
+		$this->later(
+			static function () use ( $cookie ): void {
+				$_COOKIE = $cookie;
+			}
+		);
+		$fields = array(
+			'linker_request_id' => wp_generate_uuid4(),
+			'linker_draft_hash' => WC()->cart->get_cart_hash(),
+		);
+		if ( ! is_user_logged_in() ) {
+			require_once dirname( __DIR__, 2 ) . '/fixtures/GenieVerificationFixture.php';
+			GenieVerificationFixture::install(
+				function ( callable $remove ): void {
+					$this->later( $remove );
+				}
+			);
+			$fields['cf-turnstile-response'] = 'XXXX.DUMMY.TOKEN.XXXX';
+		}
+		return $fields;
+	}
 
 	/** Review exposes the native checkout fields and signs exactly the revision shown. */
 	public function test_preliminary_review_form_binds_the_native_nonce(): void {
@@ -434,7 +465,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'name'                          => 'Guided Fixture',
 			'email'                         => 'plan-' . self::tag() . '@example.test',
 			'consent'                       => '1',
-		);
+		) + $this->form_transport();
 		$handler                           = new \Linker\Commerce\Inquiry\Handler();
 		$altered                           = $post;
 		$altered['linker_report_transfer'] = substr_replace( ( $token[1] ?? '' ), str_repeat( '9', 32 ), 0, 32 );
@@ -664,7 +695,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'message'                    => 'Please call about my roof.',
 			'email'                      => $email,
 			'consent'                    => '1',
-		);
+		) + $this->form_transport();
 		$form    = new \Linker\Commerce\Inquiry\Form();
 		$handler = new \Linker\Commerce\Inquiry\Handler( $form );
 		$form->register();
@@ -837,7 +868,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'name'                       => 'Marta Becker',
 			'email'                      => 'reviewed-project@example.test',
 			'consent'                    => '1',
-		);
+		) + $this->form_transport();
 		foreach ( array( 'off', 'observe' ) as $mode ) {
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=' . $mode ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Restore the isolated PHP fixture environment.
 			$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
@@ -904,7 +935,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '<title>' . $title . ' | Linker</title>', $html );
 		$this->assertSame( 1, preg_match( '/<form class="linker-inquiry-form".*?<\/form>/s', $html, $matches ) );
 		$form = $matches[0] ?? '';
-		$this->assertStringContainsString( $message, $form );
+		$this->assertSame( 1, preg_match( '/<label[^>]*for="inquiry-message"[^>]*>(.*?)<textarea/s', $form, $field ) );
+		$this->assertSame( $message, trim( wp_strip_all_tags( $field[1] ) ) );
 		$this->assertStringContainsString( 'action="' . admin_url( 'admin-post.php' ) . '"', $form );
 		$this->assertStringNotContainsString( '[linker_', $form );
 		$this->assertStringNotContainsString( 'name="billing_country"', $form );
@@ -918,8 +950,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 */
 	public static function request_languages(): array {
 		return array(
-			'en' => array( '/proforma-request/', 'Send an inquiry', 'Message (optional)' ),
-			'de' => array( '/de/proforma-anfrage/', 'Anfrage senden', 'Nachricht (optional)' ),
+			'en' => array( '/proforma-request/', 'Send an inquiry', 'Project message optional' ),
+			'de' => array( '/de/proforma-anfrage/', 'Anfrage senden', 'Projektnachricht optional' ),
 		);
 	}
 
@@ -1034,7 +1066,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				'consent'              => '1',
 				'lang'                 => 'de',
 				'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			)
+			) + $this->form_transport()
 		);
 		$this->assertInstanceOf( WC_Order::class, $order );
 		$this->later(
@@ -1278,7 +1310,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'message'              => 'A contact question.',
 			'consent'              => '1',
 			'linker_contact_nonce' => wp_create_nonce( 'linker_contact_form' ),
-		);
+		) + $this->form_transport();
 		WC()->mailer();
 		$address                = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Preserve the exact test runner value for restoration.
 		$_SERVER['REMOTE_ADDR'] = '127.246.0.1';
@@ -1345,7 +1377,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'email'                => $customer->get_billing_email(),
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-		);
+		) + $this->form_transport();
 		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $result );
 		$this->later(
@@ -1413,7 +1445,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'email'                => $customer->get_billing_email(),
 			'consent'              => '1',
 			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-		);
+		) + $this->form_transport();
 		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
 		$this->assertInstanceOf( WC_Order::class, $result );
 		$this->later(
@@ -1463,7 +1495,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				'billing_address_1'    => 'Teststraße 246',
 				'billing_vat_id'       => $vat,
 				'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
-			)
+			) + $this->form_transport()
 		);
 		$this->assertInstanceOf( WC_Order::class, $result );
 		$this->later(
