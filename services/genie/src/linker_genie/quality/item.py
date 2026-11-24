@@ -9,6 +9,7 @@ inquiries the model read may have changed since.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -67,6 +68,9 @@ def build(turn: LoggedTurn) -> Item:
         # account may see net prices, a guest, pending or restricted one not.
         "account": {"approved": turn.approved},
     }
+    misses = absent_models(turn.tool_calls, turn.output["blocks"])
+    if misses:
+        state["reference"]["published_catalogue_checks"] = misses
     swap = wrong_pick(turn, cards, page)
     if swap is not None:
         state["answer_a"] = answer_with_offers(answer, page, cards)
@@ -136,3 +140,27 @@ def wrong_pick(
     if not others:
         return None
     return (recommended[0], others[0])
+
+
+def absent_models(
+    calls: Sequence[dict[str, Any]], blocks: Sequence[dict[str, Any]]
+) -> list[dict[str, object]]:
+    refs = {ref for b in blocks if b.get("type") == "text" for ref in b.get("refs", [])}
+    checked = []
+    for call in calls:
+        code = (call.get("arguments") or {}).get("text")
+        if (
+            call.get("ok") is True
+            and call.get("name") == "linker/search-products"
+            and isinstance(code, str)
+            and f"catalog.absent.{code}" in refs
+            and (call.get("result") or {}).get("qualified") == []
+        ):
+            checked.append(
+                {
+                    "published_model_lookup": code,
+                    "qualified_products": [],
+                    "released_pairing_with_unlisted_model": False,
+                }
+            )
+    return checked

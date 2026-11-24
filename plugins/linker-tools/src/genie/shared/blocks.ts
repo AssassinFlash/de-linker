@@ -10,6 +10,38 @@
 import type { Block, CardPrice, CardsBlock, CompareBlock } from '../api/turn';
 
 /**
+ * Controls below a reply, shared by live and restored turns.
+ *
+ * @param blocks The turn after its document links have been authorized and labeled.
+ */
+export function controlsOf( blocks: Block[] ): Block[] {
+	const links = new Set< string >();
+	return blocks.filter( ( block ) => {
+		if ( block.type === 'document' ) {
+			if ( ! block.url || ! block.label ) {
+				return false;
+			}
+			const [ file, page ] = block.url.split( '#' );
+			const key = JSON.stringify( [
+				block.document_id ?? file,
+				page,
+				block.label,
+			] );
+			if ( links.has( key ) ) {
+				return false;
+			}
+			links.add( key );
+			return true;
+		}
+		return (
+			block.type === 'ask' ||
+			block.type === 'parts' ||
+			( block.type === 'action' && block.name !== 'open_configurator' )
+		);
+	} );
+}
+
+/**
  * The price lines of the turn's cards, as the service filled them (#242).
  *
  * @param blocks The turn's blocks.

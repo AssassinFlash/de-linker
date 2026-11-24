@@ -12,9 +12,10 @@ import { expect, test } from 'vitest';
 /**
  * Internal dependencies
  */
-import type { Block } from '../api/turn';
+import type { Block, DocumentBlock } from '../api/turn';
 import {
 	cardIdsOf,
+	controlsOf,
 	comparisonsOf,
 	pricesOf,
 	proofsOf,
@@ -62,4 +63,30 @@ test( 'reopening an unsigned turn shows the original action quantity without mak
 	];
 	expect( quantitiesOf( stored ) ).toEqual( { 4107: 2 } );
 	expect( proofsOf( stored ) ).toEqual( {} );
+} );
+
+test( 'the same visible manual and page has one control across evidence chunks', () => {
+	const page: DocumentBlock = {
+		type: 'document',
+		ref: 'passage-1',
+		document_id: 'manual',
+		url: '/cb2.pdf#page=4',
+		label: 'CB2-100 · User manual (EN) · p. 4',
+	};
+	const shared = { ...page, ref: 'passage-2', evidence_product_id: 4103 };
+	const otherPage = {
+		...page,
+		url: '/cb2.pdf#page=8',
+		label: 'CB2-100 · User manual (EN) · p. 8',
+	};
+	const otherModel = { ...page, label: 'CB2-57 · User manual (EN) · p. 4' };
+	const blocks = [
+		{ ...page, url: null },
+		page,
+		shared,
+		otherPage,
+		otherModel,
+	];
+	expect( controlsOf( blocks ) ).toEqual( [ page, otherPage, otherModel ] );
+	expect( blocks ).toHaveLength( 5 );
 } );

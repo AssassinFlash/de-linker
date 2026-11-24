@@ -1727,7 +1727,15 @@ body:has(.linker-genie-hero--open)
 	box-shadow: none;
 }
 
+body:has(dialog[open]) :is(.linker-genie, [data-linker-genie-peek]) {
+	display: none;
+}
+
 @media (max-width: 860px) {
+	.linker-genie-peek {
+		display: none;
+	}
+
 	.linker-genie {
 		right: 12px;
 		bottom: max(12px, env(safe-area-inset-bottom));

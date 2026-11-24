@@ -784,3 +784,50 @@ test( 'a cold multi-turn history restores each comparison against the same curre
 		)
 	).toHaveLength( 1 );
 } );
+
+test( 'a reopened shared manual keeps its purpose and the model this turn requested', async () => {
+	const displayed = {
+		type: 'document' as const,
+		ref: 'p2.document.0',
+		label: 'Manual',
+		document_id: 'doc',
+		document_revision: 'revision-1',
+		url: PDF,
+	};
+	const turn = {
+		meta: null,
+		blocks: [
+			displayed,
+			{ ...displayed, ref: 'cafeface0000-p1-0', evidence_product_id: 1 },
+		],
+	};
+	const fetcher = vi.fn( async ( url: RequestInfo | URL ) => ( {
+		ok: true,
+		json: async () =>
+			String( url ).endsWith( '/publication/manifest' )
+				? permission
+				: {
+						product_id: Number(
+							new URL( String( url ), PDF ).searchParams.get(
+								'input[product_id]'
+							)
+						),
+						model: String( url ).includes( 'product_id]=2' )
+							? 'Model B'
+							: 'Model A',
+						documents: [
+							{
+								url: PDF.split( '#' )[ 0 ],
+								type: 'manual',
+								lang: 'en',
+								display_purpose: 'User manual',
+							},
+						],
+					},
+	} ) ) as unknown as typeof fetch;
+	const restored = await restoreArtifacts( turn, context, 'n', fetcher );
+	expect( restored.blocks ).toMatchObject( [
+		{ label: 'Model B · User manual (EN) · p.\u00a01' },
+		{ label: 'Model B · User manual (EN) · p.\u00a01' },
+	] );
+} );

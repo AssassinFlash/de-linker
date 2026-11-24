@@ -70,6 +70,7 @@ class Snapshot:
     documents: dict[str, dict[str, Any]]
     compatibility_revision: str
     model_identity_revision: str = ""
+    revision_check: bool = False
 
     @classmethod
     def read(cls, value: Any) -> Snapshot:
@@ -117,6 +118,7 @@ class Snapshot:
             documents,
             str(value.get("compatibility_revision", "")),
             str(value.get("model_identity_revision", "")),
+            value.get("revision_check") == 1,
         )
 
     def canonical(self, product_id: int) -> int | None:
@@ -347,6 +349,37 @@ class PublicationClient:
         return Snapshot.read(self._request("GET", "/manifest"))
 
     def validate(self, snapshot: Snapshot) -> None:
+        if snapshot.revision_check:
+            observed = self._request(
+                "POST",
+                "/validate",
+                {
+                    "expected_revision": snapshot.source_revision,
+                    "model_identity_revision": snapshot.model_identity_revision,
+                },
+            )
+            if (
+                not isinstance(observed, dict)
+                or not isinstance(observed.get("source_revision"), str)
+                or not observed["source_revision"]
+            ):
+                raise PublicationUnavailable("invalid Woo publication revision")
+            if observed["source_revision"] != snapshot.source_revision:
+                raise PublicationChanged("Woo publication changed during the operation")
+            if observed.get("valid") is False and "invalid" in observed:
+                # WordPress reverted to the dependency contract during this turn.
+                # Validate the original inputs with that still-current authority.
+                self._validate_dependencies(snapshot)
+                return
+            identity = observed.get("model_identity_revision")
+            if not isinstance(identity, str) or not identity:
+                raise PublicationUnavailable("invalid Woo model identity revision")
+            if identity != snapshot.model_identity_revision:
+                raise PublicationChanged("Woo publication changed during the operation")
+            return
+        self._validate_dependencies(snapshot)
+
+    def _validate_dependencies(self, snapshot: Snapshot) -> None:
         response = self._request("POST", "/validate", snapshot.dependencies())
         if isinstance(response, dict) and response.get("valid") is False:
             raise PublicationChanged("Woo publication changed during the operation")

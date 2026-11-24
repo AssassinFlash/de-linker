@@ -750,6 +750,13 @@ final class PreparationJobsTest extends TestCase {
 		$manifest                   = Publication::manifest();
 		$this->assertSame( $old['source_revision'], $manifest['source_revision'] );
 		$this->assertNotSame( $old['model_identity_revision'], $manifest['model_identity_revision'] );
+		$this->assertSame(
+			array(
+				'source_revision'         => $old['source_revision'],
+				'model_identity_revision' => $manifest['model_identity_revision'],
+			),
+			Publication::current_revisions()
+		);
 		$this->assertFalse( $manifest['products'][0]['ready']['knowledge'] );
 		$this->assertFalse( Publication::validate( array( 'model_identity_revision' => $old['model_identity_revision'] ) )['valid'] );
 		$this->assertTrue(

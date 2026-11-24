@@ -185,6 +185,25 @@ for (const lang of ['en', 'de'] as const) {
 			});
 		}
 
+		test('the open home preview gives way to search and returns on close', async ({
+			page,
+		}) => {
+			await page.setViewportSize(DESKTOP);
+			await arrive(page, PAGES[lang].home);
+			await scrollPast(page);
+			await page.clock.runFor(DWELL + 500);
+			await expect(card(page)).toBeVisible();
+			await page
+				.locator('[data-tv-header-search]:visible')
+				.first()
+				.click();
+			await expect(page.locator('#tv-site-search[open]')).toBeVisible();
+			await expect(card(page)).toBeHidden();
+			await expect(dock(page)).toBeHidden();
+			await page.keyboard.press('Escape');
+			await expect(card(page)).toBeVisible();
+		});
+
 		test('the home card waits until the hero is passed', async ({
 			page,
 		}) => {

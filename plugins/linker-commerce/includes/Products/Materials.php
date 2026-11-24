@@ -1418,7 +1418,7 @@ final class Materials {
 	 * @return array<string,mixed>
 	 */
 	public static function document_edition( string $url ): array {
-		if ( '' === $url ) {
+		if ( ! str_contains( $url, '/wp-content/uploads/' ) ) {
 			return array();
 		}
 		self::$document_titles ??= self::read( 'document-titles.json' );
@@ -1426,6 +1426,29 @@ final class Materials {
 		$key                     = explode( '/wp-content/uploads/', rawurldecode( $path ), 2 )[1] ?? '';
 		$edition                 = self::$document_titles[ $key ] ?? array();
 		return is_array( $edition ) ? $edition : array();
+	}
+
+	/**
+	 * Document purpose and edition for links already labelled with a model.
+	 *
+	 * @param string   $url    Published original.
+	 * @param string   $locale English or German.
+	 * @param string[] $models Published model names represented in the file title.
+	 */
+	public static function document_purpose( string $url, string $locale, array $models ): string {
+		$edition = self::document_edition( $url );
+		$parts   = explode( ' – ', (string) ( $edition[ $locale ] ?? '' ), 2 );
+		if ( ! isset( $parts[1] ) ) {
+			return '';
+		}
+		return (string) preg_replace_callback(
+			'/ \(([^()]*)\)$/u',
+			static function ( array $note ) use ( $models ): string {
+				$qualifiers = array_diff( explode( ', ', $note[1] ), $models );
+				return $qualifiers ? ' (' . implode( ', ', $qualifiers ) . ')' : '';
+			},
+			$parts[1]
+		);
 	}
 
 	/**

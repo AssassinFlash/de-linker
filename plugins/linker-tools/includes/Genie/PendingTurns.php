@@ -76,13 +76,38 @@ final class PendingTurns {
 		return is_array( $value ) ? $value : array();
 	}
 
+	/**
+	 * Only the live service subject and progress fields are needed on a running poll.
+	 * A cache miss reads the pending operation, including jobs accepted by an older shell.
+	 *
+	 * @param int    $id Owned conversation.
+	 * @param string $job Service job ID.
+	 * @return array<string,mixed>
+	 */
+	public static function polling( int $id, string $job ): array {
+		$header = wp_cache_get( $job, 'linker_genie_poll' );
+		if ( is_array( $header ) && $header['conversation_id'] === $id ) {
+			return $header;
+		}
+		$turn = self::current( $id );
+		if ( ( $turn['job_id'] ?? null ) !== $job ) {
+			return array();
+		}
+		$header = array_intersect_key( $turn, array_flip( array( 'job_id', 'conversation_id', 'receipt', 'started_at', 'stage', 'subject_hash', 'operation_id' ) ) );
+		wp_cache_set( $job, $header, 'linker_genie_poll', Proxy::TURN_BUDGET );
+		return $header;
+	}
+
 	/** Public progress only.
 	 *
 	 * @param array<string,mixed> $turn Pending context.
 	 * @return array<string,mixed>
 	 */
 	public static function progress( array $turn ): array {
-		$stage = get_post_meta( $turn['receipt'], self::STAGE, true );
+		$stage = wp_cache_get( $turn['job_id'], 'linker_genie_stage' );
+		if ( false === $stage ) {
+			$stage = get_post_meta( $turn['receipt'], self::STAGE, true );
+		}
 		return array(
 			'job_id'          => $turn['job_id'],
 			'conversation_id' => $turn['conversation_id'],
@@ -97,6 +122,8 @@ final class PendingTurns {
 	 * @param array<string,mixed> $turn Pending context held under its operation lock.
 	 */
 	public static function clear( array $turn ): void {
+		wp_cache_delete( $turn['job_id'], 'linker_genie_poll' );
+		wp_cache_delete( $turn['job_id'], 'linker_genie_stage' );
 		delete_post_meta( $turn['conversation_id'], self::PENDING, wp_slash( $turn ) );
 		delete_post_meta( $turn['receipt'], self::STAGE );
 		wp_clear_scheduled_hook( 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );

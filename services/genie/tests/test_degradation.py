@@ -17,6 +17,7 @@ import httpx
 import pytest
 from baseline.grade import NEXT_STEP_BLOCKS
 from pydantic_ai.exceptions import ModelHTTPError, UnexpectedModelBehavior
+from test_publication import authority, manifest
 
 from linker_genie.abilities import Abilities, AbilityClient, AbilityError
 from linker_genie.cycle import TurnResult, fatal_class, run
@@ -148,13 +149,17 @@ def _index(message: str) -> KnowledgeUnavailable:
 
     class Broken:
         def search(
-            self, query: str, lang: str, product_ids: object = None
+            self,
+            query: str,
+            lang: str,
+            product_ids: object = None,
+            publication: object = None,
         ) -> list[object]:
-            del query, lang, product_ids
+            del query, lang, product_ids, publication
             raise sqlite3.OperationalError(message)
 
     try:
-        KnowledgeSearch(lambda: Broken())(  # type: ignore[arg-type,return-value]
+        KnowledgeSearch(lambda: Broken(), publication=authority(manifest()))(  # type: ignore[arg-type,return-value]
             {"query": "q", "lang": "en"}
         )
     except KnowledgeUnavailable as error:

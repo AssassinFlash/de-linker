@@ -29,7 +29,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
+from baseline.evidence import pairing_prose
 from linker_genie.figures import digits_are_regulation, is_code, regulation_number_spans
+from linker_genie.quality.item import absent_models
 
 # AGENTS.md §3: these words are not this shop's vocabulary, in either language.
 FORBIDDEN_WORDS = (
@@ -71,6 +73,7 @@ class Turn:
     meta: dict[str, Any] = field(default_factory=dict)
     blocks: list[dict[str, Any]] = field(default_factory=list)
     done: bool = False
+    tool_calls: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _field(line: str, name: str) -> str | None:
@@ -1014,10 +1017,68 @@ def repeated_signed_copy(text: str) -> list[str]:
     return failures
 
 
+_CLEARANCE_POSITIONS = {
+    "en": {
+        "front": "front",
+        "right": "right",
+        "rear": "rear|back|behind",
+        "left": "left",
+        "top": "top|above|overhead",
+    },
+    "de": {
+        "front": "vorn[e]?|Vorderseite",
+        "right": "rechts|rechte[nr]? Seite",
+        "rear": "hinten|hinter|Rückseite",
+        "left": "links|linke[nr]? Seite",
+        "top": "oben|oberhalb|Oberseite",
+    },
+}
+_CLEARANCE_MEASURE = re.compile(r"(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(mm|cm|m)\b", re.I)
+
+
+def clearance_failures(text: str, lang: str, expected: Mapping[str, int]) -> list[str]:
+    """Each cabinet position must have its own minimum from the installation drawing."""
+    found: set[str] = set()
+    failures: list[str] = []
+    for clause in re.split(r"[,.;](?!\d)|[\n|]", text):
+        # "left and above 500 mm" shares a measurement. A second measurement
+        # after "and" starts its own clause ("left 500 mm and above 500 mm").
+        parts = re.split(r"\s+(?:and|und)\s+", clause, flags=re.I)
+        groups = [parts[0]]
+        for part in parts[1:]:
+            if _CLEARANCE_MEASURE.search(groups[-1]) and _CLEARANCE_MEASURE.search(
+                part
+            ):
+                groups.append(part)
+            else:
+                groups[-1] += " " + part
+        for group in groups:
+            measurements = _CLEARANCE_MEASURE.findall(group)
+            if not measurements:
+                continue
+            for position, pattern in _CLEARANCE_POSITIONS[lang].items():
+                if not re.search(r"\b(?:" + pattern + r")\b", group, re.I):
+                    continue
+                minimum = expected[position]
+                for amount, unit in measurements:
+                    if unit.lower() == "mm" and minimum in number_variants(amount):
+                        found.add(position)
+                    else:
+                        failures.append(
+                            f"{position} clearance is {amount} {unit}, diagram gives {minimum} mm"
+                        )
+    for position, minimum in expected.items():
+        if position not in found:
+            failures.append(f"missing {position} clearance of {minimum} mm")
+    return failures
+
+
 def check(
     row: dict[str, Any],
     turn: Turn,
     catalog: Mapping[str, str] | None = None,
+    *,
+    published: Mapping[int, str] | None = None,
 ) -> list[str]:
     """Why the row fails; empty when it passes. Judge/human-review rows still
     run the floors and any `expect` they carry — the verdict beyond that is the
@@ -1030,6 +1091,26 @@ def check(
     types = block_types(blocks)
     shown = shown_ids(blocks)
 
+    if expect.get("absent_model") and not any(
+        item["published_model_lookup"] == expect["absent_model"]
+        for item in absent_models(turn.tool_calls, blocks)
+    ):
+        failures.append(
+            f"missing published catalogue lookup for {expect['absent_model']}"
+        )
+    if clearances := expect.get("minimum_clearances_mm"):
+        failures.extend(clearance_failures(text, row["lang"], clearances))
+    excluded = expect.get("excluded_brands") or []
+    if excluded:
+        for pid in sorted(shown):
+            name = (published or {}).get(pid)
+            if name is None:
+                failures.append(f"unpublished or unverified product {pid} is shown")
+            elif any(
+                re.search(r"\b" + re.escape(brand) + r"\b", name, re.I)
+                for brand in excluded
+            ):
+                failures.append(f"withdrawn product {pid} ({name}) is shown")
     for product_id in expect.get("products", []):
         if int(product_id) not in shown:
             failures.append(f"product {product_id} is not in a cards or compare block")
@@ -1136,7 +1217,29 @@ def check(
         for value in expect.get("numbers") or []
         if str(value) not in restricted
     ]
-    for token in untraceable_numbers(text, [*allowed, *licensed], catalog, governed):
+    numeric_text = text
+    if row.get("category") == "pairing" and turn.tool_calls:
+        condition = pairing_prose(
+            turn.tool_calls, blocks, "de" if row["lang"] == "de" else "en"
+        )
+        if condition is not None:
+            numeric_text = answer_text(
+                [
+                    b
+                    for b in blocks
+                    if b.get("type") != "text" or b.get("text") != condition
+                ]
+            )
+    if expect.get("named_model"):
+        numeric_text = re.sub(
+            r"(?<!\w)" + re.escape(expect["named_model"]) + r"(?!\w)",
+            "",
+            numeric_text,
+            flags=re.I,
+        )
+    for token in untraceable_numbers(
+        numeric_text, [*allowed, *licensed], catalog, governed
+    ):
         failures.append(f"number {token} is in no expected fact")
 
     failures.extend(repeated_signed_copy(text))

@@ -36,6 +36,7 @@ from linker_genie.language import (
     turn_language,
 )
 from linker_genie.prices import Lookup, fill
+from linker_genie.publication import PublicationUnavailable
 from linker_genie.route import SEARCH_LIMIT, Route
 from linker_genie.schema import (
     HandoffBlock,
@@ -191,6 +192,7 @@ def _seal_and_finish(
         customer_message(request),
         request.page_context.type,
         original=original,
+        page_product_id=request.page_context.product_id,
     )
     sealed = _restore_qualified(sealed, replacements)
     if clearance_question(customer_message(request)) and not any(
@@ -422,6 +424,8 @@ def run(
                 timing.phase(clock, timing.attempt_key(attempt)),
             ):
                 output, facts = generate(request, retry_reason)
+        except PublicationUnavailable:
+            raise
         except (ValueError, TypeError, RuntimeError) as error:
             raised = True
             # The live list first: a tool recorded its class, then a wrapper

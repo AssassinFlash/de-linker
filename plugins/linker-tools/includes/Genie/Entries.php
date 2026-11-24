@@ -265,11 +265,14 @@ class Entries {
 			'retry'              => __( 'Try again', 'linker-tools' ),
 		);
 		echo '<div class="linker-genie">';
-		echo '<div class="linker-genie-peek">';
-		foreach ( array_slice( $this->prompts( $this->page_context() ), 0, 2 ) as $prompt ) {
-			printf( '<button type="button" class="linker-genie-peek__prompt" data-linker-genie-open data-ask-message="%1$s" aria-controls="%2$s">%3$s</button>', esc_attr( $prompt ), esc_attr( $mount ), esc_html( $prompt ) );
+		$page = $this->page_context();
+		if ( null === $this->preview->card_page( $page ) ) {
+			echo '<div class="linker-genie-peek">';
+			foreach ( array_slice( $this->prompts( $page ), 0, 2 ) as $prompt ) {
+				printf( '<button type="button" class="linker-genie-peek__prompt" data-linker-genie-open data-ask-message="%1$s" aria-controls="%2$s">%3$s</button>', esc_attr( $prompt ), esc_attr( $mount ), esc_html( $prompt ) );
+			}
+			echo '</div>';
 		}
-		echo '</div>';
 		printf(
 			'<button type="button" class="linker-genie-open" data-linker-genie-open aria-expanded="false" aria-controls="%1$s" aria-label="%2$s"><span class="linker-genie-open-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.4 5v10.9a1.8 1.8 0 0 0 1.8 1.8H17" stroke-width="3.1"/><path d="M8.8 8.4C11.8 4.5 16.4 3.1 19.6 3.5" stroke-width="1.5" opacity="0.62"/><circle cx="20.7" cy="4.9" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="linker-genie-open-label">%2$s</span></button>',
 			esc_attr( $mount ),

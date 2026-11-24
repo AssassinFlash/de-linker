@@ -469,3 +469,19 @@ def test_publication_reads_can_overlap_without_sharing_the_sqlite_cursor() -> No
         results = list(pool.map(search, [{"query": "battery"}, {"query": "inverter"}]))
     assert all(result["hits"] for result in results)
     assert {query for query, _, _ in index.calls} == {"battery", "inverter"}
+
+
+def test_turn_search_reuses_the_supplied_permission_and_checks_it_after_read() -> None:
+    from unittest.mock import patch
+
+    permissions = authority(manifest())
+    captured = permissions.snapshot()
+    search = KnowledgeSearch(lambda: FakeIndex(), permissions)  # type: ignore[arg-type,return-value]
+    with (
+        patch.object(
+            permissions, "snapshot", side_effect=AssertionError("second full manifest")
+        ),
+        patch.object(permissions, "validate", wraps=permissions.validate) as validate,
+    ):
+        assert search.search({"query": "battery"}, snapshot=captured)["hits"]
+    validate.assert_called_once_with(captured)

@@ -589,9 +589,18 @@ def _named_codes_sentence(codes: list[str], language: Locale) -> str:
 
 
 def prepared_answer(
-    facts: TurnFacts, route: Route, language: Locale
+    facts: TurnFacts,
+    route: Route,
+    language: Locale,
+    *,
+    question: str = "",
+    page_product_id: int | None = None,
 ) -> TurnOutput | None:
     """Return an unhydrated answer when the native result determines it completely."""
+    if route.name == "documents" and clearance_question(question):
+        return _prepared_cabinet_installation(
+            facts, route, language, question, page_product_id
+        )
     if route.name == "service":
         ref = f"handoff.sentence_{language}"
         if ref in facts.facts:
@@ -618,6 +627,7 @@ def prepared_answer(
                 call["arguments"].get("text")
                 for call in facts.tool_calls
                 if call["name"] == "linker/search-products"
+                and call.get("ok") is True
                 and call["result"].get("qualified") == []
             }
             if (
@@ -632,9 +642,19 @@ def prepared_answer(
                     if language == "de"
                     else " There is no documented pairing for this combination."
                 )
-                blocks: list[Block] = [
-                    TextBlock(text=sentence, refs=[str(pid) for pid in known_ids])
-                ]
+                refs = [str(pid) for pid in known_ids]
+                for code in missing:
+                    ref = f"catalog.absent.{code}"
+                    facts.add(
+                        Fact(
+                            id=ref,
+                            value=f"Published product search for {code}: no qualified product. "
+                            "No released pairing with this model.",
+                            source="search-products",
+                        )
+                    )
+                    refs.append(ref)
+                blocks: list[Block] = [TextBlock(text=sentence, refs=refs)]
                 if known_ids:
                     blocks.append(CardsBlock(product_ids=known_ids))
                 return TurnOutput(language=language, blocks=blocks)
@@ -868,6 +888,179 @@ def _warranty_period_fallback(
     return hydrate(draft, facts, language)
 
 
+def _cabinet_clearance_answer(
+    facts: TurnFacts,
+    route: Route,
+    question: str,
+    language: Locale,
+    documents: list[str],
+    page_product_id: int | None,
+) -> TurnOutput | None:
+    """Render a cabinet's directional clearances from its current reviewed figure."""
+    from linker_genie.figures import tag
+    from linker_genie.manual_diagram_records import DIAGRAMS
+    from linker_genie.manual_evidence import evidence_id
+    from linker_genie.source_models import codes
+
+    if route.name != "documents" or not clearance_question(question):
+        return None
+    names = codes(question)
+    models = {code.upper() for code in names if code.upper().startswith("CB2-")}
+    if not names and page_product_id is not None:
+        for call in facts.tool_calls:
+            if call.get("name") != "linker/get-product" or not call.get("ok"):
+                continue
+            product = call.get("result") or {}
+            if product.get("product_id") == page_product_id and product.get("model"):
+                models.add(product["model"].upper())
+    if len(models) != 1:
+        return None
+    model = models.pop()
+    if any(note.code.upper() != model for note in route.named_models):
+        return None
+    diagram = next(
+        row for row in DIAGRAMS if row["figure"] == "CB2 installation space requirement"
+    )
+    cid = evidence_id(
+        diagram["sha256"],
+        diagram["source_page"],
+        model,
+        diagram["source_id"],
+        diagram["excerpt"],
+    )
+    source = facts.documents.get(cid)
+    text = facts.facts.get(f"{cid}.text")
+    tagged = tag(cid, diagram["excerpt"])
+    if (
+        cid not in facts.technical_chunks
+        or source is None
+        or source.evidence is None
+        or source.page != diagram["source_page"]
+        or text is None
+        or text.value != tagged.text
+        or any(
+            ref not in facts.facts or facts.facts[ref].value != value
+            for ref, value in tagged.figures.items()
+        )
+        or facts.knowledge_products.get(cid) != (source.evidence.product_id,)
+        or any(
+            source.evidence.product_id not in note.product_ids
+            for note in route.named_models
+        )
+    ):
+        return None
+    if language == "de":
+        sentence = (
+            "Wenn Sie vor dem Schrank stehen, halten Sie für die Luftzirkulation "
+            f"folgende Mindestabstände ein: vorne {{fact:{cid}.n1}}, rechts {{fact:{cid}.n2}}, "
+            f"hinten {{fact:{cid}.n3}}, links {{fact:{cid}.n4}} und oben {{fact:{cid}.n5}}."
+        )
+    else:
+        sentence = re.sub(
+            r"\[n(\d+)=[^\]]+\]",
+            lambda m: f"{{fact:{cid}.n{m[1]}}}",
+            tagged.text,
+        )
+    refs = dict.fromkeys([cid, *documents])
+    blocks: list[Block] = [TextBlock(text=sentence, refs=[cid])]
+    target_ref = next(
+        (
+            ref
+            for ref, doc in facts.documents.items()
+            if ref.startswith(f"p{source.evidence.product_id}.document.")
+            and doc.url == source.url
+        ),
+        None,
+    )
+    if target_ref:
+        refs[target_ref] = None
+    blocks.extend(DocumentBlock(ref=ref) for ref in refs)
+    return TurnOutput(language=language, blocks=blocks)
+
+
+def _prepared_cabinet_installation(
+    facts: TurnFacts,
+    route: Route,
+    language: Locale,
+    question: str,
+    page_product_id: int | None,
+) -> TurnOutput | None:
+    """Use checked installation instructions only for an entirely covered question."""
+    from linker_genie.source_models import codes
+
+    remaining = question.casefold()
+    for code in codes(question):
+        if code.upper().startswith("CB2-"):
+            remaining = remaining.replace(code.casefold(), "")
+    words = set(re.findall(r"[\w]+", remaining))
+    # Additional technical subjects stay with the normal multi-question answer.
+    installation_words = set(
+        (
+            "i am installing a an the saj cabinet battery what is are how installed minimum "
+            "required clearance clearances does manufacturer specify do need space for install "
+            "it this around in front on right left behind above and from to please show me "
+            "relevant pages page installation guide quick user manual manuals according "
+            "wie wird der die das den dem des saj schrank installiert welcher welche welchen "
+            "mindestabstand mindestabstände ist sind nötig erforderlich gelten für laut "
+            "hersteller bitte zeigen sie mir relevanten seiten aus anleitung kurzanleitung "
+            "installationsanleitung benutzerhandbuch und im handbuch"
+        ).split()
+    )
+    if not words <= installation_words:
+        return None
+    draft = _cabinet_clearance_answer(
+        facts, route, question, language, [], page_product_id
+    )
+    if draft is None:
+        return None
+    figure = next(b.ref for b in draft.blocks if isinstance(b, DocumentBlock))
+    product = facts.knowledge_products[figure]
+    installation: list[Block] = []
+    citations: list[Block] = []
+    needs_instructions = bool({"how", "wie", "installed", "installiert"} & words)
+    needs_manual = bool({"manual", "manuals", "benutzerhandbuch", "handbuch"} & words)
+    for statement, en, de, required in (
+        (
+            "The cabinet can be installed either indoors or outdoors.",
+            "The cabinet can be installed indoors or outdoors.",
+            "Der Schrank kann in Innenräumen oder im Freien installiert werden.",
+            needs_instructions,
+        ),
+        (
+            "Only qualified electricians who have read and fully understood all safety regulations contained in this manual can install, maintain and repair the battery.",
+            "Only qualified electricians who have read and understood the safety instructions in the user manual may install the battery.",
+            "Nur qualifizierte Elektrofachkräfte, die die Sicherheitshinweise im Benutzerhandbuch gelesen und verstanden haben, dürfen die Batterie installieren.",
+            needs_manual or needs_instructions,
+        ),
+    ):
+        if not required:
+            continue
+        ref = next(
+            (
+                cid
+                for cid, ids in facts.knowledge_products.items()
+                if ids == product
+                and cid in facts.technical_chunks
+                and (doc := facts.documents.get(cid)) is not None
+                and doc.evidence is not None
+                and doc.page is not None
+                and doc.evidence.product_id in product
+                and (source := facts.facts.get(f"{cid}.text")) is not None
+                and source.value.startswith(statement)
+            ),
+            None,
+        )
+        if ref is None:
+            return None
+        installation.append(TextBlock(text=de if language == "de" else en, refs=[ref]))
+        citations.append(DocumentBlock(ref=ref))
+    return draft.model_copy(
+        update={
+            "blocks": [*draft.blocks[:1], *installation, *draft.blocks[1:], *citations]
+        }
+    )
+
+
 def _manual_torque_fallback(
     facts: TurnFacts,
     language: Locale,
@@ -1062,6 +1255,11 @@ def fallback(
             ],
         )
     if route is not None and route.name == "documents" and facts.documents:
+        cabinet = _cabinet_clearance_answer(
+            facts, route, question, language, _document_refs(facts), page_product_id
+        )
+        if cabinet is not None:
+            return hydrate(cabinet, facts, language)
         manual = _manual_torque_fallback(
             facts, language, route, question, page_product_id
         )
@@ -1987,6 +2185,7 @@ def seal(
     page_type: str | None,
     *,
     original: TurnOutput | None = None,
+    page_product_id: int | None = None,
 ) -> TurnOutput:
     """Drop unlicensed bare numbers and write the sentences a row requires.
 
@@ -2013,7 +2212,17 @@ def seal(
     happens after grounding and hydration: a filename or an unrelated file
     must not license numbers, nor may another block borrow that citation.
     """
-    if route is None or page_type not in (None, "other"):
+    if route is None:
+        return output
+    clearance = clearance_question(question)
+    cabinet = (
+        _cabinet_clearance_answer(
+            facts, route, question, output.language, [], page_product_id
+        )
+        if clearance
+        else None
+    )
+    if page_type not in (None, "other") and cabinet is None:
         return output
     from linker_genie import ground as grounding
 
@@ -2024,7 +2233,7 @@ def seal(
         if fact_id.endswith(".text")
     }
     blob = "\n".join(fact.value for fact in source_texts.values())
-    if clearance_question(question):
+    if clearance:
         clearances = _source_clearances(scoped)
         checked_sources = _seal_sources(
             original or output, facts, route, include_qualified=True
@@ -2047,6 +2256,23 @@ def seal(
             checked,
             allowed,
         )
+        if cabinet is not None:
+            # The original can also answer a separate installation question and
+            # carry a product card or another manual. Keep these checked blocks.
+            cabinet = hydrate(cabinet, facts, output.language)
+            existing = [
+                block
+                for block in stripped.blocks
+                if not isinstance(block, TextBlock) or block.text.strip()
+            ]
+            shown = {b.url for b in existing if isinstance(b, DocumentBlock)}
+            links = [
+                b
+                for b in cabinet.blocks
+                if isinstance(b, DocumentBlock) and b.url not in shown
+            ]
+            text = [b for b in cabinet.blocks if isinstance(b, TextBlock)]
+            return output.model_copy(update={"blocks": [*text, *existing, *links]})
         return _append_clearance(stripped, scoped)
     if _document_like(route, question):
         stripped = grounding.strip_detached_code_tails(
@@ -2225,7 +2451,9 @@ def _seal_attachment_figures(
 
 def clearance_question(question: str) -> bool:
     folded = question.casefold()
-    return "clearance" in folded or "mindestabstand" in folded
+    return any(
+        word in folded for word in ("clearance", "mindestabstand", "mindestabstände")
+    )
 
 
 def _usable_question(question: str) -> bool:

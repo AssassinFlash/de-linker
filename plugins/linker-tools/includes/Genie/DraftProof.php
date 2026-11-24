@@ -45,6 +45,7 @@ class DraftProof {
 		$owner               = null;
 		$dependency_revision = null;
 		$shown               = array();
+		$document_targets    = array();
 		$events              = explode( "\n\n", $stream );
 		$blocks              = array();
 		$quantities          = array();
@@ -61,11 +62,8 @@ class DraftProof {
 			if ( in_array( $block['type'] ?? '', array( 'compare', 'cards' ), true ) ) {
 				$shown = array_merge( $shown, $block['product_ids'] ?? array() );
 			}
-			if ( 'document' === ( $block['type'] ?? '' ) ) {
-				$document_owner = LiveDocuments::owner( $block );
-				if ( null !== $document_owner ) {
-					$shown[] = $document_owner;
-				}
+			if ( 'document' === ( $block['type'] ?? '' ) && preg_match( '/^p(\d+)\.document\.\d+$/D', $block['ref'] ?? '', $target ) ) {
+				$document_targets[] = (int) $target[1];
 			}
 			if ( 'action' === ( $block['type'] ?? '' ) && 'add_to_draft' === ( $block['name'] ?? '' ) ) {
 				$args = $block['args'] ?? array();
@@ -81,7 +79,7 @@ class DraftProof {
 		try {
 			foreach ( $blocks as $index => $block ) {
 				if ( 'document' === ( $block['type'] ?? '' ) ) {
-					$block = LiveDocuments::present( $block, $manifest, $shown, $locale );
+					$block = LiveDocuments::present( $block, $manifest, $shown ? $shown : $document_targets, $locale );
 				} elseif ( in_array( $block['type'] ?? '', array( 'cards', 'compare' ), true ) ) {
 					$owner ??= $this->owner();
 					if ( $owner instanceof WP_Error ) {

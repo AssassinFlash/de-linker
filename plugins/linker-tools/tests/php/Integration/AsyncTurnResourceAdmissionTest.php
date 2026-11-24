@@ -105,10 +105,10 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$this->assertStringEndsWith( $job, $url );
 			$this->assertSame( $scope, $headers['X-Linker-Resource-Subject'] );
 			++$reads;
-			if ( 'owner-deleted' === $outcome && 2 === $reads ) {
+			if ( 'owner-deleted' === $outcome && 3 === $reads ) {
 				$this->assertTrue( ( new Conversations() )->delete( $id ) );
 			}
-			if ( 1 === $reads ) {
+			if ( $reads <= 2 ) {
 				return (string) wp_json_encode(
 					array(
 						'status' => 'running',
@@ -178,6 +178,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$input               = \Linker\Tools\Genie\PendingTurns::current( $id );
 				$input['started_at'] = time() - Proxy::TURN_BUDGET - 1;
 				update_post_meta( $id, \Linker\Tools\Genie\PendingTurns::PENDING, wp_slash( $input ) );
+				wp_cache_delete( $job, 'linker_genie_poll' );
 			}
 			// A second native MySQL connection holds the terminal operation while this tab polls.
 			$peer = new \wpdb( constant( 'DB_USER' ), constant( 'DB_PASSWORD' ), constant( 'DB_NAME' ), constant( 'DB_HOST' ) );
@@ -187,7 +188,8 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$joining = $proxy->poll( $poll );
 				$this->assertInstanceOf( WP_REST_Response::class, $joining );
 				$this->assertSame( 'running', $joining->get_data()['status'] );
-				$this->assertSame( 1, $reads );
+				$this->assertSame( 'expired' === $outcome ? 1 : 2, $reads );
+				$this->assertSame( '', get_post_meta( $receipt, \Linker\Tools\Genie\PendingTurns::STAGE, true ) );
 			} finally {
 				$peer->get_var( $peer->prepare( 'SELECT RELEASE_LOCK(%s)', $key ) );
 				$peer->close();
@@ -259,7 +261,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$again = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_REST_Response::class, $again );
 			$this->assertSame( $final->get_data(), $again->get_data() );
-			$this->assertSame( 2, $reads );
+			$this->assertSame( 3, $reads );
 			$thread = $proxy->conversation()->get_data();
 			$this->assertArrayNotHasKey( 'pending_job', $thread );
 			$this->assertSame( $operation, $thread['operation_id'] );
@@ -272,7 +274,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$replay = $proxy->poll( $poll );
 				$this->assertInstanceOf( WP_Error::class, $replay );
 				$this->assertSame( 409, $replay->get_error_data()['status'] );
-				$this->assertSame( 2, $reads );
+				$this->assertSame( 3, $reads );
 			}
 		} finally {
 			foreach ( $hooks as $hook => $callbacks ) {

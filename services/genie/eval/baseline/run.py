@@ -58,6 +58,8 @@ from baseline.grade import (  # noqa: E402
     check,
     parse_stream,
 )
+from linker_genie.quality.item import absent_models  # noqa: E402
+from linker_genie.quality.turns import TurnSource  # noqa: E402
 
 SET = Path(__file__).with_name("baseline100.jsonl")
 QUALITATIVE = Path(__file__).with_name("qualitative.jsonl")
@@ -107,7 +109,7 @@ def load_rows(
     return rows[:limit] if limit else rows
 
 
-def catalog_of(wp: str) -> dict[str, str]:
+def catalog_of(wp: str, *, published: dict[int, str] | None = None) -> dict[str, str]:
     """Model and SKU tokens of the target's own catalogue (the reader the
     understanding layer uses, Store API): the numbers inside a model code are
     traceable because the model is that product's name."""
@@ -122,6 +124,8 @@ def catalog_of(wp: str) -> dict[str, str]:
         with urllib.request.urlopen(url, timeout=30) as response:
             items = json.loads(response.read().decode())
         for item in items:
+            if published is not None:
+                published[int(item["id"])] = str(item["name"])
             for token in [item.get("sku"), item.get("name"), *model_terms(item)]:
                 if token:
                     tokens[str(token)] = str(item.get("name", ""))
@@ -261,6 +265,21 @@ def ask(wp: str, row: dict[str, Any]) -> tuple[Turn, str | None]:
     return parse_stream(stream), None
 
 
+def attach_logged_evidence(source: TurnSource, row: dict[str, Any], turn: Turn) -> None:
+    """Bind proof to the exact answered question in this target's private log."""
+    identifier = turn.meta.get("turn_id")
+    if not isinstance(identifier, int):
+        raise ValueError("The captured turn has no log ID")
+    logged = source.by_ids([identifier])
+    if (
+        not logged
+        or logged[0].question != row["question"]
+        or logged[0].locale != row["lang"]
+    ):
+        raise ValueError(f"No matching logged question for {row['id']}")
+    turn.tool_calls = logged[0].tool_calls
+
+
 def judge_row(
     row: dict[str, Any], turn: Turn
 ) -> tuple[str, list[str], dict[str, Any] | None]:
@@ -290,6 +309,12 @@ def judge_row(
             }
         ),
     }
+    checked = absent_models(turn.tool_calls, turn.blocks)
+    if checked:
+        item["reference"] = {
+            "task": item["reference"],
+            "published_catalogue_checks": checked,
+        }
     cascade = run_cascade(
         item, JUDGES["jev"], JUDGES["deepseek"], QA_QUESTIONS[:2], TURN_THRESHOLDS
     )
@@ -502,6 +527,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, help="only the first N rows (smoke)")
     parser.add_argument("--only", nargs="*", help="row ids")
     parser.add_argument("--lang", choices=("en", "de"))
+    parser.add_argument(
+        "--turn-log",
+        type=Path,
+        help="Read verified facts from this target’s local Genie turn log",
+    )
     parser.add_argument("--category")
     parser.add_argument(
         "--judge",
@@ -526,7 +556,8 @@ def main(argv: list[str] | None = None) -> int:
     if not rows:
         print("no rows selected", file=sys.stderr)
         return 2
-    catalog = catalog_of(args.wp)
+    published: dict[int, str] = {}
+    catalog = catalog_of(args.wp, published=published)
     args.out.mkdir(parents=True, exist_ok=True)
     stamp = time.strftime("%Y%m%dT%H%M%S")
     path = args.out / f"baseline-{stamp}.jsonl"
@@ -542,7 +573,9 @@ def main(argv: list[str] | None = None) -> int:
                 verdict = "fail"
                 meta: dict[str, Any] = {}
             else:
-                failures = check(row, turn, catalog)
+                if args.turn_log:
+                    attach_logged_evidence(TurnSource(args.turn_log), row, turn)
+                failures = check(row, turn, catalog, published=published)
                 meta = turn.meta
                 judged: tuple[str, list[str]] | None = None
                 # The cascade only runs once the content assertions hold. A miss

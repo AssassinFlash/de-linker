@@ -77,7 +77,12 @@ final class Publication {
 		if ( ! array_is_list( $value ) ) {
 			ksort( $value );
 		}
-		return array_map( array( self::class, 'ordered' ), $value );
+		foreach ( $value as $key => $child ) {
+			if ( is_array( $child ) || is_object( $child ) ) {
+				$value[ $key ] = self::ordered( $child );
+			}
+		}
+		return $value;
 	}
 
 	/**
@@ -261,6 +266,20 @@ final class Publication {
 	 */
 	public static function catalog(): array {
 		return self::read_manifest( true );
+	}
+
+	/**
+	 * Read the current public revision and the private model membership revision.
+	 * Readiness rows are worker progress and do not grant permission.
+	 *
+	 * @return array{source_revision:string,model_identity_revision:string}
+	 */
+	public static function current_revisions(): array {
+		$catalog = self::catalog();
+		return array(
+			'source_revision'         => $catalog['source_revision'],
+			'model_identity_revision' => self::model_identity_revision( self::model_statuses_in_current_read() ),
+		);
 	}
 
 	/**
@@ -572,19 +591,19 @@ final class Publication {
 		}
 		$stored_titles = get_option( Materials::DE_DOCUMENT_TITLES, array() );
 		$stored_titles = is_array( $stored_titles ) ? $stored_titles : array();
+		// Catalogue, knowledge and compact revision reads share the public projection.
+		// Each checked boundary still reads current posts, terms, associations and file bytes.
+		static $last_inputs = null;
+		static $last_result = array();
+		$inputs             = array( $products, $documents, $stored_titles );
+		if ( $inputs !== $last_inputs ) {
+			$last_result = self::catalog_revisions( $products, $documents, $stored_titles );
+			$last_inputs = $inputs;
+		}
 		if ( $catalog_only ) {
-			// These native rows include current file bytes, permissions, locale membership,
-			// product facts and compatibility claims. An unchanged generation already has revisions.
-			static $last_inputs = null;
-			static $last_result = array();
-			$inputs             = array( $products, $documents, $stored_titles );
-			if ( $inputs !== $last_inputs ) {
-				$last_result = self::catalog_revisions( $products, $documents, $stored_titles );
-				$last_inputs = $inputs;
-			}
 			return $last_result;
 		}
-		$manifest = self::catalog_revisions( $products, $documents, $stored_titles );
+		$manifest = $last_result;
 		// Knowledge has an additional identity dependency. Draft-only identity
 		// changes must not alter the published source or engineering generation.
 		$manifest['model_identity_revision'] = self::model_identity_revision( self::model_statuses_in_current_read() );

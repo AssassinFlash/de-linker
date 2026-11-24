@@ -172,6 +172,8 @@ final class DraftProofTest extends TestCase {
 			'title_de' => 'Montagehandbuch',
 		);
 		WP_Mock::userFunction( 'switch_to_locale', array( 'return' => false ) );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Implement the native function in the WP_Mock fixture.
+		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn( string $url, int $part ): mixed => parse_url( $url, $part ) ) );
 		$base   = array(
 			'type'              => 'document',
 			'ref'               => 'p6.document.1',
@@ -201,7 +203,7 @@ final class DraftProofTest extends TestCase {
 		$this->assertSame( "B · Manual (EN) · S.\u{00a0}8, 12", $blocks[0]['label'] );
 		$this->assertSame( 'Original installation manual', $blocks[0]['sourceTitle'] );
 		$this->assertNull( $blocks[1]['url'] );
-		$this->assertSame( "A · Manual (EN) · S.\u{00a0}8, 12", $blocks[2]['label'] );
+		$this->assertSame( "B · Manual (EN) · S.\u{00a0}8, 12", $blocks[2]['label'] );
 		$this->assertNull( $blocks[3]['url'] );
 		$this->assertNull( $blocks[4]['url'] );
 	}

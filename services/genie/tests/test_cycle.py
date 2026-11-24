@@ -19,6 +19,7 @@ from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.agent import make_generate
 from linker_genie.cycle import run
 from linker_genie.facts import Fact, TurnFacts, collect, merge
+from linker_genie.publication import PublicationChanged, PublicationUnavailable
 from linker_genie.route import Route
 from linker_genie.schema import (
     AskBlock,
@@ -1417,3 +1418,21 @@ def test_team_route_uses_the_verified_handoff_without_model_authored_details() -
     result = run(_request(), lambda *_: (out, TurnFacts()), route, facts)
     assert result.grounded and result.attempts == 1
     assert prepared_answer(TurnFacts(), route, "en") is None
+
+
+@pytest.mark.parametrize("error", [PublicationChanged, PublicationUnavailable])
+def test_model_tool_permission_failure_stops_the_turn_immediately(
+    error: type[PublicationUnavailable],
+) -> None:
+    calls = 0
+
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        nonlocal calls
+        calls += 1
+        raise error("Current authority refused the model's document search")
+
+    with pytest.raises(error):
+        run(_request(), generate)
+    assert calls == 1

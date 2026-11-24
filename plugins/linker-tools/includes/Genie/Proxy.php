@@ -787,38 +787,54 @@ class Proxy {
 		if ( is_wp_error( $identity ) || ! hash_equals( $binding, $identity->binding() ) ) {
 			return self::unknown_job();
 		}
-		$operation = (string) get_post_field( 'post_name', $receipt );
-		$turn      = PendingTurns::current( $conversation );
-		if ( ( $turn['job_id'] ?? null ) !== $job ) {
+		$turn = PendingTurns::polling( $conversation, $job );
+		if ( ! $turn ) {
 			return ( new Replies() )->read( $receipt, $binding );
 		}
-		// A peer may already be finalizing. Return real progress and let the next poll read its receipt.
+		$completion = get_post_meta( $conversation, Thread::COMPLETION, true );
+		if ( ( $completion['operation_id'] ?? null ) === $turn['operation_id'] || microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
+			$result = self::job_error( 503 );
+		} else {
+			$result = $this->job_request( $this->base() . '/assistant/turn/' . $job, $turn['subject_hash'] );
+		}
+		if ( ! is_wp_error( $result ) && 'running' === $result['status'] && is_string( $result['stage'] ?? null ) ) {
+			$progress = PendingTurns::progress( $turn );
+			if ( $progress['stage'] !== $result['stage'] ) {
+				$progress['stage'] = $result['stage'];
+				wp_cache_set( $job, $result['stage'], 'linker_genie_stage', self::TURN_BUDGET );
+			}
+			return new WP_REST_Response( $progress );
+		}
+
+		// Re-read ownership and the full original input under the operation lock before any terminal write.
 		$reply = new WP_REST_Response( PendingTurns::progress( $turn ) );
 		Lock::run(
-			'genie-operation-' . $operation,
-			function () use ( &$reply, $job, $conversation, $receipt, $binding ): void {
+			'genie-operation-' . $turn['operation_id'],
+			function () use ( &$reply, $job, $conversation, $receipt, $binding, $result ): void {
+				wp_cache_delete( $conversation, 'posts' );
 				wp_cache_delete( $conversation, 'post_meta' );
+				wp_cache_delete( $receipt, 'post_meta' );
+				if ( ! $this->conversations->may_use( $conversation ) || PendingTurns::conversation( $receipt, $job ) !== $conversation ) {
+					$reply = self::unknown_job();
+					return;
+				}
 				$current = PendingTurns::current( $conversation );
-				$reply   = ( $current['job_id'] ?? null ) === $job ? $this->poll_owned( $current ) : ( new Replies() )->read( $receipt, $binding );
+				$reply   = ( $current['job_id'] ?? null ) === $job ? $this->poll_owned( $current, $result ) : ( new Replies() )->read( $receipt, $binding );
 			}
 		);
 		return $reply;
 	}
 
-	/** Fetch current progress or finish a checked result under its operation lock.
+	/** Finish a checked result under its operation lock.
 	 *
-	 * @param array<string,mixed> $turn Pending native turn.
+	 * @param array<string,mixed>          $turn Pending native turn.
+	 * @param array<string,mixed>|WP_Error $result Service response.
 	 */
-	private function poll_owned( array $turn ): WP_REST_Response|WP_Error {
+	private function poll_owned( array $turn, array|WP_Error $result ): WP_REST_Response|WP_Error {
 		$id        = $turn['conversation_id'];
 		$recovered = PendingTurns::recover( $turn );
 		if ( null !== $recovered ) {
 			return is_wp_error( $recovered ) ? $recovered : ( new Replies() )->read( $turn['receipt'], $turn['owner_binding'] );
-		}
-		if ( microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
-			$result = self::job_error( 503 );
-		} else {
-			$result = $this->job_request( $this->base() . '/assistant/turn/' . $turn['job_id'], $turn['subject_hash'] );
 		}
 		if ( is_wp_error( $result ) ) {
 			if ( 'linker_genie_connection' === $result->get_error_code() ) {
@@ -827,21 +843,10 @@ class Proxy {
 			PendingTurns::fail( $turn );
 			return self::unrecorded( $result );
 		}
-		if ( 'running' === $result['status'] && is_string( $result['stage'] ?? null ) ) {
-			update_post_meta( $turn['receipt'], PendingTurns::STAGE, $result['stage'] );
-			return new WP_REST_Response( PendingTurns::progress( $turn ) );
-		}
 		if ( 'completed' !== $result['status'] || ! is_string( $result['stream'] ?? null ) ) {
 			$error = self::job_error( (int) ( $result['http_status'] ?? 502 ), (string) ( $result['code'] ?? '' ) );
 			PendingTurns::fail( $turn );
 			return self::unrecorded( $error );
-		}
-		// A different tab can delete this conversation while the service GET is in flight.
-		wp_cache_delete( $id, 'posts' );
-		wp_cache_delete( $id, 'post_meta' );
-		wp_cache_delete( $turn['receipt'], 'post_meta' );
-		if ( ! $this->conversations->may_use( $id ) || PendingTurns::conversation( $turn['receipt'], $turn['job_id'] ) !== $id ) {
-			return self::unknown_job();
 		}
 		if ( $turn['partner'] && ! PublicationGuard::sees_prices() ) {
 			PendingTurns::fail( $turn );

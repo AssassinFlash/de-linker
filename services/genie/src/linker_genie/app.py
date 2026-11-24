@@ -431,6 +431,7 @@ def _compute_turn(
                     body,
                     abilities,
                     get_vocabulary=lambda: store_vocabulary().get(original_permission),
+                    permission=original_permission,
                     on_stage=on_stage,
                 )
             )
@@ -1021,7 +1022,13 @@ def _answer(
         publication=publication,
     )
     catalog = (
-        prepared_answer(prepared.facts, prepared.route, language)
+        prepared_answer(
+            prepared.facts,
+            prepared.route,
+            language,
+            question=last_customer_message(body),
+            page_product_id=body.page_context.product_id,
+        )
         if not prepared.attachments and len(body.messages) == 1
         else None
     )

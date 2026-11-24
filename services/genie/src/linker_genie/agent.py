@@ -19,6 +19,7 @@ import json
 import os
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -273,7 +274,7 @@ def make_generate(
     `pages` reads the customer's page (page.py, #234) when the model asks for it.
     `clock` only times each tool call the model makes (timing.py, #336).
     """
-    document_search = search or knowledge.SEARCH
+    document_search = search or partial(knowledge.SEARCH.search, snapshot=publication)
 
     def generate(
         request: TurnRequest, retry_reason: str | None

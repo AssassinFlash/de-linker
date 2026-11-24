@@ -1781,3 +1781,82 @@ def test_async_turn_keeps_publication_refusal_and_releases_slot(
         assert monotonic() < until
         sleep(0.01)
     authority.close()
+
+
+def test_turn_revision_checks_both_revisions_without_sending_dependency_lists() -> None:
+    import json
+
+    raw = manifest()
+    raw["revision_check"] = 1
+    observed = {
+        "source_revision": raw["source_revision"],
+        "model_identity_revision": raw["model_identity_revision"],
+    }
+    requests = []
+    status = 200
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/manifest"):
+            return httpx.Response(200, json=raw)
+        body = json.loads(request.content)
+        requests.append(body)
+        return httpx.Response(status, json=observed)
+
+    client = PublicationClient("https://site.test", httpx.MockTransport(handle))
+    permission = client.snapshot()
+    client.validate(permission)
+    assert requests == [
+        {
+            "expected_revision": permission.source_revision,
+            "model_identity_revision": permission.model_identity_revision,
+        }
+    ]
+    for key in observed:
+        original = observed[key]
+        observed[key] = "changed"
+        with pytest.raises(PublicationChanged):
+            client.validate(permission)
+        observed[key] = original
+    status = 503
+    with pytest.raises(PublicationUnavailable):
+        client.validate(permission)
+    status = 200
+    observed.clear()
+    with pytest.raises(PublicationUnavailable):
+        client.validate(permission)
+
+
+def test_running_turn_finishes_if_wordpress_reverts_to_dependency_validation() -> None:
+    import json
+
+    raw = manifest()
+    raw["revision_check"] = 1
+    requests = []
+    valid = True
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/manifest"):
+            return httpx.Response(200, json=raw)
+        body = json.loads(request.content)
+        requests.append(body)
+        if "expected_revision" in body:
+            return httpx.Response(
+                200,
+                json={
+                    "valid": False,
+                    "source_revision": raw["source_revision"],
+                    "invalid": [
+                        {"kind": key, "id": "", "reason": "invalid_dependencies"}
+                        for key in ("products", "documents")
+                    ],
+                },
+            )
+        return httpx.Response(200, json={"valid": valid})
+
+    client = PublicationClient("https://site.test", httpx.MockTransport(handle))
+    permission = client.snapshot()
+    client.validate(permission)
+    assert requests[-1] == permission.dependencies()
+    valid = False
+    with pytest.raises(PublicationChanged):
+        client.validate(permission)

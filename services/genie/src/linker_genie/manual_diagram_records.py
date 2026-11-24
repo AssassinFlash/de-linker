@@ -7,6 +7,11 @@ figure identifier. The OCR fragments alone are not the source of the facts.
 
 from typing import Any
 
+from linker_genie.manual_evidence_records import (
+    CB2_QUICK_GUIDE_SUBJECT,
+    CB2_SPACE_SECTION,
+)
+
 _ETR = "307b704c87f25f013609375569c9624e3167c13cd0178a16b079c942da6032b6"
 _BAT = "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2"
 _ETR_ANCHOR = {
@@ -96,5 +101,26 @@ DIAGRAMS: list[dict[str, Any]] = [
         "pixel_size": [746, 466],
         "pixel_sha256": "268640fb57bb616b941c4a91ebe16762f02eb38b47921553288449b353fea16f",
         "excerpt": "Figure ETR12510INT0004 shows the inverter secured to its mounting bracket with M6 screws tightened to 3 Nm to 5 Nm.",
+    },
+    {
+        **CB2_QUICK_GUIDE_SUBJECT,
+        "anchor_figure": "CB2 guide model range",
+        "anchor_bbox": [37, 56, 558, 98],
+        "anchor_pixel_size": [1042, 84],
+        "anchor_pixel_sha256": "48fa0cc11102a23fe972ccba4ca2485c058a8aa7e91f8f023e516adacceaa923",
+        "source_id": "a70cb4c39824-p1-8f2ca4eb",
+        "source_sha256": "fb4129801da311d8f4b58e59057d613553e059154afece467667175655c79b39",
+        "source_page": 1,
+        "source_section": "1. Installation space requirement",
+        "source_picture": "#/pictures/2",
+        "figure": "CB2 installation space requirement",
+        "display_section": "Installation space requirement",
+        "bbox": [50, 348, 563, 561],
+        "pixel_size": [1026, 426],
+        "pixel_sha256": "b4eff84e34988029aa934dd5c60bf6f5656db1d05ede048b8770d05a24f39df3",
+        "reviewed_reset": CB2_SPACE_SECTION,
+        "excerpt": "Facing the front of the CB2 cabinet, reserve at least 1500 mm in front, "
+        "1000 mm on the right, 400 mm behind, 500 mm on the left and 500 mm above "
+        "for air circulation.",
     },
 ]

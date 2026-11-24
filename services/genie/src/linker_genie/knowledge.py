@@ -34,7 +34,7 @@ from linker_genie.hs3_evidence import conditional_answers
 from linker_genie.publication import (
     PublicationChanged,
     PublicationClient,
-    PublicationUnavailable,
+    Snapshot,
     current,
 )
 from linker_genie.retrieval import LANGS, DocumentIndex, ServingMismatch, default_index
@@ -83,6 +83,11 @@ class KnowledgeSearch:
             return self._index().loaded()
 
     def __call__(self, arguments: dict[str, Any] | None) -> dict[str, Any]:
+        return self.search(arguments)
+
+    def search(
+        self, arguments: dict[str, Any] | None, snapshot: Snapshot | None = None
+    ) -> dict[str, Any]:
         """The tool result for `arguments`, or `{"error": …}` for an invalid input."""
         try:
             query, lang, product_ids = validate(arguments or {})
@@ -90,7 +95,8 @@ class KnowledgeSearch:
             return {"error": str(error)}
         try:
             authority = self._publication or current()
-            snapshot = authority.snapshot()
+            if snapshot is None:
+                snapshot = authority.snapshot()
             if "unavailable" in authority.identify_text(query).values():
                 raise PublicationChanged("supplied model is no longer published")
             if product_ids:
@@ -106,8 +112,6 @@ class KnowledgeSearch:
             authority.validate(snapshot)
         except PublicationChanged:
             raise
-        except PublicationUnavailable as error:
-            raise KnowledgeUnavailable(str(error)) from error
         except EmbeddingError as error:
             log.error("document search failed: %s", error)
             raise
