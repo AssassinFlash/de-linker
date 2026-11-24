@@ -1017,6 +1017,62 @@ def repeated_signed_copy(text: str) -> list[str]:
     return failures
 
 
+_CLEARANCE_POSITIONS = {
+    "en": {
+        "front": "front",
+        "right": "right",
+        "rear": "rear|back|behind",
+        "left": "left",
+        "top": "top|above|overhead",
+    },
+    "de": {
+        "front": "vorn[e]?|Vorderseite",
+        "right": "rechts|rechte[nr]? Seite",
+        "rear": "hinten|hinter|Rückseite",
+        "left": "links|linke[nr]? Seite",
+        "top": "oben|oberhalb|Oberseite",
+    },
+}
+_CLEARANCE_MEASURE = re.compile(r"(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(mm|cm|m)\b", re.I)
+
+
+def clearance_failures(text: str, lang: str, expected: Mapping[str, int]) -> list[str]:
+    """Each cabinet position must have its own minimum from the installation drawing."""
+    found: set[str] = set()
+    failures: list[str] = []
+    for clause in re.split(r"[,.;](?!\d)|[\n|]", text):
+        # "left and above 500 mm" shares a measurement. A second measurement
+        # after "and" starts its own clause ("left 500 mm and above 500 mm").
+        parts = re.split(r"\s+(?:and|und)\s+", clause, flags=re.I)
+        groups = [parts[0]]
+        for part in parts[1:]:
+            if _CLEARANCE_MEASURE.search(groups[-1]) and _CLEARANCE_MEASURE.search(
+                part
+            ):
+                groups.append(part)
+            else:
+                groups[-1] += " " + part
+        for group in groups:
+            measurements = _CLEARANCE_MEASURE.findall(group)
+            if not measurements:
+                continue
+            for position, pattern in _CLEARANCE_POSITIONS[lang].items():
+                if not re.search(r"\b(?:" + pattern + r")\b", group, re.I):
+                    continue
+                minimum = expected[position]
+                for amount, unit in measurements:
+                    if unit.lower() == "mm" and minimum in number_variants(amount):
+                        found.add(position)
+                    else:
+                        failures.append(
+                            f"{position} clearance is {amount} {unit}, diagram gives {minimum} mm"
+                        )
+    for position, minimum in expected.items():
+        if position not in found:
+            failures.append(f"missing {position} clearance of {minimum} mm")
+    return failures
+
+
 def check(
     row: dict[str, Any],
     turn: Turn,
@@ -1042,6 +1098,8 @@ def check(
         failures.append(
             f"missing published catalogue lookup for {expect['absent_model']}"
         )
+    if clearances := expect.get("minimum_clearances_mm"):
+        failures.extend(clearance_failures(text, row["lang"], clearances))
     excluded = expect.get("excluded_brands") or []
     if excluded:
         for pid in sorted(shown):

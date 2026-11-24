@@ -987,15 +987,38 @@ def test_a_hard_row_that_deflects_to_the_mailbox_fails() -> None:
     assert any("sales@de-linker.com" in failure for failure in failures)
 
 
-def test_a_clearance_answer_with_all_four_values_passes() -> None:
-    row = next(item for item in ROWS if item["id"] == "b15-en")
-    good = turn(
-        [
-            text("Keep 1500 mm above, 1000 mm below, 500 mm left and 400 mm right."),
-            {"type": "document", "ref": "chunk-1", "label": "CB2 guide"},
-        ]
-    )
-    assert check(row, good, FEED_TOKENS) == []
+def test_minimum_clearances_bind_the_unit_and_each_direction_in_both_languages() -> (
+    None
+):
+    examples = {
+        "en": "1,500 mm in front, 1,000 mm on the right, 400 mm behind, 500 mm on the left and 500 mm above",
+        "de": "Vorne 1.500 mm, rechts 1.000 mm, hinten 400 mm, links und oben 500 mm",
+    }
+
+    def failures(lang: str, copy: str) -> list[str]:
+        row = next(item for item in ROWS if item["id"] == f"b15-{lang}")
+        captured = turn(
+            [text(copy), {"type": "document", "ref": "cb2-p1"}], language=lang
+        )
+        return check(row, captured, FEED_TOKENS)
+
+    for lang, original in examples.items():
+        assert failures(lang, original) == []
+        for invalid in [
+            original.replace(" and 500 mm above", "").replace(" und oben", ""),
+            original.replace("1,000 mm on the right", "500 mm on the right").replace(
+                "rechts 1.000", "rechts 500"
+            ),
+            original.replace("400 mm", "400 cm"),
+            original
+            + (
+                ", another 950 mm on the right"
+                if lang == "en"
+                else ", rechts zusätzlich 950 mm"
+            ),
+            original + (", another 970 mm" if lang == "en" else ", zusätzlich 970 mm"),
+        ]:
+            assert failures(lang, invalid), invalid
 
 
 def test_b15_cabinet_dimensions_from_the_quick_guide_are_traceable() -> None:
@@ -1028,8 +1051,8 @@ def test_a_missing_clearance_value_fails() -> None:
     )
     failures = check(row, thin, FEED_TOKENS)
     # `500 mm` inside `1500 mm` must not satisfy the 500 mm clearance.
-    assert any("500 ?mm" in failure and "1500" not in failure for failure in failures)
-    assert any("400 ?mm" in failure for failure in failures)
+    assert any("500 mm" in failure for failure in failures)
+    assert any("400 mm" in failure for failure in failures)
 
 
 def test_numbers_are_traceable_through_units_and_catalogue_codes() -> None:
