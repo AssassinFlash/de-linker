@@ -78,6 +78,8 @@ export function sameEquipmentDemand(
 			sameJson(briefA[field] ?? null, briefB[field] ?? null),
 		) &&
 		[
+			"grid_connection",
+			"country_rule_inputs",
 			"backup_demand",
 			"existing_system",
 			"energy_scenario",
