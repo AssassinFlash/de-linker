@@ -18,7 +18,11 @@ use Linker\Commerce\Products\Publication\EvidenceBindings;
 	if ( ! in_array( $mode, array( 'plan', 'apply' ), true ) ) {
 		WP_CLI::error( 'Expected plan or apply.' );
 	}
-	$copy        = json_decode( file_get_contents( $file ), true, 512, JSON_THROW_ON_ERROR )['product_faq_copy']; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local release input.
+	$input = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local release input.
+	if ( false === $input ) {
+		WP_CLI::error( 'Could not read the reviewed vocabulary file.' );
+	}
+	$copy        = json_decode( $input, true, 512, JSON_THROW_ON_ERROR )['product_faq_copy'];
 	$changes     = array();
 	$product_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type='product' AND post_status='publish' ORDER BY ID" );
 	foreach ( $product_ids as $id ) {
@@ -38,7 +42,7 @@ use Linker\Commerce\Products\Publication\EvidenceBindings;
 			$original = $row;
 			foreach ( array( 'question', 'answer', 'question_de', 'answer_de' ) as $key ) {
 				if ( isset( $row[ $key ] ) ) {
-					$row[ $key ] = str_replace( array_keys( $copy ), array_values( $copy ), $row[ $key ] );
+					$row[ $key ] = strtr( $row[ $key ], $copy );
 				}
 			}
 			if ( $original === $row ) {
@@ -87,7 +91,7 @@ use Linker\Commerce\Products\Publication\EvidenceBindings;
 			}
 		}
 	}
-	WP_CLI::line(
+	WP_CLI::log(
 		wp_json_encode(
 			array(
 				'mode'          => $mode,
