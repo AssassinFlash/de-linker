@@ -6939,7 +6939,7 @@ msgstr "Laden Sie diese Anfrage erneut, um das aktuelle Angebot zu korrigieren."
 
 #: includes/Quotation/Issuer.php
 msgid "The previous Quotation notification is still being queued. Please try again shortly."
-msgstr "Die Benachrichtigung zum vorherigen Angebot wird noch für den Versand vorbereitet. Bitte versuchen Sie es in Kürze erneut."
+msgstr "Die Benachrichtigung zum vorherigen Angebot ist noch in der Warteschlange. Bitte versuchen Sie es in Kürze erneut."
 
 #: includes/Quotation/Issuer.php
 msgid "Inquiry not found."
