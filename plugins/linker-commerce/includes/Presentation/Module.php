@@ -60,7 +60,7 @@ final class Module {
 		$this->account->register();
 		$this->blog->register();
 		add_filter( 'wp_preload_resources', array( $this, 'preload_resources' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'trim_woo_assets' ), 30 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'trim_woo_assets' ), 31 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_account_scripts' ) );
 	}
@@ -125,12 +125,27 @@ final class Module {
 
 	/** Marketing and editorial pages have no Woo cart UI. Registered dependencies remain available to widgets. */
 	public function trim_woo_assets(): void {
-		if ( ! function_exists( 'is_woocommerce' ) || is_woocommerce() || is_cart() || is_checkout() || is_account_page() || ComparePage::is_comparison_page() ) {
+		if ( ! function_exists( 'is_woocommerce' ) || is_woocommerce() || is_cart() || is_checkout() || is_account_page() || ComparePage::is_comparison_page() || did_action( 'woocommerce_add_to_cart' ) ) {
 			return;
+		}
+		$post = get_queried_object();
+		if ( $post instanceof \WP_Post ) {
+			if ( str_contains( $post->post_content, '<!-- wp:woocommerce/' ) ) {
+				return;
+			}
+			global $shortcode_tags;
+			foreach ( get_shortcode_tags_in_content( $post->post_content ) as $tag ) {
+				$callback = $shortcode_tags[ $tag ];
+				if ( is_string( $callback ) && str_starts_with( $callback, 'WC_Shortcodes::' ) ) {
+					return;
+				}
+			}
 		}
 		foreach ( array( 'woocommerce-layout', 'woocommerce-smallscreen', 'woocommerce-general' ) as $handle ) {
 			wp_dequeue_style( $handle );
 		}
+		// Site Kit enqueues its cart/purchase event adapter at priority 30, with Woo as a dependency.
+		wp_dequeue_script( 'googlesitekit-events-provider-woocommerce' );
 		wp_dequeue_script( 'wc-add-to-cart' );
 		wp_dequeue_script( 'woocommerce' );
 	}
