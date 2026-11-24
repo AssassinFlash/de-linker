@@ -36,6 +36,13 @@
 			input.focus();
 		} );
 		dialog.querySelector( '[data-tv-search-close]' ).addEventListener( 'click', () => dialog.close() );
+		dialog.addEventListener( 'keydown', event => {
+			if ( event.key === 'Escape' ) {
+				event.preventDefault();
+				event.stopPropagation();
+				dialog.close();
+			}
+		} );
 		dialog.addEventListener( 'close', () => { resetMatches(); form.reset(); searchLink.focus(); } );
 		input.addEventListener( 'input', () => {
 			resetMatches();

@@ -252,7 +252,8 @@ test( 'site search shows linked model suggestions and preserves native search su
 		assert.equal( match.pathname, '/de/produkt/gw80k/' );
 		assert.equal( match.querySelector( 'small' ).textContent, 'DLK-GW80K' );
 		assert.equal( new w.FormData( input.form ).get( 's' ), 'GW80K' );
-		doc.querySelector( '[data-tv-search-close]' ).click();
+		input.dispatchEvent( new w.KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true, cancelable: true } ) );
+		assert.equal( dialog.open, false );
 		assert.equal( doc.activeElement, opener );
 		assert.equal( input.value, '' );
 	} finally { dom.window.close(); }
