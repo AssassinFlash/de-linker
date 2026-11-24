@@ -87,11 +87,10 @@ final class AuthTemplates {
 		add_filter( 'woocommerce_get_query_vars', array( $this, 'query_vars' ) );
 		add_filter( 'wc_get_template', array( $this, 'template' ), 30, 2 );
 		add_filter( 'woocommerce_login_redirect', array( $this, 'product_login_destination' ) );
-		add_filter( 'seopress_titles_title', array( $this, 'document_title' ), 40 );
-		add_filter( 'pre_get_document_title', array( $this, 'document_title' ), 40 );
+		add_filter( 'seopress_titles_title', array( $this, 'document_title' ), 45 );
+		add_filter( 'pre_get_document_title', array( $this, 'document_title' ), 45 );
 		add_action( 'template_redirect', array( $this, 'signed_out_notice' ) );
 		add_action( 'template_redirect', array( $this, 'register_redirect' ) );
-		add_action( 'woocommerce_account_register_endpoint', array( $this, 'confirm_inquiry' ) );
 	}
 
 	/**
@@ -141,13 +140,16 @@ final class AuthTemplates {
 	 *
 	 * SEOPress otherwise repeats the parent account page's saved sign-in title.
 	 * Both title entry points share this callback; independent German titles
-	 * remain with the language companion and the sign-in title stays unchanged.
+	 * remain with the language companion.
 	 *
 	 * @param string $title Existing document title.
 	 */
 	public function document_title( string $title ): string {
 		if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || ! function_exists( 'is_wc_endpoint_url' ) || is_404() ) {
 			return $title;
+		}
+		if ( AccountLink::awaiting_confirmation() && ! is_wc_endpoint_url() ) {
+			return __( 'Confirm inquiry', 'linker-commerce' ) . ' | ' . get_bloginfo( 'name' );
 		}
 		$language = function_exists( 'pll_current_language' ) ? pll_current_language() : explode( '_', get_locale() )[0];
 		if ( 'en' !== $language ) {
@@ -172,6 +174,8 @@ final class AuthTemplates {
 			} else {
 				return $title;
 			}
+		} elseif ( ! is_wc_endpoint_url() ) {
+			$heading = __( 'Sign in to your partner account', 'linker-commerce' );
 		} else {
 			return $title;
 		}
@@ -240,11 +244,11 @@ final class AuthTemplates {
 		$account = wc_get_page_permalink( 'myaccount' );
 		$order   = AccountLink::awaiting_confirmation();
 		if ( $order ) {
-			if ( ! $register ) {
-				wp_safe_redirect( AccountLink::continue_at( self::register_url() ) );
-				exit;
-			}
 			if ( ! isset( $_POST['linker_claim_nonce'] ) ) {
+				if ( $register ) {
+					wp_safe_redirect( AccountLink::continue_at( $account ) );
+					exit;
+				}
 				return;
 			}
 			if ( ! is_string( $_POST['linker_claim_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['linker_claim_nonce'] ) ), 'linker_claim_' . $order->get_id() ) ) {
@@ -264,14 +268,6 @@ final class AuthTemplates {
 		}
 		wp_safe_redirect( $destination );
 		exit;
-	}
-
-	/** Show the explicit transfer action on the signed-in account endpoint. */
-	public function confirm_inquiry(): void {
-		$order = AccountLink::awaiting_confirmation();
-		if ( $order ) {
-			require dirname( __DIR__, 2 ) . '/templates/myaccount/auth/confirm-inquiry.php';
-		}
 	}
 
 	/**
@@ -304,6 +300,9 @@ final class AuthTemplates {
 	 * @param string $name Woo template name.
 	 */
 	public function template( string $path, string $name ): string {
+		if ( 'myaccount/dashboard.php' === $name && AccountLink::awaiting_confirmation() ) {
+			return dirname( __DIR__, 2 ) . '/templates/myaccount/auth/confirm-inquiry.php';
+		}
 		if ( ! isset( self::FILES[ $name ] ) || ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
 			return $path;
 		}

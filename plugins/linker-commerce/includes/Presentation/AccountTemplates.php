@@ -190,6 +190,9 @@ final class AccountTemplates {
 		} elseif ( 'amount-label' === $key && '' !== ( $this->row['total'] ?? '' ) ) {
 			$value = __( 'Amount', 'linker-commerce' ) . ': ';
 		} elseif ( 'page-title' === $key ) {
+			if ( ! is_wc_endpoint_url() && \Linker\Commerce\Inquiry\AccountLink::awaiting_confirmation() ) {
+				return esc_html__( 'Confirm inquiry', 'linker-commerce' );
+			}
 			$value = is_wc_endpoint_url() ? WC()->query->get_endpoint_title( WC()->query->get_current_endpoint() ) : __( 'Overview', 'linker-commerce' );
 			if ( is_wc_endpoint_url( 'orders' ) && in_array( $this->selected_status(), $this->statuses(), true ) ) {
 				$value .= ' · ' . wc_get_order_status_name( $this->selected_status() );

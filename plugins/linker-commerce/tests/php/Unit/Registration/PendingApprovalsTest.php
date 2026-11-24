@@ -48,6 +48,18 @@ final class PendingApprovalsTest extends TestCase {
 						'role'    => 'customer',
 						'orderby' => 'registered',
 						'order'   => 'ASC',
+						'meta_query' => array(
+							'relation' => 'OR',
+							array(
+								'key'     => Approval::STATUS_META,
+								'compare' => 'NOT EXISTS',
+							),
+							array(
+								'key'     => Approval::STATUS_META,
+								'value'   => array( Approval::APPROVED, Approval::REJECTED ),
+								'compare' => 'NOT IN',
+							),
+						),
 					),
 				),
 				'return' => fn (): array => array( $this->user( 5 ), $this->user( 8 ) ),

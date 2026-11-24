@@ -3,10 +3,14 @@
  * Confirm a guest inquiry's transfer to the current account.
  *
  * @package Linker\Commerce
- * @var \WC_Order $order Guest inquiry.
  */
 
 defined( 'ABSPATH' ) || exit;
+
+$order = \Linker\Commerce\Inquiry\AccountLink::awaiting_confirmation();
+if ( ! $order ) {
+	return;
+}
 ?>
 <form method="post">
 	<p><?php /* translators: %s: inquiry number. */ printf( esc_html__( 'Add inquiry #%s to your account?', 'linker-commerce' ), esc_html( $order->get_order_number() ) ); ?></p>

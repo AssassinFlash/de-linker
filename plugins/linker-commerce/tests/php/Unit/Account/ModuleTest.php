@@ -73,11 +73,10 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $auth, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_login_redirect', array( $auth, 'product_login_destination' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
-		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $auth, 'document_title' ), 40 );
-		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $auth, 'document_title' ), 40 );
+		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $auth, 'document_title' ), 45 );
+		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $auth, 'document_title' ), 45 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'register_redirect' ) );
-		WP_Mock::expectActionAdded( 'woocommerce_account_register_endpoint', array( $auth, 'confirm_inquiry' ) );
 
 		$admin_access = new AdminAccessNotice();
 		WP_Mock::expectFilterAdded( 'woocommerce_prevent_admin_access', array( $admin_access, 'protect' ), PHP_INT_MAX );
