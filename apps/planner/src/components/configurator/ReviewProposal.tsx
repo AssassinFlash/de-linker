@@ -871,6 +871,7 @@ export function ReviewProposal({
 				{recoverTransfer && draftTransfer}
 				<details className="sc-card sc-review-details">
 					<summary>{__("Project report", "linker-tools")}</summary>
+					{ready && !reportOnly && !recoverTransfer && draftTransfer}
 					{ready &&
 						report.sections.map((section) => (
 							<section key={section.id}>

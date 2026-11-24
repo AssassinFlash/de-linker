@@ -17,6 +17,7 @@ use Linker\Commerce\Inquiry\PublicGuard;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Planning\Context;
 use Linker\Commerce\Planning\DraftPreview;
+use Linker\Commerce\Planning\DraftRecovery;
 use Linker\Commerce\Planning\DraftTransfer;
 use Linker\Commerce\Planning\InquiryTransfer;
 use Linker\Commerce\Products\Publication;
@@ -121,6 +122,145 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				$this->assertContains( $value, $values );
 			}
 		}
+	}
+
+	/**
+	 * Woo migrates a guest transfer and merges a pre-existing partner cart before inquiry.
+	 *
+	 * @dataProvider restored_report_states
+	 * @param bool $unavailable Whether the older account project is inaccessible.
+	 */
+	public function test_guest_transfer_and_saved_account_lines_reach_one_inquiry( bool $unavailable ): void {
+		$customer = $this->customer();
+		$product  = $this->product( '99' );
+		$product->set_short_description( 'Published equipment for a project.' );
+		$product->save();
+		$id                               = $product->get_id();
+		$manifest                         = Publication::manifest();
+		$products                         = array_column( $manifest['products'], null, 'product_id' );
+		$guest                            = $this->planning_report();
+		$guest['snapshot']['kind']        = 'planning_products_v1';
+		$guest['snapshot']['items']       = array(
+			array(
+				'product_id' => $id,
+				'quantity'   => 2,
+				'label'      => $product->get_name(),
+			),
+		);
+		$guest['snapshot']['publication'] = array(
+			'engineering_contract'   => 2,
+			'reference_inputs'       => array(),
+			'products'               => array(
+				array(
+					'product_id'       => $id,
+					'product_revision' => $products[ $id ]['product_revision'],
+				),
+			),
+			'documents'              => array(),
+			'compatibility_revision' => $manifest['compatibility_revision'],
+		);
+		$old                              = $guest;
+		$old['id']                        = bin2hex( random_bytes( 16 ) );
+		$old['snapshot']['project_id']    = bin2hex( random_bytes( 16 ) );
+		$this->as_user( $customer->get_id() );
+		wc_load_cart();
+		$cart = WC()->cart;
+		$cart->empty_cart();
+		$manual = $cart->add_to_cart( $id, 1 );
+		$linked = $cart->add_to_cart( $id, 3, 0, array(), array( DraftTransfer::LINE_META => $old['id'] ) );
+		$this->assertIsString( $manual );
+		$this->assertIsString( $linked );
+		( new \WC_Cart_Session( $cart ) )->persistent_cart_update();
+		$cart->empty_cart( false );
+
+		$this->as_user( 0 );
+		$cookies = $_COOKIE;
+		$present = static function ( $enabled, $name, $value ) {
+			$_COOKIE[ $name ] = $value;
+			return false;
+		};
+		add_filter( 'woocommerce_set_cookie_enabled', $present, 10, 3 );
+		$this->later(
+			static function () use ( $cookies, $present ): void {
+				remove_filter( 'woocommerce_set_cookie_enabled', $present );
+				$_COOKIE = $cookies;
+			}
+		);
+		$session = WC()->session;
+		$this->assertInstanceOf( \WC_Session_Handler::class, $session );
+		$session->destroy_session();
+		$session->set_customer_session_cookie( true );
+		$session->set( 'linker_planner_seen', true );
+		$session->save_data();
+		$command = array(
+			'project_id'            => $guest['snapshot']['project_id'],
+			'report_run_id'         => $guest['snapshot']['report_run_id'],
+			'expected_revision'     => 1,
+			'expected_draft_sha256' => DraftPreview::fingerprint(),
+			'key'                   => wp_generate_uuid4(),
+		);
+		$receipt = ( new DraftTransfer() )->apply( null, $command, $guest );
+		$this->assertIsArray( $receipt, $receipt instanceof \WP_Error ? $receipt->get_error_code() : '' );
+
+		$this->as_user( $customer->get_id() );
+		WC()->customer = $customer;
+		wc_user_logged_in( $customer->get_username(), get_userdata( $customer->get_id() ) );
+		$session->init_session_cookie();
+		( new \WC_Cart_Session( $cart ) )->get_cart_from_session();
+		$this->assertSame( (string) $customer->get_id(), $session->get_customer_id() );
+		$this->assertSame( $receipt, $session->get( DraftTransfer::RECEIPTS )[ $command['key'] ] );
+		$this->assertCount( 3, $cart->get_cart() );
+		$this->assertArrayNotHasKey( $old['id'], $session->get( DraftTransfer::CONTEXTS ) );
+
+		$read  = static fn ( $previous, $handoff ) => $guest['id'] === $handoff ? $guest : ( $unavailable ? new \WP_Error( 'linker_planner_handoff_not_found', '', array( 'status' => 404 ) ) : $old );
+		$admit = static fn (): bool => true;
+		// phpcs:disable WooCommerce.Commenting.CommentHooks.MissingHookComment -- Owned Planner responses at the existing private boundaries.
+		add_filter( 'linker_tools_planning_inquiry_handoff', $read, 11, 2 );
+		add_filter( 'linker_tools_planning_admit_inquiry', $admit, 11 );
+		$this->later(
+			static function () use ( $read, $admit ): void {
+				remove_filter( 'linker_tools_planning_inquiry_handoff', $read, 11 );
+				remove_filter( 'linker_tools_planning_admit_inquiry', $admit, 11 );
+			}
+		);
+		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingHookComment
+		$missing = DraftRecovery::review();
+		$this->assertSame( $unavailable ? array( $linked ) : array(), $missing );
+		if ( $unavailable ) {
+			$this->assertFalse( DraftRecovery::detach( 'unconfirmed' ) );
+			$this->assertTrue( DraftRecovery::detach( wp_create_nonce( DraftRecovery::nonce_action( $missing ) ) ) );
+			$this->assertArrayNotHasKey( DraftTransfer::LINE_META, $cart->get_cart()[ $linked ] );
+			$this->assertSame( 3, $cart->get_cart()[ $linked ]['quantity'] );
+		}
+		$details = Submission::from_post(
+			array(
+				'name'    => 'Partner',
+				'email'   => self::TESTER,
+				'message' => 'Please quote the entire draft.',
+				'consent' => '1',
+			),
+			false
+		);
+		$this->assertInstanceOf( Submission::class, $details );
+		$order = ( new Sender() )->request( $details );
+		$this->assertInstanceOf( WC_Order::class, $order, $order instanceof \WP_Error ? $order->get_error_code() : '' );
+		$this->later( static fn () => $order->delete( true ) );
+		$this->assertSame( $customer->get_id(), $order->get_customer_id() );
+		$this->assertSame( 6, $order->get_item_count() );
+		$this->assertCount( 3, $order->get_items() );
+		$this->assertArrayHasKey( $guest['id'], Context::stored( $order ) );
+		$this->assertSame( ! $unavailable, isset( Context::stored( $order )[ $old['id'] ] ) );
+	}
+
+	/** Owned and unavailable older projects.
+	 *
+	 * @return array<string,array{bool}>
+	 */
+	public function restored_report_states(): array {
+		return array(
+			'owned account project'        => array( false ),
+			'inaccessible account project' => array( true ),
+		);
 	}
 
 	/**

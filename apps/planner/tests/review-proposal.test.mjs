@@ -700,3 +700,26 @@ test("generating with the chosen logo then downloading PDF and CSV creates only 
 	await act(async () => button("Download PDF").click());
 	assert.deepEqual(created, ["data:image/png;base64,bWFyaw==", null]);
 });
+
+test("a guest can add a first selection to the draft from the inquiry review", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props();
+	t.after(() => page.dispose(root));
+	value.run.result.has_draft_items = true;
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, {
+				...value,
+				inquiry: React.createElement("form"),
+			}),
+		),
+	);
+	const add = button("Add selected products to solution draft");
+	assert.ok(add);
+	assert.equal(add.disabled, false);
+	assert.equal(
+		add.closest("details").querySelector("summary").textContent,
+		"Project report",
+	);
+});
