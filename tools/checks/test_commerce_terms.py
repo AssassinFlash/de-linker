@@ -89,7 +89,7 @@ class MatchingTests(unittest.TestCase):
         self.assertEqual(commerce.matched_terms("backorder", patterns()), [])
 
     def test_prefix_terms_carry_inflections(self):
-        self.assertEqual(commerce.matched_terms("Your orders ship", patterns()), ["order*"])
+        self.assertEqual(commerce.matched_terms("Your orders ship", patterns()), ["order*", "ship"])
         self.assertEqual(commerce.matched_terms("Bestellungen", patterns()), ["Bestell*"])
         self.assertEqual(commerce.matched_terms("Versandkosten", patterns()), ["Versand*"])
         self.assertEqual(commerce.matched_terms("Zahlungsbedingungen", patterns()), ["Zahlung*"])
@@ -206,6 +206,32 @@ class CatalogTests(unittest.TestCase):
 
 
 class ScanCoverageTests(unittest.TestCase):
+    def test_only_published_json_copy_is_scanned(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            data = root / "plugins/linker-commerce/data"
+            faq = root / "docs/faq"
+            data.mkdir(parents=True)
+            faq.mkdir(parents=True)
+            (data / "faq-trade.json").write_text(json.dumps({
+                "_why": "obsolete order reference",
+                "categories": [{"name": {"en": "Shipping"}, "qas": [{
+                    "question": {"de": "Mindestbestellmenge?"},
+                    "answer": {"en": '<a href="/cart/">Contact us</a>'},
+                }]}],
+            }))
+            (data / "document-titles.json").write_text(json.dumps({
+                "order-manual.pdf": {"de": "Versand", "en": "Meter catalog", "previous": True},
+            }))
+            (faq / "meter.json").write_text(json.dumps({"items": [
+                {"status": "pass", "answer": "Before ordering", "reason": "old order"},
+                {"status": "fail", "answer": "Order separately"},
+            ]}))
+            hits = commerce.repo_hits(root, commerce.load_terms())
+            self.assertCountEqual([h.text for h in hits], [
+                "Shipping", "Mindestbestellmenge?", "Before ordering", "Versand", "Meter catalog",
+            ])
+
     """What the gate reads, pinned so a root cannot shrink silently."""
 
     def test_mu_plugins_holds_one_refusal_and_no_listed_word(self):

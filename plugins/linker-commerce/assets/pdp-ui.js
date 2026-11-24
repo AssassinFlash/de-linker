@@ -159,12 +159,11 @@
 			new CustomEvent("linker-genie-ask", { detail: { message: message, trigger: trigger } })
 		);
 	}
-	var askButton = root.querySelector("[data-pdp-ask]");
-	if (askButton) {
+	root.querySelectorAll("[data-pdp-ask]").forEach(function (askButton) {
 		askButton.addEventListener("click", function () {
 			ask(askButton.getAttribute("data-ask-message") || "", askButton);
 		});
-	}
+	});
 	root.querySelectorAll("[data-project-message]").forEach(function (choice) {
 		choice.addEventListener("click", function () {
 			ask(choice.getAttribute("data-project-message") || "", choice);

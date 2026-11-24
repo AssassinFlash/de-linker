@@ -35,9 +35,9 @@
     },
     {
       "question": "When does the eManager need external current transformers?",
-      "answer": "When the eManager works as a grid meter, either internal CT or external CT can be applied. The internal CT solution is available for current smaller than 63 A. To use external CTs, select the 50xN A/50 mA CT, wherein N is equal to or greater than 2. When the diameter of the grid AC cable is larger than 48 mm, order an additional DTSU666 (Dual RS485) grid meter from SAJ and prepare external CTs of N A/5 A, wherein the secondary current must be of 5 A.",
+      "answer": "When the eManager works as a grid meter, either internal CT or external CT can be applied. The internal CT solution is available for current smaller than 63 A. To use external CTs, select the 50xN A/50 mA CT, wherein N is equal to or greater than 2. When the diameter of the grid AC cable is larger than 48 mm, include an additional DTSU666 (Dual RS485) grid meter from SAJ and prepare external CTs of N A/5 A, wherein the secondary current must be of 5 A.",
       "question_de": "Wann braucht der eManager externe Stromwandler?",
-      "answer_de": "Wenn der eManager als Netzstromzähler arbeitet, kann entweder ein interner CT oder ein externer CT verwendet werden. Die interne CT-Lösung ist für Ströme kleiner als 63 A verfügbar. Für externe CTs wählen Sie den 50xN A/50 mA CT, wobei N gleich oder größer als 2 ist. Wenn der Durchmesser des Netz-AC-Kabels größer als 48 mm ist, bestellen Sie zusätzlich einen DTSU666 (Dual RS485) Netzstromzähler bei SAJ und bereiten Sie externe CTs von N A/5 A vor, wobei der Sekundärstrom 5 A betragen muss.",
+      "answer_de": "Wenn der eManager als Netzstromzähler arbeitet, kann entweder ein interner CT oder ein externer CT verwendet werden. Die interne CT-Lösung ist für Ströme kleiner als 63 A verfügbar. Für externe CTs wählen Sie den 50xN A/50 mA CT, wobei N gleich oder größer als 2 ist. Wenn der Durchmesser des Netz-AC-Kabels größer als 48 mm ist, verwenden Sie zusätzlich einen DTSU666 (Dual RS485) Netzstromzähler von SAJ und bereiten Sie externe CTs von N A/5 A vor, wobei der Sekundärstrom 5 A betragen muss.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_manual_en_v3.pdf",
         "page": 25,

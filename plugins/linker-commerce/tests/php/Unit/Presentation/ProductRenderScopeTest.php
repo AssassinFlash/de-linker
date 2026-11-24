@@ -70,7 +70,7 @@ final class ProductRenderScopeTest extends TestCase {
 				$product->allows( 'get_name' )->andReturn( 'Fixture model ' . $id );
 				$product->allows( 'get_sku' )->andReturn( 'FIXTURE-' . $id );
 				$product->allows( 'get_permalink' )->andReturn( 'http://linker.test/product/model-' . $id . '/' );
-				$product->allows( 'get_image_id' )->andReturn( 0 );
+				$product->allows( 'get_image_id' )->andReturn( 1000 + $id );
 				$product->allows( 'get_gallery_image_ids' )->andReturn( array() );
 				$product->allows( 'get_short_description' )->andReturn( '' );
 				$product->allows( 'get_description' )->andReturn( '' );
@@ -136,6 +136,11 @@ final class ProductRenderScopeTest extends TestCase {
 		WP_Mock::userFunction( 'get_the_title' )->andReturn( 'Fixture' );
 		WP_Mock::userFunction( 'get_term_link' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_get_attachment_image_url' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_get_attachment_image_src' )->andReturnUsing(
+			static fn ( int $attachment_id, string $size ): array|false => 'medium' === $size
+				? array( 'http://linker.test/media/' . $attachment_id . '.png', 300, 200, true )
+				: false
+		);
 		$_GET = array();
 	}
 
@@ -166,7 +171,9 @@ final class ProductRenderScopeTest extends TestCase {
 			$this->assertSame( 'FIXTURE-' . $member['id'], $member['sku'] );
 			$this->assertSame( 'http://linker.test/product/model-' . $member['id'] . '/', $member['url'] );
 			$this->assertSame( 'Fixture model ' . $member['id'], $member['name'] );
-			$this->assertArrayHasKey( 'image', $member );
+			$this->assertSame( 'http://linker.test/media/' . ( 1000 + $member['id'] ) . '.png', $member['image'] );
+			$this->assertSame( 300, $member['imageWidth'] );
+			$this->assertSame( 200, $member['imageHeight'] );
 			$this->assertArrayHasKey( 'selection', $member );
 			$this->assertArrayHasKey( 'priceHtml', $member );
 			$this->assertArrayHasKey( 'availability', $member );

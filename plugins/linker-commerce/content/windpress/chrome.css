@@ -345,3 +345,24 @@ html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop
 	}
 }
 @media (prefers-reduced-motion:reduce){#tv-header-v2 *,#tv-header-v2 *::before,#tv-header-v2 *::after{transition:none!important;animation:none!important}#tv-header-v2 .tv-mega-link:hover .tv-mega-link-thumb,#tv-header-v2 .tv-mega-featured:hover .tv-mega-featured-img,#tv-header-v2 .tv-app-mega-stack-item:hover .tv-app-mega-stack-thumb,#tv-header-v2 .tv-header-cta:hover,#tv-header-v2 .tv-header-utility:hover{transform:none}}
+
+.tv-search-dialog {
+  position: fixed; inset: 0; margin: auto; width: min(36rem, calc(100% - 2rem));
+  max-height: min(78dvh, 42rem); overflow: auto; padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--proto-neutral-200); border-radius: var(--proto-radius-lg);
+  background: white; color: var(--proto-ink-deep); box-shadow: 0 18px 60px rgb(21 53 47 / 18%);
+}
+.tv-search-dialog::backdrop { background: rgb(21 53 47 / 42%); }
+.tv-search-heading, .tv-search-entry { display: flex; align-items: center; gap: .75rem; }
+.tv-search-heading { justify-content: space-between; margin-bottom: 1rem; }
+.tv-search-heading h2 { font-size: 1.4rem; font-weight: 600; margin: 0; }
+.tv-search-heading button { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: .5rem; }
+.tv-search-dialog label { display: block; margin-bottom: .5rem; }
+.tv-search-entry input { min-width: 0; flex: 1; min-height: 2.75rem; padding: .6rem .75rem; border: 1px solid var(--proto-neutral-400); border-radius: .5rem; }
+.tv-search-entry button { min-height: 2.75rem; padding: .6rem 1rem; border-radius: .5rem; background: var(--proto-teal-700); color: white; }
+.tv-search-matches { list-style: none; padding: 0; margin: .75rem 0 0; }
+.tv-search-matches a { display: block; padding: .6rem .75rem; color: inherit; border-radius: .5rem; }
+.tv-search-matches small { display: block; color: var(--proto-neutral-600); }
+.tv-search-matches a:is(:focus-visible,:hover), .tv-search-heading button:hover { background: var(--proto-neutral-100); }
+.tv-search-status { margin: .75rem 0 0; font-size: .875rem; }
+.tv-search-status:empty { display: none; }

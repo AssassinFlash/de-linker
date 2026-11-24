@@ -110,7 +110,7 @@ function page(rows) {
  </div></body></html>`;
 }
 
-const QA = (question, answer) => `<details class="linker-library-qa" data-library-item data-library-group="Ordering"><summary class="linker-library-qa-head"><span class="linker-library-qa-text"><span class="linker-library-qa-q">${question}</span><span class="linker-library-qa-where" hidden>In the answer</span></span></summary><div class="linker-library-qa-a"><p>${answer}</p></div></details>`;
+const QA = (question, answer) => `<details class="linker-library-qa" data-library-item><summary class="linker-library-qa-head"><span class="linker-library-qa-text"><span class="linker-library-qa-q">${question}</span></span></summary><div class="linker-library-qa-a"><p>${answer}</p></div></details>`;
 const DOC = (title, type) => `<li class="linker-library-doc has-tile" data-library-item data-library-type="${type}"><span class="linker-library-thumb is-type"></span><span class="linker-library-doc-lead"><span class="linker-library-badge is-${type}">${type}</span><span class="linker-library-doc-title">${title}</span></span><p class="linker-library-doc-meta"><span class="linker-library-doc-covers">covers 2 products</span><span class="linker-library-lang">EN</span></p><a class="linker-library-dl" href="https://de-linker.test/a.pdf">Download</a></li>`;
 
 /** The page with rows: 25 documents so the pager has two pages. */
@@ -427,11 +427,11 @@ test('a shared document is searchable by a covered model and explains that match
 test('the Woo SKU and differently separated model find the same associated PDF', () => {
  const dom = fixture();
  const row = dom.window.document.querySelector('.linker-library-doc');
- row.setAttribute('data-library-skus', JSON.stringify({'DLK-GOODWE-GW8KEHAG20': 'GoodWe GW8K-EHA-G20'}));
+ row.setAttribute('data-library-skus', JSON.stringify({'DLK-GOODWE-GW8KEHAG20': 'GoodWe ESA GW8K-EHA-G20'}));
  const doc = boot(dom);
  doc.querySelector('#linker-library-tab-documents').click();
  const input = doc.querySelector('.linker-library-q');
- for (const query of ['DLK-GOODWE-GW8KEHAG20', 'GW8K-EHA-G20', 'GW8K EHA G20', 'dlk-goodwe-gw8kehag20 datasheet']) {
+ for (const query of ['DLK-GOODWE-GW8KEHAG20', 'GW8K-EHA-G20', 'GW8K EHA G20', 'dlk-goodwe-gw8kehag20 datasheet', 'ESA GW8K']) {
   input.value = query;
   input.dispatchEvent(new dom.window.Event('input',{bubbles:true}));
   const hits = doc.querySelectorAll('[data-library-results] .linker-library-doc');
@@ -676,6 +676,7 @@ test('a question searched in the answer shows where it matched', () => {
  assert.ok(hit, 'the answer row matched');
  const where = hit.querySelector('.linker-library-qa-where');
  assert.equal(where.hidden, false);
+ assert.equal(where.textContent, 'In the answer');
 });
 
 test('a tab switch re-halves the search results, not just the counts', () => {

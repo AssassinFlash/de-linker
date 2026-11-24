@@ -26,12 +26,12 @@ final class GermanTitlesTest extends TestCase {
 	/**
 	 * The English description SEOPress computes on the English shop page.
 	 */
-	private const ENGLISH = 'Filter inverters, LFP batteries, all-in-one systems, meters and controllers by brand, or find an item by number or nameplate photo. Net prices for partners.';
+	private const ENGLISH = 'Compare inverters, LFP storage and accessories for your project. Filter by brand or look up a device by model or product number.';
 
 	/**
 	 * The German sentence the catalog carries.
 	 */
-	private const GERMAN = 'Filtern Sie Wechselrichter, LFP-Batterien, Komplettsysteme, Zähler und Steuerungen nach Marke oder finden Sie ein Produkt per Produktnummer oder Typenschildfoto. Nettopreise für Partner.';
+	private const GERMAN = 'Vergleichen Sie Wechselrichter, LFP-Speicher und Zubehör für Ihr Projekt. Filtern Sie nach Marke oder suchen Sie nach Modell und Produktnummer.';
 
 	/**
 	 * The German shop request.

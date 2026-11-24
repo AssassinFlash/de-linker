@@ -83,7 +83,7 @@ final class TradeRulesTest extends TestCase {
 			}
 		}
 		$this->assertSame( 'Inquiries & delivery', $categories[0]['name'] );
-		$this->assertSame( 'Was ist die Mindestbestellmenge, und wohin liefert Linker?', $rules->categories( 'de' )[0]['questions'][0]['question'] );
+		$this->assertSame( 'Kann ich ein einzelnes Gerät anfragen, und wohin liefern Sie?', $rules->categories( 'de' )[0]['questions'][0]['question'] );
 		$this->assertSame( 'Anfrage & Lieferung', $rules->categories( 'de-DE' )[0]['name'], 'a locale answers with its language' );
 	}
 

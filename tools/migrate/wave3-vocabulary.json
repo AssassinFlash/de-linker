@@ -1,0 +1,87 @@
+{
+  "page_pairs": {
+    "home": [
+      13,
+      6913
+    ],
+    "blog": [
+      14,
+      6915
+    ],
+    "solution": [
+      746,
+      6871
+    ],
+    "residential": [
+      749,
+      6923
+    ],
+    "installer": [
+      826,
+      6869
+    ],
+    "epc": [
+      842,
+      6867
+    ],
+    "faq": [
+      932,
+      6863
+    ],
+    "utility": [
+      1755,
+      6917
+    ],
+    "services": [
+      2748,
+      6700
+    ]
+  },
+  "page_copy": {
+    "There is no pallet minimum. Inquiries start from individual units, delivered across the EU. Equipment ships according to project schedules, with trade quotes detailing destination freight.": "You can request a single unit. We deliver across the EU and coordinate delivery with your project schedule. Your quotation lists the freight cost to your destination.",
+    "They ship together under a unified invoice; check each pairing": "They can be delivered together on one invoice. Check each pairing",
+    "invoice or order reference": "invoice number or project reference",
+    "Rechnungs- oder Bestellreferenz": "Rechnungsnummer oder Projektreferenz",
+    "Commercial invoice and order confirmation": "Commercial invoice and delivery documents",
+    "Browse the product catalog": "Browse products",
+    "How does purchasing work for large, container-sized storage projects?": "How do I request a quotation for a container-scale storage project?",
+    "We discuss the expected delivery date with you when arranging the order, so you can plan the installation.": "We agree an estimated delivery date with you so you can plan the installation.",
+    "The system ships to your premises or to the site.": "We deliver the system to your premises or to the installation site.",
+    "project documentation for your inquiry, and delivery planning for your order": "project documentation for your inquiry, and delivery planning for your installation",
+    "Our team prepares your quotation and works with you on any subsequent order.": "Our team prepares your quotation and coordinates delivery with you once you accept it.",
+    "We discuss estimated delivery dates with you for each order.": "We discuss estimated delivery dates for your project with you.",
+    "Equipment ships from warehouse stock in Germany. We give you an estimated delivery date for your order based on current availability.": "We deliver from our warehouse in Germany. We confirm availability and give you an estimated delivery date.",
+    "before equipment ships": "before delivery",
+    "SCADA &amp; GRID DISPATCH": "SCADA &amp; GRID CONTROL",
+    "SCADA & NETZ-DISPATCH": "SCADA & NETZSTEUERUNG",
+    "Equipment ships according to the delivery arrangements agreed for the order.": "We deliver the equipment under the terms agreed for your project.",
+    "Der Versand richtet sich nach den Liefervereinbarungen zum Auftrag.": "Wir liefern die Geräte zu den für Ihr Projekt vereinbarten Bedingungen.",
+    "We work out the delivery schedule with you when arranging the order.": "We agree the delivery schedule with you for your project.",
+    "Stock ships from our warehouse.": "We deliver from our warehouse.",
+    "Warranty terms follow the order.": "For product warranty conditions, see the manufacturer’s terms for your model.",
+    "Garantiebedingungen richten sich nach der Bestellung.": "Die Garantiebedingungen für Ihr Modell finden Sie in den Garantieunterlagen des Herstellers.",
+    "Sie werden zusammen mit einer einheitlichen Rechnung geliefert; prüfen Sie": "Eine gemeinsame Lieferung mit einer Rechnung ist möglich. Prüfen Sie"
+  },
+  "product_faq_copy": {
+    "Contents are order-dependent": "The exact contents depend on the configuration",
+    "Der Inhalt ist bestellabhängig": "Der Inhalt hängt von der Konfiguration ab",
+    "Der Lieferumfang ist bestellabhängig": "Der Lieferumfang hängt von der Konfiguration ab",
+    "order an additional DTSU666": "include an additional DTSU666",
+    "bestellen Sie zusätzlich einen DTSU666": "verwenden Sie zusätzlich einen DTSU666",
+    "GMK330 ships with": "GMK330 includes",
+    "The GMK330 ships with": "The GMK330 includes",
+    "is shipped with the unit": "is included with the unit",
+    "to purchase a battery expansion kit": "for a battery expansion kit",
+    "can be purchased from a dealer": "is available from a dealer",
+    "the CT can be purchased from GoodWe or purchased separately": "the CT is available from GoodWe or another supplier",
+    "the CT can be purchased from GoodWe or separately": "the CT is available from GoodWe or another supplier",
+    "contact a dealer to purchase a GMK330 or GM330 Smart Meter": "ask a dealer for a GMK330 or GM330 Smart Meter",
+    "It is documented as purchased from GoodWe": "The document names GoodWe as the supplier",
+    "grid-dispatch setting": "grid control setting",
+    "Netzstromzähler bei SAJ und bereiten": "Netzstromzähler von SAJ und bereiten",
+    "What should be checked before requesting a GW22K-HCA-20?": "What should I check when the GW22K-HCA-20 arrives?",
+    "Was ist vor der Anfrage für GW22K-HCA-20 zu prüfen?": "Was sollte ich bei der Lieferung des GW22K-HCA-20 prüfen?",
+    "Before ordering, check that the charging pile model is correct. If there is any discrepancy, do not open the packaging and contact your dealer.": "Before accepting delivery, check the model shown on the packaging. If it differs from the model you expect, leave the box unopened and contact your supplier.",
+    "Prüfen Sie vor der Bestellung, ob das Modell der Ladestation korrekt ist. Bei Abweichungen öffnen Sie die Verpackung nicht und kontaktieren Sie Ihren Händler.": "Prüfen Sie vor der Annahme der Lieferung die Modellangabe auf der Verpackung. Bei einer Abweichung lassen Sie die Verpackung geschlossen und wenden Sie sich an Ihren Lieferanten."
+  }
+}

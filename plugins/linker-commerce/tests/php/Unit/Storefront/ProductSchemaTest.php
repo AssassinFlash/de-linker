@@ -30,6 +30,7 @@ final class ProductSchemaTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction(
 			'wp_json_encode',
 			array( 'return' => static fn( $value, $flags = 0 ) => json_encode( $value, $flags ) )
@@ -46,10 +47,66 @@ final class ProductSchemaTest extends TestCase {
 	public function test_register_adds_the_block_to_the_head(): void {
 		$schema = new ProductSchema();
 		WP_Mock::expectActionAdded( 'wp_head', array( $schema, 'print_block' ) );
+		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( $schema, 'description' ), 45 );
 
 		$schema->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Keep a manually edited description; otherwise use the product's public facts.
+	 *
+	 * @dataProvider meta_sources
+	 *
+	 * @param string $stored    Saved value.
+	 * @param bool   $generated Expect the public model summary.
+	 */
+	public function test_search_uses_the_native_or_generated_description( string $stored, bool $generated ): void {
+		$product = $this->product();
+		WP_Mock::userFunction(
+			'is_singular',
+			array(
+				'args'   => array( 'product' ),
+				'return' => true,
+			)
+		);
+		WP_Mock::userFunction( 'get_the_ID', array( 'return' => self::PRODUCT ) );
+		WP_Mock::userFunction(
+			'wc_get_product',
+			array(
+				'args'   => array( self::PRODUCT ),
+				'return' => $product,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( self::PRODUCT, '_seopress_titles_desc', true ),
+				'return' => $stored,
+			)
+		);
+		$schema = new ProductSchema();
+		$value  = $schema->description( 'Project notes for GoodWe GW5.1-BAT-D-G21.' );
+		if ( $generated ) {
+			$this->assertSame( $schema->data( $product )['description'], $value );
+			$this->assertGreaterThanOrEqual( 125, mb_strlen( $value ) );
+			$this->assertLessThanOrEqual( 155, mb_strlen( $value ) );
+		} else {
+			$this->assertSame( 'Project notes for GoodWe GW5.1-BAT-D-G21.', $value );
+		}
+	}
+
+	/**
+	 * Product meta sources.
+	 *
+	 * @return array<string,array{string,bool}>
+	 */
+	public static function meta_sources(): array {
+		return array(
+			'auto'   => array( '', true ),
+			'manual' => array( 'Project notes for %%post_title%%.', false ),
+		);
 	}
 
 	/**
@@ -81,7 +138,7 @@ final class ProductSchemaTest extends TestCase {
 		);
 		$this->assertSame( 'GW5.1-BAT-D-G21', $data['model'] );
 		$this->assertSame( 'Home Storage', $data['category'] );
-		$this->assertStringContainsString( '5.12 kWh rated ESA battery module', $data['description'] );
+		$this->assertStringContainsString( '5.12 kWh', $data['description'] );
 		$this->assertSame( 'https://de-linker.com/full.png', $data['image'] );
 		$this->assertConditionsMet();
 	}
@@ -97,45 +154,8 @@ final class ProductSchemaTest extends TestCase {
 		foreach ( array( '"price"', 'priceCurrency', 'listPrice', 'lowPrice', 'Net price', '€' ) as $forbidden ) {
 			$this->assertStringNotContainsString( $forbidden, $json, "the block must not carry $forbidden" );
 		}
-		// The block still carries the two public facts of an offer.
-		$this->assertStringContainsString( '"@type":"Offer"', $json );
-		$this->assertStringContainsString( '"availability":"https://schema.org/InStock"', $json );
+		$this->assertStringNotContainsString( '"offers"', $json );
 		$this->assertConditionsMet();
-	}
-
-	/**
-	 * Availability is WooCommerce's own stock state — the authority once the
-	 * previous tree's mirror is gone (its states map one to one).
-	 *
-	 * @param string $status   WooCommerce's stock status.
-	 * @param string $expected The schema.org term, or '' for "claim nothing".
-	 * @dataProvider stock_states
-	 */
-	public function test_availability_follows_the_stock_state( string $status, string $expected ): void {
-		$schema = new ProductSchema();
-		$offers = $schema->data( $this->product( stock_status: $status ) )['offers'];
-
-		if ( '' === $expected ) {
-			$this->assertArrayNotHasKey( 'availability', $offers );
-			$this->assertSame( 'https://de-linker.com/product/gw51/', $offers['url'] );
-			return;
-		}
-		$this->assertSame( $expected, $offers['availability'] );
-		$this->assertConditionsMet();
-	}
-
-	/**
-	 * WooCommerce's statuses and what each means in schema.org.
-	 *
-	 * @return array<string, array{string, string}>
-	 */
-	public static function stock_states(): array {
-		return array(
-			'in stock'      => array( 'instock', 'https://schema.org/InStock' ),
-			'out of stock'  => array( 'outofstock', 'https://schema.org/OutOfStock' ),
-			'on backorder'  => array( 'onbackorder', 'https://schema.org/BackOrder' ),
-			'unknown state' => array( 'reserved-for-review', '' ),
-		);
 	}
 
 	/**
@@ -177,7 +197,6 @@ final class ProductSchemaTest extends TestCase {
 		$data   = $schema->data( $this->product( permalink: 'https://de-linker.com/de/produkt/gw51/' ) );
 
 		$this->assertSame( 'https://de-linker.com/de/produkt/gw51/', $data['url'] );
-		$this->assertSame( 'https://de-linker.com/de/produkt/gw51/', $data['offers']['url'] );
 		$this->assertConditionsMet();
 	}
 
@@ -351,7 +370,7 @@ final class ProductSchemaTest extends TestCase {
 		$product->shouldReceive( 'get_sku' )->andReturn( $sku );
 		$product->shouldReceive( 'get_stock_status' )->andReturn( $stock_status );
 		$product->shouldReceive( 'get_image_id' )->andReturn( $image );
-		$product->shouldReceive( 'get_short_description' )->andReturn( '<p>GW5.1-BAT-D-G21 is the 5.12 kWh rated ESA battery module.</p>' );
+		$product->shouldReceive( 'get_short_description' )->andReturn( '<p>GW5.1-BAT-D-G21 is the 5.12 kWh.</p>' );
 		$product->shouldReceive( 'get_description' )->andReturn( '' );
 		if ( 0 === $image ) {
 			$product->shouldNotReceive( 'get_image_id' );

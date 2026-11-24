@@ -157,7 +157,8 @@ final class DocumentLibrary {
 	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>
 	 */
 	private function documents_in( array $manifest, array $products ): array {
-		$files = array();
+		$files    = array();
+		$previous = array();
 		foreach ( $products as $id ) {
 			$source = self::source( $id );
 			$title  = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
@@ -169,8 +170,9 @@ final class DocumentLibrary {
 				}
 				$key = (string) $document['url'];
 				if ( ! isset( $files[ $key ] ) ) {
-					$files[ $key ] = array(
-						'title'    => Materials::localized_document_title( '' !== trim( $document['title'] ) ? $document['title'] : __( 'Document', 'linker-commerce' ) ),
+					$previous[ $key ] = true === ( Materials::document_edition( $key )['previous'] ?? false );
+					$files[ $key ]    = array(
+						'title'    => Materials::localized_document_title( '' !== trim( $document['title'] ) ? $document['title'] : __( 'Document', 'linker-commerce' ), null, $document['url'] ),
 						'url'      => (string) $document['url'],
 						'type'     => self::type( (string) $document['type'], (string) $document['role'] ),
 						'language' => self::language( (string) $document['language'] ),
@@ -190,8 +192,8 @@ final class DocumentLibrary {
 		$documents = array_values( $files );
 		usort(
 			$documents,
-			static function ( array $a, array $b ): int {
-				$order = self::rank( $a['type'] ) <=> self::rank( $b['type'] );
+			static function ( array $a, array $b ) use ( $previous ): int {
+				$order = array( self::rank( $a['type'] ), $previous[ $a['url'] ] ) <=> array( self::rank( $b['type'] ), $previous[ $b['url'] ] );
 
 				return 0 !== $order ? $order : strcasecmp( $a['title'], $b['title'] );
 			}
@@ -276,7 +278,7 @@ final class DocumentLibrary {
 				continue;
 			}
 			$page    = (int) $faq['citation']['page'];
-			$title   = Materials::localized_document_title( (string) ( $faq['citation']['title'] ?? '' ), $german );
+			$title   = Materials::localized_document_title( (string) ( $faq['citation']['title'] ?? '' ), $german, $faq['citation']['url'] );
 			$items[] = array(
 				'question'   => $question,
 				'answer'     => $answer,

@@ -14,6 +14,7 @@ use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Presentation\PageUrls;
 
 use Linker\Commerce\Products\Materials;
+use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Products\Publication;
@@ -72,7 +73,7 @@ final class ProductView {
 				'downloads'   => $this->downloads( $product_id ),
 				'faqs'        => $this->faqs( $product_id ),
 				'pairings'    => $this->pairings( $product_id ),
-				'crumbs'      => $this->crumbs( $product_id ),
+				'crumbs'      => self::crumbs( $product_id ),
 			)
 		);
 	}
@@ -238,7 +239,7 @@ final class ProductView {
 	 * light), as the product page shows it; null when the library holds none.
 	 *
 	 * @param int $product_id The product.
-	 * @return array{src: string, srcset: string, sizes: string, alt: string}|null
+	 * @return array{src: string, srcset: string, sizes: string, width: int, height: int, alt: string}|null
 	 */
 	private function brand_logo( int $product_id ): ?array {
 		static $logos = array();
@@ -247,27 +248,8 @@ final class ProductView {
 			return null;
 		}
 		if ( ! \array_key_exists( $brand, $logos ) ) {
-			$attachment      = get_posts(
-				array(
-					'post_type'      => 'attachment',
-					'posts_per_page' => 1,
-					'fields'         => 'ids',
-					'no_found_rows'  => true,
-					'post_status'    => 'inherit',
-					'meta_key'       => '_wp_attached_file', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					's'              => 'our-brand-' . $brand . '-mono-light',
-				)
-			);
-			$id              = array() !== $attachment ? (int) reset( $attachment ) : 0;
-			$source          = $id ? wp_get_attachment_image_src( $id, 'full' ) : false;
-			$logos[ $brand ] = \is_array( $source )
-				? array(
-					'src'    => (string) $source[0],
-					'srcset' => (string) wp_get_attachment_image_srcset( $id, 'full' ),
-					'sizes'  => (string) wp_get_attachment_image_sizes( $id, 'full' ),
-					'alt'    => $this->term_name( $product_id, 'pa_brand' ),
-				)
-				: null;
+			$image           = \Linker\Commerce\Presentation\BrandLogo::image( $brand, 26 );
+			$logos[ $brand ] = null === $image ? null : $image + array( 'alt' => $this->term_name( $product_id, 'pa_brand' ) );
 		}
 		return $logos[ $brand ];
 	}
@@ -619,7 +601,7 @@ final class ProductView {
 	 */
 	public function downloads( int $product_id, ?array $manifest = null ): array {
 		if ( null !== $this->document_reader ) {
-			return ( $this->document_reader )( $product_id );
+			return self::by_language( ( $this->document_reader )( $product_id ) );
 		}
 		if ( ! Publication::is_published( $product_id ) ) {
 			return array();
@@ -657,7 +639,7 @@ final class ProductView {
 				);
 				unset( $allowed[ $key ] );
 			}
-			return $documents;
+			return self::by_language( $documents );
 		}
 		foreach ( $manifest['documents'] as $document ) {
 			if ( ! in_array( $id, $document['product_ids'], true ) ) {
@@ -670,6 +652,26 @@ final class ProductView {
 				'role'     => $document['role'] ?? '',
 				'language' => $document['lang'],
 			);
+		}
+		return self::by_language( $documents );
+	}
+
+	/**
+	 * PHP's stable sort keeps the publisher's ordering among equally useful files.
+	 *
+	 * @param list<array{title:string,url:string,type:string,role:string,language:string}> $documents Authorized documents.
+	 * @return list<array{title:string,url:string,type:string,role:string,language:string}>
+	 */
+	private static function by_language( array $documents ): array {
+		if ( Materials::is_de() ) {
+			$rank = array(
+				'DE'    => 0,
+				'MUL'   => 1,
+				'DE/EN' => 1,
+				'EN/DE' => 1,
+				'EN'    => 2,
+			);
+			usort( $documents, static fn ( array $a, array $b ): int => ( $rank[ DocumentLibrary::language( $a['language'] ) ] ?? 3 ) <=> ( $rank[ DocumentLibrary::language( $b['language'] ) ] ?? 3 ) );
 		}
 		return $documents;
 	}
@@ -725,7 +727,7 @@ final class ProductView {
 	 * @param int $product_id The product.
 	 * @return list<array{label: string, url: string|null}> The crumbs.
 	 */
-	private function crumbs( int $product_id ): array {
+	public static function crumbs( int $product_id ): array {
 		$crumbs = array(
 			array(
 				'label' => __( 'Products', 'linker-commerce' ),

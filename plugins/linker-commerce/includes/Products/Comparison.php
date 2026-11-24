@@ -294,6 +294,39 @@ final class Comparison {
 	}
 
 	/**
+	 * The GoodWe STS four-port table gives one rated power for all four ports.
+	 * Split that measurement into the same two domains used by the other model
+	 * (GoodWe ESA 5–30 kW user manual, technical data, PDF pp. 338–340).
+	 *
+	 * @param int $id Product whose native specification is being compared.
+	 * @return list<array{title:string,rows:list<array{label:string,value:string,unit:string,note:string,highlight:bool}>}>
+	 */
+	private function comparison_groups( int $id ): array {
+		$groups = $this->view->spec_groups( $id );
+		foreach ( $groups as $index => $group ) {
+			$domains = match ( $group['title'] ) {
+				'Ratings (grid, back-up, smart port, inverter)' => array( 'Grid, back-up and smart port', 'Inverter side', 'Rated power' ),
+				'Bemessung (Netz, Notstrom, Smart Port, Wechselrichter)' => array( 'Netz, Notstrom und Smart Port', 'Wechselrichterseite', 'Nennleistung' ),
+				default => null,
+			};
+			if ( null === $domains ) {
+				continue;
+			}
+			list( $grid, $inverter, $power ) = $domains;
+			$groups[ $index ]['title']       = $grid;
+			foreach ( $group['rows'] as $row ) {
+				if ( $power === $row['label'] ) {
+					$groups[] = array(
+						'title' => $inverter,
+						'rows'  => array( $row ),
+					);
+				}
+			}
+		}
+		return $groups;
+	}
+
+	/**
 	 * Combine the products' technical tables without conflating equal labels
 	 * from different groups. A group and label shared by products are aligned;
 	 * when one product repeats that pair, its meanings are ambiguous and every
@@ -311,7 +344,7 @@ final class Comparison {
 		foreach ( $products as $product ) {
 			$id                  = (int) $product['product_id'];
 			$empty_values[ $id ] = '';
-			foreach ( $this->view->spec_groups( $id ) as $group ) {
+			foreach ( $this->comparison_groups( $id ) as $group ) {
 				$title = trim( $group['title'] );
 				foreach ( $group['rows'] as $row ) {
 					$label = $row['label'];

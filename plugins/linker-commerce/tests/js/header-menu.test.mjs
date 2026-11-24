@@ -215,3 +215,46 @@ test( 'unfolding after an outside focus change does not take that focus', async 
 	assert.equal( window.document.activeElement, outside );
 	window.close();
 } );
+
+test( 'site search shows linked model suggestions and preserves native search submission', async () => {
+	const dom = new JSDOM( `<html lang="de"><body><header id="tv-header-v2">
+		<a href="/de/produkte/#search-box" data-tv-header-search data-search-min="2" data-search-url="/wp-json/linker/v1/catalog-search">Suche</a>
+		<dialog id="tv-site-search"><h2>Website durchsuchen</h2><button data-tv-search-close></button><form action="/de/"><input type="search" name="s"></form>
+		<ul class="tv-search-matches" hidden></ul><p role="status"></p></dialog></header></body></html>`,
+		{ url: 'https://example.test/de/', runScripts: 'outside-only' } );
+	try {
+		const w = dom.window;
+		const doc = w.document;
+		const dialog = doc.querySelector( 'dialog' );
+		dialog.showModal = () => { dialog.open = true; };
+		dialog.close = () => { dialog.open = false; dialog.dispatchEvent( new w.Event( 'close' ) ); };
+		let requested;
+		w.fetch = async ( url ) => {
+			requested = url;
+			return { ok: true, json: async () => ( { items: [ { title: 'GoodWe GW80K', sku: 'DLK-GW80K', url: '/de/produkt/gw80k/' } ] } ) };
+		};
+		w.eval( source );
+		const opener = doc.querySelector( '[data-tv-header-search]' );
+		opener.click();
+		assert( dialog.open );
+		const input = doc.querySelector( '[name=s]' );
+		assert.equal( doc.activeElement, input );
+		input.value = 'GW80K';
+		const shown = new Promise( resolve => {
+			const observer = new w.MutationObserver( () => { observer.disconnect(); resolve(); } );
+			observer.observe( doc.querySelector( '.tv-search-matches' ), { childList: true } );
+		} );
+		input.dispatchEvent( new w.Event( 'input' ) );
+		await shown;
+		assert.equal( requested.searchParams.get( 'lang' ), 'de' );
+		assert.equal( requested.searchParams.get( 'q' ), 'GW80K' );
+		const match = doc.querySelector( '.tv-search-matches a' );
+		assert.equal( match.pathname, '/de/produkt/gw80k/' );
+		assert.equal( match.querySelector( 'small' ).textContent, 'DLK-GW80K' );
+		assert.equal( new w.FormData( input.form ).get( 's' ), 'GW80K' );
+		input.dispatchEvent( new w.KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true, cancelable: true } ) );
+		assert.equal( dialog.open, false );
+		assert.equal( doc.activeElement, opener );
+		assert.equal( input.value, '' );
+	} finally { dom.window.close(); }
+} );

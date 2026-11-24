@@ -63,6 +63,13 @@ final class Materials {
 	private static ?array $product_index = null;
 
 	/**
+	 * Reviewed display labels, keyed by the manufacturer's file in uploads.
+	 *
+	 * @var array<string, mixed>|null
+	 */
+	private static ?array $document_titles = null;
+
+	/**
 	 * Whether the page is German.
 	 */
 	public static function is_de(): bool {
@@ -1405,16 +1412,36 @@ final class Materials {
 	}
 
 	/**
-	 * German pages use an existing reviewed title when the guarded migration
-	 * has stored one for this exact English string. English pages and unmapped
-	 * titles keep the stored wording; German catalogue words still follow
-	 * document_title_display().
+	 * The editorial record for this specific published file.
+	 *
+	 * @param string $url Published original.
+	 * @return array<string,mixed>
+	 */
+	public static function document_edition( string $url ): array {
+		if ( '' === $url ) {
+			return array();
+		}
+		self::$document_titles ??= self::read( 'document-titles.json' );
+		$path                    = (string) wp_parse_url( $url, PHP_URL_PATH );
+		$key                     = explode( '/wp-content/uploads/', rawurldecode( $path ), 2 )[1] ?? '';
+		$edition                 = self::$document_titles[ $key ] ?? array();
+		return is_array( $edition ) ? $edition : array();
+	}
+
+	/**
+	 * Use the file’s reviewed display title in the current language. Other files
+	 * keep their published title or its existing German editorial translation.
 	 *
 	 * @param string    $title  Stored title shown to the customer.
 	 * @param bool|null $german Whether the page is German; null reads the request.
+	 * @param string    $url Published file whose label is shown.
 	 */
-	public static function localized_document_title( string $title, ?bool $german = null ): string {
+	public static function localized_document_title( string $title, ?bool $german = null, string $url = '' ): string {
 		$german = $german ?? self::is_de();
+		$label  = self::document_edition( $url )[ $german ? 'de' : 'en' ] ?? '';
+		if ( is_string( $label ) && '' !== $label ) {
+			return $label;
+		}
 		if ( ! $german ) {
 			return $title;
 		}

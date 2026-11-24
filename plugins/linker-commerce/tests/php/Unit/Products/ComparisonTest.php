@@ -304,6 +304,48 @@ final class ComparisonTest extends TestCase {
 		}
 	}
 
+	/** The four-port STS rating states both the line-side and the inverter-side power. */
+	public function test_four_port_ratings_align_with_each_matching_domain(): void {
+		$this->spec_tables[4107] = array(
+			array(
+				'spec_group_title' => 'Ratings (grid, back-up, smart port, inverter)',
+				'spec_rows'        => array( self::spec_row( 'Rated power', '30', 'kW' ), self::spec_row( 'Rated current', '45.5', 'A' ) ),
+			),
+		);
+		$this->spec_tables[6530] = array(
+			array(
+				'spec_group_title' => 'Grid, back-up and smart port',
+				'spec_rows'        => array( self::spec_row( 'Rated power', '60', 'kW' ), self::spec_row( 'Rated current', '91', 'A' ) ),
+			),
+			array(
+				'spec_group_title' => 'Inverter side',
+				'spec_rows'        => array( self::spec_row( 'Rated power', '30', 'kW' ) ),
+			),
+		);
+		$specs                   = array_column( $this->comparison()->of( array( 6530, 4107 ), 'en' )['specs'], 'values', 'label' );
+		self::assertSame(
+			array(
+				6530 => '60 kW',
+				4107 => '30 kW',
+			),
+			$specs['Rated power (Grid, back-up and smart port)']
+		);
+		self::assertSame(
+			array(
+				6530 => '30 kW',
+				4107 => '30 kW',
+			),
+			$specs['Rated power (Inverter side)']
+		);
+		self::assertSame(
+			array(
+				6530 => '91 A',
+				4107 => '45.5 A',
+			),
+			$specs['Rated current']
+		);
+	}
+
 	/** Context and product identity decide alignment, including repeated rows. */
 	public function test_technical_rows_align_only_unambiguous_matching_groups(): void {
 		$this->spec_tables[4107] = array(

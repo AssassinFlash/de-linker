@@ -11,53 +11,7 @@ namespace Linker\Tools\Genie;
 
 use WP_Post;
 
-/**
- * /genie/ and /de/genie/ are the workspace's login wall, not a content page:
- * an anonymous visitor gets the tool's name and "Anmelden / Konto erstellen",
- * and the conversation itself needs an account (docs/specs/19-tool-pages.md
- * §2). Google indexed the English page on 2026-10-26 and both addresses were
- * listed in SEOPress's page-sitemap1.xml, so both now answer noindex and leave
- * that sitemap.
- *
- * The decision lands on SEOPress's own extension points — the filters the
- * plugin and its PRO add-on already use — instead of on the two pages' stored
- * robots option. The stored option (`_seopress_robots_index`, the per-post
- * "No index" checkbox) is the same signal and produces the same output, but it
- * is WordPress data: this tree's migration and `present` own the pages, and a
- * page re-imported or recreated without that meta would silently return to the
- * index. A rule that ships with the plugin survives that and needs no
- * production write.
- *
- * - `seopress_titles_noindex_bypass` is the effective robots decision the meta
- *   tag is built from. Answering `'1'` there is what makes SEOPress also omit
- *   the canonical (the canonical hooks are only defined while the bypass does
- *   not answer `'1'`/`'yes'`, options-titles-metas.php) and remove Polylang's
- *   hreflang alternates (the robots hook removes them when its array carries
- *   noindex). The English and German pages stay Polylang twins either way; the
- *   alternates are suppressed on both sides, not on one.
- * - `seopress_titles_robots_attrs` is the array that meta tag is assembled
- *   from. The bypass already puts `noindex` into it; this filter keeps it
- *   there if another filter on the same decision chain emptied it — the
- *   render-time half that linker-i18n's twin mirror also carries
- *   (`Seo::twin_robots`). `follow` stays whatever the page itself says.
- * - `wp_robots` is WordPress's own policy, the fallback for a host without
- *   SEOPress. With SEOPress active it owns the single robots tag and empties
- *   core's directives (seopress-functions.php removes
- *   `wp_robots_max_image_preview_large`), so this callback stays aside there
- *   rather than printing a second robots tag on this one page.
- * - `seopress_sitemaps_single_url` is where the XML sitemap drops an entry.
- *   SEOPress returns null there for a post whose stored robots option says
- *   noindex (src/Services/Sitemap/Render/Single.php), but reads the post meta
- *   only — a decision made in code is invisible to it, so this filter repeats
- *   the exclusion for the workspace page.
- *
- * The page is identified by the path both languages share — the English post
- * and its German twin are both named `genie` (Polylang puts German under
- * /de/) — and by being a top-level page, so a page that merely ends in
- * /genie/ under another parent is not caught. When the page moves or is
- * renamed this rule stops applying with it; that is the point, the address it
- * names is the one the site serves.
- */
+/** Keep both language versions of the Genie workspace outside the index. */
 final class PageIndexing {
 
 	/**
@@ -72,6 +26,8 @@ final class PageIndexing {
 	public function register(): void {
 		add_filter( 'seopress_titles_noindex_bypass', array( $this, 'noindex' ) );
 		add_filter( 'seopress_titles_robots_attrs', array( $this, 'seopress_robots' ) );
+		add_filter( 'pll_rel_hreflang_attributes', array( $this, 'alternates' ), 50 );
+		add_filter( 'seopress_titles_desc', array( $this, 'description' ), 50 );
 		add_filter( 'wp_robots', array( $this, 'robots' ) );
 		add_filter( 'seopress_sitemaps_single_url', array( $this, 'drop_from_sitemap' ), 10, 2 );
 	}
@@ -133,6 +89,25 @@ final class PageIndexing {
 	 */
 	public function drop_from_sitemap( mixed $url, mixed $post ): mixed {
 		return $post instanceof WP_Post && self::is_workspace_post( $post ) ? null : $url;
+	}
+
+	/**
+	 * Omit alternate index URLs for private workspaces.
+	 *
+	 * @param array<string,string> $links Language alternates.
+	 * @return array<string,string>
+	 */
+	public function alternates( array $links ): array {
+		return $this->request_is_workspace() ? array() : $links;
+	}
+
+	/**
+	 * Describe the public tool in the page language.
+	 *
+	 * @param string $description SEOPress description.
+	 */
+	public function description( string $description ): string {
+		return $this->request_is_workspace() ? __( 'Ask Genie about inverter and battery compatibility, product specifications and manufacturer documents for your project.', 'linker-tools' ) : $description;
 	}
 
 	/**

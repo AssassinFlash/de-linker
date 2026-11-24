@@ -104,7 +104,7 @@ final class GermanTitles {
 		if ( ! $this->is_german_shop() ) {
 			return $description;
 		}
-		return __( 'Filter inverters, LFP batteries, all-in-one systems, meters and controllers by brand, or find an item by number or nameplate photo. Net prices for partners.', 'linker-i18n' );
+		return __( 'Compare inverters, LFP storage and accessories for your project. Filter by brand or look up a device by model or product number.', 'linker-i18n' );
 	}
 
 	/**

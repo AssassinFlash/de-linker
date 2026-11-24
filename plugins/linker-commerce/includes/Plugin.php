@@ -87,6 +87,8 @@ final class Plugin {
 		$filters->register();
 		$this->search_scope->register();
 		$this->contact->register();
+		( new Storefront\PageIndexing() )->register();
+		( new Storefront\PageSchema() )->register();
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
 		( new Consent\BasicMode() )->register();

@@ -416,6 +416,25 @@ def fragment_strings(content: str) -> list[tuple[str, int]]:
     return parser.strings
 
 
+def structured_copy(path: Path, data: dict) -> list[str]:
+    if path.name == "faq-trade.json":
+        labels = []
+        for category in data["categories"]:
+            labels.append(category["name"])
+            for qa in category["qas"]:
+                labels.extend((qa["question"], qa["answer"]))
+        return [text for label in labels for text in label.values()]
+    if path.name == "document-titles.json":
+        return [title[lang] for title in data.values() for lang in ("en", "de")]
+    return [
+        item[field]
+        for item in data.get("items", [])
+        if item.get("status") == "pass"
+        for field in ("question", "answer", "question_de", "answer_de")
+        if field in item
+    ]
+
+
 def repo_hits(root: Path, terms: list[str]) -> list[Hit]:
     """Every banned word in every customer-visible repository source."""
     patterns = [(term, term_pattern(term)) for term in terms]
@@ -440,6 +459,18 @@ def repo_hits(root: Path, terms: list[str]) -> list[Hit]:
                 Hit("fragment", relative, line, value, term)
                 for term in matched_terms(value, patterns)
             )
+
+    data_dir = root / "plugins/linker-commerce/data"
+    for path in [data_dir / "faq-trade.json", data_dir / "document-titles.json", *sorted((root / "docs/faq").glob("*.json"))]:
+        if not path.is_file():
+            continue
+        source = path.read_text(encoding="utf-8")
+        for label in structured_copy(path, json.loads(source)):
+            for value, _ in fragment_strings(label):
+                for term in matched_terms(value, patterns):
+                    pos = source.find(json.dumps(label, ensure_ascii=False))
+                    line = source.count("\n", 0, max(0, pos)) + 1
+                    hits.append(Hit("data", str(path.relative_to(root)), line, value, term))
 
     for path in sorted(root.glob(CATALOG_GLOB)):
         relative = str(path.relative_to(root))

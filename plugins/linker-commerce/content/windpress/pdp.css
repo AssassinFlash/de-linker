@@ -2058,3 +2058,8 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 		grid-template-columns: minmax(0, 1fr);
 	}
 }
+
+#tv-storefront-pdp .pdp-compatibility-check p { margin: .5rem 0 1rem; }
+#tv-storefront-pdp .pdp-compatibility-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+#tv-storefront-pdp .pdp-compatibility-check { padding-block: clamp(1.5rem, 3vw, 2.5rem); }
+#tv-storefront-pdp .pdp-compatibility-actions .pdp-btn { width: auto; margin: 0; }

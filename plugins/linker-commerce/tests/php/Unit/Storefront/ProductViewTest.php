@@ -256,4 +256,20 @@ final class ProductViewTest extends TestCase {
 			( new ProductView() )->downloads( 12 )
 		);
 	}
+	/** German and multilingual files precede English files without reordering peers. */
+	public function test_german_downloads_keep_most_relevant_languages_first(): void {
+		WP_Mock::userFunction( 'linker_i18n_is_de', array( 'return' => true ) );
+		$rows = array();
+		foreach ( array( 'EN', 'DE/EN', 'DE', 'MULTI', 'EN' ) as $index => $language ) {
+			$rows[] = array(
+				'title'    => (string) $index,
+				'url'      => 'https://de-linker.test/' . $index . '.pdf',
+				'type'     => 'manual',
+				'role'     => 'manual',
+				'language' => $language,
+			);
+		}
+		$view = new ProductView( document_reader: static fn (): array => $rows );
+		self::assertSame( array( '2', '1', '3', '0', '4' ), array_column( $view->downloads( 7 ), 'title' ) );
+	}
 }

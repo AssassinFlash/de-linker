@@ -21,9 +21,9 @@
     },
     {
       "question": "What does the HS3-6K-T2-W/G-PX package contain?",
-      "answer": "The shipment contains: inverter, 24-pin communication cable connector, insulated terminals x22, PV connector x4, 1 backup load connector (blue) kit, 1 grid connector (black) kit, communication cable kit, 2 meter kit, 3 printed documents. Contents are order-dependent; not all packages listed may be in your shipment. In some configurations, the grid and backup load connector kits might be different. Meter kit A or B is included depending on shipments.",
+      "answer": "The shipment contains: inverter, 24-pin communication cable connector, insulated terminals x22, PV connector x4, 1 backup load connector (blue) kit, 1 grid connector (black) kit, communication cable kit, 2 meter kit, 3 printed documents. The exact contents depend on the configuration; not all packages listed may be in your shipment. In some configurations, the grid and backup load connector kits might be different. Meter kit A or B is included depending on shipments.",
       "question_de": "Was gehört zum Lieferumfang des HS3-6K-T2-W/G-PX?",
-      "answer_de": "Zum Lieferumfang gehören: Wechselrichter, 24-poliger Kommunikationskabel-Stecker, isolierte Klemmen x22, PV-Stecker x4, 1 Backup-Last-Anschlusskit (blau), 1 Netzanschlusskit (schwarz), Kommunikationskabel-Kit, 2 Meter-Kit, 3 gedruckte Dokumente. Der Inhalt ist bestellabhängig; nicht alle aufgeführten Pakete müssen in Ihrer Lieferung enthalten sein. In einigen Konfigurationen können das Netz- und das Backup-Last-Anschlusskit abweichen. Meter-Kit A oder B ist je nach Lieferung enthalten.",
+      "answer_de": "Zum Lieferumfang gehören: Wechselrichter, 24-poliger Kommunikationskabel-Stecker, isolierte Klemmen x22, PV-Stecker x4, 1 Backup-Last-Anschlusskit (blau), 1 Netzanschlusskit (schwarz), Kommunikationskabel-Kit, 2 Meter-Kit, 3 gedruckte Dokumente. Der Inhalt hängt von der Konfiguration ab; nicht alle aufgeführten Pakete müssen in Ihrer Lieferung enthalten sein. In einigen Konfigurationen können das Netz- und das Backup-Last-Anschlusskit abweichen. Meter-Kit A oder B ist je nach Lieferung enthalten.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf",
         "page": 36,

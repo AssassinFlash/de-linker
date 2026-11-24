@@ -11,12 +11,12 @@
       "qas": [
         {
           "question": {
-            "en": "What is the minimum order quantity, and where does Linker deliver?",
-            "de": "Was ist die Mindestbestellmenge, und wohin liefert Linker?"
+            "en": "Can I request a single unit, and where do you deliver?",
+            "de": "Kann ich ein einzelnes Gerät anfragen, und wohin liefern Sie?"
           },
           "answer": {
-            "en": "There is no pallet minimum. Inquiries start from individual units, delivered across the EU. Equipment ships according to project schedules, with trade quotes detailing destination freight.",
-            "de": "Es gibt kein Palettenminimum. Anfragen sind ab einzelnen Einheiten möglich, geliefert in der gesamten EU. Ausrüstung wird gemäß Projektzeitplänen versandt, wobei Handelsangebote die Frachtkosten zum Zielort ausweisen."
+            "en": "You can request a single unit. We deliver across the EU and coordinate delivery with your project schedule. Your quotation lists the freight cost to your destination.",
+            "de": "Sie können ein einzelnes Gerät anfragen. Wir liefern in der gesamten EU und stimmen den Liefertermin mit Ihrem Projektplan ab. Die Frachtkosten zum Zielort finden Sie in Ihrem Angebot."
           }
         },
         {
@@ -25,8 +25,8 @@
             "de": "Können verschiedene Marken in einer Projektanfrage kombiniert werden?"
           },
           "answer": {
-            "en": "Yes. Inverters, batteries, smart meters, and accessories from different brands can be combined in one project inquiry. They ship together under a unified invoice; check each pairing against the compatibility lists on file before sending your inquiry.",
-            "de": "Ja. Wechselrichter, Batteriespeicher, Smart Meter und Zubehör verschiedener Marken können in einer Projektanfrage kombiniert werden. Sie werden zusammen mit einer einheitlichen Rechnung geliefert; prüfen Sie jede Kombination vor Ihrer Anfrage anhand der hinterlegten Kompatibilitätslisten."
+            "en": "Yes. Inverters, batteries, smart meters, and accessories from different brands can be combined in one project inquiry. They can be delivered together on one invoice. Check each pairing against the compatibility lists on file before sending your inquiry.",
+            "de": "Ja. Wechselrichter, Batteriespeicher, Smart Meter und Zubehör verschiedener Marken können in einer Projektanfrage kombiniert werden. Eine gemeinsame Lieferung mit einer Rechnung ist möglich. Prüfen Sie jede Kombination vor Ihrer Anfrage anhand der hinterlegten Kompatibilitätslisten."
           }
         },
         {
@@ -81,8 +81,8 @@
     },
     {
       "name": {
-        "en": "Shipping & logistics",
-        "de": "Versand & Logistik"
+        "en": "Freight & logistics",
+        "de": "Fracht & Logistik"
       },
       "qas": [
         {
@@ -139,8 +139,8 @@
             "de": "Wie werden Garantieansprüche bearbeitet?"
           },
           "answer": {
-            "en": "For a warranty claim, contact us with your invoice or order reference, serial number, model, and fault description. Linker handles the diagnostic exchange with the manufacturer's technical desk. <a href=\"/contact/?intent=support\">Contact us about Warranty & Replacements</a>.",
-            "de": "Für einen Garantieanspruch kontaktieren Sie uns mit Ihrer Rechnungs- oder Bestellreferenz, Seriennummer, Modell und Fehlerbeschreibung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href=\"/de/kontakt/?intent=support\">Kontakt zu Garantie & Ersatz</a>."
+            "en": "For a warranty claim, contact us with your invoice number or project reference, serial number, model, and fault description. Linker handles the diagnostic exchange with the manufacturer's technical desk. <a href=\"/contact/?intent=support\">Contact us about Warranty & Replacements</a>.",
+            "de": "Für einen Garantieanspruch kontaktieren Sie uns mit Ihrer Rechnungsnummer oder Projektreferenz, Seriennummer, Modell und Fehlerbeschreibung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href=\"/de/kontakt/?intent=support\">Kontakt zu Garantie & Ersatz</a>."
           }
         },
         {

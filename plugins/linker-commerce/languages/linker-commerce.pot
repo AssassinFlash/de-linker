@@ -6484,3 +6484,75 @@ msgstr ""
 #: templates/quotation/quotation.php:71
 msgid "Quotation — DRAFT"
 msgstr ""
+
+#: includes/Products/Materials.php includes/Products/SelectionFacts.php includes/Storefront/ProductSchema.php includes/Abilities/SizeHint.php includes/Storefront/ProductView.php
+msgid "single-phase"
+msgstr ""
+
+#: includes/Storefront/ProductSchema.php includes/Products/SelectionFacts.php includes/Abilities/SizeHint.php includes/Products/Materials.php
+msgid "three-phase"
+msgstr ""
+
+#: includes/Storefront/ProductSchema.php
+msgid "Use the manufacturer’s documents to check the technical details, then request a quotation from Linker for your installation."
+msgstr ""
+
+#: includes/Storefront/ProductSchema.php
+msgid "Check the technical details in the manufacturer’s documents and request a quotation from Linker for your project."
+msgstr ""
+
+#: includes/Storefront/ProductSchema.php
+msgid "Check the manufacturer’s documents and ask Linker for a quotation for your installation."
+msgstr ""
+
+#: includes/Storefront/ProductSchema.php
+msgid "See the manufacturer’s documents and request a project quotation from Linker."
+msgstr ""
+
+#: includes/Storefront/ProductSchema.php
+msgid "Check the manufacturer’s documents and request a quotation."
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Which inverters are compatible with %s? Please include the manufacturer documentation."
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Check inverter compatibility"
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Find an inverter for %s or discuss your existing equipment with our team."
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Open configurator"
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Contact our team"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php includes/Consent/BasicMode.php content/windpress/consent.css
+msgid "Yes"
+msgstr ""
+
+#: src/accounts/api.test.ts templates/emails/linker-genie-handoff.php includes/Vocabulary/Labels.php content/journal-titles.json src/accounts/style.css
+msgid "No"
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Which equipment is compatible with %s? Please include the manufacturer documentation."
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Check system compatibility"
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php
+#, php-format
+msgid "Check which equipment works with %s in your project."
+msgstr ""

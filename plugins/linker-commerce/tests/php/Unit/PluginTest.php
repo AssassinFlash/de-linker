@@ -21,6 +21,8 @@ use Linker\Commerce\Contact\Module as ContactModule;
 use Linker\Commerce\Health\Monitor;
 use Linker\Commerce\Plugin;
 use Linker\Commerce\Storefront\ProductFilters;
+use Linker\Commerce\Storefront\PageSchema;
+use Linker\Commerce\Storefront\PageIndexing;
 use Linker\Commerce\Storefront\ProductSchema;
 use Linker\Commerce\Storefront\ProductView;
 use WP_Mock;
@@ -106,6 +108,16 @@ final class PluginTest extends TestCase {
 		// AnyInstance matches the object the registration constructs.
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( ProductFilters::class ), 'normalize_query' ), 0 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( new AnyInstance( ProductFilters::class ), 'filter' ), 99 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_schemas_website', array( new AnyInstance( PageSchema::class ), 'localized_home' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_get_json_data_organization', array( new AnyInstance( PageSchema::class ), 'localized_home' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( PageSchema::class ), 'print_blocks' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_titles_noindex_bypass', array( new AnyInstance( PageIndexing::class ), 'noindex' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_titles_robots_attrs', array( new AnyInstance( PageIndexing::class ), 'robots' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'wp_robots', array( new AnyInstance( PageIndexing::class ), 'native_robots' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'pll_rel_hreflang_attributes', array( new AnyInstance( PageIndexing::class ), 'alternates' ), 50 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_titles_canonical_on_noindex', array( new AnyInstance( PageIndexing::class ), 'canonical' ), 50 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_url', array( new AnyInstance( PageIndexing::class ), 'sitemap' ), 20, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( new AnyInstance( ProductSchema::class ), 'description' ), 45 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( ProductSchema::class ), 'print_block' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( \Linker\Commerce\Storefront\ArchiveSchema::class ), 'print_block' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'init', array( new AnyInstance( Monitor::class ), 'schedule' ) ); // @phpstan-ignore argument.type
