@@ -18148,3 +18148,7 @@ msgstr "Für steckerfertige Geräte gelten besondere G98-Anforderungen. Klären 
 #: build/planner/assets/planner.js:1
 msgid "Is all generation at the premises permanently wired?"
 msgstr "Sind alle Erzeugungseinheiten am Standort fest angeschlossen?"
+
+#: build/planner/assets/planner.js:1
+msgid "Grid connection review"
+msgstr "Netzanschlussprüfung"
