@@ -86,7 +86,8 @@ def terminal_section(
                 doc = cast(Object, fact["source"])
                 section.rows.append(
                     ReportRow(
-                        label=str(cast(Object, fact["label"])[locale]),
+                        label=f"{cast(Object, fact['label'])[locale]} · "
+                        + ("Originalzitat" if de else "Original excerpt"),
                         value=f"{'S.' if de else 'p.'} {doc['page']} · {doc['quote']} · {'Dokumentstand' if de else 'Document revision'} {doc['document_revision']}",
                         href=cast(str, doc["url"]),
                     )

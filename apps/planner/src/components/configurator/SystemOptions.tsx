@@ -1,3 +1,4 @@
+import { CountryRuleResult } from "../equipment/CountryRuleResult.tsx";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
@@ -283,6 +284,17 @@ function compareFit(
 	return a === b ? 0 : a < b ? -1 : 1;
 }
 
+function readCountryReview(assessment: JsonObject): JsonObject | undefined {
+	const units = Array.isArray(assessment.systems) ? assessment.systems : [];
+	const first = units.length
+		? readObject(readObject(units[0]).assessment)
+		: assessment;
+	const country = first.country_assessment;
+	if (!country) return undefined;
+	const review = readObject(country).rule_review;
+	return review ? readObject(review) : undefined;
+}
+
 export function SystemOptions({
 	solarOnly,
 	guided = false,
@@ -358,6 +370,7 @@ export function SystemOptions({
 		comparison?.run.project_id === run.project_id ? comparison : null;
 	const detail = useCandidateAssessment(client, scope, run, candidate);
 	const assessment = currentScope ? detail.data : undefined;
+	const countryReview = assessment && readCountryReview(assessment);
 	const format = (value: number) =>
 		new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(value);
 	const capacity = (item: EquipmentCandidate) =>
@@ -1279,12 +1292,16 @@ export function SystemOptions({
 											</ul>
 										</section>
 									))}
-								<p className="sc-muted">
-									{__(
-										"Country and grid requirements require separate assessment.",
-										"linker-tools",
-									)}
-								</p>
+								{countryReview ? (
+									<CountryRuleResult review={countryReview} locale={locale} />
+								) : (
+									<p className="sc-muted">
+										{__(
+											"Country and grid requirements require separate assessment.",
+											"linker-tools",
+										)}
+									</p>
+								)}
 							</details>
 							{selectionError && (
 								<p role="alert">

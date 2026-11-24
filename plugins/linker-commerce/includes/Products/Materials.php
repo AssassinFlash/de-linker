@@ -279,8 +279,8 @@ final class Materials {
 
 	/**
 	 * The contract facts of a product, keyed by the shop's own spec
-	 * vocabulary: the registry's specifications, or the product's own figures
-	 * when no material is bound. A registry value explicitly marked as a
+	 * vocabulary: the registry's maintained specifications when present,
+	 * otherwise the Woo product's own figures. A registry value explicitly marked as a
 	 * merged upper limit is not a product capacity; the native product's range
 	 * is used when present, and the misleading scalar is otherwise omitted.
 	 *
@@ -290,11 +290,8 @@ final class Materials {
 	public static function facts( WC_Product $product ): array {
 		$id       = (int) $product->get_id();
 		$material = self::material_for_product( $id );
-		if ( \is_array( $material ) ) {
-			$specs = $material['technical']['specifications'] ?? array();
-			if ( ! \is_array( $specs ) ) {
-				return array();
-			}
+		$specs    = $material['technical']['specifications'] ?? array();
+		if ( \is_array( $specs ) && array() !== $specs ) {
 			$energy = $specs['battery_rated_energy'] ?? array();
 			if ( \is_array( $energy ) && \str_contains( \strtolower( (string) ( $energy['unit'] ?? '' ) ), 'merged value' ) ) {
 				$own   = \json_decode( (string) \get_post_meta( self::source_product_id( $id ), '_tv_b2b_figures', true ), true );

@@ -28,6 +28,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from functools import cache
+from http.client import IncompleteRead
 from pathlib import Path
 from typing import Any, cast
 
@@ -471,7 +472,7 @@ def _outline_with_source(
     key = quadkey(latitude, longitude)
     try:
         url = part_url(country, key)
-    except (OSError, ValueError):
+    except (OSError, ValueError, IncompleteRead):
         url = None
     if url is not None:
         archive = _archive_path(country, key, url)

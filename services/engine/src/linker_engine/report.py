@@ -12,7 +12,16 @@ from __future__ import annotations
 from urllib.parse import unquote, urlsplit
 
 from . import rules
-from .models import Line, Report, ReportRow, ReportSection, ReportTable, RuleResult
+from .models import (
+    Line,
+    Report,
+    ReportRow,
+    ReportSection,
+    ReportSummaryCard,
+    ReportTable,
+    RuleResult,
+)
+from .proposal import monthly_chart
 from .residential import Design
 from .roof import lod2
 from .roof.service import ROOF_ASSUMPTIONS
@@ -70,6 +79,8 @@ def _rule_row(rule: RuleResult, locale: Locale) -> ReportRow:
 
 def _quantity_text(line: Line, locale: Locale) -> str:
     """The quantity with its unit, in the grammatical number of the count: 1 pc, 22 pcs, 60 m."""
+    if line.quantity is None:
+        return t("quantity.site", locale)
     return tn(f"unit.{line.unit}", line.quantity, locale, n=line.quantity)
 
 
@@ -157,24 +168,6 @@ def residential(
     if request.existing_inverter:
         site.append(
             ReportRow(label=t("row.existing", locale), value=request.existing_inverter)
-        )
-    if source_revision:
-        # The report names the engineering generation it was built from, so a
-        # printed copy can be traced to the data behind it. Short hashes: the
-        # full 64-hex revisions are unreadable on paper, and the prefix is what
-        # the engine's own /resource/version readback compares.
-        site.append(
-            ReportRow(
-                label=t("row.revision", locale),
-                value=t(
-                    "row.revision_value",
-                    locale,
-                    source=source_revision[:12],
-                    compatibility=(compatibility_revision or "")[:12],
-                )
-                if compatibility_revision
-                else t("row.revision_source", locale, source=source_revision[:12]),
-            )
         )
     sections.append(ReportSection(id="site", title=t("report.site", locale), rows=site))
 
@@ -339,6 +332,7 @@ def residential(
             )
         sections.append(
             ReportSection(
+                tier="appendix",
                 id="basis",
                 title=t("report.basis", locale),
                 rows=basis_rows,
@@ -370,6 +364,7 @@ def residential(
                 )
         sections.append(
             ReportSection(
+                tier="appendix",
                 id="releases",
                 title=t("report.releases", locale),
                 rows=release_rows,
@@ -391,6 +386,11 @@ def residential(
             sections.append(
                 ReportSection(
                     id="pv-components",
+                    paragraphs=[
+                        "Generische Modulparameter für die Planung. Die Module gehören nicht zum Lieferumfang von Linker."
+                        if locale == "de"
+                        else "Generic panel parameters for design. The panels are outside Linker’s supply scope."
+                    ],
                     title="PV-Modulbelegung"
                     if locale == "de"
                     else "Solar panel layout",
@@ -436,12 +436,16 @@ def residential(
         )
 
     assumptions = [
-        t("limit.no_payback", locale),
         t("limit.household", locale),
     ]
-    module = _module_name(design)
-    if module:
-        assumptions.insert(1, t("limit.declared_module", locale, model=module))
+    if design.selected and design.selected.strings:
+        assumptions.append(
+            t(
+                "limit.declared_module",
+                locale,
+                model=f"{fmt(design.selected.strings.module_wp, locale)} W",
+            )
+        )
     if not request.planes:
         assumptions.append(t("limit.default_orientation", locale))
     assumptions += [
@@ -450,6 +454,7 @@ def residential(
     ]
     sections.append(
         ReportSection(
+            tier="appendix",
             id="assumptions",
             title=t("report.assumptions", locale),
             paragraphs=assumptions,
@@ -462,16 +467,86 @@ def residential(
             paragraphs=[t("next.draft", locale), t("next.installer", locale)],
         )
     )
+    if source_revision:
+        sections.append(
+            ReportSection(
+                id="project-revisions",
+                tier="appendix",
+                title=t("row.revision", locale),
+                rows=[
+                    ReportRow(
+                        label="Produktdaten" if locale == "de" else "Product data",
+                        value=source_revision,
+                    )
+                ]
+                + (
+                    [
+                        ReportRow(
+                            label="Kompatibilität"
+                            if locale == "de"
+                            else "Compatibility",
+                            value=compatibility_revision,
+                        )
+                    ]
+                    if compatibility_revision
+                    else []
+                ),
+            )
+        )
+    cards = [
+        ReportSummaryCard(
+            label=t("row.array", locale), value=f"{fmt(request.pv_kwp, locale)} kWp"
+        )
+    ]
+    if design.selected and design.selected.battery:
+        cards.append(
+            ReportSummaryCard(
+                label="Nutzbare Speicherkapazität"
+                if locale == "de"
+                else "Usable storage",
+                value=f"{fmt(design.selected.battery.usable_kwh, locale)} kWh",
+            )
+        )
+    elif design.sizing.recommended:
+        cards.append(
+            ReportSummaryCard(
+                label="Speicherauslegung" if locale == "de" else "Storage sizing",
+                value=_range(
+                    design.sizing.low_kwh, design.sizing.high_kwh, locale, "kWh"
+                ),
+                note="Auslegungsbereich" if locale == "de" else "Design range",
+            )
+        )
+    cards += [
+        ReportSummaryCard(
+            label="Erwarteter Jahresertrag"
+            if locale == "de"
+            else "Estimated annual generation",
+            value=f"{fmt(y.kwh_year_mean, locale)} kWh",
+            note=f"PVGIS · {y.years[0]}–{y.years[1]}",
+        ),
+        ReportSummaryCard(
+            label=t("row.phase", locale),
+            value=t("row.phase_value", locale, phase=request.phase),
+        ),
+    ]
     return Report(
         title=t("report.title", locale),
         subtitle=t("report.subtitle", locale),
         generated_at=generated_at,
         locale=locale,
-        sections=sections,
+        sections=[s for s in sections if s.tier == "commercial"]
+        + [s for s in sections if s.tier == "appendix"],
+        summary_cards=cards,
+        monthly_chart=monthly_chart(
+            locale,
+            y.monthly_kwh,
+            None,
+            (
+                "PVGIS · mittlerer Monatsertrag"
+                if locale == "de"
+                else "PVGIS · mean monthly generation"
+            )
+            + f", {y.years[0]}–{y.years[1]}",
+        ),
     )
-
-
-def _module_name(design: Design) -> str:
-    if design.selected and design.selected.strings:
-        return design.selected.strings.module
-    return ""

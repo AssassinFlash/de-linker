@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 
 from pydantic import Field, field_validator
 
+from . import eu_connection_rules as eu_rules
 from .canonical import Json, Object
 from .country_rules import (
     _AT_CONFORMITY_SOURCE,
@@ -26,7 +27,9 @@ from .country_rules import (
 )
 from .energy_inputs import Document, SchemaVersion
 
-BUNDLED_RULE_COUNTRIES: frozenset[str] = frozenset({"DE", "FR", "NL", "AT", "SE"})
+BUNDLED_RULE_COUNTRIES: frozenset[str] = frozenset(
+    {"DE", "FR", "NL", "AT", "SE", *eu_rules.CHECKS}
+)
 
 _FRAMEWORKS: dict[str, str] = {
     "DE": "EnWG §19; VDE-AR-N 4110:2023-09; EEG 2023 § 9",
@@ -109,6 +112,10 @@ def bundled_country_sources(country: str | None) -> list[Object]:
     if not isinstance(country, str):
         return []
     code = country.upper()
+    if code == "GB":
+        return [dict(_COUNTRY_RULE_SOURCES[code]), dict(eu_rules.GB_DNO_SOURCE)]
+    if code in eu_rules.CHECKS:
+        return [dict(_COUNTRY_RULE_SOURCES[code])]
     if code == "DE":
         return [
             {
@@ -327,6 +334,7 @@ def country_assessment(inputs: Object) -> Object:
             country if isinstance(country, str) else None,
             inputs["country_rule_inputs"],
             operator=facts.dso_name,
+            voltage_level=facts.voltage_level,
         )
         if review is not None:
             result["rule_review"] = review
@@ -354,6 +362,7 @@ def country_assessment(inputs: Object) -> Object:
                     "se_automatic_reconnection",
                     "se_existing_change",
                     "se_connection_duty",
+                    *eu_rules.CHECKS.values(),
                 }
                 for check in cast(list[Json], review["checks"])
             ):

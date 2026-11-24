@@ -8,7 +8,21 @@ import {
 } from "../domain/countryRules.ts";
 import { ScenarioNumber } from "./energy/ScenarioNumber.tsx";
 
+import {
+	euRuleFields,
+	euFieldUnits,
+	euRuleLabels,
+	euRuleScopes,
+	isEuBasis,
+} from "../domain/euCountryRules.ts";
+
 const countries: Record<RuleBasis, string> = {
+	ch_lv_generation_control: "CH",
+	be_small_plant_limits: "BE",
+	pl_renewable_electric_installation: "PL",
+	gb_lv_microgeneration: "GB",
+	es_self_consumption: "ES",
+	it_lv_generation_spi: "IT",
 	fr_generation_pmax: "FR",
 	nl_storage_max_active: "NL",
 	de_pv_installed: "DE",
@@ -18,6 +32,12 @@ const countries: Record<RuleBasis, string> = {
 // Source-reading dates: docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md
 // and docs/research/2026-11-12-se-country-rules/EVIDENCE.md.
 const CHECKED_SOURCE_DATES: Record<RuleBasis, string> = {
+	ch_lv_generation_control: "2026-11-24",
+	be_small_plant_limits: "2026-11-24",
+	pl_renewable_electric_installation: "2026-11-24",
+	gb_lv_microgeneration: "2026-11-24",
+	es_self_consumption: "2026-11-24",
+	it_lv_generation_spi: "2026-11-24",
 	fr_generation_pmax: "2026-11-04",
 	nl_storage_max_active: "2026-11-04",
 	de_pv_installed: "2026-11-04",
@@ -45,6 +65,7 @@ export function CountryRuleForm({
 	onValidity: (valid: boolean) => void;
 }) {
 	const id = useId();
+	const euLabels = euRuleLabels();
 	const [dateText, setDateText] = useState(value?.rule_date ?? "");
 	const validity = useRef<Record<string, boolean>>({});
 	const report = useCallback(
@@ -105,7 +126,16 @@ export function CountryRuleForm({
 					value={value?.basis ?? ""}
 					onChange={(event) => {
 						const basis = event.currentTarget.value as RuleBasis | "";
-						onChange(basis ? emptyCountryRuleInputs(basis) : undefined);
+						onChange(
+							basis
+								? {
+										...emptyCountryRuleInputs(basis),
+										rule_date: isEuBasis(basis)
+											? CHECKED_SOURCE_DATES[basis]
+											: null,
+									}
+								: undefined,
+						);
 					}}
 				>
 					<option value="">
@@ -126,6 +156,18 @@ export function CountryRuleForm({
 					<option value="se_rfg_maximum_capacity">
 						{__("Sweden: maximum capacity under RfG Article 5", "linker-tools")}
 					</option>
+					{(Object.keys(euRuleFields) as (keyof typeof euRuleFields)[])
+						.filter(
+							(basis) =>
+								!country ||
+								countries[basis] === country ||
+								value?.basis === basis,
+						)
+						.map((basis) => (
+							<option key={basis} value={basis}>
+								{euLabels[basis]}
+							</option>
+						))}
 				</select>
 			</label>
 			{value && (
@@ -138,73 +180,78 @@ export function CountryRuleForm({
 							)}
 						</p>
 					)}
-					<p>
-						{value.basis === "fr_generation_pmax"
-							? __(
-									"Enter Pmax for the generation unit under Regulation (EU) 2016/631, not a device rating or Article 3 installed power by assumption.",
-									"linker-tools",
-								)
-							: value.basis === "nl_storage_max_active"
+					{isEuBasis(value.basis) && <p>{euRuleScopes()[value.basis]}</p>}
+					{!isEuBasis(value.basis) && (
+						<p>
+							{value.basis === "fr_generation_pmax"
 								? __(
-										"Enter the storage unit's maximum deliverable active power. Confirm the unit boundary separately; do not automatically add units.",
+										"Enter Pmax for the generation unit under Regulation (EU) 2016/631, not a device rating or Article 3 installed power by assumption.",
 										"linker-tools",
 									)
-								: value.basis === "de_pv_installed"
+								: value.basis === "nl_storage_max_active"
 									? __(
-											"Enter installed solar power calculated for EEG section 9, including its aggregation conditions. A single inverter rating is not that calculation.",
+											"Enter the storage unit's maximum deliverable active power. Confirm the unit boundary separately; do not automatically add units.",
 											"linker-tools",
 										)
-									: value.basis === "se_rfg_maximum_capacity"
+									: value.basis === "de_pv_installed"
 										? __(
-												"Enter the maximum capacity and the connection-point voltage. Article 5(2) of Regulation (EU) 2016/631 uses both, and EIFS 2018:2 section 17 makes the Nordic threshold values the Swedish ones.",
+												"Enter installed solar power calculated for EEG section 9, including its aggregation conditions. A single inverter rating is not that calculation.",
 												"linker-tools",
 											)
-										: __(
-												"Enter the maximum capacity Pmax of the whole installation at one connection point, as TOR Erzeuger Typ A section 4.1 defines it. Several generating units at one connection point count as one installation.",
-												"linker-tools",
-											)}
-					</p>
-					<p>
-						{value.basis === "fr_generation_pmax"
-							? sprintf(
-									__(
-										"Source version: 26 June 2020, checked %s.",
-										"linker-tools",
-									),
-									checkedSourceDate(value.basis, locale),
-								)
-							: value.basis === "nl_storage_max_active"
+										: value.basis === "se_rfg_maximum_capacity"
+											? __(
+													"Enter the maximum capacity and the connection-point voltage. Article 5(2) of Regulation (EU) 2016/631 uses both, and EIFS 2018:2 section 17 makes the Nordic threshold values the Swedish ones.",
+													"linker-tools",
+												)
+											: __(
+													"Enter the maximum capacity Pmax of the whole installation at one connection point, as TOR Erzeuger Typ A section 4.1 defines it. Several generating units at one connection point count as one installation.",
+													"linker-tools",
+												)}
+						</p>
+					)}
+					{!isEuBasis(value.basis) && (
+						<p>
+							{value.basis === "fr_generation_pmax"
 								? sprintf(
 										__(
-											"Source version: 1 October 2026, checked %s.",
+											"Source version: 26 June 2020, checked %s.",
 											"linker-tools",
 										),
 										checkedSourceDate(value.basis, locale),
 									)
-								: value.basis === "de_pv_installed"
+								: value.basis === "nl_storage_max_active"
 									? sprintf(
 											__(
-												"German source text checked %s; earlier transition rules are not established here.",
+												"Source version: 1 October 2026, checked %s.",
 												"linker-tools",
 											),
 											checkedSourceDate(value.basis, locale),
 										)
-									: value.basis === "se_rfg_maximum_capacity"
+									: value.basis === "de_pv_installed"
 										? sprintf(
 												__(
-													"EIFS 2018:2 in force from 27 April 2019; section 17 adopts the RfG Article 5(2) table for the Nordic area. Checked %s.",
+													"German source text checked %s; earlier transition rules are not established here.",
 													"linker-tools",
 												),
 												checkedSourceDate(value.basis, locale),
 											)
-										: sprintf(
-												__(
-													"TOR Erzeuger Typ A, version 1.4 in force from 1 June 2026, checked %s.",
-													"linker-tools",
-												),
-												checkedSourceDate(value.basis, locale),
-											)}
-					</p>
+										: value.basis === "se_rfg_maximum_capacity"
+											? sprintf(
+													__(
+														"EIFS 2018:2 in force from 27 April 2019; section 17 adopts the RfG Article 5(2) table for the Nordic area. Checked %s.",
+														"linker-tools",
+													),
+													checkedSourceDate(value.basis, locale),
+												)
+											: sprintf(
+													__(
+														"TOR Erzeuger Typ A, version 1.4 in force from 1 June 2026, checked %s.",
+														"linker-tools",
+													),
+													checkedSourceDate(value.basis, locale),
+												)}
+						</p>
+					)}
 					<p>
 						{__(
 							"The rule date selects a documented source reading. It does not change the project connection date or establish whether the rule applies today.",
@@ -234,16 +281,73 @@ export function CountryRuleForm({
 								onChange={(event) => changeDate(event.currentTarget.value)}
 							/>
 						</label>
-						<ScenarioNumber
-							field="power_kw"
-							label={__("Declared power", "linker-tools")}
-							value={value.power_kw}
-							unit="kW"
-							locale={locale}
-							min={0}
-							report={report}
-							onChange={(next) => number("power_kw", next)}
-						/>
+						{isEuBasis(value.basis) ? (
+							euRuleFields[value.basis].map((field) => {
+								const unit = euFieldUnits[field];
+								if (!unit)
+									return (
+										<label key={field} className="sc-field">
+											<span>{euLabels[field]}</span>
+											<select
+												value={value[field] == null ? "" : String(value[field])}
+												onChange={(event) =>
+													onChange({
+														...value,
+														[field]:
+															event.currentTarget.value === ""
+																? null
+																: event.currentTarget.value === "true",
+													})
+												}
+											>
+												<option value="">
+													{__("Not specified", "linker-tools")}
+												</option>
+												<option value="true">
+													{__("Yes", "linker-tools")}
+												</option>
+												<option value="false">
+													{__("No", "linker-tools")}
+												</option>
+											</select>
+										</label>
+									);
+								const amount = value[field];
+								return (
+									<ScenarioNumber
+										key={field}
+										field={field}
+										label={euLabels[field]}
+										value={typeof amount === "number" ? amount : null}
+										unit={unit}
+										locale={locale}
+										report={report}
+										onChange={(next) => {
+											if (
+												next === 0 &&
+												field !== "be_storage_kva" &&
+												field !== "be_generation_kva"
+											) {
+												report(field, false);
+												return;
+											}
+											onChange({ ...value, [field]: next });
+										}}
+									/>
+								);
+							})
+						) : (
+							<ScenarioNumber
+								field="power_kw"
+								label={__("Declared power", "linker-tools")}
+								value={value.power_kw}
+								unit="kW"
+								locale={locale}
+								min={0}
+								report={report}
+								onChange={(next) => number("power_kw", next)}
+							/>
+						)}
 						{value.basis === "fr_generation_pmax" && (
 							<ScenarioNumber
 								field="connection_voltage_kv"

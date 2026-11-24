@@ -54,14 +54,24 @@ BATTERY = {
 @pytest.mark.parametrize(
     ("inputs", "locale", "orders", "quantities"),
     [
-        ({"equipment_setup": BATTERY}, "en", {2090: 6}, ["6 pc", "—"]),
+        (
+            {"equipment_setup": BATTERY},
+            "en",
+            {2090: 6},
+            ["6 pcs", "Per site layout"],
+        ),
         (
             {"equipment_setup": {**BATTERY, "parallel_stacks": None}},
             "de",
             {},
-            ["—", "—"],
+            ["Menge zu bestätigen", "Nach Anlagenplanung"],
         ),
-        ({"equipment_setup": {**BATTERY, "battery_product_id": None}}, "en", {}, ["—"]),
+        (
+            {"equipment_setup": {**BATTERY, "battery_product_id": None}},
+            "en",
+            {},
+            ["Per site layout"],
+        ),
         (
             {
                 "equipment_plant_setup": {
@@ -103,7 +113,7 @@ BATTERY = {
             },
             "en",
             {2090: 5},
-            ["1 pc", "12 pc"],
+            ["1 pc", "12 pcs"],
         ),
     ],
 )

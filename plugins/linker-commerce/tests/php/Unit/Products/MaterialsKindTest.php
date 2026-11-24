@@ -56,6 +56,35 @@ final class MaterialsKindTest extends TestCase {
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id ) => 9295 === $id ? 9294 : 0 ) );
 	}
 
+	/** The complete ESA cabinet uses its own published model and source document. */
+	public function test_goodwe_esa_cabinet_has_one_material_binding(): void {
+		$material = Materials::material_for_product( 6321 );
+		$this->assertNotNull( $material );
+		$this->assertSame( array( 6321 ), $material['bindings']['woo_product_ids'] );
+		$this->assertSame( 'GW125/261-ESA-LCN-G10', $material['identity']['model'] );
+		$this->assertSame( 'storage_system', $material['identity']['kind'] );
+		$this->assertStringContainsString( 'GW_ESA-261kWh_Datasheet', $material['technical']['documents'][0]['url'] );
+		$this->assertNotContains( 'woo:6321', array_column( Materials::registry()['unresolved_inputs'], 'input_id' ) );
+		$native = array( 'ip_rating' => array( 'value' => 'IP54' ) );
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 6321, '_tv_b2b_figures', true ),
+				'return' => (string) json_encode( $native ),
+			)
+		);
+		$this->assertSame( $native, Materials::facts( $this->product( 6321 ) ) );
+	}
+
+	/** A B2-25.0 is one 25 kWh system containing five BU2 modules. */
+	public function test_saj_ratings_distinguish_the_complete_system_from_each_internal_module(): void {
+		$facts = Materials::facts( $this->product( 2070 ) );
+		$this->assertSame( '5.0', $facts['module_energy_kwh_nominal']['value'] );
+		$this->assertSame( '4.5', $facts['module_energy_kwh_usable']['value'] );
+		$this->assertSame( '25.0', $facts['system_nominal_energy_kwh']['value'] );
+		$this->assertSame( '22.5', $facts['system_usable_energy_kwh']['value'] );
+	}
+
 	/** A cabinet and its internal inverter must not share the inverter's figures. */
 	public function test_duplicate_binding_uses_the_woo_models_matching_material_for_both_languages(): void {
 		$this->seed_registry(

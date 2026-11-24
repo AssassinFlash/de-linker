@@ -140,10 +140,14 @@ def test_the_report_names_the_generation_it_was_built_from(engine: Engine) -> No
         "9a687023a7b7b5ab769878739277eca058e1879f3a5cca7c12f9ef9968eee89c",
         "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c",
     )
-    site = {row.label: row.value for row in built.sections[0].rows}
-    # Short prefixes: the printed sheet must stay readable; the engine's own
-    # /resource/version readback compares the same twelve characters.
-    assert site["Revision"] == ("Design data 9a687023a7b7 · compatibility e90acaa602fd")
+    section = next(
+        section for section in built.sections if section.id == "project-revisions"
+    )
+    assert section.tier == "appendix"
+    assert [r.value for r in section.rows] == [
+        "9a687023a7b7b5ab769878739277eca058e1879f3a5cca7c12f9ef9968eee89c",
+        "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c",
+    ]
 
 
 def test_the_pdf_carries_the_linker_mark_without_an_uploaded_logo(
@@ -195,7 +199,12 @@ def test_the_pdf_prints_the_revision_it_was_built_from(engine: Engine) -> None:
         "2026-10-09T12:00:00Z",
         "9a687023a7b7b5ab769878739277eca058e1879f3a5cca7c12f9ef9968eee89c",
     )
-    assert "Design data 9a687023a7b7" in text_of(pdf.render(built))
+    pages = PdfReader(io.BytesIO(pdf.render(built))).pages
+    assert "9a687023a7b7" not in pages[0].extract_text()
+    assert (
+        "9a687023a7b7b5ab769878739277eca058e1879f3a5cca7c12f9ef9968eee89c"
+        in "".join(pages[-1].extract_text().split())
+    )
 
 
 def test_every_rule_without_a_source_is_disclosed_somewhere() -> None:
@@ -218,12 +227,12 @@ def test_sections_follow_the_ticket(engine: Engine) -> None:
         "yield",
         "storage",
         "metrics",
-        "basis",
-        "releases",
         "bom",
         "warnings",
-        "assumptions",
         "next",
+        "basis",
+        "releases",
+        "assumptions",
     ]
 
 
@@ -379,6 +388,7 @@ def test_pdf_renders_the_cold_voc_beta_with_its_native_symbol_glyph(
             "sections": [
                 ReportSection(
                     id="formula",
+                    tier="appendix",
                     title="Cold Voc",
                     paragraphs=[formula, source_url],
                     rows=[
@@ -395,11 +405,9 @@ def test_pdf_renders_the_cold_voc_beta_with_its_native_symbol_glyph(
     )
     original = report.model_dump()
     document = pdf.render(report)
-    # The shipped Latin faces have no U+03B2; the native Symbol encoding names
-    # the actual beta glyph. An ASCII b substitute is not the same character.
-    for name in ("Vera", "Vera-Bold"):
-        assert ord("β") not in cast(TTFont, pdfmetrics.getFont(name)).face.charToGlyph
-    assert pdfmetrics.getEncoding("SymbolEncoding").vector[98] == "beta"
+    for name in ("DejaVuSans", "DejaVuSans-Bold"):
+        face = cast(TTFont, pdfmetrics.getFont(name)).face
+        assert all(ord(letter) in face.charToGlyph for letter in "βźł")
     extracted = text_of(document)
     assert " ".join(formula.split()) in " ".join(extracted.split())
     assert extracted.count("β") == 9
@@ -410,7 +418,7 @@ def test_pdf_renders_the_cold_voc_beta_with_its_native_symbol_glyph(
         resources = cast(DictionaryObject, page["/Resources"].get_object())
         for font in cast(DictionaryObject, resources["/Font"].get_object()).values():
             fonts.add(str(cast(DictionaryObject, font.get_object())["/BaseFont"]))
-    assert "/Symbol" in fonts and "/ZapfDingbats" not in fonts
+    assert any("DejaVuSans" in font for font in fonts) and "/ZapfDingbats" not in fonts
     assert {
         annotation.get_object()["/A"]["/URI"]
         for page in reader.pages
@@ -491,3 +499,83 @@ def test_pdf_keeps_datasheet_and_rule_references_on_their_labelled_page() -> Non
     ]
     for index, row in enumerate(rows):
         assert any(row.label in page and f"(ref-{index:02d})" in page for page in pages)
+
+
+@pytest.mark.parametrize("locale", ["de", "en"])
+def test_proposal_places_monthly_generation_and_verified_cards_before_appendix(
+    engine: Engine, locale: str
+) -> None:
+    built = build(engine, locale)
+    assert built.monthly_chart is not None
+    assert len(built.monthly_chart.pv_kwh) == 12
+    assert built.monthly_chart.load_kwh is None
+    assert len(built.summary_cards) == 4
+    logo = f"data:image/png;base64,{PNG}"
+    data = pdf.render(built, logo)
+    assert pdf.render(built, logo) == data
+    pages = [page.extract_text() for page in PdfReader(io.BytesIO(data)).pages]
+    assert built.monthly_chart.title in pages[0]
+    appendix = (
+        "Technischer & rechtlicher Anhang"
+        if locale == "de"
+        else "Technical & Compliance Appendix"
+    )
+    assert any(appendix in page for page in pages[1:])
+    assert all(
+        word not in "\n".join(pages).lower()
+        for word in ("payback", "amortisation", "cashflow")
+    )
+
+
+@pytest.mark.parametrize(
+    ("locale", "site"), [("en", "Per site layout"), ("de", "Nach Anlagenplanung")]
+)
+def test_quick_proposal_leaves_site_materials_to_the_measured_layout(
+    engine: Engine, locale: str, site: str
+) -> None:
+    from conftest import PANEL_ELECTRICAL
+
+    scenario = ResidentialInput.model_validate(
+        dict(
+            plz="80538",
+            country="DE",
+            annual_kwh=5000,
+            pv_kwp=10,
+            phase=3,
+            locale=locale,
+            module=PANEL_ELECTRICAL,
+        )
+    )
+    design = residential.design(engine, scenario)
+    assert design.selected
+    lines = [
+        line
+        for line in design.selected.lines
+        if line.role in ("dc_cable", "connector", "mounting")
+    ]
+    assert len(lines) == 3 and all(line.quantity is None for line in lines)
+    sections = report.residential(design, "2026-01-01T00:00:00Z").sections
+    materials = next(s for s in sections if s.id == "bom").table
+    assert materials and sum(row[0] == site for row in materials.rows) == 3
+    assert "Proforma" not in str(sections)
+
+
+def test_the_appendix_prints_a_document_url_once_per_reference() -> None:
+    link = "https://de-linker.com/documents/manual.pdf"
+    entry = ReportSection(
+        id="sources",
+        tier="appendix",
+        title="Source documents",
+        rows=[ReportRow(label="Manual", value=link, href=link)],
+    )
+    report = Report.model_validate(
+        dict(
+            title="Proposal",
+            subtitle="",
+            locale="en",
+            generated_at="2026-11-24",
+            sections=[entry],
+        )
+    )
+    result = text_of(pdf.render(report))
+    assert result.count(link) == 1

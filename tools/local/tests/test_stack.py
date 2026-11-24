@@ -294,11 +294,18 @@ def test_a_form_mails_into_the_instance_instead_of_sending(
     a = stack.instance(A)
     before = set(a.mail_dir.glob("*.eml"))
 
+    reset_path = "/wp-login.php?action=lostpassword"
+    page = request(a.port, reset_path)
+    assert page.status == 200
+    nonce = re.search(r'name="linker_password_reset_nonce" value="([^"]+)"', page.body)
+    assert nonce is not None
     sent = request(
         a.port,
-        "/wp-login.php?action=lostpassword",
+        reset_path,
         method="POST",
+        cookie=page.headers["Set-Cookie"].split(";", 1)[0],
         form={
+            "linker_password_reset_nonce": nonce[1],
             "user_login": "local-admin",
             "redirect_to": "",
             "wp-submit": "Get New Password",

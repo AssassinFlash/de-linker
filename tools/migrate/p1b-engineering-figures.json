@@ -1,0 +1,1236 @@
+{
+  "purpose": "Verified product engineering figures for existing Woo products. Import with 615-dc-figures.py and retain its site-specific rollback receipt.",
+  "reviewed_sources": [
+    {
+      "document_id": "doc-5fc29752652f76723dfec8e5698f5dd3551b467e11811174397ebe224719c9e2",
+      "blob_sha256": "cdc4081da807a15cdc98b84c5d38725c01468608b512ae115fd51b06b33f02d1",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_Limited-Warranty-Europe.pdf",
+      "pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "doc-f5ff86503d325bd3141aa78c9dbbdef6338e6667de02bd3aeb965e9112920594",
+      "blob_sha256": "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08",
+      "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "document_id": "doc-4acaeab393826261df5e6a6c685a3cfa8c97d37ae636f32f2dd25733f5273dab",
+      "blob_sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+      "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+      "blob_sha256": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+      "pages": [
+        1,
+        3
+      ]
+    },
+    {
+      "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+      "blob_sha256": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf",
+      "pages": [
+        12
+      ]
+    },
+    {
+      "document_id": "doc-0672c057029d037b65ec8146400e0acb06e02c7900f41792fd623a0206f91e74",
+      "blob_sha256": "270d7e015db51b233920640cac612bdff1c461743c896124581c462709f7a083",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf",
+      "pages": [
+        1,
+        2
+      ]
+    },
+    {
+      "document_id": "doc-982aed912e09eb0d8ed806cf2ae483ec9cc782a57cc2d77e2d5fcfd35fb3dc03",
+      "blob_sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+      "pages": [
+        1
+      ]
+    },
+    {
+      "document_id": "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af",
+      "blob_sha256": "0fdeaf90548f35e00a605e8ae538c24f89f745be5195e85dbf466c2a7d2d9178",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "document_id": "doc-b9e192456cf52c431d8599e2d8901ad3c117dc5b2f73bb2318d480265d9339a4",
+      "blob_sha256": "348497c21d2f3ba532a9c1c3fa0d3e010355467b5cfbd9f9bff3a57de294f3df",
+      "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+      "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+      "blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+      "pages": [
+        36
+      ]
+    }
+  ],
+  "products": {
+    "1956": {
+      "model": "GW208.9-BAT-LC-G10",
+      "documents": {
+        "doc-5fc29752652f76723dfec8e5698f5dd3551b467e11811174397ebe224719c9e2": "cdc4081da807a15cdc98b84c5d38725c01468608b512ae115fd51b06b33f02d1"
+      },
+      "figures": {
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "202.7",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-5fc29752652f76723dfec8e5698f5dd3551b467e11811174397ebe224719c9e2",
+              "page": 1
+            },
+            "qualifier": {
+              "en": "GoodWe measures usable energy under Appendix A of its European battery warranty (page 5). Temperature and storage conditions affect the available energy.",
+              "de": "GoodWe bestimmt die nutzbare Energie nach Anhang A der europäischen Batteriegarantie (Seite 5). Temperatur und Lagerbedingungen beeinflussen die verfügbare Energie."
+            }
+          }
+        }
+      }
+    },
+    "1957": {
+      "model": "GW208.9-BAT-LCD-G10",
+      "documents": {
+        "doc-5fc29752652f76723dfec8e5698f5dd3551b467e11811174397ebe224719c9e2": "cdc4081da807a15cdc98b84c5d38725c01468608b512ae115fd51b06b33f02d1",
+        "doc-f5ff86503d325bd3141aa78c9dbbdef6338e6667de02bd3aeb965e9112920594": "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08"
+      },
+      "figures": {
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "200.7",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-5fc29752652f76723dfec8e5698f5dd3551b467e11811174397ebe224719c9e2",
+              "page": 1
+            },
+            "qualifier": {
+              "en": "GoodWe measures usable energy under Appendix A of its European battery warranty (page 5). Temperature and storage conditions affect the available energy.",
+              "de": "GoodWe bestimmt die nutzbare Energie nach Anhang A der europäischen Batteriegarantie (Seite 5). Temperatur und Lagerbedingungen beeinflussen die verfügbare Energie."
+            }
+          }
+        },
+        "rated_energy_kwh": {
+          "expect": {
+            "value": "208.9",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "208.9",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-f5ff86503d325bd3141aa78c9dbbdef6338e6667de02bd3aeb965e9112920594",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "1958": {
+      "model": "GW261.2-BAT-LCD-G10",
+      "documents": {
+        "doc-5fc29752652f76723dfec8e5698f5dd3551b467e11811174397ebe224719c9e2": "cdc4081da807a15cdc98b84c5d38725c01468608b512ae115fd51b06b33f02d1"
+      },
+      "figures": {
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "250.9",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-5fc29752652f76723dfec8e5698f5dd3551b467e11811174397ebe224719c9e2",
+              "page": 1
+            },
+            "qualifier": {
+              "en": "GoodWe measures usable energy under Appendix A of its European battery warranty (page 5). Temperature and storage conditions affect the available energy.",
+              "de": "GoodWe bestimmt die nutzbare Energie nach Anhang A der europäischen Batteriegarantie (Seite 5). Temperatur und Lagerbedingungen beeinflussen die verfügbare Energie."
+            }
+          }
+        }
+      }
+    },
+    "1954": {
+      "model": "GW61.4-BAT-AC-G10",
+      "documents": {
+        "doc-4acaeab393826261df5e6a6c685a3cfa8c97d37ae636f32f2dd25733f5273dab": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c"
+      },
+      "figures": {
+        "system_usable_energy_kwh": {
+          "expect": {
+            "value": "60",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "60",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-4acaeab393826261df5e6a6c685a3cfa8c97d37ae636f32f2dd25733f5273dab",
+              "page": 2
+            },
+            "qualifier": {
+              "en": "At beginning of life with 100% depth of discharge, a 0.2C charge/discharge rate and 25 ± 2 °C. The available energy depends on the configuration.",
+              "de": "Zu Beginn der Lebensdauer bei 100 % Entladetiefe, einer Lade- und Entladerate von 0,2 C und 25 ± 2 °C. Die verfügbare Energie hängt von der Konfiguration ab."
+            }
+          }
+        }
+      }
+    },
+    "1955": {
+      "model": "GW112.6-BAT-AC-G10",
+      "documents": {
+        "doc-4acaeab393826261df5e6a6c685a3cfa8c97d37ae636f32f2dd25733f5273dab": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c"
+      },
+      "figures": {
+        "system_usable_energy_kwh": {
+          "expect": {
+            "value": "110",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "110",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-4acaeab393826261df5e6a6c685a3cfa8c97d37ae636f32f2dd25733f5273dab",
+              "page": 2
+            },
+            "qualifier": {
+              "en": "At beginning of life with 100% depth of discharge, a 0.2C charge/discharge rate and 25 ± 2 °C. The available energy depends on the configuration.",
+              "de": "Zu Beginn der Lebensdauer bei 100 % Entladetiefe, einer Lade- und Entladerate von 0,2 C und 25 ± 2 °C. Die verfügbare Energie hängt von der Konfiguration ab."
+            }
+          }
+        }
+      }
+    },
+    "4103": {
+      "model": "CB2-57.3-HV5",
+      "documents": {
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "modules_per_stack_min": {
+          "expect": null,
+          "set": {
+            "value": "4",
+            "unit": "modules",
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            }
+          }
+        },
+        "modules_per_stack_max": {
+          "expect": null,
+          "set": {
+            "value": "4",
+            "unit": "modules",
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            }
+          }
+        }
+      }
+    },
+    "4104": {
+      "model": "CB2-71.6-HV5",
+      "documents": {
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "modules_per_stack_min": {
+          "expect": null,
+          "set": {
+            "value": "5",
+            "unit": "modules",
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            }
+          }
+        },
+        "modules_per_stack_max": {
+          "expect": null,
+          "set": {
+            "value": "5",
+            "unit": "modules",
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            }
+          }
+        }
+      }
+    },
+    "4105": {
+      "model": "CB2-85.9-HV5",
+      "documents": {
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "modules_per_stack_min": {
+          "expect": null,
+          "set": {
+            "value": "6",
+            "unit": "modules",
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            }
+          }
+        },
+        "modules_per_stack_max": {
+          "expect": null,
+          "set": {
+            "value": "6",
+            "unit": "modules",
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            }
+          }
+        }
+      }
+    },
+    "4106": {
+      "model": "CB2-100.3-HV5",
+      "documents": {
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "modules_per_stack_min": {
+          "expect": null,
+          "set": {
+            "value": "7",
+            "unit": "modules",
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            }
+          }
+        },
+        "modules_per_stack_max": {
+          "expect": null,
+          "set": {
+            "value": "7",
+            "unit": "modules",
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 3
+            }
+          }
+        }
+      }
+    },
+    "1959": {
+      "model": "CHS2-29.9K-T4-X",
+      "documents": {
+        "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "battery_rated_energy": {
+          "expect": {
+            "value": "57.3–100.3",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "57.3–100.3",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+              "page": 12
+            },
+            "value_de": "57,3–100,3",
+            "columns": [
+              {
+                "model": "CB2-57.3-HV5",
+                "value": 57.3,
+                "unit": "kWh",
+                "module_count": 4
+              },
+              {
+                "model": "CB2-71.6-HV5",
+                "value": 71.6,
+                "unit": "kWh",
+                "module_count": 5
+              },
+              {
+                "model": "CB2-85.9-HV5",
+                "value": 85.9,
+                "unit": "kWh",
+                "module_count": 6
+              },
+              {
+                "model": "CB2-100.3-HV5",
+                "value": 100.3,
+                "unit": "kWh",
+                "module_count": 7
+              }
+            ],
+            "qualifier": {
+              "en": "Rated energy depends on the CB2 cabinet selected for the CHS2 system.",
+              "de": "Die Nennenergie hängt vom gewählten CB2-Schrank des CHS2-Systems ab."
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "51.5 / 64.4 / 77.3 / 90.2",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+              "page": 12
+            },
+            "value_de": "51,5 / 64,4 / 77,3 / 90,2",
+            "columns": [
+              {
+                "model": "CB2-57.3-HV5",
+                "value": 51.5,
+                "unit": "kWh",
+                "module_count": 4
+              },
+              {
+                "model": "CB2-71.6-HV5",
+                "value": 64.4,
+                "unit": "kWh",
+                "module_count": 5
+              },
+              {
+                "model": "CB2-85.9-HV5",
+                "value": 77.3,
+                "unit": "kWh",
+                "module_count": 6
+              },
+              {
+                "model": "CB2-100.3-HV5",
+                "value": 90.2,
+                "unit": "kWh",
+                "module_count": 7
+              }
+            ],
+            "qualifier": {
+              "en": "The four values apply to the CB2-57.3, CB2-71.6, CB2-85.9 and CB2-100.3 cabinets respectively.",
+              "de": "Die vier Werte gelten der Reihe nach für die Schränke CB2-57.3, CB2-71.6, CB2-85.9 und CB2-100.3."
+            }
+          }
+        },
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "integrated_system",
+            "unit": null,
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "1960": {
+      "model": "CHS2-30K-T4-X",
+      "documents": {
+        "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "battery_rated_energy": {
+          "expect": {
+            "value": "57.3–100.3",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "57.3–100.3",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+              "page": 12
+            },
+            "value_de": "57,3–100,3",
+            "columns": [
+              {
+                "model": "CB2-57.3-HV5",
+                "value": 57.3,
+                "unit": "kWh",
+                "module_count": 4
+              },
+              {
+                "model": "CB2-71.6-HV5",
+                "value": 71.6,
+                "unit": "kWh",
+                "module_count": 5
+              },
+              {
+                "model": "CB2-85.9-HV5",
+                "value": 85.9,
+                "unit": "kWh",
+                "module_count": 6
+              },
+              {
+                "model": "CB2-100.3-HV5",
+                "value": 100.3,
+                "unit": "kWh",
+                "module_count": 7
+              }
+            ],
+            "qualifier": {
+              "en": "Rated energy depends on the CB2 cabinet selected for the CHS2 system.",
+              "de": "Die Nennenergie hängt vom gewählten CB2-Schrank des CHS2-Systems ab."
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "51.5 / 64.4 / 77.3 / 90.2",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+              "page": 12
+            },
+            "value_de": "51,5 / 64,4 / 77,3 / 90,2",
+            "columns": [
+              {
+                "model": "CB2-57.3-HV5",
+                "value": 51.5,
+                "unit": "kWh",
+                "module_count": 4
+              },
+              {
+                "model": "CB2-71.6-HV5",
+                "value": 64.4,
+                "unit": "kWh",
+                "module_count": 5
+              },
+              {
+                "model": "CB2-85.9-HV5",
+                "value": 77.3,
+                "unit": "kWh",
+                "module_count": 6
+              },
+              {
+                "model": "CB2-100.3-HV5",
+                "value": 90.2,
+                "unit": "kWh",
+                "module_count": 7
+              }
+            ],
+            "qualifier": {
+              "en": "The four values apply to the CB2-57.3, CB2-71.6, CB2-85.9 and CB2-100.3 cabinets respectively.",
+              "de": "Die vier Werte gelten der Reihe nach für die Schränke CB2-57.3, CB2-71.6, CB2-85.9 und CB2-100.3."
+            }
+          }
+        },
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "integrated_system",
+            "unit": null,
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "1961": {
+      "model": "CHS2-50K-T6-X",
+      "documents": {
+        "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+        "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3"
+      },
+      "figures": {
+        "battery_rated_energy": {
+          "expect": {
+            "value": "57.3–100.3",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "57.3–100.3",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+              "page": 12
+            },
+            "value_de": "57,3–100,3",
+            "columns": [
+              {
+                "model": "CB2-57.3-HV5",
+                "value": 57.3,
+                "unit": "kWh",
+                "module_count": 4
+              },
+              {
+                "model": "CB2-71.6-HV5",
+                "value": 71.6,
+                "unit": "kWh",
+                "module_count": 5
+              },
+              {
+                "model": "CB2-85.9-HV5",
+                "value": 85.9,
+                "unit": "kWh",
+                "module_count": 6
+              },
+              {
+                "model": "CB2-100.3-HV5",
+                "value": 100.3,
+                "unit": "kWh",
+                "module_count": 7
+              }
+            ],
+            "qualifier": {
+              "en": "Rated energy depends on the CB2 cabinet selected for the CHS2 system.",
+              "de": "Die Nennenergie hängt vom gewählten CB2-Schrank des CHS2-Systems ab."
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "51.5 / 64.4 / 77.3 / 90.2",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+              "page": 12
+            },
+            "value_de": "51,5 / 64,4 / 77,3 / 90,2",
+            "columns": [
+              {
+                "model": "CB2-57.3-HV5",
+                "value": 51.5,
+                "unit": "kWh",
+                "module_count": 4
+              },
+              {
+                "model": "CB2-71.6-HV5",
+                "value": 64.4,
+                "unit": "kWh",
+                "module_count": 5
+              },
+              {
+                "model": "CB2-85.9-HV5",
+                "value": 77.3,
+                "unit": "kWh",
+                "module_count": 6
+              },
+              {
+                "model": "CB2-100.3-HV5",
+                "value": 90.2,
+                "unit": "kWh",
+                "module_count": 7
+              }
+            ],
+            "qualifier": {
+              "en": "The four values apply to the CB2-57.3, CB2-71.6, CB2-85.9 and CB2-100.3 cabinets respectively.",
+              "de": "Die vier Werte gelten der Reihe nach für die Schränke CB2-57.3, CB2-71.6, CB2-85.9 und CB2-100.3."
+            }
+          }
+        },
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "integrated_system",
+            "unit": null,
+            "citation": {
+              "document_id": "doc-7bd0684a7675015d302d914a0c1644ade70f35633a3c34bdf69de0d8882b9d2d",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "2003": {
+      "model": "L260-OMNI",
+      "documents": {
+        "doc-0672c057029d037b65ec8146400e0acb06e02c7900f41792fd623a0206f91e74": "270d7e015db51b233920640cac612bdff1c461743c896124581c462709f7a083"
+      },
+      "figures": {
+        "energy_kwh": {
+          "expect": {
+            "value": "260",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "260",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-0672c057029d037b65ec8146400e0acb06e02c7900f41792fd623a0206f91e74",
+              "page": 2
+            }
+          }
+        },
+        "power_kw": {
+          "expect": {
+            "value": "125",
+            "unit": "kW"
+          },
+          "set": {
+            "value": "125",
+            "unit": "kW",
+            "citation": {
+              "document_id": "doc-0672c057029d037b65ec8146400e0acb06e02c7900f41792fd623a0206f91e74",
+              "page": 2
+            }
+          }
+        },
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "integrated_system",
+            "unit": null,
+            "citation": {
+              "document_id": "doc-0672c057029d037b65ec8146400e0acb06e02c7900f41792fd623a0206f91e74",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "6321": {
+      "model": "GW125/261-ESA-LCN-G10",
+      "documents": {
+        "doc-982aed912e09eb0d8ed806cf2ae483ec9cc782a57cc2d77e2d5fcfd35fb3dc03": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "integrated_system",
+            "unit": null,
+            "citation": {
+              "document_id": "doc-982aed912e09eb0d8ed806cf2ae483ec9cc782a57cc2d77e2d5fcfd35fb3dc03",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "3557": {
+      "model": "GW11K-HCA-20",
+      "documents": {
+        "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af": "0fdeaf90548f35e00a605e8ae538c24f89f745be5195e85dbf466c2a7d2d9178"
+      },
+      "figures": {
+        "rated_power_kw": {
+          "expect": {
+            "value": "11",
+            "unit": "kW"
+          },
+          "set": {
+            "value": "11",
+            "unit": "kW",
+            "citation": {
+              "document_id": "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af",
+              "page": 2
+            }
+          }
+        },
+        "phase": {
+          "expect": {
+            "value": "Three-phase",
+            "unit": null
+          },
+          "set": {
+            "value": "Three-phase",
+            "unit": null,
+            "citation": {
+              "document_id": "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af",
+              "page": 2
+            },
+            "value_de": "Dreiphasig"
+          }
+        }
+      }
+    },
+    "3586": {
+      "model": "GW7K-HCA-20",
+      "documents": {
+        "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af": "0fdeaf90548f35e00a605e8ae538c24f89f745be5195e85dbf466c2a7d2d9178"
+      },
+      "figures": {
+        "rated_power_kw": {
+          "expect": {
+            "value": "7",
+            "unit": "kW"
+          },
+          "set": {
+            "value": "7",
+            "unit": "kW",
+            "citation": {
+              "document_id": "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af",
+              "page": 2
+            }
+          }
+        },
+        "phase": {
+          "expect": {
+            "value": "Single-phase",
+            "unit": null
+          },
+          "set": {
+            "value": "Single-phase",
+            "unit": null,
+            "citation": {
+              "document_id": "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af",
+              "page": 2
+            },
+            "value_de": "Einphasig"
+          }
+        }
+      }
+    },
+    "3587": {
+      "model": "GW22K-HCA-20",
+      "documents": {
+        "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af": "0fdeaf90548f35e00a605e8ae538c24f89f745be5195e85dbf466c2a7d2d9178"
+      },
+      "figures": {
+        "rated_power_kw": {
+          "expect": {
+            "value": "22",
+            "unit": "kW"
+          },
+          "set": {
+            "value": "22",
+            "unit": "kW",
+            "citation": {
+              "document_id": "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af",
+              "page": 2
+            }
+          }
+        },
+        "phase": {
+          "expect": {
+            "value": "Three-phase",
+            "unit": null
+          },
+          "set": {
+            "value": "Three-phase",
+            "unit": null,
+            "citation": {
+              "document_id": "doc-9b809373f9d915cfd74012104fbf8e70c3cdf31c62714e5b0758b5c1aacd04af",
+              "page": 2
+            },
+            "value_de": "Dreiphasig"
+          }
+        }
+      }
+    },
+    "2403": {
+      "model": "GW125K-STS-G10",
+      "documents": {
+        "doc-b9e192456cf52c431d8599e2d8901ad3c117dc5b2f73bb2318d480265d9339a4": "348497c21d2f3ba532a9c1c3fa0d3e010355467b5cfbd9f9bff3a57de294f3df"
+      },
+      "figures": {
+        "rated_power_kw": {
+          "expect": {
+            "value": "125.0 (75 @ 220V)",
+            "unit": "kW"
+          },
+          "set": {
+            "value": "125.0 (75 @ 220V)",
+            "unit": "kW",
+            "citation": {
+              "document_id": "doc-b9e192456cf52c431d8599e2d8901ad3c117dc5b2f73bb2318d480265d9339a4",
+              "page": 2
+            },
+            "value_de": "125,0 (75 bei 220 V)"
+          }
+        }
+      }
+    },
+    "1832": {
+      "model": "B2-5.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2067": {
+      "model": "B2-10.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "10.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "9.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "module_energy_kwh_nominal": {
+          "expect": {
+            "value": "10.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
+            ]
+          }
+        },
+        "module_energy_kwh_usable": {
+          "expect": {
+            "value": "9.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2068": {
+      "model": "B2-15.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "15.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "13.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "module_energy_kwh_nominal": {
+          "expect": {
+            "value": "15.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
+            ]
+          }
+        },
+        "module_energy_kwh_usable": {
+          "expect": {
+            "value": "13.5",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2069": {
+      "model": "B2-20.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "20.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "18.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "module_energy_kwh_nominal": {
+          "expect": {
+            "value": "20.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
+            ]
+          }
+        },
+        "module_energy_kwh_usable": {
+          "expect": {
+            "value": "18.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2070": {
+      "model": "B2-25.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_nominal_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "25.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "system_usable_energy_kwh": {
+          "expect": null,
+          "set": {
+            "value": "22.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        },
+        "module_energy_kwh_nominal": {
+          "expect": {
+            "value": "25.0",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "5.0",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2"
+            ]
+          }
+        },
+        "module_energy_kwh_usable": {
+          "expect": {
+            "value": "22.5",
+            "unit": "kWh"
+          },
+          "set": {
+            "value": "4.5",
+            "unit": "kWh",
+            "citation": {
+              "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "1179": {
+      "model": "H2-25K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "1181": {
+      "model": "H2-30K-T3-DE",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "2063": {
+      "model": "H2-15K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "2064": {
+      "model": "H2-20K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "4107": {
+      "model": "H2-10K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    },
+    "4108": {
+      "model": "H2-12K-T3",
+      "documents": {
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "package": "saj_h2_meter_and_wiring"
+    }
+  },
+  "package_contents": {
+    "saj_h2_meter_and_wiring": [
+      {
+        "id": "smart-meter",
+        "label": {
+          "en": "Smart meter",
+          "de": "Smart Meter"
+        },
+        "quantity": 1,
+        "unit": "piece",
+        "role": "meter",
+        "source": {
+          "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+          "page": 36
+        }
+      },
+      {
+        "id": "current-transformers",
+        "label": {
+          "en": "Current transformer",
+          "de": "Stromwandler"
+        },
+        "quantity": 3,
+        "unit": "piece",
+        "role": "other",
+        "source": {
+          "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+          "page": 36
+        }
+      },
+      {
+        "id": "meter-comm-cable-10m",
+        "label": {
+          "en": "Meter communication cable (10 m)",
+          "de": "Kommunikationskabel für den Zähler (10 m)"
+        },
+        "quantity": 1,
+        "unit": "piece",
+        "role": "other",
+        "source": {
+          "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+          "page": 36
+        }
+      }
+    ]
+  }
+}

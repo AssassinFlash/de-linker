@@ -63,6 +63,9 @@ def closed_document(
             # absent in immutable older reports stay optional.
             optional = {
                 ("Report", "phase_conflicts"),
+                ("Report", "summary_cards"),
+                ("Report", "monthly_chart"),
+                ("ReportSection", "tier"),
                 ("ReportTable", "column_weights"),
             }
             value["required"] = [

@@ -73,7 +73,7 @@ from .test_private_http import TOKEN, USER, headers
 
 @pytest.fixture
 def feed() -> FixtureObject:
-    raw = json.loads((FIXTURES / "feed.json").read_text())
+    raw = json.loads((FIXTURES / "scenario-feed-2026-10-09.json").read_text())
     # The source study identifies these five module-count columns. This
     # explicit synthetic maintenance field exercises the producer contract;
     # native Woo needs its own source-backed labels before qualification.
@@ -1868,7 +1868,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         )
         assert not any(panel_label in row[1] for row in bom.table.rows)
         assert any(
-            row[0] == ("3 pc" if locale == "en" else "3 St.")
+            row[0] == ("3 pcs" if locale == "en" else "3 St.")
             and battery["model"] in row[1]
             for row in bom.table.rows
         )
@@ -7222,13 +7222,17 @@ def test_conditional_pairs_and_equipment_checks_assess_real_woo_candidates(
     b2 = next(p for p in basis["products"] if p["id"] == 2068)
     b2["figures"]["modules_per_stack_min"]["unit"] = "count"
     b2["figures"]["modules_per_stack_max"]["unit"] = "count"
-    b2["figures"]["module_energy_kwh_usable"] = {
-        "value": "13.5",
-        "unit": "kWh",
-        "citation": copy.deepcopy(
-            b2["figures"]["module_energy_kwh_nominal"]["citation"]
-        ),
-    }
+    for key, value in (
+        ("system_usable_energy_kwh", "13.5"),
+        ("module_energy_kwh_usable", "4.5"),
+    ):
+        b2["figures"][key] = {
+            "value": value,
+            "unit": "kWh",
+            "citation": copy.deepcopy(
+                b2["figures"]["module_energy_kwh_nominal"]["citation"]
+            ),
+        }
     etr_template = copy.deepcopy(next(p for p in basis["products"] if p["id"] == 3595))
     etr_6508 = {
         **etr_template,
@@ -7353,6 +7357,17 @@ def test_conditional_pairs_and_equipment_checks_assess_real_woo_candidates(
     }
     assessed_b2 = json_object(assess_equipment({"equipment_selection": sel_b2}, basis))
     assert assessed_b2["overall_status"] == "satisfied"
+    usable = next(c for c in assessed_b2["checks"] if c["id"] == "usable_energy")
+    assert usable["actual"] == 13.5
+    # A withdrawn cabinet rating leaves only its internal pack's evidence.
+    withdrawn = copy.deepcopy(basis)
+    pack_only = next(p for p in withdrawn["products"] if p["id"] == 2068)
+    del pack_only["figures"]["system_usable_energy_kwh"]
+    recheck = json_object(assess_equipment({"equipment_selection": sel_b2}, withdrawn))
+    assert (
+        next(c for c in recheck["checks"] if c["id"] == "usable_energy")["status"]
+        == "unresolved"
+    )
 
     # 4. Unreleased Cartesian pairs do not consume work_budget or record
     # pair_release_not_established gaps during search.

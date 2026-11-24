@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import io
 from dataclasses import replace
+from hashlib import sha256
 from typing import cast
 
 import pytest
@@ -31,6 +32,7 @@ from .conftest import FixtureObject, json_object
 from .test_country_rules import rule_input
 from .test_equipment import feed as feed
 from .test_equipment import inputs
+from .test_eu6_country_rules import EVIDENCE
 from .test_grid_connection import declared
 
 
@@ -478,9 +480,20 @@ def test_all_50_european_countries_report_official_sources_or_explicit_rule_gaps
         assert name in quick_text
         assert text("country_open", locale) not in str(report.sections)
         if code in BUNDLED_RULE_COUNTRIES:
+            source_rows = [
+                row
+                for section in report.sections
+                if section.id in {"grid-connection-evidence", "grid-source-register"}
+                for row in section.rows
+            ]
+            evidence_text = "\n".join(
+                row.label + " " + row.value for row in source_rows
+            )
             for source in bundled_country_sources(code):
-                assert str(source["title"]) in quick_text
-                assert str(source["source_url"]) in quick_text
+                assert str(source["title"]) in evidence_text
+                assert str(source["source_url"]) in evidence_text
+                if source.get("text_sha256"):
+                    assert str(source["text_sha256"]) in evidence_text
         elif code in expected_frameworks:
             assert expected_frameworks[code] in quick_text
 
@@ -511,3 +524,69 @@ def test_all_50_european_countries_report_official_sources_or_explicit_rule_gaps
         )
         assert country_name(sample_code, locale) in extracted
         assert "\x00" not in extracted and "■" not in extracted
+
+
+@pytest.mark.parametrize("multiple", [False, True])
+def test_g98_paperwork_cites_the_operator_procedure_in_report_and_csv(
+    multiple: bool,
+    feed: FixtureObject,
+) -> None:
+    from linker_engine import pdf
+    from linker_engine.planning.grid_connection import country_assessment
+    from linker_engine.planning.grid_connection_report import (
+        country_rule_csv,
+    )
+    from linker_engine.planning.report_model import build_report
+
+    values: Object = {**inputs(feed, 3), **declared(country="GB", complete=True)}
+    values["country_rule_inputs"] = rule_input(
+        "gb_lv_microgeneration",
+        rule_date="2026-11-24",
+        gb_in_great_britain=True,
+        gb_permanently_wired=True,
+        current_per_phase_a=16,
+        gb_type_tested=True,
+        gb_multiple_premises=multiple,
+    )
+    grid = country_assessment(values)
+    report = build_report(
+        {
+            "title": "G98",
+            "project_id": "g98",
+            "input_sha256": "1" * 64,
+            "revision": 1,
+            "locale": "en",
+            "generated_at": "2026-11-24T00:00:00Z",
+            "source_runs": [],
+            "brief": values["brief"],
+            "equipment": assess_equipment(values, feed),
+        }
+    )
+    detail = next(
+        s for s in report.sections if s.id == "country-rule-gb_connection_route"
+    )
+    evidence = next(s for s in report.sections if s.id == "grid-source-register")
+    dno = "https://connections.nationalgrid.co.uk/g98-connection-procedures"
+    assert any(dno in row.value for row in detail.rows)
+    assert any("EID=102993" in row.value for row in evidence.rows)
+
+    document = PdfReader(io.BytesIO(pdf.render(report)))
+    pdf_text = "".join("".join(page.extract_text().split()) for page in document.pages)
+    assert "EID=102993" in pdf_text and dno in pdf_text
+
+    source: Object = {"project_id": "g98", "revision": 1, "input_sha256": "inputs"}
+    data = country_rule_csv(grid, "en", source, "report")
+    assert data is not None
+    headers, row = csv.reader(io.StringIO(data.decode("utf-8-sig")))
+    fields = {
+        h.split("[")[-1].rstrip("]"): value
+        for h, value in zip(headers, row, strict=True)
+    }
+    assert fields["outcome"] == (
+        "gb_cluster_agreement" if multiple else "gb_single_g98_notice"
+    )
+    assert fields["source_url"] == dno
+    assert (
+        fields["source_text_sha256"]
+        == sha256((EVIDENCE / "dno-excerpts.txt").read_bytes()).hexdigest()
+    )

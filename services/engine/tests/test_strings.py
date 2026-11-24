@@ -63,7 +63,12 @@ def test_ten_kwp_on_a_ten_kw_inverter(products: Products) -> None:
     assert [g.strings for g in result.layout.strings if g.strings] == [1, 1]
 
 
-def test_missing_datasheet_values_stop_the_layout(products: Products) -> None:
+def test_missing_datasheet_values_stop_the_layout() -> None:
+    from pathlib import Path
+
+    products = Products.load(
+        Path(__file__).parent / "fixtures" / "scenario-feed-2026-10-09.json"
+    )
     ecoflow = products.by_id[
         6480
     ]  # figures without a hosted citation are not in the feed

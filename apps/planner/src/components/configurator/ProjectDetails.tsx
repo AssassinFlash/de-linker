@@ -1,3 +1,14 @@
+import { GridConnectionForm } from "../GridConnectionForm.tsx";
+import { CountryRuleForm } from "../CountryRuleForm.tsx";
+import {
+	readGridConnection,
+	emptyGridConnection,
+	replaceGridConnection,
+} from "../../domain/gridConnection.ts";
+import {
+	readCountryRuleInputs,
+	replaceCountryRuleInputs,
+} from "../../domain/countryRules.ts";
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { geocodeAddress } from "../../data/googleMaps.ts";
@@ -115,6 +126,10 @@ export function ProjectDetails({
 		brief.system_scope === "pv_only" && hasStorageToExclude(inputs);
 	const [locating, setLocating] = useState(false);
 	const [locationError, setLocationError] = useState(false);
+	const [gridValid, setGridValid] = useState(true);
+	const [ruleValid, setRuleValid] = useState(true);
+	const grid = readGridConnection(inputs.grid_connection);
+	const rules = readCountryRuleInputs(inputs.country_rule_inputs);
 	const live = useRef(true);
 	const heading = useRef<HTMLHeadingElement>(null);
 	useEffect(() => {
@@ -460,6 +475,35 @@ export function ProjectDetails({
 					</div>
 				)}
 				{!equipmentFirst && existingEquipment}
+				{!creation && (
+					<details className="sc-selection-evidence">
+						<summary>{__("Grid connection review", "linker-tools")}</summary>
+						<CountryRuleForm
+							value={rules}
+							country={country}
+							locale={config.locale}
+							onValidity={setRuleValid}
+							onChange={(next) =>
+								edit((before) =>
+									replaceCountryRuleInputs(
+										next && !before.grid_connection
+											? replaceGridConnection(before, emptyGridConnection())
+											: before,
+										next,
+									),
+								)
+							}
+						/>
+						<GridConnectionForm
+							value={grid}
+							hasRules={Boolean(rules)}
+							onValidity={setGridValid}
+							onChange={(next) =>
+								edit((before) => replaceGridConnection(before, next))
+							}
+						/>
+					</details>
+				)}
 			</fieldset>
 			{profile}
 			<footer className="sc-footer">
@@ -484,6 +528,8 @@ export function ProjectDetails({
 					type={creation ? "submit" : "button"}
 					disabled={
 						disabled ||
+						!gridValid ||
+						!ruleValid ||
 						locating ||
 						pendingScope !== null ||
 						solarConflict ||

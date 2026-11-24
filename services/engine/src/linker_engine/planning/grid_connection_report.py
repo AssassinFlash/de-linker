@@ -6,6 +6,7 @@ from typing import cast
 
 from linker_engine.models import ReportRow, ReportSection
 
+from . import eu_connection_rules as eu_rules
 from .canonical import Json, Object
 from .grid_connection import BUNDLED_RULE_COUNTRIES, bundled_country_sources
 from .report_copy import (
@@ -65,6 +66,20 @@ def _rule_sections(review: Object, locale: str) -> list[ReportSection]:
             value=_rule_number(inputs["power_kw"], locale, "kW"),
         ),
     ]
+    extra_fields = eu_rules.FIELDS.get(str(review["country_code"]), ())
+    if extra_fields:
+        rows.pop()  # The EU readings use the declared quantities for their own country.
+        for key in extra_fields:
+            amount = inputs.get(key)
+            unit = eu_rules.UNITS.get(key)
+            rows.append(
+                ReportRow(
+                    label=text("eu_rule_field_" + key, locale),
+                    value=_rule_number(amount, locale, unit)
+                    if unit
+                    else _declared_boolean(amount, locale),
+                )
+            )
     if review["country_code"] == "FR":
         rows.extend(
             [
@@ -295,6 +310,12 @@ def country_rule_csv(
             "SHA-256 der Netzanschlussquellen",
         ),
     ]
+    country_fields = eu_rules.FIELDS.get(str(review["country_code"]), ())
+    columns.extend(
+        (key, text("eu_rule_field_" + key, "en"), text("eu_rule_field_" + key, "de"))
+        for key in country_fields
+        if key not in {"power_kw", "connection_voltage_kv"}
+    )
     writer.writerow(
         f"{de if locale == 'de' else en} [{key}]" for key, en, de in columns
     )
@@ -344,6 +365,11 @@ def country_rule_csv(
                 origin["evidence_snapshot_date"],
                 origin["text_sha256"],
                 grid_hashes,
+                *[
+                    inputs.get(key)
+                    for key in country_fields
+                    if key not in {"power_kw", "connection_voltage_kv"}
+                ],
             ]
         )
     return output.getvalue().encode("utf-8-sig")
@@ -442,10 +468,15 @@ def grid_connection_sections(value: Json, locale: str) -> list[ReportSection]:
     recorded_ids = {str(source["id"]) for source in recorded_sources}
     for source in recorded_sources:
         checks.rows.append(_source_row(source))
-    if is_bundled and review is None:
-        for source in bundled_country_sources(country_code):
-            if str(source["id"]) not in recorded_ids:
-                checks.rows.append(_source_row(source))
+    if review is not None and country_code == "GB":
+        sources = cast(list[Object], review["sources"])
+    elif is_bundled and review is None:
+        sources = bundled_country_sources(country_code)
+    else:
+        sources = []
+    for source in sources:
+        if str(source["id"]) not in recorded_ids:
+            checks.rows.append(_source_row(source))
     return [declarations, checks] + (_rule_sections(review, locale) if review else [])
 
 
@@ -458,7 +489,12 @@ def unfilled_grid_connection_sections(
     is_bundled = code in BUNDLED_RULE_COUNTRIES
     if is_bundled:
         assert code is not None
-        paragraph = text(f"grid_bundled_unfilled_{code}", locale)
+        paragraph = text(
+            f"grid_bundled_scope_{code}"
+            if code in eu_rules.CHECKS
+            else f"grid_bundled_unfilled_{code}",
+            locale,
+        )
     else:
         paragraph = country_gap_paragraph(code, locale)
 

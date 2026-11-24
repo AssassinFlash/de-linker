@@ -61,7 +61,7 @@ export type Role =
 export interface Line {
 	role: Role;
 	product: ProductRef | null;
-	quantity: number;
+	quantity: number | null;
 	unit: 'pcs' | 'm' | 'pairs' | 'set';
 	label: string;
 	basis: string[];
@@ -96,6 +96,7 @@ export interface Excluded {
 }
 
 export interface ReportSection {
+	tier?: 'commercial' | 'appendix';
 	id: string;
 	title: string;
 	/** `href`: a document on de-linker.com that the value names. */
@@ -105,6 +106,15 @@ export interface ReportSection {
 }
 
 export interface Report {
+	summary_cards?: { label: string; value: string; note?: string | null }[];
+	monthly_chart?: {
+		title: string;
+		months: string[];
+		pv_kwh: number[];
+		load_kwh?: number[] | null;
+		unit: string;
+		source_note: string;
+	} | null;
 	title: string;
 	subtitle: string;
 	generated_at: string;
@@ -247,7 +257,7 @@ export interface CommercialSystem {
 	usable_kwh: number;
 	power_kw: number;
 	release: Release | null;
-	lines: Line[];
+	lines: ( Line & { quantity: number } )[];
 }
 
 export interface CommercialResult {

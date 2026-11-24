@@ -313,6 +313,32 @@ final class SelectionFactsTest extends TestCase {
 		$this->assertSame( 60.0, $facts->usable_kwh );
 	}
 
+	/** An internal battery module is not the capacity sold with a whole cabinet. */
+	public function test_missing_cabinet_rating_does_not_use_internal_pack_energy(): void {
+		$this->mock_product(
+			self::ID,
+			array( 453 => 'battery-systems' ),
+			array(),
+			array(),
+			self::figures(
+				array(
+					'sales_unit_kind'           => array( 'value' => 'battery_system' ),
+					'module_energy_kwh_nominal' => array(
+						'value' => '52.24',
+						'unit'  => 'kWh',
+					),
+					'module_energy_kwh_usable'  => array(
+						'value' => '50',
+						'unit'  => 'kWh',
+					),
+				)
+			)
+		);
+		$facts = SelectionFacts::for_product( self::ID );
+		$this->assertSame( 'unknown', $facts->nominal_kwh );
+		$this->assertSame( 'unknown', $facts->usable_kwh );
+	}
+
 	/**
 	 * Missing or broken figures leave every figure fact unknown.
 	 *

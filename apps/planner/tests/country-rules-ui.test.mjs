@@ -331,3 +331,43 @@ for (const de of [false, true]) {
 		);
 	});
 }
+
+for (const de of [false, true]) {
+	test(`${de ? "DE" : "EN"}: Swiss rule entry keeps kW and kVA separate at the checked date`, async (t) => {
+		let current;
+		function Harness() {
+			const [value, setValue] = useState(undefined);
+			current = value;
+			return React.createElement(CountryRuleForm, {
+				value,
+				country: "CH",
+				locale: de ? "de-DE" : "en-GB",
+				onChange: setValue,
+				onValidity: useCallback(() => {}, []),
+			});
+		}
+		await mount(t, React.createElement(Harness), de);
+		const select = document.querySelector("select");
+		await act(async () => {
+			select.value = "ch_lv_generation_control";
+			select.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+		assert.equal(current.rule_date, "2026-11-24");
+		assert.equal(current.power_kw, null);
+		assert.equal(current.apparent_power_kva, null);
+		assert.match(
+			document.body.textContent,
+			de
+				? /Installierte Gesamterzeugungsleistung/
+				: /Total installed generating power/,
+		);
+		assert.match(
+			document.body.textContent,
+			de ? /Installierte Scheinleistung/ : /Installed apparent power/,
+		);
+		assert.match(
+			document.body.textContent,
+			de ? /Neuanlage|neue Erzeugungsanlage/ : /new generating installation/,
+		);
+	});
+}

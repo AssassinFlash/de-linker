@@ -25,6 +25,7 @@ export interface ReportRow {
 	href: string | null;
 }
 export interface ReportSection {
+	tier?: "commercial" | "appendix";
 	id: string;
 	title: string;
 	rows: ReportRow[];
@@ -36,6 +37,15 @@ export interface ReportSection {
 	} | null;
 }
 export interface PlanningReport {
+	summary_cards?: { label: string; value: string; note?: string | null }[];
+	monthly_chart?: {
+		title: string;
+		months: string[];
+		pv_kwh: number[];
+		load_kwh?: number[] | null;
+		unit: string;
+		source_note: string;
+	} | null;
 	title: string;
 	subtitle: string;
 	generated_at: string;

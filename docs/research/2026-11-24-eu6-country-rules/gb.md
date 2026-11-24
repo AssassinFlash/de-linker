@@ -1,0 +1,7 @@
+# Great Britain · G98 or application to the network operator
+
+On 24 November 2026 the ENA catalogue listed G98 Issue 2 Amendment 1 (August 2026). §§2.1–2.4 cover fully type-tested microgeneration in parallel with public low-voltage networks in Great Britain. For permanent equipment at a single premises, use the aggregate registered AC current on each phase at 230 V. Include existing generation. Above 16 A on any phase, ask the DNO for the G99 application route. Northern Ireland has separate G98/NI and G99/NI documents. Plug-in equipment, grouped installations and mixed storage configurations have additional conditions. A product name or an export limiter alone cannot establish eligibility. [ENA G98 scope and edition](https://www.ena-eng.org/ENA-Docs/Index?Action=ViewDetail&EID=102993&tab=introduction)
+
+National Grid Electricity Distribution's instructions distinguish single-premises notification within 28 days after commissioning from the prior agreement required for a planned local group of premises. Its 3.68 kW example assumes 230 V and unity power factor. A nationwide installation approval or a conversion from DC array power cannot be inferred. [NGED connection procedures](https://connections.nationalgrid.co.uk/g98-connection-procedures)
+
+The two excerpt files contain short, whitespace-normalised passages from the publisher and operator respectively. Their SHA-256 values refer to those UTF-8 files. The catalogue gives a publication month for the amendment. The operator page does not publish a commencement date.

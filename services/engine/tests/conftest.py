@@ -154,8 +154,9 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClie
     shutil.copytree(FIXTURES / "pvgis", cache / "pvgis")
     monkeypatch.setattr("linker_engine.pvgis._pvgis_fetch", no_network)
     monkeypatch.setattr("linker_engine.roof.lod2.fetch", munich_tile)
+    # Preserve the frozen before-withdrawal catalogue used by the API scenarios.
     prepared = publication_feed(
-        json.loads((FIXTURES / "feed.json").read_text()),
+        json.loads((FIXTURES / "scenario-feed-2026-10-09.json").read_text()),
         json.loads((FIXTURES / "compatibility.json").read_text()),
     )
     feed_path = tmp_path / "published-feed.json"
@@ -177,6 +178,7 @@ def publication_feed(raw: dict[str, Any], contract: dict[str, Any]) -> dict[str,
 
     raw = json.loads(json.dumps(raw))
     raw["compatibility"] = contract
+    raw["compatibility_version"] = contract["version"]
     raw["compatibility_revision"] = digest(contract)
     for product in raw["products"]:
         urls = {document["url"] for document in product["documents"]}

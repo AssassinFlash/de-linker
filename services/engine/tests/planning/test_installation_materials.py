@@ -295,7 +295,7 @@ def test_owned_mounting_rule_report_worker_and_export_permission(
     material_items = selected["declared_installation_materials"]
     assert material_items == [
         {
-            "quantity": {"en": "8 pc", "de": "8 St."},
+            "quantity": {"en": "8 pcs", "de": "8 St."},
             "explanation": {
                 "en": "5 modules × 0 + 2 occupied row segments × 4 + 3 neighboring slot pairs × 0 = 8 pieces",
                 "de": "5 Module × 0 + 2 belegte Reihenabschnitte × 4 + 3 Paare benachbarter Modulplätze × 0 = 8 Stück",
@@ -528,7 +528,8 @@ def test_exact_instance_and_current_document_comparison(
                 if section.id == "installation-declared-materials"
             )
             shown = projected_section.rows[0].value
-            assert word in shown and "25 mm²" in shown and "p. 153" in shown
+            page_reference = "S. 153" if language == "de" else "p. 153"
+            assert word in shown and "25 mm²" in shown and page_reference in shown
             assert projected_section.rows[0].href == fact["source"]["url"]
             assert "Private specification" not in str(projected)
             assert "Private source note" not in str(projected)

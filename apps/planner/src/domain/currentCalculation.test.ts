@@ -9,6 +9,7 @@ import {
 } from "./draft.ts";
 import {
 	authoredCalculationInputs,
+	sameEquipmentDemand,
 	acknowledgeCalculation,
 } from "./currentCalculation.ts";
 import type { Project } from "../data/protocol.ts";
@@ -224,5 +225,27 @@ test("unchanged inputs can calculate at the existing revision; late receipts can
 			...project,
 			inputs: { note: "not my request" },
 		}),
+	);
+});
+
+test("a comparison cannot reuse another set of grid declarations or national rule inputs", () => {
+	const saved = {
+		grid_connection: { voltage_level: "low" },
+		country_rule_inputs: { power_kw: 11.08 },
+	};
+	assert.ok(sameEquipmentDemand(saved, { ...saved }));
+	assert.equal(
+		sameEquipmentDemand(saved, {
+			...saved,
+			country_rule_inputs: { power_kw: 11.09 },
+		}),
+		false,
+	);
+	assert.equal(
+		sameEquipmentDemand(saved, {
+			...saved,
+			grid_connection: { voltage_level: "medium" },
+		}),
+		false,
 	);
 });

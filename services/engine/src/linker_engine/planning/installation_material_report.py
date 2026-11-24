@@ -81,7 +81,7 @@ def material_section(review: Object, locale: str) -> ReportSection:
                     if binding.get(key) is not None:
                         detail += " · " + number(binding[key], locale, unit)
             if isinstance(source, dict):
-                detail += f" · p. {source['page']} · {source['quote']}"
+                detail += f" · {'Originalzitat, S.' if de else 'Original excerpt, p.'} {source['page']} · {source['quote']}"
                 href = cast(str, source["url"])
         rows.append(
             ReportRow(

@@ -163,6 +163,27 @@ def test_the_outline_answer_carries_the_source_and_licence() -> None:
         assert -90.0 <= latitude <= 90.0
 
 
+def test_truncated_footprint_catalogue_uses_the_next_attributed_source(
+    monkeypatch: object,
+) -> None:
+    from http.client import IncompleteRead
+
+    import pytest
+
+    assert isinstance(monkeypatch, pytest.MonkeyPatch)
+
+    def interrupted(country: str, key: str) -> str:
+        raise IncompleteRead(b"Location,QuadKey", 16)
+
+    ring = _box(16.37, 48.21)
+    monkeypatch.setattr(footprints, "part_url", interrupted)
+    monkeypatch.setattr(footprints, "_overpass_outline", lambda *a, **kw: ring)
+    payload = footprints.outline_payload("AT", 48.21, 16.37)
+    assert payload is not None
+    assert payload["source"] == "OpenStreetMap contributors"
+    assert payload["licence"] == footprints.OSM_LICENCE
+
+
 def test_a_position_with_no_mapped_building_answers_none() -> None:
     from linker_engine.roof import footprints as module
 

@@ -244,12 +244,11 @@ export function ResidentialPanel( {
 	}
 
 	function draftLines() {
-		return ( result?.selected?.lines ?? [] )
-			.filter( ( line ) => line.product )
-			.map( ( line ) => ( {
-				productId: line.product!.id,
-				quantity: line.quantity,
-			} ) );
+		return ( result?.selected?.lines ?? [] ).flatMap( ( line ) =>
+			line.product && line.quantity !== null
+				? [ { productId: line.product.id, quantity: line.quantity } ]
+				: []
+		);
 	}
 
 	async function addAll() {

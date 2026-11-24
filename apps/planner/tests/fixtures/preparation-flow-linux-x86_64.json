@@ -2036,15 +2036,15 @@
 				"revision": 2,
 				"schema": 1
 			},
-			"result_sha256": "e190e6213e13f172f41e8833edf035c18b469a7e40f740d5ea4582b872c77bc0",
+			"result_sha256": "e506bdb63b8d3e2bce366f5f88383627f89aaf680a247fed0cededa2d9e04ae1",
 			"result": {
 				"dependencies": {
 					"materials_model": "05d240d303681b43e781bd65b613d29b60d86c183bd5fed5a8475da1c2d43820",
-					"prepared_asset_content": "bfecc04786c09b817ec5cb8f47e6115dadf2dea7da4e836b79f0a81ab654d8f4",
-					"prepared_asset_metadata": "7abaedf17d30c46920bd5157669ce8c46e5226a46f94237910ce7d31d8d40485",
+					"prepared_asset_content": "e094e93a487bb86363339469e04660941a1184cf4e873d6983bc47febff748de",
+					"prepared_asset_metadata": "f2ad90218b3d7f53d5532242ec9e7bd4d9079315e480d32e47d8f9c5dcd7f545",
 					"prepared_attachment.bill_of_materials_csv.content": "f6bebc8712d3a443706444e492a08c6ccc74ccabd5a5fa278efc2dca75a0478e",
-					"prepared_attachment.bill_of_materials_csv.metadata": "338bd6adfb6f30ec1056f32960151ba9cf6b5e430d1f7b327153653545e312e7",
-					"report_model": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
+					"prepared_attachment.bill_of_materials_csv.metadata": "2bd9f7f0004fc8799a96184b38309da4184f076eba2dedfe6058cd76f833299e",
+					"report_model": "cb198828cebc3431e5b71506a25f06a9dc9af05b826afd17a7c7e05045b560dd",
 					"report_source": "9355fbf99cd351c3f7e70a26e36eb09fa00bb2941a8a15cdeaf6788890c9fffb"
 				},
 				"equipment_candidate": null,
@@ -2058,13 +2058,13 @@
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 				},
 				"prepared_asset": {
-					"content_sha256": "bfecc04786c09b817ec5cb8f47e6115dadf2dea7da4e836b79f0a81ab654d8f4",
+					"content_sha256": "e094e93a487bb86363339469e04660941a1184cf4e873d6983bc47febff748de",
 					"id": "00000000000000000000000000000012",
 					"media_type": "application/pdf",
 					"metadata": {
 						"dependencies": {
 							"materials_model": "05d240d303681b43e781bd65b613d29b60d86c183bd5fed5a8475da1c2d43820",
-							"report_model": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
+							"report_model": "cb198828cebc3431e5b71506a25f06a9dc9af05b826afd17a7c7e05045b560dd",
 							"report_source": "9355fbf99cd351c3f7e70a26e36eb09fa00bb2941a8a15cdeaf6788890c9fffb"
 						},
 						"locale": "en",
@@ -2073,10 +2073,10 @@
 							"label": "Project planning report",
 							"rights_basis": "Private project output and customer-provided branding"
 						},
-						"report_model_sha256": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
+						"report_model_sha256": "cb198828cebc3431e5b71506a25f06a9dc9af05b826afd17a7c7e05045b560dd",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "7abaedf17d30c46920bd5157669ce8c46e5226a46f94237910ce7d31d8d40485",
+					"metadata_sha256": "f2ad90218b3d7f53d5532242ec9e7bd4d9079315e480d32e47d8f9c5dcd7f545",
 					"project_id": "0000000000000000000000000000000c",
 					"purpose": "planning_report_pdf_v1"
 				},
@@ -2088,7 +2088,7 @@
 						"metadata": {
 							"dependencies": {
 								"materials_model": "05d240d303681b43e781bd65b613d29b60d86c183bd5fed5a8475da1c2d43820",
-								"report_model": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
+								"report_model": "cb198828cebc3431e5b71506a25f06a9dc9af05b826afd17a7c7e05045b560dd",
 								"report_source": "9355fbf99cd351c3f7e70a26e36eb09fa00bb2941a8a15cdeaf6788890c9fffb"
 							},
 							"locale": "en",
@@ -2099,7 +2099,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "338bd6adfb6f30ec1056f32960151ba9cf6b5e430d1f7b327153653545e312e7",
+						"metadata_sha256": "2bd9f7f0004fc8799a96184b38309da4184f076eba2dedfe6058cd76f833299e",
 						"project_id": "0000000000000000000000000000000c",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -2108,31 +2108,56 @@
 				"report": {
 					"generated_at": "2023-11-14T22:13:20+00:00",
 					"locale": "en",
+					"monthly_chart": null,
 					"sections": [
 						{
 							"id": "project",
-							"paragraphs": [
-								"This report presents saved project inputs and the original results of the selected calculations. Country-specific requirements, electrical design and installation checks remain open. It does not approve the complete installation."
-							],
+							"paragraphs": [],
 							"rows": [
 								{
 									"href": null,
 									"label": "Project",
 									"value": "Synthetic owned direct-beam fixture"
-								},
-								{
-									"href": null,
-									"label": "Project reference",
-									"value": "0000000000000000000000000000000c"
-								},
+								}
+							],
+							"table": null,
+							"tier": "commercial",
+							"title": "Project"
+						},
+						{
+							"id": "pv-components",
+							"paragraphs": [
+								"Module counts come from the saved roof layout retained for this report. The modules are design references; electrical and mounting suitability require project-specific assessment."
+							],
+							"rows": [
 								{
 									"href": null,
 									"label": "Input revision",
 									"value": "2"
+								},
+								{
+									"href": null,
+									"label": "PV nameplate power",
+									"value": "2.3 kWp"
 								}
 							],
-							"table": null,
-							"title": "Project"
+							"table": {
+								"column_weights": [1.0, 3.0, 2.0],
+								"columns": [
+									"Quantity",
+									"Panel parameters",
+									"Module power (STC)"
+								],
+								"rows": [
+									[
+										"5",
+										"Generic 460 W PV module (reference only — not supplied by Linker) · 1,762 × 1,134 mm",
+										"460 W"
+									]
+								]
+							},
+							"tier": "commercial",
+							"title": "Solar panel layout"
 						},
 						{
 							"id": "direct-beam-0",
@@ -2213,6 +2238,7 @@
 								}
 							],
 							"table": null,
+							"tier": "appendix",
 							"title": "Geometric direct-beam visibility"
 						},
 						{
@@ -2251,6 +2277,7 @@
 								}
 							],
 							"table": null,
+							"tier": "appendix",
 							"title": "Selected source row 0"
 						},
 						{
@@ -2289,14 +2316,20 @@
 								}
 							],
 							"table": null,
+							"tier": "appendix",
 							"title": "Selected source row 12"
 						},
 						{
-							"id": "pv-components",
+							"id": "project-traceability",
 							"paragraphs": [
-								"Module counts come from the saved roof layout retained for this report. The modules are design references; electrical and mounting suitability require project-specific assessment."
+								"This report presents saved project inputs and the original results of the selected calculations. Country-specific requirements, electrical design and installation checks remain open. It does not approve the complete installation."
 							],
 							"rows": [
+								{
+									"href": null,
+									"label": "Project reference",
+									"value": "0000000000000000000000000000000c"
+								},
 								{
 									"href": null,
 									"label": "Input revision",
@@ -2304,26 +2337,73 @@
 								},
 								{
 									"href": null,
-									"label": "PV nameplate power",
-									"value": "2.3 kWp"
+									"label": "Project inputs · SHA-256",
+									"value": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93"
+								},
+								{
+									"href": null,
+									"label": "direct_beam.geometry · SHA-256",
+									"value": "ed9aeb1aa1c180308d53a85eafb3290c3a8df215c77cad93aa1c58c273e32380"
+								},
+								{
+									"href": null,
+									"label": "direct_beam.runtime_bundle · SHA-256",
+									"value": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
+								},
+								{
+									"href": null,
+									"label": "direct_beam.weather.document · SHA-256",
+									"value": "9de56160fb075ac308f9924a6a9a2c9584658744ad69609882cdab3cbeb079a3"
+								},
+								{
+									"href": null,
+									"label": "direct_beam.weather.metadata · SHA-256",
+									"value": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb"
+								},
+								{
+									"href": null,
+									"label": "direct_beam.weather.raw · SHA-256",
+									"value": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
+								},
+								{
+									"href": null,
+									"label": "direct_beam.weather.selection · SHA-256",
+									"value": "9ab296e57560a45f9ce68a0a7d26224cb90470cfeeb75b334bbff4981137043a"
+								},
+								{
+									"href": null,
+									"label": "direct_beam.woo.module_inputs · SHA-256",
+									"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
+								},
+								{
+									"href": null,
+									"label": "materials_model · SHA-256",
+									"value": "05d240d303681b43e781bd65b613d29b60d86c183bd5fed5a8475da1c2d43820"
+								},
+								{
+									"href": null,
+									"label": "pv_components.geometry · SHA-256",
+									"value": "ed9aeb1aa1c180308d53a85eafb3290c3a8df215c77cad93aa1c58c273e32380"
+								},
+								{
+									"href": null,
+									"label": "run.0.manifest · SHA-256",
+									"value": "0f0996563b953b3bf7c3b0c672af8f15769fb14345b8ce9475cde369f30fb17a"
+								},
+								{
+									"href": null,
+									"label": "run.0.result · SHA-256",
+									"value": "eb5be0a589bfe1aba27678e1f86c0e039f9acab1a13801ae8a45e9372c5f2cd7"
+								},
+								{
+									"href": null,
+									"label": "woo.direct_beam · SHA-256",
+									"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 								}
 							],
-							"table": {
-								"column_weights": [1.0, 3.0, 2.0],
-								"columns": [
-									"Quantity",
-									"Panel parameters",
-									"Module power (STC)"
-								],
-								"rows": [
-									[
-										"5",
-										"Generic 460 W PV module (reference only — not supplied by Linker) · 1,762 × 1,134 mm",
-										"460 W"
-									]
-								]
-							},
-							"title": "Solar panel layout"
+							"table": null,
+							"tier": "appendix",
+							"title": "Project revision"
 						},
 						{
 							"id": "basis",
@@ -2333,16 +2413,44 @@
 									"href": null,
 									"label": "Calculation reference",
 									"value": "0000000000000000000000000000000e · Input revision 2"
+								},
+								{
+									"href": null,
+									"label": "manifest_sha256",
+									"value": "0f0996563b953b3bf7c3b0c672af8f15769fb14345b8ce9475cde369f30fb17a"
+								},
+								{
+									"href": null,
+									"label": "result_sha256",
+									"value": "eb5be0a589bfe1aba27678e1f86c0e039f9acab1a13801ae8a45e9372c5f2cd7"
+								},
+								{
+									"href": null,
+									"label": "input_sha256",
+									"value": "7e6fa42009a004a75b4977bf3dd68bb198b18cb5eb438eb74d14cc0862d67c93"
+								},
+								{
+									"href": null,
+									"label": "runtime_sha256",
+									"value": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 								}
 							],
 							"table": null,
+							"tier": "appendix",
 							"title": "Saved calculation references"
 						}
 					],
 					"subtitle": "Saved project inputs and selected calculation results",
+					"summary_cards": [
+						{
+							"label": "PV array",
+							"note": null,
+							"value": "2.3 kWp"
+						}
+					],
 					"title": "Project planning report"
 				},
-				"report_sha256": "72412964b88014578061d2af46abfa32af884cc9b246331e96e9f2f1b2e686cc",
+				"report_sha256": "cb198828cebc3431e5b71506a25f06a9dc9af05b826afd17a7c7e05045b560dd",
 				"revision": 2,
 				"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 				"schema": 1,
@@ -4158,11 +4266,11 @@
 			"revision": 3,
 			"state": "succeeded",
 			"is_current": true,
-			"manifest_sha256": "66313d8e47ffb583df3f48e1530bfd969f6cefd165e2a7495de07e5b46e930f2",
+			"manifest_sha256": "be56f8246fa68693fc388e572b58de0069665db035c1a3508ef2ca9290bef2dd",
 			"manifest": {
 				"context": {
 					"assets": {
-						"report.source": "a81fb287282a9691e1fcd1702818937cb4c3bf389ed6e3bb729f9eeec765be53",
+						"report.source": "277f0d7829a6fd6c3430065266aafa59dc8931b8227265484a1346496a07b50f",
 						"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 					},
 					"code_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
@@ -4183,36 +4291,36 @@
 				"revision": 3,
 				"schema": 1
 			},
-			"result_sha256": "ab289499155b4b80c632d2667e17775255c69f93e458effd08c120fae6ff7549",
+			"result_sha256": "a46a15d90b4ed2c7bfc0a7fe463ebbd55c167d9c1c5dcd0c94515cb52040c15e",
 			"result": {
 				"dependencies": {
 					"materials_model": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
-					"prepared_asset_content": "aa2336e67b10be8a4e8afbeb2768d8f08a1a6438a3a88ce71bbafd12302a0d72",
-					"prepared_asset_metadata": "fd71d04ed671ce40999d92502b6928586142446ad4908f7eacdf151865b5f88c",
+					"prepared_asset_content": "262c3d4b9a7ac3e289d01c3585c7f3fdc485006d1834b7ab13dcea647fba409d",
+					"prepared_asset_metadata": "589281d1a957245b9d167eafd58a56a03a8d7f22ace9be1889c5efdc66b74f0d",
 					"prepared_attachment.bill_of_materials_csv.content": "e991a0fd0091e5575ab1e133c86694b93ee8ba077308ae7fea4f8ae14bd143b8",
-					"prepared_attachment.bill_of_materials_csv.metadata": "36dfc52ad6792b2bcc4de6d59f71893a99059d20ef2ac43f91513099d7ae5729",
-					"report_model": "0d1a874345cc1c3a66adb7524632005371c724ad8f9747b498ad0a9a224ca1c1",
-					"report_source": "a81fb287282a9691e1fcd1702818937cb4c3bf389ed6e3bb729f9eeec765be53"
+					"prepared_attachment.bill_of_materials_csv.metadata": "1d6206b2d075b8c7ca7305b654a8fc6ca8845e41cc507ebd283228c514ab5710",
+					"report_model": "2b9eb332478677caa6add3bf086d9a6bc7e664398868afe6f8b95034442726bc",
+					"report_source": "277f0d7829a6fd6c3430065266aafa59dc8931b8227265484a1346496a07b50f"
 				},
 				"equipment_candidate": null,
 				"has_draft_items": false,
 				"input_sha256": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf",
 				"kind": "planning_report_v1",
-				"manifest_sha256": "66313d8e47ffb583df3f48e1530bfd969f6cefd165e2a7495de07e5b46e930f2",
+				"manifest_sha256": "be56f8246fa68693fc388e572b58de0069665db035c1a3508ef2ca9290bef2dd",
 				"materials_sha256": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
 				"pinned_assets": {
-					"report.source": "a81fb287282a9691e1fcd1702818937cb4c3bf389ed6e3bb729f9eeec765be53",
+					"report.source": "277f0d7829a6fd6c3430065266aafa59dc8931b8227265484a1346496a07b50f",
 					"runtime_bundle": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 				},
 				"prepared_asset": {
-					"content_sha256": "aa2336e67b10be8a4e8afbeb2768d8f08a1a6438a3a88ce71bbafd12302a0d72",
+					"content_sha256": "262c3d4b9a7ac3e289d01c3585c7f3fdc485006d1834b7ab13dcea647fba409d",
 					"id": "00000000000000000000000000000020",
 					"media_type": "application/pdf",
 					"metadata": {
 						"dependencies": {
 							"materials_model": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
-							"report_model": "0d1a874345cc1c3a66adb7524632005371c724ad8f9747b498ad0a9a224ca1c1",
-							"report_source": "a81fb287282a9691e1fcd1702818937cb4c3bf389ed6e3bb729f9eeec765be53"
+							"report_model": "2b9eb332478677caa6add3bf086d9a6bc7e664398868afe6f8b95034442726bc",
+							"report_source": "277f0d7829a6fd6c3430065266aafa59dc8931b8227265484a1346496a07b50f"
 						},
 						"locale": "de",
 						"provenance": {
@@ -4220,10 +4328,10 @@
 							"label": "Projektplanungsbericht",
 							"rights_basis": "Private project output and customer-provided branding"
 						},
-						"report_model_sha256": "0d1a874345cc1c3a66adb7524632005371c724ad8f9747b498ad0a9a224ca1c1",
+						"report_model_sha256": "2b9eb332478677caa6add3bf086d9a6bc7e664398868afe6f8b95034442726bc",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "fd71d04ed671ce40999d92502b6928586142446ad4908f7eacdf151865b5f88c",
+					"metadata_sha256": "589281d1a957245b9d167eafd58a56a03a8d7f22ace9be1889c5efdc66b74f0d",
 					"project_id": "00000000000000000000000000000014",
 					"purpose": "planning_report_pdf_v1"
 				},
@@ -4235,8 +4343,8 @@
 						"metadata": {
 							"dependencies": {
 								"materials_model": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e",
-								"report_model": "0d1a874345cc1c3a66adb7524632005371c724ad8f9747b498ad0a9a224ca1c1",
-								"report_source": "a81fb287282a9691e1fcd1702818937cb4c3bf389ed6e3bb729f9eeec765be53"
+								"report_model": "2b9eb332478677caa6add3bf086d9a6bc7e664398868afe6f8b95034442726bc",
+								"report_source": "277f0d7829a6fd6c3430065266aafa59dc8931b8227265484a1346496a07b50f"
 							},
 							"locale": "de",
 							"provenance": {
@@ -4246,7 +4354,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "36dfc52ad6792b2bcc4de6d59f71893a99059d20ef2ac43f91513099d7ae5729",
+						"metadata_sha256": "1d6206b2d075b8c7ca7305b654a8fc6ca8845e41cc507ebd283228c514ab5710",
 						"project_id": "00000000000000000000000000000014",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -4255,31 +4363,139 @@
 				"report": {
 					"generated_at": "2023-11-14T22:13:20+00:00",
 					"locale": "de",
+					"monthly_chart": null,
 					"sections": [
 						{
 							"id": "project",
-							"paragraphs": [
-								"Dieser Bericht enthält gespeicherte Projekteingaben und die ursprünglichen Ergebnisse der ausgewählten Berechnungen. Landesspezifische Anforderungen sowie die elektrische Auslegung und die Installation müssen noch geprüft werden. Der Bericht erteilt keine Freigabe für die Gesamtanlage."
-							],
+							"paragraphs": [],
 							"rows": [
 								{
 									"href": null,
 									"label": "Projekt",
 									"value": "Actual weather / synthetic one-module geometric scenario"
-								},
-								{
-									"href": null,
-									"label": "Projektreferenz",
-									"value": "00000000000000000000000000000014"
-								},
-								{
-									"href": null,
-									"label": "Eingabeversion",
-									"value": "3"
 								}
 							],
 							"table": null,
+							"tier": "commercial",
 							"title": "Projekt"
+						},
+						{
+							"id": "pv-components",
+							"paragraphs": [
+								"Die Stückzahlen stammen aus der für diesen Bericht gespeicherten Dachbelegung. Die Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden."
+							],
+							"rows": [
+								{
+									"href": null,
+									"label": "Eingabeversion",
+									"value": "2"
+								},
+								{
+									"href": null,
+									"label": "PV-Nennleistung",
+									"value": "0,46 kWp"
+								}
+							],
+							"table": {
+								"column_weights": [1.0, 3.0, 2.0],
+								"columns": ["Menge", "Moduldaten", "Modulleistung (STC)"],
+								"rows": [
+									[
+										"1",
+										"Generisches 460-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker) · 1.762 × 1.134 mm",
+										"460 W"
+									]
+								]
+							},
+							"tier": "commercial",
+							"title": "PV-Modulbelegung"
+						},
+						{
+							"id": "pv",
+							"paragraphs": [
+								"Dieser Abschnitt zeigt das ausgewählte gespeicherte PV-Profil mit den damaligen Annahmen. Detaillierte Verschattung und elektrische Auslegung müssen gesondert geprüft werden."
+							],
+							"rows": [
+								{
+									"href": null,
+									"label": "PV-Erzeugung",
+									"value": "314,012 kWh"
+								},
+								{
+									"href": null,
+									"label": "Berechnungszeitraum (UTC)",
+									"value": "2023-01-01T00:00:00+00:00 – 2024-01-01T00:00:00+00:00"
+								},
+								{
+									"href": null,
+									"label": "Berechnete Intervalle",
+									"value": "8.760"
+								}
+							],
+							"table": null,
+							"tier": "commercial",
+							"title": "PV-Erzeugungsszenario"
+						},
+						{
+							"id": "energy",
+							"paragraphs": [
+								"Die Werte stammen aus dem gespeicherten Ergebnis der ausgewählten Energieberechnung und beruhen auf den damaligen Szenarioparametern. Das allgemeine Energiemodell belegt nicht die Leistungsfähigkeit der ausgewählten Geräte."
+							],
+							"rows": [
+								{
+									"href": null,
+									"label": "Berechnungszeitraum (UTC)",
+									"value": "2023-06-16T11:00:00+00:00 – 2023-06-16T13:00:00+00:00"
+								},
+								{
+									"href": null,
+									"label": "Simulierter Strombedarf",
+									"value": "4 kWh"
+								},
+								{
+									"href": null,
+									"label": "PV-Erzeugung",
+									"value": "0,644925 kWh"
+								},
+								{
+									"href": null,
+									"label": "Netzbezug",
+									"value": "3,355 kWh"
+								},
+								{
+									"href": null,
+									"label": "PV-Einspeisung",
+									"value": "0 kWh"
+								},
+								{
+									"href": null,
+									"label": "PV-Abregelung",
+									"value": "0 kWh"
+								},
+								{
+									"href": null,
+									"label": "Ungedeckter simulierter Strombedarf",
+									"value": "0 kWh"
+								},
+								{
+									"href": null,
+									"label": "Solarer Deckungsanteil am Gesamtbedarf",
+									"value": "16,123 %"
+								},
+								{
+									"href": null,
+									"label": "PV-Energie für Verbrauch und Speicherung vor Ort",
+									"value": "100 %"
+								},
+								{
+									"href": null,
+									"label": "Berechnete Intervalle",
+									"value": "2"
+								}
+							],
+							"table": null,
+							"tier": "commercial",
+							"title": "Energieszenario"
 						},
 						{
 							"id": "geometric-pv-reference-0",
@@ -4501,122 +4717,119 @@
 								}
 							],
 							"table": null,
+							"tier": "appendix",
 							"title": "PV-Referenz: geometrische Verschattung der Direktstrahlung"
 						},
 						{
-							"id": "pv-components",
+							"id": "project-traceability",
 							"paragraphs": [
-								"Die Stückzahlen stammen aus der für diesen Bericht gespeicherten Dachbelegung. Die Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden."
+								"Dieser Bericht enthält gespeicherte Projekteingaben und die ursprünglichen Ergebnisse der ausgewählten Berechnungen. Landesspezifische Anforderungen sowie die elektrische Auslegung und die Installation müssen noch geprüft werden. Der Bericht erteilt keine Freigabe für die Gesamtanlage."
 							],
 							"rows": [
+								{
+									"href": null,
+									"label": "Projektreferenz",
+									"value": "00000000000000000000000000000014"
+								},
 								{
 									"href": null,
 									"label": "Eingabeversion",
-									"value": "2"
+									"value": "3"
 								},
 								{
 									"href": null,
-									"label": "PV-Nennleistung",
-									"value": "0,46 kWp"
-								}
-							],
-							"table": {
-								"column_weights": [1.0, 3.0, 2.0],
-								"columns": ["Menge", "Moduldaten", "Modulleistung (STC)"],
-								"rows": [
-									[
-										"1",
-										"Generisches 460-W-PV-Modul (nur Referenz — nicht im Lieferumfang von Linker) · 1.762 × 1.134 mm",
-										"460 W"
-									]
-								]
-							},
-							"title": "PV-Modulbelegung"
-						},
-						{
-							"id": "pv",
-							"paragraphs": [
-								"Dieser Abschnitt zeigt das ausgewählte gespeicherte PV-Profil mit den damaligen Annahmen. Detaillierte Verschattung und elektrische Auslegung müssen gesondert geprüft werden."
-							],
-							"rows": [
-								{
-									"href": null,
-									"label": "PV-Erzeugung",
-									"value": "314,012 kWh"
+									"label": "Eingabedaten · SHA-256",
+									"value": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf"
 								},
 								{
 									"href": null,
-									"label": "Berechnungszeitraum (UTC)",
-									"value": "2023-01-01T00:00:00+00:00 – 2024-01-01T00:00:00+00:00"
+									"label": "geometric_pv_reference.0.manifest · SHA-256",
+									"value": "45bb866c0b1597860b27f77b7127cd391a498452c63ab6e3fc0a2765cf3e0f2e"
 								},
 								{
 									"href": null,
-									"label": "Berechnete Intervalle",
-									"value": "8.760"
-								}
-							],
-							"table": null,
-							"title": "PV-Erzeugungsszenario"
-						},
-						{
-							"id": "energy",
-							"paragraphs": [
-								"Die Werte stammen aus dem gespeicherten Ergebnis der ausgewählten Energieberechnung und beruhen auf den damaligen Szenarioparametern. Das allgemeine Energiemodell belegt nicht die Leistungsfähigkeit der ausgewählten Geräte."
-							],
-							"rows": [
-								{
-									"href": null,
-									"label": "Berechnungszeitraum (UTC)",
-									"value": "2023-06-16T11:00:00+00:00 – 2023-06-16T13:00:00+00:00"
+									"label": "geometric_pv_reference.0.metadata · SHA-256",
+									"value": "dcec9a75de093613ac334ae48e9cfecf3c20d528f64fd7e4be20c3a2c3490211"
 								},
 								{
 									"href": null,
-									"label": "Simulierter Strombedarf",
-									"value": "4 kWh"
+									"label": "geometric_pv_reference.0.model.inputs · SHA-256",
+									"value": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a"
 								},
 								{
 									"href": null,
-									"label": "PV-Erzeugung",
-									"value": "0,644925 kWh"
+									"label": "geometric_pv_reference.0.model.witness · SHA-256",
+									"value": "e996cb6e18314b74af07d2c68577703331996634a5bfee6d1d8ffedcaae06384"
 								},
 								{
 									"href": null,
-									"label": "Netzbezug",
-									"value": "3,355 kWh"
+									"label": "geometric_pv_reference.0.project.parameters · SHA-256",
+									"value": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7"
 								},
 								{
 									"href": null,
-									"label": "PV-Einspeisung",
-									"value": "0 kWh"
+									"label": "geometric_pv_reference.0.weather.metadata · SHA-256",
+									"value": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb"
 								},
 								{
 									"href": null,
-									"label": "PV-Abregelung",
-									"value": "0 kWh"
+									"label": "geometric_pv_reference.0.weather.raw · SHA-256",
+									"value": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 								},
 								{
 									"href": null,
-									"label": "Ungedeckter simulierter Strombedarf",
-									"value": "0 kWh"
+									"label": "geometric_pv_reference.0.woo.module_inputs · SHA-256",
+									"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 								},
 								{
 									"href": null,
-									"label": "Solarer Deckungsanteil am Gesamtbedarf",
-									"value": "16,123 %"
+									"label": "historical_woo.energy.pv_available_ac.metadata · SHA-256",
+									"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 								},
 								{
 									"href": null,
-									"label": "PV-Energie für Verbrauch und Speicherung vor Ort",
-									"value": "100 %"
+									"label": "materials_model · SHA-256",
+									"value": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e"
 								},
 								{
 									"href": null,
-									"label": "Berechnete Intervalle",
-									"value": "2"
+									"label": "pv_components.geometry · SHA-256",
+									"value": "6840321b4a240793c39b9e870ef8ac9d467803613d45907de7cacd61b1f23170"
+								},
+								{
+									"href": null,
+									"label": "run.0.manifest · SHA-256",
+									"value": "3f685c49e89d5ec12414d1a9c998f000192ab01df560e21f6f68c45d859d7f43"
+								},
+								{
+									"href": null,
+									"label": "run.0.result · SHA-256",
+									"value": "6329199c874c0f745832c0720e095756b2efeb24557bdd1e6a396224bf428fec"
+								},
+								{
+									"href": null,
+									"label": "run.1.manifest · SHA-256",
+									"value": "a4d2daa7f6ea979e5a62e34e564e28baf6c4afe3107ab9f53a549272cd0ae22d"
+								},
+								{
+									"href": null,
+									"label": "run.1.result · SHA-256",
+									"value": "5c1e3208d1e7a7daaa39b6cc25a3e0b72828e8b76972fe3b5cde648519e4d086"
+								},
+								{
+									"href": null,
+									"label": "woo.energy.pv_available_ac.metadata · SHA-256",
+									"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
+								},
+								{
+									"href": null,
+									"label": "woo.pv · SHA-256",
+									"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 								}
 							],
 							"table": null,
-							"title": "Energieszenario"
+							"tier": "appendix",
+							"title": "Projektstand"
 						},
 						{
 							"id": "basis",
@@ -4639,18 +4852,66 @@
 								},
 								{
 									"href": null,
+									"label": "manifest_sha256",
+									"value": "3f685c49e89d5ec12414d1a9c998f000192ab01df560e21f6f68c45d859d7f43"
+								},
+								{
+									"href": null,
+									"label": "result_sha256",
+									"value": "6329199c874c0f745832c0720e095756b2efeb24557bdd1e6a396224bf428fec"
+								},
+								{
+									"href": null,
+									"label": "input_sha256",
+									"value": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf"
+								},
+								{
+									"href": null,
+									"label": "runtime_sha256",
+									"value": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
+								},
+								{
+									"href": null,
 									"label": "Berechnungsreferenz",
 									"value": "00000000000000000000000000000016 · Eingabeversion 2"
+								},
+								{
+									"href": null,
+									"label": "manifest_sha256",
+									"value": "a4d2daa7f6ea979e5a62e34e564e28baf6c4afe3107ab9f53a549272cd0ae22d"
+								},
+								{
+									"href": null,
+									"label": "result_sha256",
+									"value": "5c1e3208d1e7a7daaa39b6cc25a3e0b72828e8b76972fe3b5cde648519e4d086"
+								},
+								{
+									"href": null,
+									"label": "input_sha256",
+									"value": "1652f1f72a6bc1cf23bc1b71b297dd59ca8a7539ddb8cf9648b694677800d7ed"
+								},
+								{
+									"href": null,
+									"label": "runtime_sha256",
+									"value": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 								}
 							],
 							"table": null,
+							"tier": "appendix",
 							"title": "Referenzen der gespeicherten Berechnungen"
 						}
 					],
 					"subtitle": "Gespeicherte Projekteingaben und ausgewählte Berechnungsergebnisse",
+					"summary_cards": [
+						{
+							"label": "PV-Leistung",
+							"note": null,
+							"value": "0,46 kWp"
+						}
+					],
 					"title": "Projektplanungsbericht"
 				},
-				"report_sha256": "0d1a874345cc1c3a66adb7524632005371c724ad8f9747b498ad0a9a224ca1c1",
+				"report_sha256": "2b9eb332478677caa6add3bf086d9a6bc7e664398868afe6f8b95034442726bc",
 				"revision": 3,
 				"runtime_sha256": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854",
 				"schema": 1,
@@ -4935,26 +5196,94 @@
 					"state": "succeeded",
 					"matches_view_revision": true,
 					"is_current": true,
-					"manifest_sha256": "66313d8e47ffb583df3f48e1530bfd969f6cefd165e2a7495de07e5b46e930f2",
-					"result_sha256": "ab289499155b4b80c632d2667e17775255c69f93e458effd08c120fae6ff7549",
+					"manifest_sha256": "be56f8246fa68693fc388e572b58de0069665db035c1a3508ef2ca9290bef2dd",
+					"result_sha256": "a46a15d90b4ed2c7bfc0a7fe463ebbd55c167d9c1c5dcd0c94515cb52040c15e",
 					"kind": "planning_report_v1",
 					"scope": {},
 					"rows": [
-						{
-							"label": "Project",
-							"value": "This report presents saved project inputs and the original results of the selected calculations. Country-specific requirements, electrical design and installation checks remain open. It does not approve the complete installation."
-						},
 						{
 							"label": "Project: Project",
 							"value": "Actual weather / synthetic one-module geometric scenario"
 						},
 						{
-							"label": "Project: Project reference",
-							"value": "00000000000000000000000000000014"
+							"label": "Solar panel layout",
+							"value": "Module counts come from the saved roof layout retained for this report. The modules are design references; electrical and mounting suitability require project-specific assessment."
 						},
 						{
-							"label": "Project: Input revision",
-							"value": "3"
+							"label": "Solar panel layout: Input revision",
+							"value": "2"
+						},
+						{
+							"label": "Solar panel layout: PV nameplate power",
+							"value": "0.46 kWp"
+						},
+						{
+							"label": "Solar panel layout",
+							"value": {
+								"Quantity": "1",
+								"Panel parameters": "Generic 460 W PV module (reference only — not supplied by Linker) · 1,762 × 1,134 mm",
+								"Module power (STC)": "460 W"
+							}
+						},
+						{
+							"label": "PV generation scenario",
+							"value": "This section presents the selected saved PV profile and its original assumptions. Detailed shading and electrical design require separate assessment."
+						},
+						{
+							"label": "PV generation scenario: PV generation",
+							"value": "314.012 kWh"
+						},
+						{
+							"label": "PV generation scenario: Calculation period (UTC)",
+							"value": "2023-01-01T00:00:00+00:00 – 2024-01-01T00:00:00+00:00"
+						},
+						{
+							"label": "PV generation scenario: Calculated intervals",
+							"value": "8,760"
+						},
+						{
+							"label": "Energy scenario",
+							"value": "These values come from the selected saved energy result and reflect its original scenario parameters. The general energy-flow model does not establish the performance of the selected equipment."
+						},
+						{
+							"label": "Energy scenario: Calculation period (UTC)",
+							"value": "2023-06-16T11:00:00+00:00 – 2023-06-16T13:00:00+00:00"
+						},
+						{
+							"label": "Energy scenario: Simulated load demand",
+							"value": "4 kWh"
+						},
+						{
+							"label": "Energy scenario: PV generation",
+							"value": "0.644925 kWh"
+						},
+						{
+							"label": "Energy scenario: Grid import",
+							"value": "3.355 kWh"
+						},
+						{
+							"label": "Energy scenario: PV export",
+							"value": "0 kWh"
+						},
+						{
+							"label": "Energy scenario: PV curtailment",
+							"value": "0 kWh"
+						},
+						{
+							"label": "Energy scenario: Unserved simulated load",
+							"value": "0 kWh"
+						},
+						{
+							"label": "Energy scenario: Solar share of gross demand",
+							"value": "16.123 %"
+						},
+						{
+							"label": "Energy scenario: PV used or stored on site",
+							"value": "100 %"
+						},
+						{
+							"label": "Energy scenario: Calculated intervals",
+							"value": "2"
 						},
 						{
 							"label": "PV reference with geometric direct-beam shading",
@@ -5105,84 +5434,88 @@
 							"value": "00000000000000000000000000000016 / 2"
 						},
 						{
-							"label": "Solar panel layout",
-							"value": "Module counts come from the saved roof layout retained for this report. The modules are design references; electrical and mounting suitability require project-specific assessment."
+							"label": "Project revision",
+							"value": "This report presents saved project inputs and the original results of the selected calculations. Country-specific requirements, electrical design and installation checks remain open. It does not approve the complete installation."
 						},
 						{
-							"label": "Solar panel layout: Input revision",
-							"value": "2"
+							"label": "Project revision: Project reference",
+							"value": "00000000000000000000000000000014"
 						},
 						{
-							"label": "Solar panel layout: PV nameplate power",
-							"value": "0.46 kWp"
+							"label": "Project revision: Input revision",
+							"value": "3"
 						},
 						{
-							"label": "Solar panel layout",
-							"value": {
-								"Quantity": "1",
-								"Panel parameters": "Generic 460 W PV module (reference only — not supplied by Linker) · 1,762 × 1,134 mm",
-								"Module power (STC)": "460 W"
-							}
+							"label": "Project revision: Project inputs · SHA-256",
+							"value": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf"
 						},
 						{
-							"label": "PV generation scenario",
-							"value": "This section presents the selected saved PV profile and its original assumptions. Detailed shading and electrical design require separate assessment."
+							"label": "Project revision: geometric_pv_reference.0.manifest · SHA-256",
+							"value": "45bb866c0b1597860b27f77b7127cd391a498452c63ab6e3fc0a2765cf3e0f2e"
 						},
 						{
-							"label": "PV generation scenario: PV generation",
-							"value": "314.012 kWh"
+							"label": "Project revision: geometric_pv_reference.0.metadata · SHA-256",
+							"value": "dcec9a75de093613ac334ae48e9cfecf3c20d528f64fd7e4be20c3a2c3490211"
 						},
 						{
-							"label": "PV generation scenario: Calculation period (UTC)",
-							"value": "2023-01-01T00:00:00+00:00 – 2024-01-01T00:00:00+00:00"
+							"label": "Project revision: geometric_pv_reference.0.model.inputs · SHA-256",
+							"value": "643825aa2ff65c747116e43de9d8e5fda7ca5958f16c1587acc339875ffb452a"
 						},
 						{
-							"label": "PV generation scenario: Calculated intervals",
-							"value": "8,760"
+							"label": "Project revision: geometric_pv_reference.0.model.witness · SHA-256",
+							"value": "e996cb6e18314b74af07d2c68577703331996634a5bfee6d1d8ffedcaae06384"
 						},
 						{
-							"label": "Energy scenario",
-							"value": "These values come from the selected saved energy result and reflect its original scenario parameters. The general energy-flow model does not establish the performance of the selected equipment."
+							"label": "Project revision: geometric_pv_reference.0.project.parameters · SHA-256",
+							"value": "0f94b0b70df0dde419f07ed2a6f4ed6a12f5e4464010371538da00cd958f7cf7"
 						},
 						{
-							"label": "Energy scenario: Calculation period (UTC)",
-							"value": "2023-06-16T11:00:00+00:00 – 2023-06-16T13:00:00+00:00"
+							"label": "Project revision: geometric_pv_reference.0.weather.metadata · SHA-256",
+							"value": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb"
 						},
 						{
-							"label": "Energy scenario: Simulated load demand",
-							"value": "4 kWh"
+							"label": "Project revision: geometric_pv_reference.0.weather.raw · SHA-256",
+							"value": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 						},
 						{
-							"label": "Energy scenario: PV generation",
-							"value": "0.644925 kWh"
+							"label": "Project revision: geometric_pv_reference.0.woo.module_inputs · SHA-256",
+							"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 						},
 						{
-							"label": "Energy scenario: Grid import",
-							"value": "3.355 kWh"
+							"label": "Project revision: historical_woo.energy.pv_available_ac.metadata · SHA-256",
+							"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 						},
 						{
-							"label": "Energy scenario: PV export",
-							"value": "0 kWh"
+							"label": "Project revision: materials_model · SHA-256",
+							"value": "efbbd24adef37c0075b5c6d9e4e9fb64882505f3b1aa1118cd7025a9590f339e"
 						},
 						{
-							"label": "Energy scenario: PV curtailment",
-							"value": "0 kWh"
+							"label": "Project revision: pv_components.geometry · SHA-256",
+							"value": "6840321b4a240793c39b9e870ef8ac9d467803613d45907de7cacd61b1f23170"
 						},
 						{
-							"label": "Energy scenario: Unserved simulated load",
-							"value": "0 kWh"
+							"label": "Project revision: run.0.manifest · SHA-256",
+							"value": "3f685c49e89d5ec12414d1a9c998f000192ab01df560e21f6f68c45d859d7f43"
 						},
 						{
-							"label": "Energy scenario: Solar share of gross demand",
-							"value": "16.123 %"
+							"label": "Project revision: run.0.result · SHA-256",
+							"value": "6329199c874c0f745832c0720e095756b2efeb24557bdd1e6a396224bf428fec"
 						},
 						{
-							"label": "Energy scenario: PV used or stored on site",
-							"value": "100 %"
+							"label": "Project revision: run.1.manifest · SHA-256",
+							"value": "a4d2daa7f6ea979e5a62e34e564e28baf6c4afe3107ab9f53a549272cd0ae22d"
 						},
 						{
-							"label": "Energy scenario: Calculated intervals",
-							"value": "2"
+							"label": "Project revision: run.1.result · SHA-256",
+							"value": "5c1e3208d1e7a7daaa39b6cc25a3e0b72828e8b76972fe3b5cde648519e4d086"
+						},
+						{
+							"label": "Project revision: woo.energy.pv_available_ac.metadata · SHA-256",
+							"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
+						},
+						{
+							"label": "Project revision: woo.pv · SHA-256",
+							"value": "9696b9d3443637d2a7fa9550aaaa3f19e2b3047822dbb11a1f08f88494e27131"
 						},
 						{
 							"label": "Saved calculation references: Data source",
@@ -5197,8 +5530,40 @@
 							"value": "0000000000000000000000000000001c · Input revision 3"
 						},
 						{
+							"label": "Saved calculation references: manifest_sha256",
+							"value": "3f685c49e89d5ec12414d1a9c998f000192ab01df560e21f6f68c45d859d7f43"
+						},
+						{
+							"label": "Saved calculation references: result_sha256",
+							"value": "6329199c874c0f745832c0720e095756b2efeb24557bdd1e6a396224bf428fec"
+						},
+						{
+							"label": "Saved calculation references: input_sha256",
+							"value": "4b8c32dd88461edc50dfc49843d8b65fc891c1a1c2bafa3f533d94e4ece5aacf"
+						},
+						{
+							"label": "Saved calculation references: runtime_sha256",
+							"value": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
+						},
+						{
 							"label": "Saved calculation references: Calculation reference",
 							"value": "00000000000000000000000000000016 · Input revision 2"
+						},
+						{
+							"label": "Saved calculation references: manifest_sha256",
+							"value": "a4d2daa7f6ea979e5a62e34e564e28baf6c4afe3107ab9f53a549272cd0ae22d"
+						},
+						{
+							"label": "Saved calculation references: result_sha256",
+							"value": "5c1e3208d1e7a7daaa39b6cc25a3e0b72828e8b76972fe3b5cde648519e4d086"
+						},
+						{
+							"label": "Saved calculation references: input_sha256",
+							"value": "1652f1f72a6bc1cf23bc1b71b297dd59ca8a7539ddb8cf9648b694677800d7ed"
+						},
+						{
+							"label": "Saved calculation references: runtime_sha256",
+							"value": "d35695dfe9b085578a7baad329e04be05dce6d0299c7942f0ba2d5e9adddb854"
 						}
 					],
 					"truncated": false,

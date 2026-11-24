@@ -12,6 +12,7 @@ from typing import Annotated, Literal, cast
 
 from pydantic import Field, field_validator
 
+from . import eu_connection_rules as eu_rules
 from .canonical import Json, Object
 from .energy_inputs import Document, SchemaVersion
 from .errors import InvalidInput
@@ -23,6 +24,12 @@ type Basis = Literal[
     "de_pv_installed",
     "at_tor_typ_a_max_capacity",
     "se_rfg_maximum_capacity",
+    "it_lv_generation_spi",
+    "es_self_consumption",
+    "gb_lv_microgeneration",
+    "pl_renewable_electric_installation",
+    "be_small_plant_limits",
+    "ch_lv_generation_control",
 ]
 
 
@@ -63,6 +70,18 @@ class CountryRuleInputs(Document):
     se_export_power_kw: Positive | None = None
     se_existing_installation_change: bool | None = None
 
+    gb_in_great_britain: bool | None = None
+    ch_new_installation: bool | None = None
+    current_per_phase_a: Positive | None = None
+    gb_type_tested: bool | None = None
+    gb_permanently_wired: bool | None = None
+    gb_multiple_premises: bool | None = None
+    es_export_surplus: bool | None = None
+    es_serviced_urban_land: bool | None = None
+    be_three_phase: bool | None = None
+    be_generation_kva: Annotated[float, Field(ge=0, allow_inf_nan=False)] | None = None
+    be_storage_kva: Annotated[float, Field(ge=0, allow_inf_nan=False)] | None = None
+
     @field_validator("rule_date")
     @classmethod
     def calendar_date(cls, value: str | None) -> str | None:
@@ -76,6 +95,7 @@ class CountryRuleInputs(Document):
 # Each reading is bounded by its effective date and the last date on which the
 # cited text was verified; later dates remain unresolved instead of inheriting it.
 _SOURCES: dict[str, Object] = {
+    **eu_rules.SOURCES,
     "FR": {
         "id": "fr_arrete_article_35",
         "title": "Arrêté du 9 juin 2020",
@@ -195,6 +215,7 @@ _AT_CONFORMITY_SOURCE: Object = {
 }
 
 _BASIS_COUNTRY: dict[str, str] = {
+    **eu_rules.BASES,
     "fr_generation_pmax": "FR",
     "nl_storage_max_active": "NL",
     "de_pv_installed": "DE",
@@ -225,7 +246,11 @@ def validate_country_rule_inputs(inputs: Object) -> None:
 
 
 def review_country_rules(
-    country: str | None, value: Json, *, operator: str | None = None
+    country: str | None,
+    value: Json,
+    *,
+    operator: str | None = None,
+    voltage_level: str | None = None,
 ) -> Object | None:
     """Interpret only the specified country, quantity and source edition."""
     facts = CountryRuleInputs.read(value)
@@ -234,7 +259,7 @@ def review_country_rules(
     assert country is not None
     source = dict(_SOURCES[country])
     source_id = cast(str, source["id"])
-    floor = cast(str, source["effective_from"])
+    floor = cast(str, source["effective_from"] or source["evidence_snapshot_date"])
     through = cast(str, source["evidence_snapshot_date"])
     in_version = facts.rule_date is not None and floor <= facts.rule_date <= through
     actual: Object = {
@@ -264,6 +289,14 @@ def review_country_rules(
                     # AT: the cited TOR part does not govern the declared
                     # project, so it supplies no conditional reading for it.
                     "outside_scope",
+                    "outside_lv_scope",
+                    "gb_other_territory",
+                    "gb_plug_in_scope",
+                    "ch_existing",
+                    "ch_above_interface_scope",
+                    "be_check_local_single_phase_limit",
+                    "be_no_generating_units",
+                    "gb_confirm_non_type_tested",
                     # AT § 2.2 lists example criteria ("können z.B. sein"), so
                     # an unchanged power does not settle the question.
                     "power_criterion_not_exceeded_other_criteria_open",
@@ -284,7 +317,30 @@ def review_country_rules(
 
     missing_date = facts.rule_date is None
     p = facts.power_kw
-    if country == "FR":
+    if country in eu_rules.CHECKS:
+        if country == "GB":
+            sources.append(dict(eu_rules.GB_DNO_SOURCE))
+        if missing_date:
+            outcome, missing = "missing_inputs", ["rule_date"]
+        elif not in_version:
+            outcome, missing = "outside_version", []
+        else:
+            outcome, missing = eu_rules.evaluate(country, facts, voltage_level)
+        actual["voltage_level"] = voltage_level
+        actual.update(
+            {
+                k: v
+                for k, v in facts.model_dump(mode="json", exclude_none=True).items()
+                if k not in {"schema_version", "basis", "rule_date"}
+            }
+        )
+        origin = (
+            str(eu_rules.GB_DNO_SOURCE["id"])
+            if outcome in {"gb_single_g98_notice", "gb_cluster_agreement"}
+            else source_id
+        )
+        add(eu_rules.CHECKS[country], outcome, missing, origin=origin)
+    elif country == "FR":
         missing = [
             key
             for key, absent in (

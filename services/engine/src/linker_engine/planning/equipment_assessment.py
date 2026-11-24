@@ -711,7 +711,6 @@ def assess_equipment(
                 "system_usable_energy_kwh",
                 "usable_energy_kwh",
                 "usable_energy",
-                "module_energy_kwh_usable",
             ):
                 energy_val, energy_refs = number(
                     battery_id, ekey, "energy", "usable_energy"

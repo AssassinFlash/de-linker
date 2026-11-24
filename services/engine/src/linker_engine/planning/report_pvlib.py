@@ -16,6 +16,7 @@ from .pv_dc_profile import project_dc
 from .pv_profile_artifacts import model_dependencies, prepared_profile
 from .report_copy import text
 from .report_numbers import significant, span
+from .report_overview import profile_months
 from .report_pv_arrays import array_identities, placements_of
 from .report_pv_components import pv_components, pv_components_note
 from .storage import Blobs
@@ -143,6 +144,7 @@ def pvlib_reference(
     return {
         "parameters": parameters,
         "profile_summary": summary,
+        "monthly_energy": profile_months(dc if converter_id is not None else ac),
         **({"converter_id": converter_id} if converter_id is not None else {}),
         "weather": details,
         "arrays": array_identities(

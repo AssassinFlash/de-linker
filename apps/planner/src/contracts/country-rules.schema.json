@@ -6,7 +6,13 @@
         "nl_storage_max_active",
         "de_pv_installed",
         "at_tor_typ_a_max_capacity",
-        "se_rfg_maximum_capacity"
+        "se_rfg_maximum_capacity",
+        "it_lv_generation_spi",
+        "es_self_consumption",
+        "gb_lv_microgeneration",
+        "pl_renewable_electric_installation",
+        "be_small_plant_limits",
+        "ch_lv_generation_control"
       ],
       "type": "string"
     },
@@ -192,6 +198,139 @@
       ],
       "default": null,
       "title": "Se Existing Installation Change"
+    },
+    "gb_in_great_britain": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gb In Great Britain"
+    },
+    "ch_new_installation": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ch New Installation"
+    },
+    "current_per_phase_a": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Positive"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "gb_type_tested": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gb Type Tested"
+    },
+    "gb_permanently_wired": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gb Permanently Wired"
+    },
+    "gb_multiple_premises": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gb Multiple Premises"
+    },
+    "es_export_surplus": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Es Export Surplus"
+    },
+    "es_serviced_urban_land": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Es Serviced Urban Land"
+    },
+    "be_three_phase": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Be Three Phase"
+    },
+    "be_generation_kva": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Be Generation Kva"
+    },
+    "be_storage_kva": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Be Storage Kva"
     }
   },
   "required": [
