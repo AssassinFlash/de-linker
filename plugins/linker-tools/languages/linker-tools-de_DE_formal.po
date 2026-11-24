@@ -17928,4 +17928,3 @@ msgstr "Angaben und Quellen werden geprüft…"
 #: build/genie.js build/hero.js
 msgid "Quotation issued"
 msgstr "Angebot ausgestellt"
-

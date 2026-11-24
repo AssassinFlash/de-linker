@@ -6389,3 +6389,98 @@ msgstr ""
 #: includes/Inquiry/Form.php
 msgid "Work email"
 msgstr ""
+
+#: includes/Account/AuthTemplates.php:152
+#: includes/Presentation/AccountTemplates.php:194
+msgid "Confirm inquiry"
+msgstr ""
+
+#: includes/Account/AuthTemplates.php:178
+msgid "Sign in to your partner account"
+msgstr ""
+
+#: includes/Inquiry/Form.php:180
+msgid "A planning report is unavailable for these products:"
+msgstr ""
+
+#: includes/Inquiry/Form.php:180
+msgid "You can keep all products and quantities in your inquiry."
+msgstr ""
+
+#: includes/Inquiry/Form.php:181
+msgid "Remove unavailable report links"
+msgstr ""
+
+#. translators: %s: planning project title.
+#: includes/Planning/Context.php:422
+#, php-format
+msgid ""
+"The planning project “%s” is no longer accessible. Remove the unavailable "
+"report link on the inquiry form to keep its products."
+msgstr ""
+
+#: includes/Quotation/AdminBox.php:85
+msgid "The billing address is incomplete. You can add it under Billing."
+msgstr ""
+
+#: includes/Quotation/AdminBox.php:88
+msgid "No buyer VAT ID is recorded. Add it under Billing if available."
+msgstr ""
+
+#: includes/Quotation/AdminBox.php:90
+msgid "Preview PDF"
+msgstr ""
+
+#: includes/Quotation/AdminBox.php:99
+msgid ""
+"Issue the PDF for offline delivery. Download it here and send it to the "
+"guest yourself."
+msgstr ""
+
+#: includes/Quotation/AdminBox.php:108
+msgid "Issue revised Quotation"
+msgstr ""
+
+#: includes/Quotation/AdminBox.php:120
+msgid "Guest inquiry"
+msgstr ""
+
+#: includes/Quotation/AdminBox.php:125
+msgid "Pending approval"
+msgstr ""
+
+#: includes/Quotation/AdminBox.php:127
+msgid "An account uses this email address. This inquiry is still unlinked."
+msgstr ""
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php:316
+msgid "Revised Quotation {quotation_number} for inquiry #{order_number}"
+msgstr ""
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php:324
+msgid "Your revised Quotation is ready"
+msgstr ""
+
+#: includes/Quotation/Issuer.php:120
+msgid ""
+"Approve this account before issuing its Quotation. The customer needs "
+"approval to download the PDF."
+msgstr ""
+
+#: includes/Quotation/Issuer.php:152 includes/Quotation/Issuer.php:203
+msgid "Reload this inquiry to revise its current Quotation."
+msgstr ""
+
+#: includes/Quotation/Issuer.php:175
+msgid "Inquiry not found."
+msgstr ""
+
+#: includes/Quotation/Issuer.php:186
+msgid ""
+"The previous Quotation notification is still being queued. Please try again "
+"shortly."
+msgstr ""
+
+#: templates/quotation/quotation.php:71
+msgid "Quotation — DRAFT"
+msgstr ""
