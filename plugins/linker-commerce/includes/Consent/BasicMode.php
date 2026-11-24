@@ -82,6 +82,9 @@ final class BasicMode {
 
 	/** Consume the event on its confirmation page before Site Kit prints its opt-out. */
 	public function read_conversion(): void {
+		if ( ! function_exists( 'WC' ) ) {
+			return;
+		}
 		$session = WC()->session;
 		if ( ! $session instanceof \WC_Session_Handler ) {
 			return;
