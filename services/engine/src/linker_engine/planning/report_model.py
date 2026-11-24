@@ -12,6 +12,7 @@ from linker_engine.models import (
     ReportSection,
     ReportTable,
 )
+from linker_engine.proposal import monthly_chart
 
 from .canonical import Object
 from .certificate_report import certificate_sections
@@ -38,6 +39,7 @@ from .report_capacity import capacity_section
 from .report_copy import TEXT, check_label, text
 from .report_numbers import comparison_values, percent
 from .report_numbers import number as number
+from .report_overview import summary_cards
 from .report_pv_components import pv_components_note
 from .report_pvlib import pvlib_sections
 
@@ -208,11 +210,8 @@ def build_report(source: Object) -> Report:
         ReportSection(
             id="project",
             title=text("project", locale),
-            paragraphs=[text("scope", locale)],
             rows=[
                 row("project", source["title"]),
-                row("project_id", source["project_id"]),
-                row("revision", source["revision"]),
             ],
         )
     )
@@ -1625,6 +1624,19 @@ def build_report(source: Object) -> Report:
     if isinstance(comparison, dict):
         sections.extend(comparison_sections(comparison, locale, number))
 
+    identity = [
+        row("project_id", source["project_id"]),
+        row("revision", source["revision"]),
+    ]
+    if source.get("input_sha256"):
+        identity.append(
+            ReportRow(
+                label="Eingabedaten · SHA-256"
+                if locale == "de"
+                else "Project inputs · SHA-256",
+                value=str(source["input_sha256"]),
+            )
+        )
     references: list[ReportRow] = []
     references.extend(
         row("data_source", label)
@@ -1635,6 +1647,26 @@ def build_report(source: Object) -> Report:
         if item.get("candidate_id"):
             value += f" · {item['candidate_id']}"
         references.append(row("run", value))
+        for field in (
+            "manifest_sha256",
+            "result_sha256",
+            "input_sha256",
+            "runtime_sha256",
+        ):
+            if item.get(field):
+                references.append(ReportRow(label=field, value=str(item[field])))
+    for name, dep_hash in cast(Object, source.get("dependencies", {})).items():
+        if isinstance(dep_hash, str) and len(dep_hash) == 64:
+            identity.append(ReportRow(label=f"{name} · SHA-256", value=dep_hash))
+    sections.append(
+        ReportSection(
+            id="project-traceability",
+            tier="appendix",
+            title="Projektstand" if locale == "de" else "Project revision",
+            rows=identity,
+            paragraphs=[text("scope", locale)],
+        )
+    )
     if references:
         sections.append(
             ReportSection(id="basis", title=text("basis", locale), rows=references)
@@ -1656,4 +1688,96 @@ def build_report(source: Object) -> Report:
         phase_conflicts=phase_conflicts,
     )
     _panel_schedule(report.sections, lines, locale)
+    report.summary_cards = summary_cards(source, locale)
+    monthly = source.get("monthly_energy")
+    if isinstance(monthly, dict):
+        dates = f"{monthly['start']} – {monthly['end']} UTC"
+        dc_bus = bool(
+            isinstance(energy, dict)
+            and "pv_generated_dc_kwh" in cast(Object, energy.get("metrics", {}))
+            and "pv_generated_ac_kwh" not in cast(Object, energy.get("metrics", {}))
+        )
+        bus = "DC" if dc_bus else "AC"
+        basis = (
+            (
+                f"Gespeicherte {bus}-Bilanz · Monatsmittel"
+                if locale == "de"
+                else f"Saved {bus} energy balance · monthly means"
+            )
+            if energy
+            else (
+                "PV-Referenzprofil · Monatsmittel"
+                if locale == "de"
+                else "PV reference profile · monthly means"
+            )
+        )
+        report.monthly_chart = monthly_chart(
+            locale,
+            cast(list[float], monthly["pv_kwh"]),
+            cast(list[float] | None, monthly["load_kwh"]),
+            f"{basis} · {dates}",
+        )
+    commercial = {
+        "project",
+        "site",
+        "existing-system",
+        "declared-equipment-demand",
+        "self-consumption-comparison",
+        "peak-shaving-comparison",
+        "customer-selected-equipment",
+        "equipment",
+        "bom",
+        "site-materials",
+        "pv-components",
+        "energy",
+        "pv",
+        "country-rule-review",
+        "grid-connection-evidence",
+    }
+    for section in report.sections:
+        if section.id not in commercial:
+            section.tier = "appendix"
+    grid = next(
+        (
+            section
+            for section in report.sections
+            if section.id == "grid-connection-evidence"
+        ),
+        None,
+    )
+    if grid:
+        archives = [
+            r for r in grid.rows if "https://" in r.value or "http://" in r.value
+        ]
+        if archives:
+            grid.rows = [r for r in grid.rows if r not in archives]
+            report.sections.append(
+                ReportSection(
+                    id="grid-source-register",
+                    tier="appendix",
+                    title="Netzanschluss · Quellen"
+                    if locale == "de"
+                    else "Grid connection sources",
+                    rows=archives,
+                )
+            )
+    source_links = list(
+        dict.fromkeys(
+            row.href
+            for section in report.sections
+            if section.tier == "commercial"
+            for row in section.rows
+            if row.href
+        )
+    )
+    if source_links:
+        report.sections.append(
+            ReportSection(
+                id="document-addresses",
+                tier="appendix",
+                title="Originaldokumente" if locale == "de" else "Original documents",
+                paragraphs=source_links,
+            )
+        )
+    report.sections.sort(key=lambda section: section.tier == "appendix")
     return report

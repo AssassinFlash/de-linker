@@ -30,6 +30,9 @@ class RuntimeSnapshot:
         files: list[Json] = []
         paths = [
             *sorted(package.parent.rglob("*.py")),
+            service / "data" / "brand" / "linker-wordmark.png",
+            service / "data" / "fonts" / "DejaVuSans.ttf",
+            service / "data" / "fonts" / "DejaVuSans-Bold.ttf",
             service / "pyproject.toml",
             service / "uv.lock",
             *sorted((service / "schemas").rglob("*.json")),

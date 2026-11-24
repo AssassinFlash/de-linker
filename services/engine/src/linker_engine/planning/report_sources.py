@@ -61,6 +61,7 @@ from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
 from .pvgis_reference_profile import prepared_reference_profile, reference_bundle
 from .records import Actor, Project, Run
 from .report_inputs import ReportOptions
+from .report_overview import profile_months, replay_months
 from .report_pv_components import pv_components, saved_roof_components
 from .report_pvlib import pvlib_reference
 from .workspace import Workspace
@@ -317,7 +318,7 @@ def report_sources(
         asset: Asset, run: Run, binding: str, *, comparison_role: str | None = None
     ) -> None:
         if asset.purpose == KNOWN_AC_PURPOSE:
-            prepared_reference_profile(
+            profile = prepared_reference_profile(
                 workspace.blobs, asset.content_sha256, asset.metadata, documents
             )
             bundle = reference_bundle(
@@ -332,6 +333,7 @@ def report_sources(
                     "parameters": bundle["parameters"],
                     "site": bundle["site"],
                     "profile_summary": asset.metadata["interpretation"],
+                    "monthly_energy": profile_months(profile),
                     "arrays": cast(Object, bundle["manifest"])["arrays"],
                     "dependencies": asset.metadata["dependencies"],
                     "basis": "customer_declared",
@@ -352,7 +354,7 @@ def report_sources(
         # product snapshot or a second provider/model calculation. The report's
         # own reader is reused, so the manifest and children of this reference
         # are verified once for every section that reads it.
-        prepared_reference_profile(
+        profile = prepared_reference_profile(
             workspace.blobs, asset.content_sha256, asset.metadata, documents
         )
         bundle = reference_bundle(
@@ -366,6 +368,7 @@ def report_sources(
                 "metadata_sha256": asset.metadata_sha256,
                 "parameters": bundle["parameters"],
                 "profile_summary": asset.metadata["interpretation"],
+                "monthly_energy": profile_months(profile),
                 "arrays": cast(Object, bundle["manifest"])["arrays"],
                 "geometry_sha256": asset.metadata["geometry_sha256"],
                 "woo_module_inputs": bundle["woo_module_inputs"],
@@ -1477,6 +1480,27 @@ def report_sources(
         "source_labels": list(dict.fromkeys(labels)),
         "dependencies": dependencies,
     }
+    if energy and isinstance(energy.get("trace_sha256"), str):
+        source["monthly_energy"] = replay_months(
+            workspace.blobs.object(str(energy["trace_sha256"]))
+        )
+    elif energy is None:
+        retained_profiles = [
+            ref
+            for ref in (
+                *roof_references.values(),
+                *known_references.values(),
+                *pvlib_references.values(),
+                *geometric_pv_references.values(),
+            )
+            if any(
+                "comparison_role" not in use
+                for use in cast(list[Object], ref["used_by"])
+            )
+        ]
+        if len(retained_profiles) == 1:
+            source["monthly_energy"] = retained_profiles[0].get("monthly_energy")
+
     if assessment is not None and "equipment" in bases:
         certificates = certificate_documents(
             workspace.blobs.object(cast(str, bases["equipment"])), assessment

@@ -13,6 +13,7 @@ from .geometric_pv_profile import prepared_profile, reference_bundle
 from .pv_profile_artifacts import _object
 from .report_copy import text
 from .report_numbers import number, span
+from .report_overview import profile_months
 from .report_pv_arrays import array_identities, placements_of
 from .report_pv_components import pv_components, pv_components_note
 from .report_pvlib import PvReferenceParts, pvlib_rows
@@ -111,6 +112,7 @@ def geometric_pv_reference(
     details = _object(witness["inputs"])
     return {
         "model": witness["kind"],
+        "monthly_energy": profile_months(profile),
         "geometry": inputs["geometry"],
         "parameters": inputs["parameters"],
         "model_facts": _model_facts(details),

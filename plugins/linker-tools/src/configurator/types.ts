@@ -96,6 +96,7 @@ export interface Excluded {
 }
 
 export interface ReportSection {
+	tier?: 'commercial' | 'appendix';
 	id: string;
 	title: string;
 	/** `href`: a document on de-linker.com that the value names. */
@@ -105,6 +106,15 @@ export interface ReportSection {
 }
 
 export interface Report {
+	summary_cards?: { label: string; value: string; note?: string | null }[];
+	monthly_chart?: {
+		title: string;
+		months: string[];
+		pv_kwh: number[];
+		load_kwh?: number[] | null;
+		unit: string;
+		source_note: string;
+	} | null;
 	title: string;
 	subtitle: string;
 	generated_at: string;

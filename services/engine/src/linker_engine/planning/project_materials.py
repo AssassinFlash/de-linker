@@ -834,8 +834,21 @@ def conductor_specification(line: Object, locale: str) -> str:
 def material_quantity(line: Object, locale: str) -> str:
     value = line.get("quantity")
     if type(value) not in (int, float) or not math.isfinite(cast(float, value)):
-        return "—"
-    return number(value, locale, material_unit(line, locale))
+        origin = line.get("source")
+        if isinstance(origin, dict) and origin.get("selected_role") == "accessory":
+            return "Nach Anlagenplanung" if locale == "de" else "Per site layout"
+        if line.get("handling") in (
+            "customer_equipment_pending",
+            "woo_product",
+            "customer_equipment_retained",
+            "manufacturer_included",
+        ):
+            return "Menge zu bestätigen" if locale == "de" else "Quantity to confirm"
+        return "Nach Anlagenplanung" if locale == "de" else "Per site layout"
+    unit = material_unit(line, locale)
+    if locale == "en" and unit == "pc" and value != 1:
+        unit = "pcs"
+    return number(value, locale, unit)
 
 
 def _cell(value: Any) -> str:
@@ -1104,7 +1117,9 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 line["quantity"],
                 material_name(line, locale),
                 material_reference(line),
-                material_scope(line, locale),
+                material_scope(line, locale)
+                if line["quantity"] is not None
+                else f"{material_scope(line, locale)} · {material_quantity(line, locale)}",
                 provenance,
                 sha256,
                 assessment,

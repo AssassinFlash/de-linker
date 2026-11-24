@@ -311,7 +311,27 @@ class ReportTable(BaseModel):
         return self
 
 
+class ReportSummaryCard(BaseModel):
+    label: str
+    value: str
+    note: str | None = None
+
+
+class ReportMonthlyChart(BaseModel):
+    title: str
+    unit: str
+    months: list[str] = Field(min_length=12, max_length=12)
+    pv_kwh: list[Annotated[float, Field(ge=0, allow_inf_nan=False)]] = Field(
+        min_length=12, max_length=12
+    )
+    load_kwh: list[Annotated[float, Field(ge=0, allow_inf_nan=False)]] | None = Field(
+        default=None, min_length=12, max_length=12
+    )
+    source_note: str
+
+
 class ReportSection(BaseModel):
+    tier: Literal["commercial", "appendix"] = "commercial"
     id: str
     title: str
     rows: list[ReportRow] = []
@@ -331,6 +351,8 @@ class Report(BaseModel):
     generated_at: str
     locale: Locale
     sections: list[ReportSection]
+    summary_cards: list[ReportSummaryCard] = Field(default_factory=list)
+    monthly_chart: ReportMonthlyChart | None = None
     phase_conflicts: list[ReportPhaseConflict] = Field(
         default_factory=list, exclude_if=lambda conflicts: not conflicts
     )

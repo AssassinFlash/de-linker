@@ -24,6 +24,7 @@ import {
 } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
+import { ReportOverview, appendixTitle } from "./ReportOverview.tsx";
 import { ProjectFacts, projectFacts } from "./ProjectFacts.tsx";
 import { __, sprintf } from "../../i18n.ts";
 import { EvidenceCard } from "../shared/EvidenceCard.tsx";
@@ -177,6 +178,31 @@ function ReportItemSections({
 	));
 }
 
+function ReportBody({ report }: { report: PlanningReport }) {
+	const sections = (tier: "commercial" | "appendix") =>
+		report.sections
+			.filter((section) => (section.tier ?? "commercial") === tier)
+			.map((section) => (
+				<section key={section.id}>
+					<h3>{section.title}</h3>
+					<ReportContent section={section} />
+				</section>
+			));
+	const appendix = sections("appendix");
+	return (
+		<>
+			<ReportOverview report={report} />
+			{sections("commercial")}
+			{appendix.length > 0 && (
+				<details className="sc-disclosure">
+					<summary>{appendixTitle(report.locale)}</summary>
+					{appendix}
+				</details>
+			)}
+		</>
+	);
+}
+
 function ReportPreview({
 	report,
 	allowed,
@@ -307,13 +333,7 @@ function ReportPreview({
 				>
 					<div className="sc-report-preview" lang={report.locale}>
 						<p className="sc-muted">{report.subtitle}</p>
-						{open &&
-							report.sections.map((section) => (
-								<section key={section.id}>
-									<h3>{section.title}</h3>
-									<ReportContent section={section} />
-								</section>
-							))}
+						{open && <ReportBody report={report} />}
 					</div>
 				</section>
 			</dialog>
@@ -881,13 +901,7 @@ export function ReviewProposal({
 				>
 					<summary>{__("Project report", "linker-tools")}</summary>
 					{ready && !reportOnly && draftTransfer}
-					{ready &&
-						report.sections.map((section) => (
-							<section key={section.id}>
-								<h3>{section.title}</h3>
-								<ReportContent section={section} />
-							</section>
-						))}
+					{ready && <ReportBody report={report} />}
 				</details>
 				{historyPanel}
 			</article>
@@ -909,9 +923,14 @@ export function ReviewProposal({
 					</p>
 				</div>
 			</header>
-			{!selected && (facts.length > 0 || overviewSections.length > 0) && (
+			{!selected &&
+			(facts.length > 0 ||
+				overviewSections.length > 0 ||
+				report?.summary_cards?.length ||
+				report?.monthly_chart) ? (
 				<section className="sc-card sc-report-overview">
 					<h2>{__("Project overview", "linker-tools")}</h2>
+					{report && <ReportOverview report={report} />}
 					{facts.length > 0 && <ProjectFacts facts={facts} />}
 					{overviewSections.length > 0 && (
 						<div lang={report?.locale}>
@@ -924,7 +943,7 @@ export function ReviewProposal({
 						</div>
 					)}
 				</section>
-			)}
+			) : null}
 			{!selected && run && !current && (
 				<p className="sc-card sc-muted" role="status" data-report-outdated="">
 					{__(

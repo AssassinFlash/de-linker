@@ -1868,7 +1868,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         )
         assert not any(panel_label in row[1] for row in bom.table.rows)
         assert any(
-            row[0] == ("3 pc" if locale == "en" else "3 St.")
+            row[0] == ("3 pcs" if locale == "en" else "3 St.")
             and battery["model"] in row[1]
             for row in bom.table.rows
         )

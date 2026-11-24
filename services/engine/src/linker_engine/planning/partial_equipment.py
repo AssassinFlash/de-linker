@@ -81,6 +81,21 @@ def partial_equipment(
         elif role == "battery":
             count, stacks = setup.get("modules_per_stack"), setup.get("parallel_stacks")
             kind = evidence.sales_unit(pid)
+            if (
+                stacks is None
+                and evidence.scalar(pid, "stacks_parallel_max", "count") == 1
+            ):
+                stacks = 1
+            if kind == "battery_module" and count is None:
+                minimum = evidence.scalar(pid, "modules_per_stack_min", "count")
+                maximum = evidence.scalar(pid, "modules_per_stack_max", "count")
+                if (
+                    minimum is not None
+                    and minimum == maximum
+                    and minimum.is_integer()
+                    and minimum > 0
+                ):
+                    count = int(minimum)
             if type(stacks) is int and stacks > 0:
                 if kind == "battery_module" and type(count) is int and count > 0:
                     quantity = count * stacks
@@ -109,7 +124,10 @@ def partial_equipment(
             "unit": "piece",
             "handling": handling,
             "basis": "customer_selected_equipment",
-            "source": {"product_revision": row["product_revision"]},
+            "source": {
+                "product_revision": row["product_revision"],
+                "selected_role": role,
+            },
         }
     ids = {pid for pid, _ in lines}
     scope = dict(cast(Object, basis["publication"]))

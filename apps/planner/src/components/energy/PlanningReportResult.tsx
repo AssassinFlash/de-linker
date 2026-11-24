@@ -1,3 +1,7 @@
+import {
+	ReportOverview,
+	appendixTitle,
+} from "../configurator/ReportOverview.tsx";
 import { EnergyError } from "./EnergyError.tsx";
 import { ApiError } from "../../data/protocol.ts";
 import { runStateLabel } from "./planningLabels.ts";
@@ -327,7 +331,9 @@ export function PlanningReportResult({
 					)}
 				</aside>
 				<div className="sc-report-content">
-					{report.sections.map((section) =>
+					<ReportOverview report={report} />
+					{report.sections.map((section, index) =>
+						section.tier === "appendix" ||
 						section.id.startsWith("check-") ||
 						["basis", "conditions"].includes(section.id) ? (
 							<details
@@ -335,7 +341,13 @@ export function PlanningReportResult({
 								className="sc-disclosure sc-work-panel"
 								lang={report.locale}
 							>
-								<summary>{section.title}</summary>
+								<summary>
+									{section.tier === "appendix" &&
+									report.sections[index - 1]?.tier !== "appendix"
+										? appendixTitle(report.locale) + " · "
+										: ""}
+									{section.title}
+								</summary>
 								<SectionContent section={section} />
 							</details>
 						) : (

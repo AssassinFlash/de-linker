@@ -1,5 +1,69 @@
 {
   "$defs": {
+    "ReportMonthlyChart": {
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "months": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 12,
+          "minItems": 12,
+          "title": "Months",
+          "type": "array"
+        },
+        "pv_kwh": {
+          "items": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "maxItems": 12,
+          "minItems": 12,
+          "title": "Pv Kwh",
+          "type": "array"
+        },
+        "load_kwh": {
+          "anyOf": [
+            {
+              "items": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "maxItems": 12,
+              "minItems": 12,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Load Kwh"
+        },
+        "source_note": {
+          "title": "Source Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "unit",
+        "months",
+        "pv_kwh",
+        "load_kwh",
+        "source_note"
+      ],
+      "title": "ReportMonthlyChart",
+      "type": "object",
+      "additionalProperties": false
+    },
     "ReportPhaseConflict": {
       "properties": {
         "unit": {
@@ -73,6 +137,15 @@
     },
     "ReportSection": {
       "properties": {
+        "tier": {
+          "default": "commercial",
+          "enum": [
+            "commercial",
+            "appendix"
+          ],
+          "title": "Tier",
+          "type": "string"
+        },
         "id": {
           "title": "Id",
           "type": "string"
@@ -117,6 +190,38 @@
         "table"
       ],
       "title": "ReportSection",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "ReportSummaryCard": {
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "label",
+        "value",
+        "note"
+      ],
+      "title": "ReportSummaryCard",
       "type": "object",
       "additionalProperties": false
     },
@@ -192,6 +297,24 @@
       },
       "title": "Sections",
       "type": "array"
+    },
+    "summary_cards": {
+      "items": {
+        "$ref": "#/$defs/ReportSummaryCard"
+      },
+      "title": "Summary Cards",
+      "type": "array"
+    },
+    "monthly_chart": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReportMonthlyChart"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "phase_conflicts": {
       "items": {

@@ -1,9 +1,8 @@
 """The design report as an A4 PDF, with the installer's own logo when one is given.
 
 Rendered from the same report model as the screen (`report.py`), so the PDF
-never words anything the screen does not. Bitstream Vera (bundled with
-ReportLab, Bitstream Vera licence) provides the Latin text, German letters,
-minus sign and dashes. The native PDF Symbol face supplies the formula beta.
+uses the same wording. Bundled DejaVu Sans fonts cover European source titles
+and engineering notation in the offline render.
 """
 
 from __future__ import annotations
@@ -11,13 +10,13 @@ from __future__ import annotations
 import base64
 import binascii
 import io
-import os
+import math
 import re
 from datetime import UTC, datetime
 from functools import cache
 from pathlib import Path
 
-import reportlab
+from reportlab.graphics.shapes import Drawing, Line, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.pagesizes import A4
@@ -29,6 +28,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
     Image,
     KeepTogether,
+    PageBreak,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -37,7 +37,13 @@ from reportlab.platypus import (
 )
 from reportlab.platypus.flowables import Flowable
 
-from .models import Report, ReportRow, ReportSection
+from .models import (
+    Report,
+    ReportMonthlyChart,
+    ReportRow,
+    ReportSection,
+    ReportSummaryCard,
+)
 from .texts import t
 
 # The site's colour tokens, as the configurator's screen uses them
@@ -65,16 +71,16 @@ class LogoError(ValueError):
 
 @cache
 def _fonts() -> None:
-    folder = os.path.join(os.path.dirname(reportlab.__file__), "fonts")
-    pdfmetrics.registerFont(TTFont("Vera", os.path.join(folder, "Vera.ttf")))
-    pdfmetrics.registerFont(TTFont("Vera-Bold", os.path.join(folder, "VeraBd.ttf")))
+    folder = BRAND.parents[1] / "fonts"
+    for name in ("DejaVuSans", "DejaVuSans-Bold"):
+        pdfmetrics.registerFont(TTFont(name, str(folder / (name + ".ttf"))))
 
 
 def _styles() -> dict[str, ParagraphStyle]:
     _fonts()
     base = ParagraphStyle(
         "base",
-        fontName="Vera",
+        fontName="DejaVuSans",
         fontSize=8.8,
         leading=12,
         textColor=INK,
@@ -86,7 +92,7 @@ def _styles() -> dict[str, ParagraphStyle]:
             "small", parent=base, fontSize=7.6, leading=10, textColor=MUTED
         ),
         "title": ParagraphStyle(
-            "title", parent=base, fontName="Vera-Bold", fontSize=17, leading=21
+            "title", parent=base, fontName="DejaVuSans-Bold", fontSize=17, leading=21
         ),
         "subtitle": ParagraphStyle(
             "subtitle", parent=base, fontSize=10, leading=14, textColor=MUTED
@@ -94,7 +100,7 @@ def _styles() -> dict[str, ParagraphStyle]:
         "h2": ParagraphStyle(
             "h2",
             parent=base,
-            fontName="Vera-Bold",
+            fontName="DejaVuSans-Bold",
             fontSize=11,
             leading=14,
             spaceBefore=10,
@@ -106,7 +112,7 @@ def _styles() -> dict[str, ParagraphStyle]:
             "label", parent=base, fontSize=8.2, leading=10.6, textColor=MUTED
         ),
         "head": ParagraphStyle(
-            "head", parent=base, fontName="Vera-Bold", fontSize=8.2, leading=10.6
+            "head", parent=base, fontName="DejaVuSans-Bold", fontSize=8.2, leading=10.6
         ),
     }
 
@@ -116,9 +122,7 @@ def _escape(text: str) -> str:
 
 
 def _text(text: str) -> str:
-    # Vera's cmap has no U+03B2. Keep the Unicode character in the document;
-    # ReportLab maps it to the native Symbol beta glyph (encoding slot 98).
-    return _escape(text).replace("β", '<font name="Symbol">β</font>')
+    return _escape(text)
 
 
 def _linked(text: str) -> str:
@@ -132,15 +136,17 @@ def _linked(text: str) -> str:
     )
 
 
-def _value(row: ReportRow) -> str:
+def _value(row: ReportRow, appendix: bool) -> str:
     """A row's value; a document is linked and its address printed for the paper copy."""
     if not row.href:
+        if appendix and re.fullmatch(r"[0-9a-f]{64}", row.value):
+            return f'<font name="Courier" size="7">{row.value}</font>'
         return _linked(row.value)
     href = _escape(row.href)
-    return (
-        f'<link href="{href}" color="{ACCENT_HEX}">{_text(row.value)}</link>'
-        f'<br/><font size="6.8" color="{MUTED_HEX}">{_text(row.href)}</font>'
-    )
+    label = f'<link href="{href}" color="{ACCENT_HEX}">{_text(row.value)}</link>'
+    if appendix:
+        label += f'<br/><font size="6.8" color="{MUTED_HEX}">{_text(row.href)}</font>'
+    return label
 
 
 def logo_image(data_url: str) -> Image:
@@ -199,7 +205,7 @@ def _section(
         rows = [
             [
                 Paragraph(_text(row.label), styles["label"]),
-                Paragraph(_value(row), styles["cell"]),
+                Paragraph(_value(row, section.tier == "appendix"), styles["cell"]),
             ]
             for row in section.rows
         ]
@@ -265,6 +271,132 @@ def _section(
     return [KeepTogether(parts[:first_content]), *parts[first_content:]]
 
 
+def _cards(
+    cards: list[ReportSummaryCard], styles: dict[str, ParagraphStyle], width: float
+) -> Table:
+    cells = [
+        [Paragraph(_text(card.label), styles["label"]) for card in cards],
+        [Paragraph(_text(card.value), styles["h2"]) for card in cards],
+    ]
+    if any(card.note for card in cards):
+        cells.append(
+            [Paragraph(_text(card.note or ""), styles["small"]) for card in cards]
+        )
+    table = Table(cells, colWidths=[width / len(cards)] * len(cards))
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f0f6f5")),
+                *(
+                    ("LINEBEFORE", (i, 0), (i, -1), 3, colors.white)
+                    for i in range(1, len(cards))
+                ),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 11),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+                ("TOPPADDING", (0, 0), (-1, -1), 2),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+                ("TOPPADDING", (0, 0), (-1, 0), 10),
+                ("BOTTOMPADDING", (0, -1), (-1, -1), 10),
+            ]
+        )
+    )
+    return table
+
+
+def _energy_chart(chart: ReportMonthlyChart, width: float, de: bool) -> Drawing:
+    """Scale both energy series to the same zero-based axis."""
+    ceiling = max([*chart.pv_kwh, *(chart.load_kwh or [])])
+    step_base = 10 ** math.floor(math.log10(ceiling / 4))
+    step = next(
+        n * step_base for n in (1, 2, 2.5, 5, 10) if n * step_base >= ceiling / 4
+    )
+    ticks = math.ceil(ceiling / step)
+    upper = ticks * step
+
+    def fmt(value: float) -> str:
+        return f"{value:g}".replace(".", ",") if de else f"{value:g}"
+
+    labels = [fmt(i * step) for i in range(ticks + 1)]
+    left = max(pdfmetrics.stringWidth(label, "DejaVuSans", 7) for label in labels) + 10
+    height = 92
+    cell = (width - left - 5) / 12
+    drawing = Drawing(width, height + 45)
+    series = [(chart.pv_kwh, ACCENT, "PV-Erzeugung" if de else "PV generation")]
+    if chart.load_kwh is not None:
+        series.append(
+            (
+                chart.load_kwh,
+                colors.HexColor("#a5b6c3"),
+                "Stromverbrauch" if de else "Electricity use",
+            )
+        )
+    legend_x = left
+    for _, color, name in series:
+        marker = Rect(legend_x, height + 28, 8, 8)
+        marker.fillColor = color
+        marker.strokeWidth = 0
+        drawing.add(marker)
+        drawing.add(
+            String(
+                legend_x + 12,
+                height + 28,
+                name,
+                fontName="DejaVuSans",
+                fontSize=8,
+                fillColor=INK,
+            )
+        )
+        legend_x += pdfmetrics.stringWidth(name, "DejaVuSans", 8) + 30
+    drawing.add(
+        String(
+            width - 5,
+            height + 28,
+            chart.unit,
+            textAnchor="end",
+            fontName="DejaVuSans",
+            fontSize=8,
+            fillColor=MUTED,
+        )
+    )
+    for idx, label in enumerate(labels):
+        y = 19 + height * idx / ticks
+        drawing.add(Line(left, y, width - 5, y, strokeColor=RULE, strokeWidth=0.5))
+        drawing.add(
+            String(
+                left - 5,
+                y - 2.5,
+                label,
+                textAnchor="end",
+                fontName="DejaVuSans",
+                fontSize=7,
+                fillColor=MUTED,
+            )
+        )
+    for month, label in enumerate(chart.months):
+        mid = left + (month + 0.5) * cell
+        drawing.add(
+            String(
+                mid,
+                6,
+                label,
+                textAnchor="middle",
+                fontName="DejaVuSans",
+                fontSize=7.5,
+                fillColor=INK,
+            )
+        )
+        bar = cell * 0.7 / len(series)
+        for j, (values, color, _) in enumerate(series):
+            marker = Rect(
+                mid - cell * 0.35 + j * bar, 19, bar - 1, height * values[month] / upper
+            )
+            marker.fillColor = color
+            marker.strokeWidth = 0
+            drawing.add(marker)
+    return drawing
+
+
 def render(
     report: Report, logo: str | None = None, *, credits: str | None = None
 ) -> bytes:
@@ -297,46 +429,82 @@ def render(
         generated_at = instant.strftime(
             "%d.%m.%Y %H:%M UTC" if report.locale == "de" else "%Y-%m-%d %H:%M UTC"
         )
+    project = next((s for s in report.sections if s.id == "project" and s.rows), None)
+    site = next((s for s in report.sections if s.id == "site" and s.rows), None)
+    title = project.rows[0].value if project else report.title
+    location = (
+        site.rows[0].value
+        if site
+        and site.rows[0].label in ("Location", "Standort", t("row.postcode", report.locale))
+        else ""
+    )
+    language = "Deutsch" if report.locale == "de" else "English"
     heading: list[Flowable] = [
-        Paragraph(_text(report.title), styles["title"]),
+        Paragraph(_text(title), styles["title"]),
         Paragraph(_text(report.subtitle), styles["subtitle"]),
-        Paragraph(_text(generated_at), styles["small"]),
+        Paragraph(
+            _text(" · ".join(filter(None, (location, generated_at, language)))),
+            styles["small"],
+        ),
     ]
-    # The Linker mark is on every report; an uploaded installer logo sits below it.
     brand = brand_image()
-    marks: list[Flowable] = [brand] if brand is not None else []
-    if logo:
-        if marks:
-            marks.append(Spacer(1, 3 * mm))
-        marks.append(logo_image(logo))
-    if marks:
-        top = Table(
-            [[heading, marks]],
-            colWidths=[width - LOGO_MAX_WIDTH, LOGO_MAX_WIDTH],
+    installer = logo_image(logo) if logo else None
+    story: list[Flowable] = []
+    if brand or installer:
+        marks = Table(
+            [[brand or "", installer or ""]], colWidths=[width / 2, width / 2]
         )
-        top.setStyle(
+        marks.setStyle(
             TableStyle(
                 [
-                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                     ("ALIGN", (1, 0), (1, 0), "RIGHT"),
                     ("LEFTPADDING", (0, 0), (-1, -1), 0),
                     ("RIGHTPADDING", (0, 0), (-1, -1), 0),
                 ]
             )
         )
-        story: list[Flowable] = [top]
-    else:
-        story = list(heading)
-    story.append(Spacer(1, 6))
+        if brand:
+            brand.hAlign = "LEFT"
+        if installer:
+            installer.hAlign = "RIGHT"
+        story.extend([marks, Spacer(1, 14)])
+    story.extend(heading)
+    story.append(Spacer(1, 10))
+    if report.summary_cards:
+        story.extend([_cards(report.summary_cards, styles, width), Spacer(1, 8)])
+    if report.monthly_chart and any(report.monthly_chart.pv_kwh):
+        chart = report.monthly_chart
+        story.extend(
+            [
+                Paragraph(_text(chart.title), styles["h2"]),
+                _energy_chart(chart, width, report.locale == "de"),
+                Paragraph(_text(chart.source_note), styles["small"]),
+                Spacer(1, 8),
+            ]
+        )
+    appendix = []
     for section in report.sections:
-        story += _section(section, styles, width)
+        if section.tier == "appendix":
+            appendix.append(section)
+        else:
+            story += _section(section, styles, width)
+    if appendix:
+        title = (
+            "Technischer &amp; rechtlicher Anhang"
+            if report.locale == "de"
+            else "Technical &amp; Compliance Appendix"
+        )
+        story.extend([PageBreak(), Paragraph(title, styles["title"]), Spacer(1, 8)])
+        for section in appendix:
+            story += _section(section, styles, width)
 
     footer = t("pdf.footer", report.locale)
     credits = t("pdf.credits", report.locale) if credits is None else credits
 
     def page(canvas: object, doc: object) -> None:
         canvas.saveState()  # type: ignore[attr-defined]
-        canvas.setFont("Vera", 7)  # type: ignore[attr-defined]
+        canvas.setFont("DejaVuSans", 7)  # type: ignore[attr-defined]
         canvas.setFillColor(MUTED)  # type: ignore[attr-defined]
         left, right = margin + padding, A4[0] - margin - padding
         canvas.drawString(left, 13 * mm, footer)  # type: ignore[attr-defined]

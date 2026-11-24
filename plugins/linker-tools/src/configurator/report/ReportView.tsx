@@ -118,6 +118,11 @@ export function ReportView( {
 		}
 	}
 
+	const chart = report.monthly_chart;
+	const de = report.locale === 'de';
+	const number = new Intl.NumberFormat( de ? 'de-DE' : 'en-GB', {
+		maximumFractionDigits: 1,
+	} );
 	return (
 		<div className="linker-report">
 			<div className="linker-report__tools">
@@ -223,12 +228,79 @@ export function ReportView( {
 						.replace( 'Z', ' UTC' )
 				) }
 			</p>
-			{ report.sections.map( ( section ) => (
+			{ !! report.summary_cards?.length && (
+				<dl className="linker-report__rows">
+					{ report.summary_cards.map( ( card ) => (
+						<div key={ card.label }>
+							<dt>{ card.label }</dt>
+							<dd>
+								{ card.value }
+								{ card.note && <small> · { card.note }</small> }
+							</dd>
+						</div>
+					) ) }
+				</dl>
+			) }
+			{ chart && (
+				<details>
+					<summary>{ chart.title }</summary>
+					<p>{ chart.source_note }</p>
+					<Table
+						columns={ [
+							{ label: de ? 'Monat' : 'Month' },
+							{
+								label:
+									( de ? 'PV-Erzeugung' : 'PV generation' ) +
+									' (' +
+									chart.unit +
+									')',
+							},
+							...( chart.load_kwh
+								? [
+										{
+											label:
+												( de
+													? 'Stromverbrauch'
+													: 'Electricity use' ) +
+												' (' +
+												chart.unit +
+												')',
+										},
+									]
+								: [] ),
+						] }
+						rows={ chart.months.map( ( month, index ) => ( {
+							key: month,
+							cells: [
+								month,
+								number.format( chart.pv_kwh[ index ] ),
+								...( chart.load_kwh
+									? [
+											number.format(
+												chart.load_kwh[ index ]
+											),
+										]
+									: [] ),
+							],
+						} ) ) }
+					/>
+				</details>
+			) }
+			{ report.sections.map( ( section, sectionIndex ) => (
 				<section
 					key={ section.id }
 					className="linker-report__section"
 					aria-labelledby={ `linker-report-${ section.id }` }
 				>
+					{ section.tier === 'appendix' &&
+						report.sections[ sectionIndex - 1 ]?.tier !==
+							'appendix' && (
+							<h3>
+								{ de
+									? 'Technischer & rechtlicher Anhang'
+									: 'Technical & Compliance Appendix' }
+							</h3>
+						) }
 					<h4 id={ `linker-report-${ section.id }` }>
 						{ section.title }
 					</h4>
