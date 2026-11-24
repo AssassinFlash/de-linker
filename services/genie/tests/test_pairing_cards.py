@@ -1117,6 +1117,10 @@ def test_numeric_grading_requires_this_turns_exact_condition_cards_and_document(
     assert any("number 230.4" in f for f in failures)
     assert any("number 2 " in f for f in failures)
     blocks.pop()
+    page_url = doc["url"]
+    doc["url"] = page_url.split("#")[0] + "#page=7"
+    assert any("number 179.2" in f for f in check(row, turn))
+    doc["url"] = page_url
     doc["document_revision"] = "older"
     assert any("number 179.2" in f for f in check(row, turn))
     doc["document_revision"] = "v2"

@@ -51,6 +51,7 @@ def pairing_prose(
     received = {
         (
             b.get("ref"),
+            b.get("url"),
             b.get("document_id"),
             b.get("document_revision"),
             b.get("evidence_product_id"),
@@ -66,6 +67,7 @@ def pairing_prose(
             source is None
             or (
                 document.ref,
+                document.url,
                 source.document_id,
                 source.document_revision,
                 source.product_id,
