@@ -7,6 +7,37 @@ const markdown = new MarkdownIt( {
 	linkify: false,
 	typographer: false,
 } );
+// Markdown-it has already paired valid delimiters here. Escapes and code
+// have their own token types and mathematical operators remain ordinary text.
+function orphanedEmphasis( before: string, after: string ): boolean {
+	return (
+		( /\p{L}$/u.test( before ) && /^(?:$|[.,;:!?]|\s)/u.test( after ) ) ||
+		( /(?:^|[\s(])$/u.test( before ) && /^\p{L}{2}/u.test( after ) )
+	);
+}
+markdown.inline.ruler2.after( 'emphasis', 'orphaned_strong', ( state ) => {
+	for ( const marker of state.delimiters ) {
+		const index = marker.token;
+		const left = state.tokens[ index ];
+		const right = state.tokens[ index + 1 ];
+		if (
+			marker.length === 2 &&
+			marker.open !== marker.close &&
+			left.type === 'text' &&
+			left.content === '*' &&
+			right?.type === 'text' &&
+			right.content === '*' &&
+			orphanedEmphasis(
+				state.tokens[ index - 1 ]?.content ?? '',
+				state.tokens[ index + 2 ]?.content ?? ''
+			)
+		) {
+			left.content = '';
+			right.content = '';
+		}
+	}
+	return true;
+} );
 // Narrative model text does not introduce destinations or external image loads.
 // Verified links/images already arrive through the document and product blocks.
 markdown.renderer.rules.link_open = () => '<span>';

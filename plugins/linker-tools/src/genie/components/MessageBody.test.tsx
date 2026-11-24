@@ -59,3 +59,23 @@ test( 'historical inline and compact headings render as headings', () => {
 	).toEqual( [ 'Features', 'More details' ] );
 	expect( container ).not.toHaveTextContent( '###' );
 } );
+
+test( 'cleans stray emphasis without changing valid Markdown or formulas', () => {
+	const { container } = render(
+		<MessageBody
+			text={
+				'Installation space requirement**, says the guide. **Another paragraph\n\n* **Normal emphasis**\n* `x**2`, 2 ** 3 and x**(2). Literal: \\*\\*word.'
+			}
+		/>
+	);
+	expect( container ).toHaveTextContent(
+		'Installation space requirement, says the guide. Another paragraph'
+	);
+	expect( container.querySelector( 'strong' ) ).toHaveTextContent(
+		'Normal emphasis'
+	);
+	expect( container.querySelectorAll( 'li' ) ).toHaveLength( 2 );
+	expect( container ).toHaveTextContent(
+		'x**2, 2 ** 3 and x**(2). Literal: **word.'
+	);
+} );
