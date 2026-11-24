@@ -879,6 +879,77 @@ def _warranty_period_fallback(
     return hydrate(draft, facts, language)
 
 
+def _cabinet_clearance_answer(
+    facts: TurnFacts,
+    route: Route,
+    question: str,
+    language: Locale,
+    documents: list[str],
+) -> TurnOutput | None:
+    """Render a cabinet's directional clearances from its current reviewed figure."""
+    from linker_genie.figures import tag
+    from linker_genie.manual_diagram_records import DIAGRAMS
+    from linker_genie.manual_evidence import evidence_id
+    from linker_genie.source_models import codes
+
+    if route.name != "documents" or not clearance_question(question):
+        return None
+    models = [
+        code.upper() for code in codes(question) if code.upper().startswith("CB2-")
+    ]
+    if len(models) != 1 or any(
+        note.code.upper() != models[0] for note in route.named_models
+    ):
+        return None
+    diagram = next(
+        row for row in DIAGRAMS if row["figure"] == "CB2 installation space requirement"
+    )
+    cid = evidence_id(
+        diagram["sha256"],
+        diagram["source_page"],
+        models[0],
+        diagram["source_id"],
+        diagram["excerpt"],
+    )
+    source = facts.documents.get(cid)
+    text = facts.facts.get(f"{cid}.text")
+    tagged = tag(cid, diagram["excerpt"])
+    if (
+        cid not in facts.technical_chunks
+        or source is None
+        or source.evidence is None
+        or source.page != diagram["source_page"]
+        or text is None
+        or text.value != tagged.text
+        or any(
+            ref not in facts.facts or facts.facts[ref].value != value
+            for ref, value in tagged.figures.items()
+        )
+        or facts.knowledge_products.get(cid) != (source.evidence.product_id,)
+        or any(
+            source.evidence.product_id not in note.product_ids
+            for note in route.named_models
+        )
+    ):
+        return None
+    if language == "de":
+        sentence = (
+            "Wenn Sie vor dem Schrank stehen, halten Sie für die Luftzirkulation "
+            f"folgende Mindestabstände ein: vorne {{fact:{cid}.n1}}, rechts {{fact:{cid}.n2}}, "
+            f"hinten {{fact:{cid}.n3}}, links {{fact:{cid}.n4}} und oben {{fact:{cid}.n5}}."
+        )
+    else:
+        sentence = re.sub(
+            r"\[n(\d+)=[^\]]+\]",
+            lambda m: f"{{fact:{cid}.n{m[1]}}}",
+            tagged.text,
+        )
+    refs = dict.fromkeys([cid, *documents])
+    blocks: list[Block] = [TextBlock(text=sentence, refs=[cid])]
+    blocks.extend(DocumentBlock(ref=ref) for ref in refs)
+    return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
+
+
 def _manual_torque_fallback(
     facts: TurnFacts,
     language: Locale,
@@ -1073,6 +1144,11 @@ def fallback(
             ],
         )
     if route is not None and route.name == "documents" and facts.documents:
+        cabinet = _cabinet_clearance_answer(
+            facts, route, question, language, _document_refs(facts)
+        )
+        if cabinet is not None:
+            return cabinet
         manual = _manual_torque_fallback(
             facts, language, route, question, page_product_id
         )
@@ -2036,6 +2112,16 @@ def seal(
     }
     blob = "\n".join(fact.value for fact in source_texts.values())
     if clearance_question(question):
+        cited = [
+            block.ref
+            for block in (original or output).blocks
+            if isinstance(block, DocumentBlock)
+        ]
+        cabinet = _cabinet_clearance_answer(
+            facts, route, question, output.language, cited
+        )
+        if cabinet is not None:
+            return cabinet
         clearances = _source_clearances(scoped)
         checked_sources = _seal_sources(
             original or output, facts, route, include_qualified=True

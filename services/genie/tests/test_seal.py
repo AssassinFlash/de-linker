@@ -1557,3 +1557,105 @@ def test_an_uncited_chunk_licenses_no_figure_on_a_strip_route() -> None:
             "other",
         )
         assert "6" not in _text(sealed).split()
+
+
+def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> None:
+    from linker_genie.hydrate import hydrate
+    from linker_genie.manual_diagram_records import DIAGRAMS
+    from linker_genie.manual_evidence import evidence_id
+    from linker_genie.template import fallback
+
+    model = "CB2-100.3-HV5"
+    diagram = next(
+        row for row in DIAGRAMS if row["figure"] == "CB2 installation space requirement"
+    )
+    cid = evidence_id(
+        diagram["sha256"], 1, model, diagram["source_id"], diagram["excerpt"]
+    )
+    tagged = tag(cid, diagram["excerpt"])
+    hit = {
+        "chunk_id": cid,
+        "doc_url": "https://example.test/quick-guide.pdf",
+        "title": "Quick installation guide",
+        "page": 1,
+        "doc_type": "manual",
+        "document_id": "quick",
+        "document_revision": "quick-current",
+        "product_ids": [4106],
+        "evidence_product_id": 4106,
+        "text": tagged.text,
+        "figures": tagged.figures,
+    }
+    manual = {
+        **hit,
+        "chunk_id": "u4",
+        "doc_url": "https://example.test/user-manual.pdf",
+        "document_id": "user",
+        "document_revision": "user-current",
+        "title": "User manual",
+        "page": 4,
+        "text": "See the installation guide.",
+        "figures": {},
+    }
+    facts = collect("linker/search-knowledge", {"hits": [hit, manual]})
+    route = Route("documents", named_models=(NamedModel(model, (4106,)),))
+    for lang in ("en", "de"):
+        locale: Literal["en", "de"] = "de" if lang == "de" else "en"
+        question = str(ROWS[f"b15-{locale}"]["question"])
+        first = f"{{fact:{cid}.n1}}"
+        side = f"{{fact:{cid}.n2}}"
+        text = (
+            f"Allow {first} on the right and {side} in front."
+            if locale == "en"
+            else f"Halten Sie rechts {first} und vorn {side} frei."
+        )
+        original = TurnOutput(
+            language=locale,
+            blocks=[
+                TextBlock(text=text, refs=[cid]),
+                DocumentBlock(ref="u4"),
+            ],
+        )
+        hydrated = hydrate(original, facts, locale)
+        delivered = seal(hydrated, facts, route, question, "other", original=original)
+        prose = _text(delivered)
+        directions = (
+            [
+                "1500 mm in front",
+                "1000 mm on the right",
+                "400 mm behind",
+                "500 mm on the left",
+                "500 mm above",
+            ]
+            if locale == "en"
+            else [
+                "vorne 1500 mm",
+                "rechts 1000 mm",
+                "hinten 400 mm",
+                "links 500 mm",
+                "oben 500 mm",
+            ]
+        )
+        assert all(pair in prose for pair in directions), prose
+        assert (
+            "1500 mm on the right" if locale == "en" else "rechts 1500 mm"
+        ) not in prose
+        recovered = fallback(facts, locale, route, question=question)
+        assert all(pair in _text(recovered) for pair in directions)
+        assert {b.url for b in delivered.blocks if isinstance(b, DocumentBlock)} == {
+            "https://example.test/quick-guide.pdf#page=1",
+            "https://example.test/user-manual.pdf#page=4",
+        }
+        for unavailable, requested in (
+            (collect("linker/search-knowledge", {"hits": [manual]}), question),
+            (facts, question.replace(model, "CB2-71.6-HV5")),
+        ):
+            checked = seal(
+                hydrate(original, unavailable, locale),
+                unavailable,
+                route,
+                requested,
+                "other",
+                original=original,
+            )
+            assert "1500 mm" not in _text(checked)
