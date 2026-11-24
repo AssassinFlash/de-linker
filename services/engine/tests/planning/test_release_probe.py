@@ -66,6 +66,14 @@ def test_http_entry_changes_the_complete_executable_identity(
     (package / "runtime_snapshot.py").write_text("# isolated snapshot location")
     application = package.parent / "application.py"
     application.write_text("# original HTTP entry")
+    for asset in (
+        "brand/linker-wordmark.png",
+        "fonts/DejaVuSans.ttf",
+        "fonts/DejaVuSans-Bold.ttf",
+    ):
+        file = service / "data" / asset
+        file.parent.mkdir(exist_ok=True, parents=True)
+        file.write_bytes(b"isolated renderer asset")
     (service / "pyproject.toml").write_text("# isolated project")
     (service / "uv.lock").write_text("# isolated lock")
     monkeypatch.setattr(
