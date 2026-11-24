@@ -1824,3 +1824,39 @@ def test_turn_revision_checks_both_revisions_without_sending_dependency_lists() 
     observed.clear()
     with pytest.raises(PublicationUnavailable):
         client.validate(permission)
+
+
+def test_running_turn_finishes_if_wordpress_reverts_to_dependency_validation() -> None:
+    import json
+
+    raw = manifest()
+    raw["revision_check"] = 1
+    requests = []
+    valid = True
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/manifest"):
+            return httpx.Response(200, json=raw)
+        body = json.loads(request.content)
+        requests.append(body)
+        if "expected_revision" in body:
+            return httpx.Response(
+                200,
+                json={
+                    "valid": False,
+                    "source_revision": raw["source_revision"],
+                    "invalid": [
+                        {"kind": key, "id": "", "reason": "invalid_dependencies"}
+                        for key in ("products", "documents")
+                    ],
+                },
+            )
+        return httpx.Response(200, json={"valid": valid})
+
+    client = PublicationClient("https://site.test", httpx.MockTransport(handle))
+    permission = client.snapshot()
+    client.validate(permission)
+    assert requests[-1] == permission.dependencies()
+    valid = False
+    with pytest.raises(PublicationChanged):
+        client.validate(permission)

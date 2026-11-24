@@ -358,18 +358,28 @@ class PublicationClient:
                     "model_identity_revision": snapshot.model_identity_revision,
                 },
             )
-            if not isinstance(observed, dict) or not all(
-                isinstance(observed.get(key), str) and observed[key]
-                for key in ("source_revision", "model_identity_revision")
+            if (
+                not isinstance(observed, dict)
+                or not isinstance(observed.get("source_revision"), str)
+                or not observed["source_revision"]
             ):
                 raise PublicationUnavailable("invalid Woo publication revision")
-            if (
-                observed["source_revision"] != snapshot.source_revision
-                or observed["model_identity_revision"]
-                != snapshot.model_identity_revision
-            ):
+            if observed["source_revision"] != snapshot.source_revision:
+                raise PublicationChanged("Woo publication changed during the operation")
+            if observed.get("valid") is False and "invalid" in observed:
+                # WordPress reverted to the dependency contract during this turn.
+                # Validate the original inputs with that still-current authority.
+                self._validate_dependencies(snapshot)
+                return
+            identity = observed.get("model_identity_revision")
+            if not isinstance(identity, str) or not identity:
+                raise PublicationUnavailable("invalid Woo model identity revision")
+            if identity != snapshot.model_identity_revision:
                 raise PublicationChanged("Woo publication changed during the operation")
             return
+        self._validate_dependencies(snapshot)
+
+    def _validate_dependencies(self, snapshot: Snapshot) -> None:
         response = self._request("POST", "/validate", snapshot.dependencies())
         if isinstance(response, dict) and response.get("valid") is False:
             raise PublicationChanged("Woo publication changed during the operation")
