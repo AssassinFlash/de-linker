@@ -9,7 +9,11 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Quotation;
 
-use Linker\Commerce\Account\DocumentDownload;
+use Linker\Commerce\Account\PrivateFiles;
+use Linker\Commerce\Registration\AccountsAdmin;
+use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Registration\VatProfile;
+use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Vocabulary\LocaleFormat;
 use RuntimeException;
 use WC_Admin_Meta_Boxes;
@@ -29,6 +33,7 @@ final class AdminBox {
 	 * Name of the button that issues the Quotation.
 	 */
 	public const BUTTON = 'linker_issue_quotation';
+	private const REVISE = 'linker_revise_quotation';
 
 	/**
 	 * Sets up the box.
@@ -58,6 +63,7 @@ final class AdminBox {
 		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
+		$this->account_context( $order );
 		$number = (string) $order->get_meta( Issuer::NUMBER_META );
 		if ( '' !== $number ) {
 			$issued = (int) $order->get_meta( Issuer::ISSUED_META );
@@ -68,22 +74,112 @@ final class AdminBox {
 				esc_html( sprintf( __( 'Issued %s', 'linker-commerce' ), wp_date( LocaleFormat::date_format(), $issued ) ) ),
 				/* translators: %s: date. */
 				esc_html( sprintf( __( 'Valid until %s', 'linker-commerce' ), wp_date( LocaleFormat::date_format(), Document::valid_until( ( new \DateTimeImmutable() )->setTimestamp( $issued ) )->getTimestamp() ) ) ),
-				esc_url( DocumentDownload::quotation_url( $order ) ),
+				esc_url( $this->pdf_url( $order, 'download' ) ),
 				esc_html__( 'Download PDF', 'linker-commerce' )
 			);
+		}
+		if ( ! in_array( $order->get_status(), array( Statuses::RECEIVED, Statuses::QUOTATION ), true ) ) {
 			return;
 		}
-		$blocker = $this->issuer->blocker( $order );
+		if ( ! $order->get_billing_address_1() || ! $order->get_billing_city() || ! $order->get_billing_postcode() ) {
+			echo '<p>' . esc_html__( 'The billing address is incomplete. You can add it under Billing.', 'linker-commerce' ) . '</p>';
+		}
+		if ( ! $order->get_meta( '_' . VatProfile::VAT_META ) ) {
+			echo '<p>' . esc_html__( 'No buyer VAT ID is recorded. Add it under Billing if available.', 'linker-commerce' ) . '</p>';
+		}
+		printf( '<p><a class="button" href="%s" target="_blank" rel="noopener">%s</a></p>', esc_url( $this->pdf_url( $order, 'preview' ) ), esc_html__( 'Preview PDF', 'linker-commerce' ) );
+		$blocker = '' === $number ? $this->issuer->blocker( $order ) : $this->issuer->revision_blocker( $order, $number );
 		if ( '' !== $blocker ) {
 			printf( '<p>%s</p>', esc_html( $blocker ) );
 			return;
 		}
+		if ( $order->get_customer_id() > 0 ) {
+			echo '<p>' . esc_html__( 'Save your changes to prices and quantities, then issue the Quotation. The customer receives an email with the link.', 'linker-commerce' ) . '</p>';
+		} else {
+			echo '<p>' . esc_html__( 'Issue the PDF for offline delivery. Download it here and send it to the guest yourself.', 'linker-commerce' ) . '</p>';
+		}
+		if ( '' !== $number ) {
+			wp_nonce_field( self::REVISE . $order->get_id() . $number, '_linker_revision_nonce', false );
+		}
 		printf(
-			'<p>%1$s</p><p><button type="submit" class="button button-primary" name="%2$s" value="1">%3$s</button></p>',
-			esc_html__( 'Save your changes to prices and quantities, then issue the Quotation. The customer receives an email with the link.', 'linker-commerce' ),
-			esc_attr( self::BUTTON ),
-			esc_html__( 'Issue Quotation', 'linker-commerce' )
+			'<p><button type="submit" class="button button-primary" name="%1$s" value="%2$s">%3$s</button></p>',
+			esc_attr( '' === $number ? self::BUTTON : self::REVISE ),
+			esc_attr( '' === $number ? '1' : $number ),
+			'' === $number ? esc_html__( 'Issue Quotation', 'linker-commerce' ) : esc_html__( 'Issue revised Quotation', 'linker-commerce' )
 		);
+	}
+
+	/**
+	 * Display ownership separately from a guest's matching email address.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	private function account_context( WC_Order $order ): void {
+		$id = $order->get_customer_id();
+		if ( ! $id ) {
+			echo '<p><strong>' . esc_html__( 'Guest inquiry', 'linker-commerce' ) . '</strong></p>';
+		}
+		$user = $id ? get_userdata( $id ) : get_user_by( 'email', $order->get_billing_email() );
+		if ( $user instanceof \WP_User ) {
+			$status = ( new Approval() )->status( $user->ID );
+			$label  = Approval::PENDING === $status ? __( 'Pending approval', 'linker-commerce' ) : Approval::label( $status );
+			if ( ! $id ) {
+				echo '<p>' . esc_html__( 'An account uses this email address. This inquiry is still unlinked.', 'linker-commerce' ) . '</p>';
+			}
+			printf( '<p>%s<br><mark class="order-status"><span>%s</span></mark></p>', esc_html( $user->user_email ), esc_html( $label ) );
+			if ( current_user_can( 'edit_users' ) && current_user_can( 'edit_user', $user->ID ) ) {
+				printf( '<p><a href="%s">%s</a></p>', esc_url( AccountsAdmin::url( $user->ID ) ), esc_html__( 'Review account', 'linker-commerce' ) );
+			}
+		}
+		printf( '<p>VIES: %s</p>', esc_html( VatProfile::label( (string) $order->get_meta( VatProfile::ORDER_STATUS ) ) ) );
+	}
+
+	/**
+	 * The staff endpoint also serves issued guest PDFs which have no account owner.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 * @param string   $mode Preview or download.
+	 */
+	private function pdf_url( WC_Order $order, string $mode ): string {
+		return add_query_arg(
+			array(
+				'action'   => 'linker_staff_quotation',
+				'order_id' => $order->get_id(),
+				'mode'     => $mode,
+				'_wpnonce' => wp_create_nonce( 'linker_quotation_' . $mode . $order->get_id() ),
+			),
+			admin_url( 'admin-post.php' )
+		);
+	}
+
+	/** Print the saved draft or the private latest issue to authorized order staff. */
+	public function pdf(): void {
+		$id   = absint( $_GET['order_id'] ?? 0 );
+		$mode = isset( $_GET['mode'] ) ? sanitize_key( wp_unslash( $_GET['mode'] ) ) : '';
+		if ( ! current_user_can( 'edit_shop_orders' ) || ! in_array( $mode, array( 'preview', 'download' ), true ) ) {
+			wp_die( '', '', array( 'response' => 403 ) );
+		}
+		check_admin_referer( 'linker_quotation_' . $mode . $id );
+		$order = wc_get_order( $id );
+		if ( ! $order instanceof WC_Order ) {
+			wp_die( '', '', array( 'response' => 404 ) );
+		}
+		$preview = 'preview' === $mode;
+		$name    = $preview ? 'quotation-preview' : (string) $order->get_meta( Issuer::NUMBER_META );
+		if ( $preview ) {
+			$bytes = $this->issuer->preview( $order );
+		} else {
+			$file = ( new PrivateFiles( Issuer::DIRECTORY ) )->path( (string) $order->get_meta( Issuer::FILE_META ) );
+			if ( ! is_file( $file ) ) {
+				wp_die( '', '', array( 'response' => 404 ) );
+			}
+			$bytes = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local private PDF.
+		}
+		nocache_headers();
+		header( 'Content-Type: application/pdf' );
+		header( 'Content-Disposition: ' . ( $preview ? 'inline' : 'attachment' ) . '; filename="' . sanitize_file_name( $name ) . '.pdf"' );
+		echo $bytes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary PDF.
+		exit;
 	}
 
 	/**
@@ -95,7 +191,7 @@ final class AdminBox {
 	 */
 	public function process( int $order_id ): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce verified the order edit nonce before this action.
-		if ( empty( $_POST[ self::BUTTON ] ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( ( empty( $_POST[ self::BUTTON ] ) && empty( $_POST[ self::REVISE ] ) ) || ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 		$order = wc_get_order( $order_id );
@@ -103,7 +199,13 @@ final class AdminBox {
 			return;
 		}
 		try {
-			$this->issuer->issue( $order );
+			if ( isset( $_POST[ self::REVISE ] ) ) {
+				$previous = sanitize_text_field( wp_unslash( $_POST[ self::REVISE ] ) );
+				check_admin_referer( self::REVISE . $order_id . $previous, '_linker_revision_nonce' );
+				$this->issuer->revise( $order, $previous );
+			} else {
+				$this->issuer->issue( $order );
+			}
 		} catch ( RuntimeException $error ) {
 			WC_Admin_Meta_Boxes::add_error( esc_html( $error->getMessage() ) );
 		}

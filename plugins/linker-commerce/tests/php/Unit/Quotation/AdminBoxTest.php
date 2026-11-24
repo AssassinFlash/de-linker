@@ -77,11 +77,19 @@ final class AdminBoxTest extends TestCase {
 		$line->allows( 'get_meta' )->andReturn( '' );
 		$line->allows( 'get_total' )->andReturn( '100' );
 		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'read_meta_data' );
+		$order->allows( 'get_customer_id' )->andReturn( 0 );
+		$order->allows( 'get_billing_email' )->andReturn( 'guest@example.test' );
+		$order->allows( 'get_billing_address_1' )->andReturn( '' );
+		$order->allows( 'get_billing_city' )->andReturn( '' );
+		$order->allows( 'get_billing_postcode' )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( '_linker_vat_status' )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( '_billing_vat_id' )->andReturn( '' );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_status' )->andReturn( $status );
 		$order->allows( 'get_items' )->andReturn( array( $line ) );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
-		$order->allows( 'get_meta' )->with( Issuer::FILE_META )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( Issuer::FILE_META )->andReturn( $number ? '20/first.pdf' : '' );
 		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->andReturn( '1760000000' );
 		return $order;
 	}
@@ -120,13 +128,18 @@ final class AdminBoxTest extends TestCase {
 	public function test_render(): void {
 		$box = $this->box();
 
+		WP_Mock::userFunction( 'get_user_by', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_create_nonce', array( 'return' => 'nonce' ) );
+		WP_Mock::userFunction( 'admin_url', array( 'return' => 'https://example.test/wp-admin/admin-post.php' ) );
+		WP_Mock::userFunction( 'wp_nonce_field', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
 		ob_start();
 		$box->render( $this->inquiry( Statuses::RECEIVED ) );
 		$this->assertStringContainsString( '<button type="submit" class="button button-primary" name="linker_issue_quotation" value="1">Issue Quotation</button>', (string) ob_get_clean() );
 
 		ob_start();
 		$box->render( $this->inquiry( 'cancelled' ) );
-		$this->assertSame( '<p>Only a received inquiry gets a Quotation.</p>', ob_get_clean() );
+		$this->assertStringNotContainsString( 'button-primary', (string) ob_get_clean() );
 
 		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
 		WP_Mock::userFunction( 'wp_date', array( 'return' => static fn ( string $format, int $time ): string => gmdate( 'Y-m-d', $time ) ) );
@@ -138,7 +151,10 @@ final class AdminBoxTest extends TestCase {
 		$this->assertStringContainsString( '<strong>PI-2026-0001</strong>', $html );
 		$this->assertStringContainsString( 'Issued 2025-10-09', $html );
 		$this->assertStringContainsString( 'Valid until 2025-11-08', $html );
-		$this->assertStringContainsString( 'https://example.test/?linker-document=quotation&amp;id=20', str_replace( '&', '&amp;', $html ) );
+		$this->assertStringContainsString( 'mode=download', $html );
+		$this->assertStringContainsString( 'Guest inquiry', $html );
+		$this->assertStringContainsString( 'Issue revised Quotation', $html );
+		$this->assertStringContainsString( 'offline delivery', $html );
 	}
 
 	/**
@@ -151,6 +167,8 @@ final class AdminBoxTest extends TestCase {
 
 		$box->process( 20 );
 
+		WP_Mock::userFunction( 'add_option', array( 'return' => true ) );
+		WP_Mock::userFunction( 'delete_option', array( 'return' => true ) );
 		$_POST[ AdminBox::BUTTON ] = '1';
 		WP_Mock::expectAction( 'linker_test_meta_box_error', 'Only a received inquiry gets a Quotation.' );
 		$box->process( 20 );

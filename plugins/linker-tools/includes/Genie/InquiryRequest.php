@@ -285,7 +285,8 @@ class InquiryRequest {
 				'order'   => $order->get_id(),
 				'number'  => (string) $order->get_order_number(),
 				'status'  => $order->get_status(),
-				'receipt' => self::receipt_sent( $order ),
+				'issued'  => class_exists( \Linker\Commerce\Inquiry\Statuses::class ) && \Linker\Commerce\Inquiry\Statuses::has_issued_document( $order ),
+			'receipt' => self::receipt_sent( $order ),
 				'email'   => (string) ( $note['email'] ?? $order->get_billing_email() ),
 				'url'     => 0 === (int) $order->get_customer_id() ? $order->get_checkout_order_received_url() : $order->get_view_order_url(),
 			);
@@ -445,6 +446,7 @@ class InquiryRequest {
 			'order'   => $order->get_id(),
 			'number'  => (string) $order->get_order_number(),
 			'status'  => in_array( $status, self::STATUSES, true ) ? $status : 'inquiry-received',
+			'issued'  => class_exists( \Linker\Commerce\Inquiry\Statuses::class ) && \Linker\Commerce\Inquiry\Statuses::has_issued_document( $order ),
 			'receipt' => self::receipt_sent( $order ),
 			'email'   => (string) $order->get_billing_email(),
 			'url'     => 0 === (int) $order->get_customer_id() ? $order->get_checkout_order_received_url() : $order->get_view_order_url(),

@@ -36,6 +36,7 @@ final class Module {
 	 * Adds the module's hooks.
 	 */
 	public function register(): void {
+		add_action( 'admin_post_linker_staff_quotation', array( $this->box, 'pdf' ) );
 		add_action( 'add_meta_boxes', array( $this->box, 'add' ) );
 		add_action( 'woocommerce_process_shop_order_meta', array( $this->box, 'process' ), 60 );
 		// After the status is stored. The Issue button reaches this too, and

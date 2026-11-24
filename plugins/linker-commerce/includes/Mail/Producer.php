@@ -72,6 +72,11 @@ final class Producer {
 				'kind'     => $content ? 'unclassified' : 'transaction',
 				'producer' => $email->id,
 			);
+			if ( $email instanceof \Linker\Commerce\Quotation\Emails\QuotationIssuedEmail && $email->object instanceof \WC_Order ) {
+				self::$origin['record'] = $email->object->get_id();
+				self::$origin['owner']  = $email->object->get_customer_id();
+				self::$origin['number'] = (string) $email->object->get_meta( \Linker\Commerce\Quotation\Issuer::NUMBER_META );
+			}
 			try {
 				$send  = static fn () => $critical ? self::critical( static fn () => $callback( ...$args ) ) : $callback( ...$args );
 				$scope = $email instanceof \WC_Email_Customer_Reset_Password ? ResetNotice::scope( (int) $email->user_id ) : null;

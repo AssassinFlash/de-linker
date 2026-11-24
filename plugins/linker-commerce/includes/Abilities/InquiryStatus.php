@@ -146,7 +146,7 @@ final class InquiryStatus {
 			'id'           => $order->get_id(),
 			'number'       => (string) $order->get_order_number(),
 			'status'       => $status,
-			'status_label' => $labels[ $key ] ?? $status,
+			'status_label' => Statuses::customer_label( $order, $labels[ $key ] ?? $status ),
 			'date'         => (string) $order->get_date_created()?->format( 'c' ),
 		);
 		// Account-page parity (#414): shows_order_total(), not sees_prices()

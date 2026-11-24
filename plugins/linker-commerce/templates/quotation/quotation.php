@@ -67,15 +67,18 @@ $linker_buyer  = $quotation['buyer'];
 <table class="head">
 	<tr>
 		<td>
-			<h1><?php esc_html_e( 'Quotation', 'linker-commerce' ); ?></h1>
+			<h1><?php echo '' === $quotation['number'] ? esc_html__( 'Quotation — DRAFT', 'linker-commerce' ) : esc_html__( 'Quotation', 'linker-commerce' ); ?></h1>
 			<table class="meta">
+				<?php if ( '' !== $quotation['number'] ) : ?>
 				<tr><td class="label"><?php esc_html_e( 'Quotation no.', 'linker-commerce' ); ?></td><td><strong><?php echo esc_html( $quotation['number'] ); ?></strong></td></tr>
+				<?php endif; ?>
 				<tr><td class="label"><?php esc_html_e( 'Inquiry no.', 'linker-commerce' ); ?></td><td><?php echo esc_html( $quotation['inquiry'] ); ?></td></tr>
 				<tr><td class="label"><?php esc_html_e( 'Date', 'linker-commerce' ); ?></td><td><?php echo esc_html( $quotation['issued'] ); ?></td></tr>
 				<tr><td class="label"><?php esc_html_e( 'Valid until', 'linker-commerce' ); ?></td><td><?php echo esc_html( $quotation['valid_until'] ); ?></td></tr>
 			</table>
 		</td>
 		<td class="seller">
+			<img src="data:image/png;base64,<?php echo esc_attr( base64_encode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/quotation-logo.png' ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Bundled brand asset for offline PDF rendering. ?>" width="108" alt="Linker"><br>
 			<strong><?php echo esc_html( $linker_seller['name'] ); ?></strong><br>
 			<?php foreach ( $linker_seller['address'] as $linker_line ) : ?>
 				<?php echo esc_html( $linker_line ); ?><br>

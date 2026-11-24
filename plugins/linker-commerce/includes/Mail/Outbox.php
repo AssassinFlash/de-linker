@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Mail;
 
 use WP_Error;
+use Linker\Commerce\Quotation\Emails\QuotationIssuedEmail;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -307,6 +308,10 @@ final class Outbox {
 				$this->fail_orphan( $message, $attempts, $job_id );
 				CapacityHealth::failed();
 			}
+			return false;
+		}
+		if ( QuotationIssuedEmail::ID === ( $message->origin['producer'] ?? '' ) && ! QuotationIssuedEmail::deliverable( $message ) ) {
+			$this->jobs->fail( $job_id, $attempts, 'Quotation is no longer available to this recipient.' );
 			return false;
 		}
 		try {

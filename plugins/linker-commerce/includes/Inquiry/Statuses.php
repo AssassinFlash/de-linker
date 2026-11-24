@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Inquiry;
 
 use WC_Order;
+use Linker\Commerce\Quotation\Issuer;
 
 /**
  * An inquiry is received, moves to quotation in preparation while the team
@@ -93,13 +94,36 @@ final class Statuses {
 	}
 
 	/**
+	 * Whether this inquiry's customer status represents an issued document.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public static function has_issued_document( WC_Order $order ): bool {
+		return self::QUOTATION === $order->get_status() && '' !== (string) $order->get_meta( Issuer::NUMBER_META );
+	}
+
+	/**
+	 * Document-aware status for a customer viewing this specific inquiry.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 * @param string   $label Registered status label.
+	 */
+	public static function customer_label( WC_Order $order, string $label ): string {
+		return self::has_issued_document( $order ) ? __( 'Quotation issued', 'linker-commerce' ) : $label;
+	}
+
+	/**
 	 * Staff may still change items and prices of a received inquiry.
 	 *
 	 * @param bool     $editable WooCommerce's verdict.
 	 * @param WC_Order $order    Order.
 	 */
 	public function editable( bool $editable, WC_Order $order ): bool {
-		return $editable || self::RECEIVED === $order->get_status();
+		return match ( $order->get_status() ) {
+			self::RECEIVED, self::QUOTATION => true,
+			'completed', 'cancelled' => false,
+			default => $editable,
+		};
 	}
 
 	/**

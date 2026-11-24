@@ -55,6 +55,9 @@ final class IssuerTest extends TestCase {
 	 */
 	private int $competitors = 0;
 
+	/** @var array<int, WC_Order> Saved inquiries read under the issue lock. */
+	private array $orders = array();
+
 	/**
 	 * Option values of the test.
 	 *
@@ -85,6 +88,7 @@ final class IssuerTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_template_html', array( 'return' => static fn ( string $template, array $args ): string => '<html><body><h1>' . $args['quotation']['number'] . '</h1></body></html>' ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => 'orderable' ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wc_get_order', array( 'return' => fn ( int $id ) => $this->orders[ $id ] ?? false ) );
 		WP_Mock::userFunction( 'WC', array( 'return' => new WooCommerce() ) );
 		WP_Mock::userFunction( 'switch_to_locale', array( 'return' => true ) );
 		WP_Mock::userFunction( 'restore_previous_locale', array( 'return' => true ) );
@@ -176,7 +180,7 @@ final class IssuerTest extends TestCase {
 	 * @param int    $id     Inquiry id.
 	 * @return WC_Order&\Mockery\MockInterface
 	 */
-	private function inquiry( string $status = Statuses::RECEIVED, string $number = '', bool $priced = true, int $id = 20 ) {
+	private function inquiry( string $status = Statuses::RECEIVED, string $number = '', bool $priced = true, int $id = 20, int $owner = 0 ) {
 		$line = Mockery::mock( WC_Order_Item_Product::class );
 		$line->allows( 'get_meta' )->with( '_linker_price_reason' )->andReturn( $priced ? '' : 'unpriced' );
 		$line->allows( 'get_total' )->andReturn( $priced ? '1680' : '0' );
@@ -185,6 +189,7 @@ final class IssuerTest extends TestCase {
 		$line->allows( 'get_quantity' )->andReturn( 1 );
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( $id );
+		$order->allows( 'get_customer_id' )->andReturn( $owner );
 		$order->allows( 'get_status' )->andReturn( $status );
 		$order->allows( 'get_items' )->andReturn( array( $line ) );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
@@ -203,7 +208,15 @@ final class IssuerTest extends TestCase {
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
 		$order->allows( 'get_subtotal' )->andReturn( 1680.0 );
 		$order->allows( 'get_total' )->andReturn( '1999.20' );
+		$this->orders[ $id ] = $order;
+		$order->allows( 'read_meta_data' );
 		return $order;
+	}
+
+	/** An account needs approval before staff can issue its priced quotation. */
+	public function test_pending_owner_cannot_be_issued_a_quotation(): void {
+		WP_Mock::userFunction( 'get_user_meta', array( 'return' => 'pending' ) );
+		$this->assertStringContainsString( 'Approve', $this->issuer()->blocker( $this->inquiry( Statuses::RECEIVED, '', true, 20, 5 ) ) );
 	}
 
 	/**
@@ -347,7 +360,7 @@ final class IssuerTest extends TestCase {
 		$order->allows( 'add_order_note' );
 		$order->expects( 'save' )->once();
 		$order->expects( 'update_status' )->never();
-		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
+
 		$this->expect_rendering();
 
 		$this->issuer()->ensure_issued( 20 );
@@ -365,7 +378,7 @@ final class IssuerTest extends TestCase {
 		$order->expects( 'calculate_totals' )->never();
 		$order->expects( 'update_status' )->never();
 		$order->expects( 'save' )->never();
-		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
+
 
 		$this->issuer()->ensure_issued( 20 );
 
