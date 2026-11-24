@@ -57,12 +57,18 @@ final class RevisionTest extends TestCase {
 		$this->assertArrayNotHasKey( 'ready', $current['products'][0] );
 		$this->assertSame( $current, Publication::catalog() );
 
+		$revisions = Publication::current_revisions();
+		$this->assertSame( $current['source_revision'], $revisions['source_revision'] );
+		$this->assertSame( $full['model_identity_revision'], $revisions['model_identity_revision'] );
+
 		$file = DocumentFiles::locate( $current['documents'][0]['url'] );
 		$this->assertNotNull( $file );
 		file_put_contents( $file['path'], '%PDF-1.4 replaced during the current Genie request' );
 		$changed = Publication::catalog();
 		$this->assertNotSame( $current['source_revision'], $changed['source_revision'] );
 		$this->assertNotSame( $current['documents'][0]['document_revision'], $changed['documents'][0]['document_revision'] );
+		$this->assertSame( $changed['source_revision'], Publication::current_revisions()['source_revision'] );
+		$this->assertSame( $changed['documents'], Publication::manifest()['documents'] );
 	}
 
 	/** Reviewed wording never changes evidence identities. */
