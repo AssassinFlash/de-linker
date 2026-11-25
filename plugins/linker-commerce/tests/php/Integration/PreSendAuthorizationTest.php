@@ -165,7 +165,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			self::assertNotEmpty( $delivered['delivered_at'] );
 			$order->read_meta_data( true );
 			wp_set_current_user( 1 );
-			$released  = \Linker\Commerce\Mail\NotificationHold::release( $id, $reference );
+			$released = \Linker\Commerce\Mail\NotificationHold::release( $id, $reference );
 			self::assertIsArray( $released );
 			self::assertSame( $released, \Linker\Commerce\Mail\NotificationHold::release( $id, $reference ) );
 			$approved = $this->permissions( $id )['jobs'];
@@ -174,6 +174,32 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $approved['receipt']['id'] );
 			self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
 		}
+	}
+
+	/** A corrected destination between permission checking and charging retires the original receipt. */
+	public function test_revoked_receipt_leaves_no_job_or_transport_debit(): void {
+		$this->provider( 'normal' );
+		$order = $this->submit();
+		do_action( Queue::PROCESS, $order->get_id() );
+		$job     = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
+		$changed = false;
+		$change  = static function ( int $meta_id, int $post_id, string $key ) use ( $order, $job, &$changed ): void {
+			if ( $job === $post_id && \Linker\Commerce\Mail\NativeAttempt::META === $key ) {
+				$changed = true;
+				$order->set_billing_email( 'corrected-receipt@example.test' );
+				$order->save();
+			}
+		};
+		add_action( 'added_post_meta', $change, 10, 3 );
+		try {
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+		} finally {
+			remove_action( 'added_post_meta', $change, 10 );
+		}
+		self::assertTrue( $changed );
+		self::assertNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) );
+		self::assertSame( 0, ( new Throttle() )->used( time() ) );
+		self::assertArrayNotHasKey( 'delivered_at', $this->permissions( $order->get_id() )['jobs']['receipt'] );
 	}
 
 	/** A persistent recipient-store outage follows Outbox's usual retry schedule to a visible failure. */

@@ -41,7 +41,7 @@ final class PublicInquiryAssessment {
 		$body    = json_decode( $raw, true );
 		$email   = is_array( $body ) ? ( $body['state']['submission']['billing']['email'] ?? '' ) : '';
 		$binding = is_array( $body ) ? ( $body['binding'] ?? null ) : null;
-		$owned   = is_string( $email ) && 1 === preg_match( '/\Atester246-[A-Za-z0-9-]+@example\.test\z/', $email );
+		$owned   = is_string( $email ) && 1 === preg_match( '/\A(?:tester246|e2e)-[A-Za-z0-9-]+@example\.test\z/', $email );
 		if ( ! $owned && ( ! str_contains( $raw, 'tester246-' ) || ! str_contains( $raw, '@example.test' ) ) ) {
 			return $pre;
 		}
@@ -60,6 +60,28 @@ final class PublicInquiryAssessment {
 			),
 			'body'     => wp_json_encode( \Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture::verdict( $binding ) ),
 		);
+	}
+
+	/**
+	 * Consume a browser fixture's saved inquiry against the local classifier response.
+	 *
+	 * @param int $id Woo inquiry from the current fixture.
+	 * @throws \RuntimeException Outside the active local fixture.
+	 */
+	public static function process( int $id ): void {
+		if ( ! self::active() ) {
+			throw new \RuntimeException( 'The local inquiry fixture is inactive.' );
+		}
+		require_once dirname( __DIR__, 3 ) . '/plugins/linker-commerce/tests/fixtures/AssessmentFixtureEnvironment.php';
+		\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
+		$local = static fn (): string => 'http://127.0.0.1:9';
+		add_filter( 'pre_option_linker_genie_url', $local );
+		try {
+			( new \Linker\Commerce\Inquiry\Assessment\Queue() )->process( $id );
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+		} finally {
+			remove_filter( 'pre_option_linker_genie_url', $local );
+		}
 	}
 
 	/**

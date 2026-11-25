@@ -270,7 +270,7 @@ for (const { language, width, branch } of journeys) {
 		const outsider = email.replace('@', '-other@');
 		const started = Date.now();
 		const password = 'Solar-' + randomUUID();
-		const restoreBudgets = isolateMailBudgets();
+		const restoreBudgets = isolateMailBudgets(true);
 		try {
 			await page.setViewportSize({
 				width,
@@ -452,7 +452,7 @@ test('an account-owned quotation survives native password recovery and a later p
 }) => {
 	test.setTimeout(360_000);
 	const email = 'e2e-known-' + randomUUID() + '@example.test';
-	const restore = isolateMailBudgets();
+	const restore = isolateMailBudgets(true);
 	try {
 		const owner = fixture('account', email, 'Solar-' + randomUUID());
 		fixture('owned-inquiry', email);

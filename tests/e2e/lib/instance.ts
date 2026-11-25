@@ -283,12 +283,19 @@ export function applyTurnstileProfile(
 }
 
 /** Isolate actual mail transport budgets for a capture on the local mail sink. */
-export function isolateMailBudgets(): () => void {
+export function isolateMailBudgets(classifyInquiries = false): () => void {
 	const check =
 		"if ( ! defined('LINKER_LOCAL_MAIL_DIR') || '127.0.0.1' !== wp_parse_url(home_url(), PHP_URL_HOST) ) throw new RuntimeException('A local mail sink is required.');";
+	const assessment = classifyInquiries
+		? `require_once ${JSON.stringify(join(REPO_ROOT, 'tests/e2e/fixtures/public-inquiry-assessment.php'))};`
+		: '';
 	const snapshot = wp([
 		'eval',
 		check +
+			assessment +
+			(classifyInquiries
+				? String.raw`\Linker\Commerce\Tests\E2E\PublicInquiryAssessment::install();`
+				: '') +
 			String.raw`
 		$prior = array();
 		foreach (array(\Linker\Commerce\Mail\Throttle::OPTION, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION) as $name) {
@@ -302,6 +309,10 @@ export function isolateMailBudgets(): () => void {
 		wp([
 			'eval',
 			check +
+				assessment +
+				(classifyInquiries
+					? String.raw`\Linker\Commerce\Tests\E2E\PublicInquiryAssessment::remove();`
+					: '') +
 				`
 		foreach (unserialize(base64_decode('${snapshot}'), array('allowed_classes' => false)) as $name => $value) {
 			wp_cache_delete($name, 'options');

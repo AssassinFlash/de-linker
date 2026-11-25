@@ -500,7 +500,9 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$job = ( new JobStore() )->load( $ids[0] );
 		$this->assertNotNull( $job );
 		$this->assertSame( 1, $job['attempts'], 'Missing SMTP configuration counts as a failed delivery attempt.' );
-		$this->assertSame( 'failure', ( new \Linker\Commerce\Mail\SmtpOutcome() )->last()['status'] );
+		$outcome = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
+		$this->assertNotNull( $outcome );
+		$this->assertSame( 'failure', $outcome['status'] );
 		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
 	}
 

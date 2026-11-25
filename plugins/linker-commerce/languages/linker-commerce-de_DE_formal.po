@@ -1372,7 +1372,7 @@ msgid ""
 "Last attempt: %1$s UTC. Reason: %2$s. The outbox retries internal "
 "notifications through authenticated SMTP."
 msgstr ""
-"Letzter Versuch: %1$s UTC. Grund: %2$s. Der Postausgang versucht den Versand "
+"Letzter Versuch: %1$s UTC. Grund: %2$s. Der Postausgang versucht die Zustellung "
 "über authentifiziertes SMTP erneut."
 
 #: includes/Health/InternalMail.php:71
@@ -2020,7 +2020,7 @@ msgstr "Bestätigung an den Kunden freigeben und senden"
 #: includes/Inquiry/Assessment/NotificationHoldView.php:32
 #: includes/Inquiry/Assessment/SendAuthorization.php:1050
 msgid "Customer receipt approved for delivery."
-msgstr "Die Bestätigung an den Kunden wurde zum Versand freigegeben."
+msgstr "Die Bestätigung an den Kunden wurde zur Zustellung freigegeben."
 
 #: includes/Inquiry/Assessment/NotificationHoldView.php:34
 #: includes/Inquiry/Assessment/NotificationHoldView.php:42

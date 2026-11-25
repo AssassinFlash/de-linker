@@ -133,10 +133,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		);
 		$fingerprint = Fingerprint::make( $identity, $action, $payload );
 		self::assertIsString( $fingerprint );
-		$id      = $post['linker_request_id'];
-		$binding = $identity->binding();
-		$owners  = array_merge( $identity->owners(), array( Allowance::owner_for( Identity::recipient( $details->email ) ) ) );
-		$entry   = array(
+		$id                      = $post['linker_request_id'];
+		$binding                 = $identity->binding();
+		$owners                  = array_merge( $identity->owners(), array( Allowance::owner_for( Identity::recipient( $details->email ) ) ) );
+		$entry                   = array(
 			'lane'        => 'verification',
 			'action'      => $action,
 			'order'       => 0,
@@ -145,18 +145,43 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			'at'          => time(),
 			'owners'      => $owners,
 		);
-		$state   = get_option( IntakeStore::OPTION, array( 'entries' => array(), 'campaign_count' => 0 ) );
+		$state                   = get_option(
+			IntakeStore::OPTION,
+			array(
+				'entries'        => array(),
+				'campaign_count' => 0,
+			)
+		);
 		$state['entries'][ $id ] = $entry;
 		update_option( IntakeStore::OPTION, $state, false );
 		$ledger = new Ledger();
 		$ledger->reserve( $id, $fingerprint, array( new Allowance( 'historical_review', $identity->browser, 10, HOUR_IN_SECONDS ) ), 120, array(), $action, $binding, $owners );
 		$ledger->dispatch( $id, $fingerprint );
-		$context = static fn (): array => array( 'enforced' => true, 'id' => $id, 'fingerprint' => $fingerprint, 'binding' => $binding );
+		$context  = static fn (): array => array(
+			'enforced'    => true,
+			'id'          => $id,
+			'fingerprint' => $fingerprint,
+			'binding'     => $binding,
+		);
 		$metadata = static function ( WC_Order $order ): void {
 			if ( 0 === $order->get_id() ) {
-				$order->update_meta_data( IntakeStore::META, array( 'lane' => 'verification', 'at' => time(), 'rule' => '' ) );
+				$order->update_meta_data(
+					IntakeStore::META,
+					array(
+						'lane' => 'verification',
+						'at'   => time(),
+						'rule' => '',
+					)
+				);
 				$order->update_meta_data( IntakeStore::LANE_META, 'verification' );
-				$order->update_meta_data( NotificationHold::META, array( 'reason' => 'verification_review', 'at' => time(), 'rule' => '' ) );
+				$order->update_meta_data(
+					NotificationHold::META,
+					array(
+						'reason' => 'verification_review',
+						'at'     => time(),
+						'rule'   => '',
+					)
+				);
 			}
 		};
 		add_filter( 'linker_commerce_public_business_context', $context );
@@ -168,7 +193,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			remove_action( 'woocommerce_before_order_object_save', $metadata );
 		}
 		if ( $order instanceof WC_Order ) {
-			$state = get_option( IntakeStore::OPTION );
+			$state                            = get_option( IntakeStore::OPTION );
 			$state['entries'][ $id ]['order'] = $order->get_id();
 			update_option( IntakeStore::OPTION, $state, false );
 			$ledger->complete( $id, $fingerprint, $order->get_id() );
@@ -376,7 +401,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assert_awaiting_assessment( $order );
 		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
 		$normal = \Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture::install( $this->later( ... ) );
-		$job = $normal->process( $order )['jobs']['receipt']['id'];
+		$job    = $normal->process( $order )['jobs']['receipt']['id'];
 
 		$sent    = 0;
 		$observe = static function () use ( &$sent ): void {
@@ -991,6 +1016,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	}
 	/** The operational summary includes genuine review requests, not campaign samples. */
 	public function test_pending_summary_excludes_confirmed_campaign_and_normal_jev_requests(): void {
+		self::assertSame( 10, has_filter( 'linker_commerce_pending_review_summary', array( IntakeStore::class, 'pending_summary' ) ) );
 		$review = $this->historical_submission( $this->post() );
 		self::assertInstanceOf( WC_Order::class, $review );
 		$historical = function ( string $lane ): WC_Order {

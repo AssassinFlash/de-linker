@@ -32,22 +32,5 @@ if ( realpath( dirname( __DIR__, 2 ) ) !== $linker_commerce_installed || ! in_ar
 	exit( 1 );
 }
 
-// Exercise the real internal SMTP configuration path with the local file-capture mailer.
-$linker_commerce_test_outbox = new \Linker\Commerce\Mail\Outbox(
-	new \Linker\Commerce\Mail\JobStore(),
-	new \Linker\Commerce\Mail\Throttle(),
-	new \Linker\Commerce\Mail\TestMode(),
-	new \Linker\Commerce\Mail\InternalSmtp( __DIR__ . '/../fixtures/internal-smtp.env' )
-);
-foreach ( array( 'pre_wp_mail', 'wp_mail_failed', 'wp_mail_succeeded', 'phpmailer_init', \Linker\Commerce\Mail\Outbox::HOOK ) as $linker_commerce_mail_hook ) {
-	foreach ( $GLOBALS['wp_filter'][ $linker_commerce_mail_hook ]->callbacks[10] as $linker_commerce_callback ) {
-		$linker_commerce_handler = $linker_commerce_callback['function'];
-		if ( is_array( $linker_commerce_handler ) && $linker_commerce_handler[0] instanceof \Linker\Commerce\Mail\Outbox ) {
-			remove_filter( $linker_commerce_mail_hook, $linker_commerce_handler );
-			$linker_commerce_local_handler = array( $linker_commerce_test_outbox, $linker_commerce_handler[1] );
-			if ( is_callable( $linker_commerce_local_handler ) ) {
-				add_filter( $linker_commerce_mail_hook, $linker_commerce_local_handler, 10, $linker_commerce_callback['accepted_args'] );
-			}
-		}
-	}
-}
+require_once dirname( __DIR__ ) . '/fixtures/LocalMailTransport.php';
+\Linker\Commerce\Tests\Fixtures\LocalMailTransport::install();

@@ -91,6 +91,7 @@ if ( 'order' === $operation ) {
 }
 if ( 'deliver' === $operation ) {
 	if ( 'receipt' === $args[2] ) {
+		\Linker\Commerce\Tests\E2E\PublicInquiryAssessment::process( $order->get_id() );
 		$authorization = AuthorizationStore::read( $order->get_id() );
 		$job = (int) ( $authorization['jobs']['receipt']['id'] ?? 0 );
 	} else {
