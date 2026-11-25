@@ -889,6 +889,15 @@ def _warranty_period_fallback(
     return hydrate(draft, facts, language)
 
 
+def _no_released_inverter(facts: TurnFacts, product_id: int) -> bool:
+    return any(
+        row["product_id"] == product_id and row.get("pairings") == []
+        for search in facts.tool_calls
+        if search.get("name") == "linker/search-products" and search.get("ok")
+        for row in search["result"].get("qualified", [])
+    )
+
+
 def _cabinet_clearance_answer(
     facts: TurnFacts,
     route: Route,
@@ -980,13 +989,7 @@ def _cabinet_clearance_answer(
                 if faq.get("question") == question_label and faq.get("answer"):
                     label = "Produkt-FAQ" if language == "de" else "Product FAQ"
                     answer = f"{label}: {faq['answer']}"
-                    if any(
-                        row["product_id"] == pid and row.get("pairings") == []
-                        for search in facts.tool_calls
-                        if search.get("name") == "linker/search-products"
-                        and search.get("ok")
-                        for row in search["result"].get("qualified", [])
-                    ):
+                    if _no_released_inverter(facts, pid):
                         answer += (
                             " Für diesen Speicher ist bei uns kein einzelnes "
                             "Wechselrichtermodell als freigegeben aufgeführt."
@@ -1040,15 +1043,34 @@ def _prepared_cabinet_installation(
             "installationsanleitung benutzerhandbuch und im handbuch"
         ).split()
     )
+    asks_pairing = any(call.arguments.get("with_pairings") for call in route.calls)
+    if asks_pairing:
+        installation_words.update(
+            "require requires need needs which inverter inverters compatible works with "
+            "bei mit er wechselrichter wechselrichtern kompatibel".split()
+        )
     if not words <= installation_words:
         return None
     draft = _cabinet_clearance_answer(
-        facts, route, question, language, [], page_product_id
+        facts,
+        route,
+        question,
+        language,
+        [],
+        page_product_id,
+        include_pairing=asks_pairing,
     )
     if draft is None:
         return None
     figure = next(b.ref for b in draft.blocks if isinstance(b, DocumentBlock))
     product = facts.knowledge_products[figure]
+    if asks_pairing and (
+        not _no_released_inverter(facts, product[0])
+        or not any(
+            isinstance(b, TextBlock) and str(product[0]) in b.refs for b in draft.blocks
+        )
+    ):
+        return None
     installation: list[Block] = []
     citations: list[Block] = []
     needs_instructions = bool({"how", "wie", "installed", "installiert"} & words)
@@ -2262,6 +2284,14 @@ def seal(
         if clearance
         else None
     )
+    if cabinet is not None and any(
+        call.arguments.get("with_pairings") for call in route.calls
+    ):
+        covered = _prepared_cabinet_installation(
+            facts, route, output.language, question, page_product_id
+        )
+        if covered is not None:
+            return hydrate(covered, facts, output.language)
     if page_type not in (None, "other") and cabinet is None:
         return output
     from linker_genie import ground as grounding
