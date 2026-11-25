@@ -281,8 +281,52 @@ test( 'cached headers show the native draft total on both links, and a clean vis
 	window.document.body.dispatchEvent( new window.CustomEvent( 'wc-blocks_added_to_cart', { bubbles: true } ) );
 	await new Promise( resolve => setTimeout( resolve, 0 ) );
 	assert.deepEqual( badges(), [ '5', '5' ] );
+	count = 0;
 	window.document.cookie = 'woocommerce_items_in_cart=; path=/; max-age=0';
 	window.dispatchEvent( new window.PageTransitionEvent( 'pageshow', { persisted: true } ) );
+	await new Promise( resolve => setTimeout( resolve, 0 ) );
 	assert.deepEqual( badges(), [] );
 	dom.window.close();
+} );
+
+test( 'a Genie-only guest carries the draft into a fresh cached header, then clears the signal when Woo is empty', async () => {
+	const dom = new JSDOM( '<header id="tv-header-v2"></header>', { url: 'https://linker.test/', runScripts: 'outside-only' } );
+	const { window } = dom;
+	let count = 1;
+	let calls = 0;
+	window.fetch = async () => { calls++; return { ok: true, json: async () => ( { items_count: count } ) }; };
+	const settle = () => new Promise( resolve => setTimeout( resolve, 0 ) );
+	const header = window.document.querySelector( 'header' );
+	const visit = ( serverBadge = '' ) => {
+		header.innerHTML = '<a data-cart-count-url="/wp-json/wc/store/v1/cart">' + serverBadge + '</a>';
+		window.eval( source );
+	};
+	const badge = () => header.querySelector( '.tv-b2b-acct-count' )?.textContent;
+	try {
+		visit();
+		assert.equal( calls, 0 );
+		window.document.body.dispatchEvent( new window.CustomEvent( 'wc-blocks_added_to_cart', { bubbles: true } ) );
+		await settle();
+		assert.equal( badge(), '1' );
+		visit(); // Cached homepage has no server-rendered badge or readable Woo cookies.
+		await settle();
+		assert.equal( badge(), '1' );
+		visit();
+		await settle();
+		assert.equal( badge(), '1' );
+		count = 0;
+		visit();
+		await settle();
+		assert.equal( badge(), undefined );
+		const before = calls;
+		visit();
+		await settle();
+		assert.equal( calls, before );
+
+		count = 2;
+		visit( '<span class="tv-b2b-acct-count">2</span>' );
+		assert.equal( badge(), '2' );
+		await settle();
+		assert.equal( badge(), '2' );
+	} finally { window.close(); }
 } );
