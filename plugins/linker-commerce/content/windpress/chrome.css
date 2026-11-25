@@ -207,7 +207,7 @@ html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(0px,round(down,
    Hide the whole collapsed dock: hiding only its button leaves the fixed
    parent intercepting clicks. Keep its separate, possibly delayed preview
    clear too. The menu link and an already open conversation stay usable. */
-body:is(.product-filter-open, .cky-modal-open, [data-genie-over-content], :has(dialog[open], #tv-header-v2 .tv-mobile-navigation[open]), :has(#home-a .hero-cinematic):not([data-genie-hero-away]))
+body:is(.product-filter-open, [data-genie-over-content], :has(dialog[open], .cky-modal.cky-modal-open, #tv-header-v2 .tv-mobile-navigation[open]), :has(#home-a .hero-cinematic):not([data-genie-hero-away]))
   :is(.linker-genie:has(> .linker-genie-open[aria-expanded="false"]), .linker-genie-peek) {
   visibility: hidden;
   pointer-events: none;
