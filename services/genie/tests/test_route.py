@@ -331,7 +331,7 @@ def test_a_document_question_searches_the_documents_of_its_product() -> None:
         ),
         (
             "en",
-            "What installation clearances does the SAJ CB2-100.3-HV5 need and which inverters are compatible?",
+            "What installation clearances does the CB2-100.3-HV5 require, and which inverter works with it?",
         ),
     ],
 )
@@ -342,6 +342,8 @@ def test_installation_and_pairing_fetch_both_sources(
     subject = Subject((4106,), {4106: "battery-systems"}, {4106: model})
     route = plan(question, [_model(model, 4106)], _reading(intent), subject, lang)
     assert route.name == "documents"
+    assert "documented series" in route.hint
+    assert "specific model" in route.hint
     assert any(
         c.ability == "linker/search-knowledge" and c.arguments["product_ids"] == [4106]
         for c in route.calls

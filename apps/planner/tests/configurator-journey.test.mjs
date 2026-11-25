@@ -24,6 +24,8 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	let phaseConflict = { actual: 1, required: 3 };
 	let reportOnly = false;
 	let reportChanges = [];
+	let alreadyPresent = false;
+	let beforeQuantity = 0;
 	let phaseConflicts;
 	const inquiryUrls = { en: `${origin}/inquiry/`, de: `${origin}/de/anfrage/` };
 	const client = {
@@ -40,7 +42,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 				handoff_id: "c".repeat(32),
 				draft_sha256: "d".repeat(64),
 				snapshot_sha256: "e".repeat(64),
-				already_present: false,
+				already_present: alreadyPresent,
 				draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
 				inquiry_urls: inquiryUrls,
 				...(reportOnly
@@ -50,7 +52,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 								{
 									product_id: 1,
 									label: "GoodWe inverter",
-									before: 0,
+									before: beforeQuantity,
 									after: 1,
 								},
 							],
@@ -73,7 +75,10 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 					path: "draft/apply",
 					intent: { key: "attached" },
 					receipt: {
-						urls: { en: `${origin}/inquiry/`, de: `${origin}/de/anfrage/` },
+						inquiryUrls,
+						urls: reportOnly
+							? inquiryUrls
+							: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
 					},
 				};
 		},
@@ -214,17 +219,49 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	await render("reviewed-selection", "en", true);
 	const writes = applied.length;
 	let refreshed = 0;
-	document.body.addEventListener("wc-blocks_added_to_cart", () => refreshed++, {
-		once: true,
-	});
+	document.addEventListener("wc-blocks_added_to_cart", () => refreshed++);
+	const assertInline = () => {
+		assert.equal(dom.element.querySelectorAll(".sc-primary").length, 0);
+		assert.equal(button("Confirm and continue to inquiry"), undefined);
+		assert.ok(
+			![...dom.element.querySelectorAll("a")].some(
+				(a) => a.textContent === "Continue to inquiry",
+			),
+		);
+	};
+	assertInline();
 	await act(async () => button("Add to solution draft").click());
 	assert.equal(applied.length, writes + 1);
 	assert.equal(refreshed, 1);
-	assert.ok(button("Add to solution draft"));
+	assertInline();
+	assert.equal(
+		dom.element.querySelector("a").textContent,
+		"View solution draft",
+	);
+	assert.equal(button("Add to solution draft"), undefined);
+	beforeQuantity = 2;
+	await render("changed-selection", "en", true);
+	await act(async () => button("Add to solution draft").click());
+	assert.equal(applied.length, writes + 1);
+	assertInline();
+	await act(async () => button("Confirm changes").click());
+	assert.equal(applied.length, writes + 2);
+	assert.equal(refreshed, 2);
+	assertInline();
+	alreadyPresent = true;
+	await render("same-selection", "en", true);
+	await act(async () => button("Add to solution draft").click());
+	assert.equal(applied.length, writes + 2);
+	assert.equal(refreshed, 3);
+	assert.match(
+		dom.element.querySelector('[role="status"]').textContent,
+		/added to solution draft/,
+	);
+	assertInline();
 });
 
-for (const current of [true, false])
-	test(`confirmation only opens inquiry for the current report (${current})`, async (t) => {
+for (const view of ["current", "earlier", "another chapter", "another visitor"])
+	test(`confirmation only opens inquiry for the current report (${view})`, async (t) => {
 		const dom = setupDom();
 		const { createRoot } = await import("react-dom/client");
 		const { DraftTransferButton } =
@@ -234,6 +271,13 @@ for (const current of [true, false])
 		const origin = window.location.origin;
 		const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
 		const startUrl = location.href;
+		const current = view === "current";
+		let sameVisitor = true;
+		let badgeNotifications = 0;
+		document.addEventListener(
+			"wc-blocks_added_to_cart",
+			() => badgeNotifications++,
+		);
 		const inquiryUrl = startUrl + "#inquiry";
 		const inquiryUrls = { en: inquiryUrl, de: `${origin}/de/anfrage/` };
 		const inquiryPages = { en: `${origin}/inquiry/`, de: inquiryUrls.de };
@@ -241,7 +285,7 @@ for (const current of [true, false])
 		const started = deferred();
 		const client = {
 			origin,
-			isCurrentScope: () => true,
+			isCurrentScope: () => sameVisitor,
 			async query() {
 				return {
 					schema_version: 1,
@@ -290,7 +334,12 @@ for (const current of [true, false])
 		);
 		await act(async () => button("Confirm and continue to inquiry").click());
 		await started.promise;
-		await render(true, current);
+		if (view === "another chapter" || view === "another visitor")
+			await act(async () =>
+				root.render(React.createElement("main", null, "Project details")),
+			);
+		else await render(true, current);
+		sameVisitor = view !== "another visitor";
 		await act(async () =>
 			applied.resolve({
 				path: "draft/apply",
@@ -302,6 +351,9 @@ for (const current of [true, false])
 			}),
 		);
 		assert.equal(location.href, current ? inquiryUrl : startUrl);
+		assert.equal(badgeNotifications, sameVisitor ? 1 : 0);
+		if (view === "another chapter")
+			assert.equal(dom.element.textContent, "Project details");
 	});
 
 for (const active of [undefined, false])
@@ -399,7 +451,13 @@ for (const active of [undefined, false])
 					}),
 				),
 			);
+		let cartNotifications = 0;
+		document.addEventListener(
+			"wc-blocks_added_to_cart",
+			() => cartNotifications++,
+		);
 		await render([record]);
+		assert.equal(cartNotifications, active === false ? 0 : 1);
 		assert.deepEqual(acknowledged, [[record, handoff]]);
 		if (active === false) {
 			assert.equal(
@@ -440,6 +498,7 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 	const { default: Configurator } =
 		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
 	const scope = "3".repeat(64);
 	const cache = new QueryClient();
 	const root = createRoot(dom.element);
@@ -485,6 +544,25 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 		})),
 	};
 	for (const [inputs, expected] of [
+		[
+			{ equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 11.09 } },
+			"11.09 kWp",
+		],
+		...[[null], [4.5, null], [4.5, 6.5]].map((powers) => [
+			{
+				geometry: flatRoof,
+				equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 11.09 },
+				pvgis_reference_setup: {
+					...knownPv.project.inputs.pvgis_reference,
+					arrays: powers.map((power, index) => ({
+						...knownPv.project.inputs.pvgis_reference.arrays[0],
+						id: "array-" + index,
+						peak_power_kwp: power,
+					})),
+				},
+			},
+			powers.includes(null) ? "11.09 kWp" : "11 kWp",
+		]),
 		[{ geometry: flatRoof }, "2.5 kWp"],
 		[{ geometry: allExcluded }, "—"],
 		[{}, "—"],

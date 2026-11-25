@@ -2050,6 +2050,14 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 	body:has(#tv-storefront-pdp) .linker-genie {
 		bottom: calc(var(--pdp-action-height, 64px) + 28px);
 	}
+
+	#tv-storefront-pdp .pdp-spec-deck {
+		padding-block-end: calc(5rem + var(--pdp-action-height, 64px));
+	}
+
+	#tv-storefront-pdp .pdp-spec-deck :is(.pdp-info-panel, .pdp-stat-row) {
+		scroll-margin-block-end: var(--pdp-action-height, 64px);
+	}
 }
 
 /* The shop grid's phone density (one card under 640). */

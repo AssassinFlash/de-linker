@@ -641,10 +641,16 @@ export function ReviewProposal({
 		"Project inputs, layout, equipment and selection basis.",
 		"linker-tools",
 	);
+	const showInquiry = Boolean(inquiry) && !selected;
+	const inlineInquiry = showInquiry && !reportOnly;
 	const draftTransfer = transferable && run && (
 		<section className="sc-draft-transfer">
-			<h2>{__("Request a quotation", "linker-tools")}</h2>
-			{selected && current && (
+			{inlineInquiry ? (
+				<h3>{__("Solution draft", "linker-tools")}</h3>
+			) : (
+				<h2>{__("Request a quotation", "linker-tools")}</h2>
+			)}
+			{!inlineInquiry && selected && current && (
 				<p>
 					{sprintf(
 						__(
@@ -657,10 +663,15 @@ export function ReviewProposal({
 			)}
 			{!reportOnly && (
 				<p className="sc-muted">
-					{__(
-						"The selected equipment and project details are included.",
-						"linker-tools",
-					)}
+					{inlineInquiry
+						? __(
+								"Add these devices to your draft if you want to include other products in your inquiry.",
+								"linker-tools",
+							)
+						: __(
+								"The selected equipment and project details are included.",
+								"linker-tools",
+							)}
 				</p>
 			)}
 			<DraftTransferButton
@@ -670,7 +681,7 @@ export function ReviewProposal({
 				scope={scope}
 				operations={operations}
 				reportOnly={reportOnly}
-				reviewedSelection={Boolean(inquiry)}
+				reviewedSelection={inlineInquiry}
 				current={current}
 				blocked={transferBlocked}
 				locale={locale}
@@ -821,7 +832,7 @@ export function ReviewProposal({
 				)}
 			</section>
 		);
-	if (inquiry && !selected) {
+	if (showInquiry) {
 		const ready = current && run?.state === "succeeded" && report !== null;
 		return (
 			<article

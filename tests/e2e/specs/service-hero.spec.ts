@@ -12,6 +12,7 @@ import { expect, test } from '@playwright/test';
  * Internal dependencies
  */
 import { instance } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 // 390/1440 are the agreed visual viewports; 768/1000/1280 exercise existing
 // responsive bands. 1490 is the owner's supplied overlapping-hero screenshot.
@@ -91,3 +92,20 @@ for (const path of ['/services-support/', '/de/kundendienst/']) {
 		});
 	}
 }
+
+test('a visitor can open Genie while reading the service page', async ({
+	page,
+	context,
+}) => {
+	await seedConsentCookies(context);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto(instance().url + '/services-support/');
+	const launcher = page.locator('.linker-genie-open');
+	await launcher.click({ trial: true });
+	await page
+		.locator('#service-redesign section')
+		.nth(2)
+		.scrollIntoViewIfNeeded();
+	await launcher.click();
+	await expect(launcher).toHaveAttribute('aria-expanded', 'true');
+});

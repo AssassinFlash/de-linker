@@ -448,6 +448,9 @@ export function ReviewInquiry({
 					focused && node.contains(focused)
 						? focused.getAttribute("name")
 						: null;
+				form
+					.querySelector('button[type="submit"]')
+					?.classList.add("sc-primary");
 				node.replaceChildren(template.content);
 				if (focusName)
 					customerFields(form)

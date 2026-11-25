@@ -17,6 +17,12 @@ import { readObject } from "../../data/readProtocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 
+function notifyDraftChanged() {
+	document.body.dispatchEvent(
+		new CustomEvent("wc-blocks_added_to_cart", { bubbles: true }),
+	);
+}
+
 /** Changes to the solution draft require review before the Woo transfer. */
 export function DraftTransferButton({
 	run,
@@ -122,6 +128,7 @@ export function DraftTransferButton({
 							: { ...receipt, active: status.active };
 					confirmed.current = { key: record.key, receipt: recovered };
 					setReceipt(recovered);
+					if (!reportOnly && recovered.active !== false) notifyDraftChanged();
 					setError(null);
 					await operations.acknowledgeReadback(record, receipt.handoffId);
 				}
@@ -186,6 +193,7 @@ export function DraftTransferButton({
 				const value = readDraftPreview(raw, command, client.origin);
 				setReceipt(null);
 				if (value.alreadyPresent) {
+					if (!reportOnly) notifyDraftChanged();
 					setPresent(value);
 					setPreview(null);
 				} else {
@@ -236,18 +244,11 @@ export function DraftTransferButton({
 		instance: number,
 		continueToInquiry = false,
 	) {
-		if (
-			reply?.path !== "draft/apply" ||
-			instance !== lifetime.current ||
-			!client.isCurrentScope(scope)
-		)
-			return;
+		if (reply?.path !== "draft/apply" || !client.isCurrentScope(scope)) return;
+		if (!reportOnly && reply.receipt.active !== false) notifyDraftChanged();
+		if (instance !== lifetime.current) return;
 		confirmed.current = { key: reply.intent.key, receipt: reply.receipt };
 		setReceipt(reply.receipt);
-		if (!reportOnly && reply.receipt.active !== false)
-			document.body.dispatchEvent(
-				new CustomEvent("wc-blocks_added_to_cart", { bubbles: true }),
-			);
 		setPreview(null);
 		setError(null);
 		if (
@@ -288,6 +289,8 @@ export function DraftTransferButton({
 		operations.records.some(
 			(other) => other !== record && other.resultId === null,
 		);
+	const inlineInquiry = reviewedSelection && !reportOnly;
+	const actionClass = inlineInquiry ? "sc-button" : "sc-button sc-primary";
 	const addLabel = reportOnly
 		? __("Attach report to inquiry", "linker-tools")
 		: reviewedSelection
@@ -295,7 +298,7 @@ export function DraftTransferButton({
 			: __("Add selected products to solution draft", "linker-tools");
 	return (
 		<section className="sc-draft-operation">
-			{!reportOnly && (
+			{!reportOnly && !inlineInquiry && (
 				<p>
 					{__(
 						"These are the products selected in this report. Adding them does not replace any outstanding engineering checks.",
@@ -305,7 +308,7 @@ export function DraftTransferButton({
 			)}
 			{readyUrls ? (
 				<>
-					{receipt && (
+					{(receipt || present) && (
 						<p role="status">
 							{reportOnly
 								? __(
@@ -319,31 +322,33 @@ export function DraftTransferButton({
 						</p>
 					)}
 					<div className="sc-actions">
-						{inquiryUrl && (
+						{!inlineInquiry && inquiryUrl && (
 							<a className="sc-button sc-primary" href={inquiryUrl}>
 								{__("Continue to inquiry", "linker-tools")}
 							</a>
 						)}
 						{!reportOnly && (
 							<a
-								className={inquiryUrl ? "sc-button" : "sc-button sc-primary"}
+								className={inquiryUrl ? "sc-button" : actionClass}
 								href={readyUrls[language]}
 							>
 								{__("View solution draft", "linker-tools")}
 							</a>
 						)}
-						<button
-							type="button"
-							className="sc-button"
-							disabled={transferBusy || !current}
-							onClick={() => {
-								setReceipt(null);
-								setPresent(null);
-								void prepare();
-							}}
-						>
-							{addLabel}
-						</button>
+						{!inlineInquiry && (
+							<button
+								type="button"
+								className="sc-button"
+								disabled={transferBusy || !current}
+								onClick={() => {
+									setReceipt(null);
+									setPresent(null);
+									void prepare();
+								}}
+							>
+								{addLabel}
+							</button>
+						)}
 					</div>
 				</>
 			) : record && current && !retired ? (
@@ -356,7 +361,7 @@ export function DraftTransferButton({
 					</p>
 					<button
 						type="button"
-						className="sc-button sc-primary"
+						className={actionClass}
 						disabled={retryBlocked}
 						onClick={() => void retry(record)}
 					>
@@ -389,7 +394,7 @@ export function DraftTransferButton({
 					{!preview ? (
 						<button
 							type="button"
-							className="sc-button sc-primary"
+							className={actionClass}
 							disabled={
 								transferBusy ||
 								!current ||
@@ -447,7 +452,7 @@ export function DraftTransferButton({
 								</Notice>
 							))}
 							<div className="sc-actions">
-								{preview.inquiryUrls && (
+								{!inlineInquiry && preview.inquiryUrls && (
 									<button
 										type="button"
 										className="sc-button sc-primary"
@@ -461,19 +466,17 @@ export function DraftTransferButton({
 								)}
 								<button
 									type="button"
-									className={
-										preview.inquiryUrls ? "sc-button" : "sc-button sc-primary"
-									}
+									className={preview.inquiryUrls ? "sc-button" : actionClass}
 									disabled={
 										transferBusy || !current || operations.storageFailed
 									}
-									onClick={() => void confirm(preview)}
+									onClick={() => void confirm(preview, false)}
 								>
 									{operations.busy
 										? reportOnly
 											? __("Attaching report…", "linker-tools")
 											: __("Adding selected products…", "linker-tools")
-										: preview.inquiryUrls
+										: !inlineInquiry && preview.inquiryUrls
 											? __("Add to solution draft", "linker-tools")
 											: reportOnly
 												? addLabel

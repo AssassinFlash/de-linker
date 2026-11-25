@@ -2,15 +2,17 @@ import { useCallback } from "react";
 import { readBrief } from "../../domain/brief.ts";
 import type { Brief } from "../../domain/brief.ts";
 import type { JsonObject } from "../../data/protocol.ts";
-import { equipmentDraft } from "../../domain/equipment.ts";
-import { hasPlant, readPlantDraft } from "../../domain/equipmentPlant.ts";
+import {
+	hasPlant,
+	changeDemandEquipment,
+	demandEquipment,
+} from "../../domain/equipmentPlant.ts";
 import { readScenarioDraft } from "../../domain/energyScenario.ts";
 import { __ } from "../../i18n.ts";
 import { retainsUnverifiedInverter } from "./ProjectEquipment.tsx";
 import { NumberField } from "../NumberField.tsx";
 import {
 	changeBackupDemand,
-	changeDemandEquipment,
 	changePeakDemand,
 	energyGoal,
 } from "./EnergyDemand.tsx";
@@ -21,9 +23,7 @@ import {
 } from "./HomepagePvReference.tsx";
 
 function demands(inputs: JsonObject) {
-	const equipment = hasPlant(inputs)
-		? readPlantDraft(inputs).requirements
-		: equipmentDraft(inputs);
+	const equipment = demandEquipment(inputs);
 	const backup = inputs.backup_demand as
 		{ load_kw: number | null; duration_hours: number | null } | undefined;
 	return { equipment, backup, goal: energyGoal(inputs) };

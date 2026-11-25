@@ -15089,6 +15089,10 @@ msgid "Request a quotation"
 msgstr "Angebot anfragen"
 
 #: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
+msgid "Add these devices to your draft if you want to include other products in your inquiry."
+msgstr "Im Lösungsentwurf können Sie diese Geräte mit weiteren Produkten in einer Anfrage zusammenfassen."
+
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
 msgid "The selected equipment and project details are included."
 msgstr "Die Anfrage enthält die gewählten Geräte und die Projektangaben."
 
@@ -16817,7 +16821,7 @@ msgstr "Partnerpreise"
 msgid "Net price after sign-in"
 msgstr "Nettopreis nach Anmeldung"
 
-#: build/genie.js build/hero.js
+#: build/genie.js build/hero.js build/planner/assets/planner.js
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 

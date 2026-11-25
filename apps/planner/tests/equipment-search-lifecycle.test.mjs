@@ -1,3 +1,4 @@
+import savedRoof from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import knownPv from "./fixtures/known-pv-reference.json" with { type: "json" };
 import nativePreparation from "./fixtures/preparation-flow-darwin-arm64.json" with { type: "json" };
 import { authoredDiscoveryInputs } from "../src/domain/currentCalculation.ts";
@@ -888,30 +889,82 @@ for (const entry of ["navigation", "direct"])
 			}
 		});
 
-test("Solar opens System using the edited array capacity rather than a previous result", async (t) => {
-	const id = "e".repeat(32);
-	const app = await equipmentApp(t, {
-		projectId: id,
-		hash: "#sc-solar",
-		inputs: { equipment_setup: savedSetup },
-		savedRun: makeRun(id, "succeeded"),
+for (const source of ["project", "partial array", "roof to known"])
+	test(`Solar carries the site capacity into the next comparison (${source})`, async (t) => {
+		const id = "e".repeat(32);
+		const app = await equipmentApp(t, {
+			projectId: id,
+			hash: "#sc-solar",
+			inputs: {
+				equipment_setup: { ...savedSetup, pv_dc_kw: 11.09 },
+				...(source === "roof to known"
+					? {
+							geometry: savedRoof,
+							inactive_known_pv_arrays: [
+								{
+									id: "previous-array",
+									peak_power_kwp: null,
+									tilt_deg: 30,
+									azimuth_north_clockwise_deg: null,
+									source_note: "",
+								},
+							],
+						}
+					: {}),
+				...(source === "partial array"
+					? {
+							pvgis_reference_setup: {
+								...knownPv.project.inputs.pvgis_reference,
+								arrays: [
+									{
+										id: "declared-array",
+										peak_power_kwp: null,
+										tilt_deg: 30,
+										azimuth_north_clockwise_deg: null,
+										source_note: "",
+									},
+								],
+							},
+							known_panel_details: {
+								count: null,
+								power_w: null,
+								system_kwp: null,
+							},
+						}
+					: {}),
+			},
+			savedRun: makeRun(id, "succeeded"),
+		});
+		const field = () => app.fieldInput("Solar capacity (kWp)");
+		await untilRun(() =>
+			document.querySelector('[aria-label="Use module details"]'),
+		);
+		const option = document.querySelector('[aria-label="Use module details"]');
+		if (option.getAttribute("aria-pressed") !== "true")
+			await act(async () => option.click());
+		await untilRun(field);
+		assert.equal(field().value, "11.09");
+		const side = () =>
+			[...document.querySelectorAll("aside dt")].find(
+				(el) => el.textContent === "Solar capacity",
+			)?.nextElementSibling?.textContent;
+		assert.equal(side(), "11.09 kWp");
+		assert.match(
+			document.querySelector(".sc-solar-total").textContent,
+			/11.09 kWp/,
+		);
+		await enter(field(), "13.7");
+		assert.equal(side(), "13.7 kWp");
+		await app.step("Matched equipment");
+		await untilRun(() => searchRequests(app).length === 1);
+		assert.equal(app.button("Use this configuration"), undefined);
+		const submitted = searchRequests(app)[0].body.inputs;
+		assert.equal(submitted.equipment_setup.pv_dc_kw, 13.7);
+		assert.equal(
+			submitted.pvgis_reference_setup.arrays[0].peak_power_kwp,
+			13.7,
+		);
 	});
-	const field = () => app.fieldInput("Solar capacity (kWp)");
-	await untilRun(() =>
-		document.querySelector('[aria-label="Use module details"]'),
-	);
-	const option = document.querySelector('[aria-label="Use module details"]');
-	if (option.getAttribute("aria-pressed") !== "true")
-		await act(async () => option.click());
-	await untilRun(field);
-	await enter(field(), "13.7");
-	await app.step("Matched equipment");
-	await untilRun(() => searchRequests(app).length === 1);
-	assert.equal(app.button("Use this configuration"), undefined);
-	assert.ok(
-		JSON.stringify(searchRequests(app)[0].body.inputs).includes("13.7"),
-	);
-});
 
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {
 	const roof = nativePreparation.pvgis_reference_project;

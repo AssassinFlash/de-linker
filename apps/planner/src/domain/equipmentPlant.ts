@@ -89,6 +89,40 @@ export function hasPlant(inputs: JsonObject): boolean {
 		inputs.equipment_plant_setup !== undefined
 	);
 }
+export function demandEquipment(inputs: JsonObject): JsonObject {
+	return hasPlant(inputs)
+		? readPlantDraft(inputs).requirements
+		: equipmentDraft(inputs);
+}
+
+/** Only an independent new PV system uses the site's array size as inverter DC demand. */
+export function usesSiteArrayForEquipment(inputs: JsonObject): boolean {
+	const scope = readObject(inputs.brief ?? {}).system_scope;
+	if (scope !== "new_pv_storage" && scope !== "pv_only") return false;
+	if (hasPlant(inputs)) {
+		return (
+			readObject(inputs.energy_plant_setup ?? inputs.energy_plant ?? {})
+				.coupling !== "plant_shared_dc"
+		);
+	}
+	return (
+		readObject(inputs.energy_scenario ?? inputs.energy_replay ?? {})
+			.coupling !== "shared_dc"
+	);
+}
+
+export function changeDemandEquipment(
+	inputs: JsonObject,
+	patch: JsonObject,
+): JsonObject {
+	if (!hasPlant(inputs)) return changeEquipment(inputs, patch);
+	const plant = readPlantDraft(inputs);
+	return plantInputs(inputs, {
+		...plant,
+		requirements: { ...plant.requirements, ...patch },
+	});
+}
+
 const equipmentFields = [
 	"equipment_plant",
 	"equipment_plant_setup",

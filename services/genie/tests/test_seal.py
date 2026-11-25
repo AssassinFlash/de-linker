@@ -1804,6 +1804,58 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         recovered_text = answer_text([block.model_dump() for block in mixed.blocks])
         assert faq["answer"] in recovered_text
         assert all(pair in recovered_text for pair in directions)
+        model_note = (
+            "kein einzelnes Wechselrichtermodell"
+            if locale == "de"
+            else "specific inverter model"
+        )
+        assert model_note not in recovered_text
+        search = {
+            "name": "linker/search-products",
+            "ok": True,
+            "arguments": {"with_pairings": True},
+            "result": {"qualified": [{"product_id": 4106, "pairings": []}]},
+        }
+        facts.tool_calls.append(search)
+        mixed = fallback(facts, locale, mixed_route, question=compound)
+        recovered_text = answer_text([block.model_dump() for block in mixed.blocks])
+        assert faq["answer"] in recovered_text and model_note in recovered_text
+        blanket_claim = (
+            "Für den CB2-100.3-HV5 ist keine Kombination dokumentiert."
+            if locale == "de"
+            else "Our product data holds no documented pairing for the CB2-100.3-HV5, "
+            "so I cannot name a released partner inverter for it."
+        )
+        bad = TurnOutput(
+            language=locale,
+            blocks=[TextBlock(text=f"{blanket_claim} {faq['answer']}", refs=["4106"])],
+        )
+        sealed = seal(
+            hydrate(bad, facts, locale),
+            facts,
+            mixed_route,
+            compound,
+            "other",
+            original=bad,
+        )
+        text = answer_text([block.model_dump() for block in sealed.blocks])
+        assert blanket_claim not in text
+        assert text.count(faq["answer"]) == 1 and model_note in text
+        assert all(pair in text for pair in directions)
+        native = prepared_answer(facts, mixed_route, locale, question=compound)
+        assert native is not None
+        assert ground_check(native, facts, mixed_route, question=compound).ok
+        other_topic = compound + (
+            " Welches Kabel brauche ich?"
+            if locale == "de"
+            else " Which cable do I need?"
+        )
+        assert prepared_answer(facts, mixed_route, locale, question=other_topic) is None
+        facts.tool_calls[-1]["result"]["qualified"][0]["pairings"] = [
+            {"product_id": 1234, "verdict": "released"}
+        ]
+        assert prepared_answer(facts, mixed_route, locale, question=compound) is None
+        facts.tool_calls.pop()
         facts.tool_calls[0]["result"].pop("faq")
 
         assert {b.url for b in delivered.blocks if isinstance(b, DocumentBlock)} >= {

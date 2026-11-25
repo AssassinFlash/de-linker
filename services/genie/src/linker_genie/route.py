@@ -268,6 +268,14 @@ DOCUMENTS_HINT = (
 )
 
 
+SERIES_PAIRING_HINT = (
+    " If the product entry or manufacturer manual identifies a partner series, "
+    "name that documented series and cite the source. If the catalogue lists no "
+    "released pairing for a specific model, say that once, after the series. "
+    "A series reference does not release individual models."
+)
+
+
 def _show_product_with_documents(message: str) -> bool:
     """An explicit request to show a product beside its documents (#563).
 
@@ -1038,7 +1046,11 @@ def _plan_turn(
                 model_calls,
                 no_handoff=True,
                 named_models=notes,
-                hint="Explain the missing pairing separately. Answer the other request from the known product's verified figures and link its manufacturer source. Search the documents if the product facts do not answer it.",
+                hint=(
+                    "If the named model is missing from the results, its pairing "
+                    "is unverified. Answer the technical question from the known "
+                    "product or its manufacturer documents." + SERIES_PAIRING_HINT
+                ),
                 reasons=tuple(reasons),
             )
     explicit_compare = re.match(
@@ -1115,7 +1127,9 @@ def _plan_turn(
         doc_calls, notes = _documents_calls(
             calls, notes, message, matches, subject, lang
         )
+        hint = DOCUMENTS_HINT
         if pairing_question and (pairing := _pairing(subject, lang)):
+            hint += SERIES_PAIRING_HINT
             doc_calls, notes = _limit_route_calls(
                 (doc_calls[0], pairing, *doc_calls[1:]), notes
             )
@@ -1124,7 +1138,7 @@ def _plan_turn(
             doc_calls,
             show_products=_show_product_with_documents(message),
             no_handoff=True,
-            hint=DOCUMENTS_HINT + family + _model_hint(notes),
+            hint=hint + family + _model_hint(notes),
             reasons=tuple(reasons),
             named_models=notes,
         )

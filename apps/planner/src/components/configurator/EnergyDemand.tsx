@@ -6,11 +6,9 @@ import { ApiError } from "../../data/protocol.ts";
 import { isPreMutationInputRefusal } from "../../data/inputRefusal.ts";
 import type { JsonObject, JsonRpcPath, Session } from "../../data/protocol.ts";
 import { emptyBrief, readBrief } from "../../domain/brief.ts";
-import { changeEquipment, equipmentDraft } from "../../domain/equipment.ts";
 import {
-	hasPlant,
-	plantInputs,
-	readPlantDraft,
+	changeDemandEquipment,
+	demandEquipment,
 } from "../../domain/equipmentPlant.ts";
 import {
 	emptyScenario,
@@ -34,18 +32,6 @@ import { ProfileCurve, profileDateFormat } from "../ProfileCurve.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { __ } from "../../i18n.ts";
 import { retainsUnverifiedInverter } from "./ProjectEquipment.tsx";
-
-export function changeDemandEquipment(
-	inputs: JsonObject,
-	patch: JsonObject,
-): JsonObject {
-	if (!hasPlant(inputs)) return changeEquipment(inputs, patch);
-	const plant = readPlantDraft(inputs);
-	return plantInputs(inputs, {
-		...plant,
-		requirements: { ...plant.requirements, ...patch },
-	});
-}
 
 export type EnergyGoal = "" | "self" | "backup" | "peak";
 export function energyGoal(inputs: JsonObject): EnergyGoal {
@@ -182,9 +168,7 @@ export function EnergyDemand({
 		inputs.energy_scenario === undefined
 			? emptyScenario()
 			: readScenarioDraft(inputs.energy_scenario);
-	const equipment = hasPlant(inputs)
-		? readPlantDraft(inputs).requirements
-		: equipmentDraft(inputs);
+	const equipment = demandEquipment(inputs);
 	const backup = inputs.backup_demand as
 		{ load_kw: number | null; duration_hours: number | null } | undefined;
 	const [invalid, setInvalid] = useState<ReadonlySet<string>>(new Set());
