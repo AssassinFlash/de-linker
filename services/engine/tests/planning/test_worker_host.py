@@ -502,7 +502,7 @@ def test_readiness_stops_when_main_progress_stalls_and_recovers_from_io_failure(
     from linker_engine.planning import worker_host
 
     tick = 100.0
-    monkeypatch.setattr(worker_host.time, "monotonic", lambda: tick)
+    monkeypatch.setattr(time, "monotonic", lambda: tick)
     path = tmp_path / "worker.ready"
     readiness = worker_host.Readiness(path, lease_seconds=5)
     readiness.pulse()
