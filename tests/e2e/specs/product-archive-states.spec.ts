@@ -210,6 +210,13 @@ test('en 390: the filter drawer stacks two facets on the listing', async ({
 	);
 
 	await expect(page.locator('.linker-genie-open')).toBeHidden();
+	const bottomGap = await drawer
+		.locator('.product-filter-actions')
+		.evaluate(
+			(actions) =>
+				window.innerHeight - actions.getBoundingClientRect().bottom
+		);
+	expect(bottomGap).toBe(0);
 	await drawer.locator('#product-filter-apply').click({ trial: true });
 
 	await drawer.locator('a[href*="brand=goodwe"]').first().click();

@@ -207,13 +207,24 @@ html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(0px,round(down,
    Hide the whole collapsed dock: hiding only its button leaves the fixed
    parent intercepting clicks. Keep its separate, possibly delayed preview
    clear too. The menu link and an already open conversation stay usable. */
-body:is(.product-filter-open, [data-genie-over-content], :has(dialog[open], .cky-modal.cky-modal-open, #tv-header-v2 .tv-mobile-navigation[open]), :has(#home-a .hero-cinematic):not([data-genie-hero-away]))
+body:is(.product-filter-open, :has(dialog[open], .cky-modal.cky-modal-open, #tv-header-v2 .tv-mobile-navigation[open]), :has(#home-a .hero-cinematic):not([data-genie-hero-away]))
   :is(.linker-genie:has(> .linker-genie-open[aria-expanded="false"]), .linker-genie-peek) {
   visibility: hidden;
   pointer-events: none;
 }
 body:has(#linker-faq-page, #linker-compare, #tv-storefront-pdp, #tv-blog-single-v1, #service-redesign) .linker-genie-peek {
   display: none;
+}
+/* Let the end of each reading surface scroll above the floating assistant. */
+#linker-faq-page .linker-library-main,
+#linker-compare,
+#service-redesign,
+#tv-storefront-pdp .pdp-spec-deck,
+#tv-blog-single-v1 #tv-blog-single-related {
+  padding-block-end: 5rem;
+}
+html:has(#linker-faq-page, #linker-compare, #tv-storefront-pdp, #tv-blog-single-v1, #service-redesign) {
+  scroll-padding-block-end: 5rem;
 }
 @media (min-width:1280px){#tv-header-v2 .tv-mobile-navigation{display:none}}
 #tv-header-v2[data-tv-nav-folded="true"] .tv-mobile-navigation{display:block}

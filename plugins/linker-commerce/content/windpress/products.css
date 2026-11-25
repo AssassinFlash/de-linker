@@ -259,10 +259,10 @@ body #linker-products.sf-products [data-card-gate] { background: #f5f6f8; border
   body #linker-products.sf-products .product-mobile-actions button { flex: 1 1 auto; border-radius: 999px; min-height: 44px; padding: 10px 12px; font-size: 11px; background: white; box-shadow: none; }
   body #linker-products.sf-products #product-filter-open { color: var(--shop-teal); border-color: var(--shop-teal); }
   body #linker-products.sf-products .product-layout { grid-template-columns: 1fr; gap: 0; }
-  body #linker-products.sf-products .sidebar-filters { z-index: 1100; background: #f6f8fa; padding: 20px; width: min(360px, 100%); }
+  body #linker-products.sf-products .sidebar-filters { z-index: 1100; background: #f6f8fa; padding: 20px 20px 0; width: min(360px, 100%); }
   body #linker-products.sf-products .filter-option,
   body #linker-products.sf-products .family-link { min-height: 44px; }
-  body #linker-products.sf-products .product-filter-actions { position: sticky; bottom: 0; background: #f6f8fa; padding-block: 14px; }
+  body #linker-products.sf-products .product-filter-actions { position: sticky; bottom: 0; background: #f6f8fa; border-top: 1px solid var(--shop-line); padding-block: 14px calc(14px + env(safe-area-inset-bottom)); }
   body #linker-products.sf-products .product-filter-actions :is(a,button) { display: flex; justify-content: center; align-items: center; flex: 1; min-height: 44px; border: 1px solid var(--shop-line); border-radius: 5px; background: white; font: 600 12px/1.4 var(--shop-sans); }
   body #linker-products.sf-products #product-filter-apply { background: var(--shop-teal); color: white; border-color: var(--shop-teal); }
   body #linker-products.sf-products .wb-strip { margin-bottom: 16px; gap: 10px; }
