@@ -42,11 +42,9 @@ class UserContext {
 	public const HEADER = 'X-Linker-User-Context';
 
 	/**
-	 * Seconds a token stays valid. This existing 120-second lifetime exceeds
-	 * the native 90-second operation window (Proxy::TURN_BUDGET). The token
-	 * is minted when the turn is sent and remains valid for the service's
-	 * customer-specific ability and price reads. Its scope and lifetime do
-	 * not change with the outer HTTP deadline.
+	 * Seconds a native account credential stays valid. The original token covers
+	 * the execution window. When a queued turn needs more time, only another
+	 * authenticated poll from its owner can mint a fresh credential.
 	 */
 	public const TTL = 120;
 
