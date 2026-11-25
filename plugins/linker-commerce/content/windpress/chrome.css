@@ -212,7 +212,7 @@ body:is(.product-filter-open, .cky-modal-open, [data-genie-over-content], :has(d
   visibility: hidden;
   pointer-events: none;
 }
-body:has(#linker-faq-page, #tv-storefront-pdp, #tv-blog-single-v1, #service-redesign) .linker-genie-peek {
+body:has(#linker-faq-page, #linker-compare, #tv-storefront-pdp, #tv-blog-single-v1, #service-redesign) .linker-genie-peek {
   display: none;
 }
 @media (min-width:1280px){#tv-header-v2 .tv-mobile-navigation{display:none}}

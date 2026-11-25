@@ -303,7 +303,7 @@
 				document.body.toggleAttribute( 'data-genie-hero-away', ! entry.isIntersecting );
 			} ).observe( hero );
 		}
-		const areas = document.querySelectorAll( '#linker-faq-page .linker-library-main, #tv-storefront-pdp .pdp-spec-deck, #tv-storefront-pdp .pdp-spec-list, #tv-blog-single-v1 .reader-all, #service-redesign section' );
+		const areas = document.querySelectorAll( '#linker-faq-page .linker-library-main, #linker-compare, #tv-storefront-pdp .pdp-spec-deck, #tv-storefront-pdp .pdp-spec-list, #tv-blog-single-v1 .reader-all, #service-redesign section' );
 		if ( ! areas.length ) return;
 		let observer;
 		function observeLauncherArea() {
