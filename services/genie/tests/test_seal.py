@@ -1807,7 +1807,7 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         model_note = (
             "kein einzelnes Wechselrichtermodell"
             if locale == "de"
-            else "no individual inverter model"
+            else "specific inverter model"
         )
         assert model_note not in recovered_text
         search = {

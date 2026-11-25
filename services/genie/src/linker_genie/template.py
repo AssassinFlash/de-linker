@@ -988,11 +988,11 @@ def _cabinet_clearance_answer(
                         for row in search["result"].get("qualified", [])
                     ):
                         answer += (
-                            " Der Katalog führt für diesen Speicher kein einzelnes "
-                            "Wechselrichtermodell als freigegeben auf."
+                            " Für diesen Speicher ist bei uns kein einzelnes "
+                            "Wechselrichtermodell als freigegeben aufgeführt."
                             if language == "de"
-                            else " The catalogue lists no individual inverter model "
-                            "as released for this battery."
+                            else " For this battery, we have no confirmed pairing with a "
+                            "specific inverter model."
                         )
                     blocks.append(TextBlock(text=answer, refs=[str(pid)]))
                     break
