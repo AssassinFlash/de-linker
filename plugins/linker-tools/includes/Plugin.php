@@ -102,6 +102,7 @@ final class Plugin {
 		add_action( 'rest_api_init', array( $this->proxy, 'register' ) );
 		// A deleted conversation's file readings leave the service's turn log (#236).
 		add_action( 'before_delete_post', array( $this->proxy, 'forget' ) );
+		add_action( 'linker_tools_expire_genie_turn', array( $this->proxy, 'expire' ), 10, 2 );
 		add_action( 'rest_api_init', array( $this->engine_proxy, 'register' ) );
 		add_action( 'rest_api_init', array( $this->quality_route, 'register' ) );
 		add_action( 'rest_api_init', array( $this->contact, 'register' ) );

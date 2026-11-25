@@ -98,7 +98,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 					array(
 						'status' => 'running',
 						'job_id' => $job,
-						'stage'  => 'understanding',
+						'stage'  => 'waited' === $outcome ? 'waiting' : 'understanding',
 					)
 				);
 			}
@@ -111,8 +111,9 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			if ( $reads <= 2 ) {
 				return (string) wp_json_encode(
 					array(
-						'status' => 'running',
-						'stage'  => $stage,
+						'status'         => 'running',
+						'stage'          => $stage,
+						'queued_seconds' => 'waited' === $outcome ? Proxy::TURN_BUDGET : 0,
 					)
 				);
 			}
@@ -129,8 +130,9 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			}
 			return (string) wp_json_encode(
 				array(
-					'status' => 'completed',
-					'stream' => $stream,
+					'status'         => 'completed',
+					'queued_seconds' => 'waited' === $outcome ? Proxy::TURN_BUDGET : 0,
+					'stream'         => $stream,
 				)
 			);
 		};
@@ -174,7 +176,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$this->assertInstanceOf( WP_REST_Response::class, $running );
 			$this->assertSame( $stage, $running->get_data()['stage'] );
 			$this->assertSame( $stage, $proxy->conversation()->get_data()['pending_job']['stage'] );
-			if ( 'expired' === $outcome ) {
+			if ( in_array( $outcome, array( 'expired', 'waited' ), true ) ) {
 				$input               = \Linker\Tools\Genie\PendingTurns::current( $id );
 				$input['started_at'] = time() - Proxy::TURN_BUDGET - 1;
 				update_post_meta( $id, \Linker\Tools\Genie\PendingTurns::PENDING, wp_slash( $input ) );
@@ -195,6 +197,15 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$peer->close();
 			}
 
+			if ( 'waited' === $outcome ) {
+				$this->assertEquals( Proxy::TURN_BUDGET, $joining->get_data()['queued_seconds'] );
+				wp_clear_scheduled_hook( 'linker_tools_expire_genie_turn', array( $id, $job ) );
+				$proxy->expire( $id, $job );
+				$this->assertGreaterThan( time(), wp_next_scheduled( 'linker_tools_expire_genie_turn', array( $id, $job ) ) );
+				$reopened = $proxy->conversation()->get_data()['pending_job'];
+				$this->assertSame( $job, $reopened['job_id'] );
+				$this->assertEquals( Proxy::TURN_BUDGET, $reopened['queued_seconds'] );
+			}
 			$recover = in_array( $outcome, array( 'receipt-poll', 'receipt-cron' ), true );
 			if ( $recover ) {
 				$interrupt = static function ( array $post ) {
@@ -217,7 +228,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$input['started_at'] = time() - Proxy::TURN_BUDGET - 1;
 				update_post_meta( $id, \Linker\Tools\Genie\PendingTurns::PENDING, wp_slash( $input ) );
 				if ( 'receipt-cron' === $outcome ) {
-					\Linker\Tools\Genie\PendingTurns::expire( $id, $job );
+					$proxy->expire( $id, $job );
 					$this->assertSame( array(), \Linker\Tools\Genie\PendingTurns::current( $id ) );
 				}
 			}
@@ -228,7 +239,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$this->assertSame( '', ( new \Linker\Tools\Genie\Thread() )->read( $id )['stream'] );
 				return;
 			}
-			if ( ! $recover && ! in_array( $outcome, array( 'completed', 'approval-withdrawn' ), true ) ) {
+			if ( ! $recover && ! in_array( $outcome, array( 'completed', 'approval-withdrawn', 'waited' ), true ) ) {
 				$this->assertInstanceOf( WP_Error::class, $final );
 				$this->assertSame( in_array( $outcome, array( 'revoked', 'publication_changed' ), true ) ? 409 : 503, $final->get_error_data()['status'] );
 				$this->assertTrue( $final->get_error_data()['unrecorded'] );
@@ -261,7 +272,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$again = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_REST_Response::class, $again );
 			$this->assertSame( $final->get_data(), $again->get_data() );
-			$this->assertSame( 3, $reads );
+			$this->assertSame( 'waited' === $outcome ? 5 : 3, $reads );
 			$thread = $proxy->conversation()->get_data();
 			$this->assertArrayNotHasKey( 'pending_job', $thread );
 			$this->assertSame( $operation, $thread['operation_id'] );
@@ -315,6 +326,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			'worker starts after withdrawal'  => array( 'publication_changed', 409 ),
 			'worker authority unavailable'    => array( 'publication_unavailable', 503 ),
 			'deadline'                        => array( 'expired' ),
+			'work queued before execution'    => array( 'waited' ),
 		);
 	}
 }

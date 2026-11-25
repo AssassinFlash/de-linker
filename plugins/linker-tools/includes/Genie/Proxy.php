@@ -711,7 +711,7 @@ class Proxy {
 		}
 		$active = PendingTurns::current( $conversation );
 		if ( $active ) {
-			PendingTurns::expire( $conversation, $active['job_id'] );
+			$this->expire( $conversation, $active['job_id'] );
 			if ( PendingTurns::current( $conversation ) ) {
 				return self::unrecorded( new WP_Error( 'linker_resource_pending', 'This conversation has a turn in progress.', array( 'status' => 409 ) ) );
 			}
@@ -756,19 +756,51 @@ class Proxy {
 		if ( ! $turn ) {
 			return array();
 		}
-		if ( microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
-			PendingTurns::expire( $id, $turn['job_id'] );
-			return array();
-		}
 		$identity = Identity::current();
 		if ( is_wp_error( $identity ) || ! hash_equals( $turn['owner_binding'], $identity->binding() ) ) {
 			return array();
 		}
+		$progress = $this->pending_progress( $turn );
+		if ( ! $progress ) {
+			return array();
+		}
 		$last = end( $turn['messages'] );
-		return PendingTurns::progress( $turn ) + array(
+		return $progress + array(
 			'operation_id' => $turn['operation_id'],
 			'user_message' => $last['content'] ?? '',
 		);
+	}
+
+	/** Expire an abandoned turn against its execution time, including jobs with no open browser.
+	 *
+	 * @param int    $id Pending conversation.
+	 * @param string $job Service job that scheduled this event.
+	 */
+	public function expire( int $id, string $job ): void {
+		$turn = PendingTurns::current( $id );
+		if ( ( $turn['job_id'] ?? null ) === $job ) {
+			$this->pending_progress( $turn );
+		}
+	}
+
+	/** Resume or reap a persisted turn. Only the service knows when queued work actually started.
+	 *
+	 * @param array<string,mixed> $turn Original service acceptance.
+	 * @return array<string,mixed> Public progress, or empty after expiry.
+	 */
+	private function pending_progress( array $turn ): array {
+		if ( microtime( true ) < PendingTurns::deadline( $turn ) ) {
+			return PendingTurns::progress( $turn );
+		}
+		if ( 'waiting' === $turn['stage'] ) {
+			$state = $this->job_request( $this->base() . '/assistant/turn/' . $turn['job_id'], $turn['subject_hash'] );
+			if ( ! is_wp_error( $state ) && PendingTurns::deadline( $turn, $state ) > microtime( true ) ) {
+				wp_schedule_single_event( (int) ceil( PendingTurns::deadline( $turn, $state ) ), 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );
+				return PendingTurns::progress( $turn ) + array( 'queued_seconds' => $state['queued_seconds'] );
+			}
+		}
+		PendingTurns::abandon( $turn );
+		return array();
 	}
 
 	/** Read or finalize one owned service job.
@@ -792,10 +824,13 @@ class Proxy {
 			return ( new Replies() )->read( $receipt, $binding );
 		}
 		$completion = get_post_meta( $conversation, Thread::COMPLETION, true );
-		if ( ( $completion['operation_id'] ?? null ) === $turn['operation_id'] || microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
+		if ( ( $completion['operation_id'] ?? null ) === $turn['operation_id'] || ( 'waiting' !== $turn['stage'] && microtime( true ) >= PendingTurns::deadline( $turn ) ) ) {
 			$result = self::job_error( 503 );
 		} else {
 			$result = $this->job_request( $this->base() . '/assistant/turn/' . $job, $turn['subject_hash'] );
+			if ( ! is_wp_error( $result ) && microtime( true ) >= PendingTurns::deadline( $turn, $result ) ) {
+				$result = self::job_error( 503 );
+			}
 		}
 		if ( ! is_wp_error( $result ) && 'running' === $result['status'] && is_string( $result['stage'] ?? null ) ) {
 			$progress = PendingTurns::progress( $turn );
@@ -803,7 +838,7 @@ class Proxy {
 				$progress['stage'] = $result['stage'];
 				wp_cache_set( $job, $result['stage'], 'linker_genie_stage', self::TURN_BUDGET );
 			}
-			return new WP_REST_Response( $progress );
+			return new WP_REST_Response( $progress + array_intersect_key( $result, array( 'queued_seconds' => true ) ) );
 		}
 
 		// Re-read ownership and the full original input under the operation lock before any terminal write.
@@ -853,7 +888,7 @@ class Proxy {
 			return self::unrecorded( PublicationGuard::refused() );
 		}
 		$this->conversations->resume_pending_guest( $id );
-		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'], $turn['operation_id'], $turn['fingerprint'] );
+		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'] + ( $result['queued_seconds'] ?? 0 ), $turn['operation_id'], $turn['fingerprint'] );
 		if ( is_wp_error( $reply ) ) {
 			if ( ! empty( $reply->get_error_data()['unrecorded'] ) ) {
 				PendingTurns::fail( $turn );

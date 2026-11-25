@@ -35,7 +35,7 @@ final class PendingTurns {
 			delete_post_meta( $receipt, $key );
 			return false;
 		}
-		wp_schedule_single_event( (int) ceil( $turn['started_at'] + Proxy::TURN_BUDGET ), 'linker_tools_expire_genie_turn', array( $id, $turn['job_id'] ) );
+		wp_schedule_single_event( (int) ceil( self::deadline( $turn ) ), 'linker_tools_expire_genie_turn', array( $id, $turn['job_id'] ) );
 		return true;
 	}
 
@@ -129,16 +129,22 @@ final class PendingTurns {
 		wp_clear_scheduled_hook( 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );
 	}
 
-	/** An abandoned browser does not leave its provisional guest post or an unusable operation.
+	/** The original execution budget starts after the service's measured queue wait.
 	 *
-	 * @param int    $conversation Pending conversation ID.
-	 * @param string $job Original job.
+	 * @param array<string,mixed> $turn Native operation context.
+	 * @param array<string,mixed> $state Service progress or final result.
 	 */
-	public static function expire( int $conversation, string $job ): void {
-		$turn = self::current( $conversation );
-		if ( ( $turn['job_id'] ?? null ) !== $job || microtime( true ) - $turn['started_at'] < Proxy::TURN_BUDGET ) {
-			return;
-		}
+	public static function deadline( array $turn, array $state = array() ): float {
+		return $turn['started_at'] + ( $state['queued_seconds'] ?? 0 ) + Proxy::TURN_BUDGET;
+	}
+
+	/** Recover a committed answer or release the expired operation under its lock.
+	 *
+	 * @param array<string,mixed> $turn Expired pending context.
+	 */
+	public static function abandon( array $turn ): void {
+		$conversation = $turn['conversation_id'];
+		$job          = $turn['job_id'];
 		Lock::run(
 			'genie-operation-' . $turn['operation_id'],
 			static function () use ( $conversation, $job ): void {
