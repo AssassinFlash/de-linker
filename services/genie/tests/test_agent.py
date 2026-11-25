@@ -629,3 +629,20 @@ def test_uncompressed_manufacturer_warranty_rows_get_the_same_verbatim_policy_in
         "without an introduction or closing summary" in prompt
         and "one matching warranty_answers value" in prompt
     )
+
+
+def test_card_follow_up_is_the_only_current_question_for_the_model() -> None:
+    first = "Which inverters are compatible?"
+    latest = "Where can I change the quantity after adding the cabinet?"
+    request = TurnRequest(
+        conversation_id="card",
+        locale="en",
+        messages=[
+            TurnMessage(role="user", content=first),
+            TurnMessage(role="user", content=latest),
+        ],
+    )
+    prompt = _user_prompt(request, None)
+    previous, current = prompt.split("Current request:", 1)
+    assert first in previous and first not in current
+    assert latest in current
