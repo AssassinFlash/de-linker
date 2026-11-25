@@ -527,6 +527,7 @@ def module_inputs(module):
         dependencies = {
             "commerce": (
                 tools + "includes/Genie/",
+                tools + "includes/Protection/EnginePublication.php",
                 i18n + "includes/",
                 i18n + "tests/fixtures/live/",
                 "tools/migrate/",
