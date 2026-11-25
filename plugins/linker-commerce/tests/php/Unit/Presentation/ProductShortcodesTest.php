@@ -1350,7 +1350,8 @@ final class ProductShortcodesTest extends TestCase {
 		$shortcodes = new ProductShortcodes( new ProductFilters(), new ProductView() );
 		$sort       = $shortcodes->products_sort();
 		self::assertStringContainsString( 'class="wbsort woocommerce-ordering" method="get" action="http://linker.test/products/"', $sort );
-		self::assertStringContainsString( 'class="select-dropdown orderby"', $sort );
+		self::assertStringContainsString( 'id="sort-select" name="sort"', $sort );
+		self::assertStringNotContainsString( 'select-dropdown orderby', $sort );
 		self::assertStringContainsString( 'name="q" value="ESA"', $sort );
 		self::assertStringContainsString( 'name="brand" value="goodwe"', $sort );
 		self::assertStringNotContainsString( 'name="product-page"', $sort );

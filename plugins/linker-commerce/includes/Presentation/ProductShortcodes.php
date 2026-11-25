@@ -446,8 +446,7 @@ final class ProductShortcodes {
 		foreach ( $selected as $key => $value ) {
 			$html .= '<input type="hidden" name="' . esc_attr( (string) $key ) . '" value="' . esc_attr( (string) $value ) . '" />';
 		}
-		// Woo's already loaded ordering handler submits this native GET form on change.
-		$html .= '<select class="select-dropdown orderby" id="sort-select" name="sort" aria-label="' . esc_attr__( 'Sort products', 'linker-commerce' ) . '">';
+		$html .= '<select class="select-dropdown" id="sort-select" name="sort" aria-label="' . esc_attr__( 'Sort products', 'linker-commerce' ) . '">';
 		foreach ( $labels as $value => $label ) {
 			$html .= '<option value="' . esc_attr( $value ) . '"' . selected( $sort, $value, false ) . '>' . esc_html( $label ) . '</option>';
 		}

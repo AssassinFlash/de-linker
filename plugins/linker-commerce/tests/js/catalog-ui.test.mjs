@@ -100,3 +100,43 @@ test('a pending catalogue search keeps an open filter drawer focused and usable'
  assert.equal(doc.activeElement.id,'product-filter-open');
  window.close();
 });
+
+test('a delayed catalogue response keeps edited numeric fields, focus and the current search in the range form', async () => {
+ const win=fixture(), doc=win.document;
+ const fields='<form class="frange"><input type="number" name="kw_min" value="2"><input type="number" name="kw_max"><input name="q" type="hidden"></form>';
+ doc.querySelector('#sidebar-filters').insertAdjacentHTML('beforeend',fields);
+ doc.body.insertAdjacentHTML('beforeend','<form class="wb-search" action="https://linker.test/products/"><input name="q" id="search-box"></form><div data-catalog-listing>Old result</div>');
+ const request=Promise.withResolvers(), response=Promise.withResolvers();
+ win.fetch=()=>{request.resolve();return response.promise};
+ const search=doc.querySelector('#search-box');search.value='SAJ';search.dispatchEvent(new win.Event('input',{bubbles:true}));
+ await request.promise;
+ const min=doc.querySelector('[name=kw_min]'),max=doc.querySelector('[name=kw_max]');
+ min.focus();min.value='6';max.focus();max.value='12';
+ response.resolve({ok:true,text:async()=>'<aside id="sidebar-filters"><button id="product-filter-close">Close</button>'+fields.replace('type="hidden"','type="hidden" value="SAJ"')+'</aside><div data-catalog-listing>New</div>'});
+ await new Promise(resolve=>setTimeout(resolve,0));
+ assert.equal(doc.querySelector('[data-catalog-listing]').textContent,'New');
+ assert.equal(doc.querySelector('[name=kw_min]').value,'6');
+ assert.equal(doc.querySelector('[name=kw_max]').value,'12');
+ assert.equal(doc.activeElement,doc.querySelector('[name=kw_max]'));
+ assert.equal(doc.querySelector('.frange input[name=q]').value,'SAJ');
+ win.close();
+});
+
+test('sorting submits once on the original shelf and after replacing an empty result with new search results', async () => {
+ const win=fixture(),doc=win.document;
+ const form=q=>`<form class="wbsort woocommerce-ordering"><input type="hidden" name="q" value="${q}"><input type="hidden" name="brand" value="saj"><select id="sort-select" name="sort"><option value="name">Name</option><option value="power-asc">Power</option></select></form>`;
+ doc.body.insertAdjacentHTML('beforeend','<form action="https://linker.test/products/"><input name="q" id="search-box"></form><div data-catalog-listing>'+form('')+'</div>');
+ const submitted=[];
+ doc.addEventListener('submit',event=>{event.preventDefault();submitted.push(Object.fromEntries(new win.FormData(event.target)))});
+ const sort=()=>{const select=doc.querySelector('#sort-select');select.value='power-asc';select.dispatchEvent(new win.Event('change',{bubbles:true}));};
+ sort();
+ const search=doc.querySelector('#search-box');
+ for(const [q,html] of [['no-match','Empty'],['H2',form('H2')]]) {
+  const updated=new Promise(resolve=>{const observer=new win.MutationObserver(()=>{if(doc.querySelector('[data-catalog-listing]').dataset.term===q){observer.disconnect();resolve()}});observer.observe(doc.body,{subtree:true,childList:true})});
+  win.fetch=async()=>({ok:true,text:async()=>'<aside id="sidebar-filters"></aside><div data-catalog-listing data-term="'+q+'">'+html+'</div>'});
+  search.value=q;search.dispatchEvent(new win.Event('input',{bubbles:true}));await updated;
+ }
+ sort();
+ assert.deepEqual(submitted,[{q:'',brand:'saj',sort:'power-asc'},{q:'H2',brand:'saj',sort:'power-asc'}]);
+ win.close();
+});

@@ -47,14 +47,22 @@
 				var filters = source.content.getElementById('sidebar-filters');
 				if (!result || !filters) throw new Error('Missing catalogue results');
 				var focused = sidebar.contains(document.activeElement) ? document.activeElement : null;
+				// Keep the visitor's range controls while the new forms supply the current query.
+				filters.querySelectorAll('.frange input[type="number"][name]').forEach(field => {
+					var existing = sidebar.querySelector('.frange input[type="number"][name="' + field.name + '"]');
+					if (existing) field.replaceWith(existing);
+				});
 				listing.replaceWith(result);
 				sidebar.replaceChildren(...filters.childNodes);
 				if (focused) {
-					var replacement = focused.id && document.getElementById(focused.id);
+					var replacement = focused.isConnected ? focused : focused.id && document.getElementById(focused.id);
 					if (!replacement && focused.matches('a[href]')) {
 						replacement = Array.from(sidebar.querySelectorAll('a[href]')).find(link => link.href === focused.href);
 					}
-					(replacement || document.getElementById('product-filter-close'))?.focus({preventScroll: true});
+					if (!replacement) {
+						replacement = document.body.classList.contains('product-filter-open') ? document.getElementById('product-filter-close') : input;
+					}
+					replacement?.focus({preventScroll: true});
 				}
 				window.linkerComparePaint?.();
 			} catch (error) {
@@ -64,6 +72,10 @@
 				}
 			}
 		}, 250);
+	});
+
+	document.addEventListener('change', function (event) {
+		if (event.target.id === 'sort-select') event.target.form.requestSubmit();
 	});
 
 	document.addEventListener('click', function (event) {
