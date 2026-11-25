@@ -1049,8 +1049,7 @@ def _plan_turn(
                 hint=(
                     "If the named model is missing from the results, its pairing "
                     "is unverified. Answer the technical question from the known "
-                    "product or its manufacturer documents."
-                    + SERIES_PAIRING_HINT
+                    "product or its manufacturer documents." + SERIES_PAIRING_HINT
                 ),
                 reasons=tuple(reasons),
             )
