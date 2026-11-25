@@ -104,17 +104,45 @@ async function read( id: string ): Promise< Snapshot | undefined > {
 	}
 }
 
-export async function removeFiles( id: string ): Promise< void > {
+export async function removeFiles(
+	id: string,
+	checkJobReferences = false
+): Promise< void > {
 	if ( typeof indexedDB === 'undefined' ) {
 		return;
 	}
 	const db = await database();
 	const tx = db.transaction( 'snapshots', 'readwrite' );
-	tx.objectStore( 'snapshots' ).delete( id );
+	const store = tx.objectStore( 'snapshots' );
+	let retained = false;
+	if ( checkJobReferences ) {
+		// The same picked file can still belong to another pending question.
+		const pending = store.openCursor();
+		pending.onsuccess = () => {
+			const cursor = pending.result;
+			if ( ! cursor ) {
+				store.delete( id );
+			} else if (
+				typeof cursor.key === 'string' &&
+				! cursor.key.includes( ':' ) &&
+				cursor.value.expires > Date.now() &&
+				cursor.value.fileIds?.includes( id )
+			) {
+				retained = true;
+			} else {
+				cursor.continue();
+			}
+		};
+	} else {
+		store.delete( id );
+	}
 	await new Promise< void >( ( resolve, reject ) => {
 		tx.oncomplete = () => resolve();
 		tx.onabort = () => reject( tx.error );
 	} );
+	if ( ! retained ) {
+		loaded.delete( id );
+	}
 }
 
 export async function keepPickedFile( scope: string, upload: Upload ) {
@@ -242,9 +270,7 @@ export function releasePickedFiles( uploads: Upload[], scope?: string ) {
 			} catch {
 				continue;
 			}
-			loaded.delete( id );
-
-			void removeFiles( id ).catch( () => undefined );
+			void removeFiles( id, true ).catch( () => undefined );
 		}
 	}
 }
@@ -285,7 +311,17 @@ export async function readJobDraft( jobId: string ) {
 	if ( ! job?.fileIds ) {
 		return job;
 	}
-	const files = await Promise.all( job.fileIds.map( ( id ) => read( id ) ) );
-	const uploads = files.flatMap( ( file ) => file?.uploads ?? [] );
+	const files = await Promise.all(
+		job.fileIds.map( async ( id ) => {
+			const file = ( await read( id ) )?.uploads[ 0 ];
+			if ( ! file ) {
+				return [];
+			}
+			const upload = loaded.get( id ) ?? file;
+			loaded.set( id, upload );
+			return [ upload ];
+		} )
+	);
+	const uploads = files.flat();
 	return { ...job, uploads };
 }

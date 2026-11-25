@@ -150,7 +150,9 @@ export function usePendingTurn(
 						} );
 					}
 					if ( draft.uploads.length ) {
-						void removeFiles( job.job_id ).catch( () => undefined );
+						await removeFiles( job.job_id ).catch(
+							() => undefined
+						);
 						releasePickedFiles( draft.uploads );
 					}
 					current.current.view.complete(
