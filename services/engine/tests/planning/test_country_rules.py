@@ -645,8 +645,7 @@ def test_missing_inputs_precede_an_outside_version_date(country: str) -> None:
 
 def test_ui_checked_dates_match_the_current_engine_sources() -> None:
     form = (
-        Path(__file__).resolve().parents[4]
-        / "apps/planner/src/components/CountryRuleForm.tsx"
+        Path(__file__).resolve().parents[4] / "apps/planner/src/domain/countryRules.ts"
     ).read_text()
     for basis, country in {
         "de_pv_installed": "DE",
@@ -654,6 +653,12 @@ def test_ui_checked_dates_match_the_current_engine_sources() -> None:
         "nl_storage_max_active": "NL",
         "at_tor_typ_a_max_capacity": "AT",
         "se_rfg_maximum_capacity": "SE",
+        "it_lv_generation_spi": "IT",
+        "es_self_consumption": "ES",
+        "gb_lv_microgeneration": "GB",
+        "pl_renewable_electric_installation": "PL",
+        "be_small_plant_limits": "BE",
+        "ch_lv_generation_control": "CH",
     }.items():
         review = review_country_rules(country, rule_input(basis))
         assert review is not None

@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import cast
+from decimal import Decimal
+from typing import Any, cast
 
 from .canonical import Json, Object, decode_object, encode
 from .errors import NotFound, VersionUnavailable
@@ -16,6 +17,47 @@ def assessments(root: Object) -> Iterator[Object]:
     yield root
     for unit in cast(list[Object], root.get("systems", [])):
         yield cast(Object, unit["assessment"])
+
+
+def candidate_ratings(value: Object, assessment: Object) -> Object:
+    """Installed capacity and nominal AC power from the run's own equipment checks."""
+    checks = cast(list[Object], assessment["checks"])
+    usable: Json
+    if "units" in value:
+        battery_units = {
+            unit["id"]
+            for unit in cast(list[dict[str, Any]], value["units"])
+            if unit["selection"]["battery_product_id"] is not None
+        }
+        capacities = {
+            row["unit_id"]: row["actual"]
+            for row in checks
+            if row.get("semantic_id") == "usable_energy"
+            and row["unit_id"] in battery_units
+        }
+        usable = (
+            float(sum((Decimal(str(n)) for n in capacities.values()), Decimal(0)))
+            if battery_units
+            and battery_units == capacities.keys()
+            and all(isinstance(n, (int, float)) for n in capacities.values())
+            else None
+        )
+    else:
+        usable = next(
+            (row["actual"] for row in checks if row["id"] == "usable_energy"), None
+        )
+    converters = [
+        row["actual"]
+        for row in checks
+        if row.get("semantic_id", row["id"]) == "converter_identity"
+    ]
+    nominal_ac_kw = (
+        sum(cast(list[float], converters))
+        if converters
+        and all(isinstance(kw, (int, float)) and kw > 0 for kw in converters)
+        else None
+    )
+    return {"nominal_ac_kw": nominal_ac_kw, "usable_energy_kwh": usable}
 
 
 class EquipmentCandidateStore:
