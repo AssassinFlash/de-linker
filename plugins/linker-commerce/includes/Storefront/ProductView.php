@@ -382,7 +382,7 @@ final class ProductView {
 				array(
 					'intent'     => 'product',
 					'kind'       => 'product',
-					'title'      => rawurlencode( $product->get_name() ),
+					'title'      => rawurlencode( html_entity_decode( $product->get_name(), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ),
 					'source_id'  => $product->get_id(),
 					'product_id' => $product->get_id(),
 					'source'     => $product->get_permalink(),

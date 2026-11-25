@@ -50,22 +50,22 @@ final class ProductSearch {
 	 * The published, catalogue-visible products whose name or SKU holds the
 	 * query, in the catalogue's own order, at most $limit of them.
 	 *
-	 * @param  string $query What the visitor typed.
-	 * @param  int    $limit Most hits, 1 to MAX_LIMIT.
+	 * @param  string   $query What the visitor typed.
+	 * @param  int|null $limit Maximum suggestions, or null for a paginated site search.
 	 * @return list<int> Product IDs.
 	 */
-	public function matching_ids( string $query, int $limit = self::DEFAULT_LIMIT ): array {
+	public function matching_ids( string $query, ?int $limit = self::DEFAULT_LIMIT ): array {
 		$needle = self::normalize( $query );
 		if ( strlen( $needle ) < self::MIN_LENGTH ) {
 			return array();
 		}
-		$limit = max( 1, min( self::MAX_LIMIT, $limit ) );
+		$limit = null === $limit ? null : max( 1, min( self::MAX_LIMIT, $limit ) );
 		$facts = array();
 		foreach ( $this->product_ids() as $product_id ) {
 			$product = wc_get_product( $product_id );
-			if ( $product instanceof WC_Product && self::matches( $product, $needle ) ) {
+			if ( $product instanceof WC_Product && self::matches( $product, $query ) ) {
 				$facts[] = $product_id;
-				if ( count( $facts ) >= $limit ) {
+				if ( null !== $limit && count( $facts ) >= $limit ) {
 					break;
 				}
 			}
@@ -125,17 +125,42 @@ final class ProductSearch {
 		return \mb_strtolower( \str_replace( array( '-', ' ', '.', '/' ), '', $text ) );
 	}
 
-	/**
-	 * Whether one product's name or SKU holds the normalized query.
+	/** The English Woo product owns its twins' shared SKU.
 	 *
-	 * @param WC_Product $product The product.
-	 * @param string     $needle  The normalized query.
+	 * @param WC_Product $product Locale product.
 	 */
-	public static function matches( WC_Product $product, string $needle ): bool {
+	private static function sku( WC_Product $product ): string {
+		$id     = $product->get_id();
+		$source = Publication::canonical_id( $id );
+		return $source === $id ? (string) $product->get_sku() : (string) get_post_meta( $source, '_sku', true );
+	}
+
+	/**
+	 * Match the name or SKU and, when supplied, the actual rated AC power.
+	 *
+	 * @param WC_Product            $product Locale product.
+	 * @param string                $query   Visitor's search words.
+	 * @param SelectionFactSet|null $facts   Product facts when already read by the catalogue.
+	 */
+	public static function matches( WC_Product $product, string $query, ?SelectionFactSet $facts = null ): bool {
+		$needle = self::normalize( $query );
 		if ( '' === $needle ) {
 			return false;
 		}
-		return \str_contains( self::normalize( $product->get_name() . ' ' . $product->get_sku() ), $needle );
+		$text = self::normalize( html_entity_decode( $product->get_name(), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) . ' ' . self::sku( $product ) );
+		if ( str_contains( $text, $needle ) ) {
+			return true;
+		}
+		if ( ! preg_match( '/\b(\d+(?:[.,]\d+)?)\s*kW\b/iu', $query, $power ) ) {
+			return false;
+		}
+		foreach ( wp_parse_list( str_replace( $power[0], ' ', $query ) ) as $word ) {
+			if ( ! str_contains( $text, self::normalize( $word ) ) ) {
+				return false;
+			}
+		}
+		$facts ??= SelectionFacts::for_product( $product->get_id() );
+		return (float) str_replace( ',', '.', $power[1] ) === $facts->ac_power_kw;
 	}
 
 	/**
@@ -151,8 +176,8 @@ final class ProductSearch {
 		$product = wc_get_product( $product_id );
 		return array(
 			'id'    => $product_id,
-			'title' => $product instanceof WC_Product ? $product->get_name() : get_the_title( $product_id ),
-			'sku'   => $product instanceof WC_Product ? (string) $product->get_sku() : '',
+			'title' => html_entity_decode( $product instanceof WC_Product ? $product->get_name() : get_the_title( $product_id ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
+			'sku'   => $product instanceof WC_Product ? self::sku( $product ) : '',
 			'url'   => (string) get_permalink( $product_id ),
 			'facts' => SelectionFacts::for_product( $product_id )->to_array(),
 		);

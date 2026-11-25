@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Products;
 
 use Linker\Commerce\Products\ProductSearch;
+use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_Product;
@@ -23,6 +24,12 @@ use WP_Mock;
  * @covers \Linker\Commerce\Products\ProductSearch
  */
 final class ProductSearchTest extends TestCase {
+
+	/** The default catalogue uses its own Woo SKU. */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
+	}
 
 
 	/**
@@ -39,6 +46,7 @@ final class ProductSearchTest extends TestCase {
 	 */
 	public function test_matches_name_or_sku(): void {
 		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( 11 );
 		$product->allows( 'get_name' )->andReturn( 'GoodWe GW60K-STS-G10' );
 		$product->allows( 'get_sku' )->andReturn( 'DLK-GOODWE-GW60KSTSG10' );
 
@@ -46,6 +54,20 @@ final class ProductSearchTest extends TestCase {
 		$this->assertTrue( ProductSearch::matches( $product, ProductSearch::normalize( 'DLK-GOODWE' ) ) );
 		$this->assertFalse( ProductSearch::matches( $product, ProductSearch::normalize( 'saJ-h2' ) ) );
 		$this->assertFalse( ProductSearch::matches( $product, '' ) );
+	}
+
+	/** Model fragments and a verified power rating can appear in either order. */
+	public function test_power_and_model_use_the_catalogue_rating(): void {
+		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_name' )->andReturn( 'GoodWe GW60K-STS-G10' );
+		WP_Mock::userFunction( 'wp_parse_list', array( 'return' => static fn( string $words ): array => explode( ' ', trim( $words ) ) ) );
+		$product->allows( 'get_id' )->andReturn( 6530 );
+		$product->allows( 'get_sku' )->andReturn( 'DLK-GOODWE-GW60KSTSG10' );
+		$facts = new SelectionFactSet( 'accessories', 'home', 3, 60.0, 'unknown', 'unknown', 'unknown' );
+		$this->assertTrue( ProductSearch::matches( $product, '60kW STS', $facts ) );
+		$this->assertTrue( ProductSearch::matches( $product, 'STS 60 kW', $facts ) );
+		$this->assertFalse( ProductSearch::matches( $product, '6 kW STS', $facts ) );
+		$this->assertFalse( ProductSearch::matches( $product, '60 kW SAJ', $facts ) );
 	}
 
 	/**
@@ -93,6 +115,7 @@ final class ProductSearchTest extends TestCase {
 			array(
 				'return' => static function ( int $id ): WC_Product {
 					$product = Mockery::mock( WC_Product::class );
+					$product->allows( 'get_id' )->andReturn( $id );
 					$product->allows( 'get_name' )->andReturn( 'GoodWe GW5.1 Battery ' . $id );
 					$product->allows( 'get_sku' )->andReturn( 'DLK-GOODWE-' . $id );
 					return $product;
@@ -117,6 +140,7 @@ final class ProductSearchTest extends TestCase {
 			array(
 				'return' => static function ( int $id ): WC_Product {
 					$product = Mockery::mock( WC_Product::class );
+					$product->allows( 'get_id' )->andReturn( $id );
 					$product->allows( 'get_name' )->andReturn( 'Inverter ' . $id );
 					$product->allows( 'get_sku' )->andReturn( '' );
 					return $product;

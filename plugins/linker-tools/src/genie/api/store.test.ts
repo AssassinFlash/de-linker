@@ -23,7 +23,7 @@ test( 'product display is asked in the page language and the permalink is kept',
 	const german = [
 		{
 			id: 4107,
-			name: 'SAJ H2-10K-T3',
+			name: 'SAJ CB2-100.3-HV5 (100.3 kWh C&#038;I battery cabinet)',
 			permalink: 'https://de-linker.test/de/produkt/saj-h2-10k-t3/',
 			images: [],
 			is_in_stock: true,
@@ -40,6 +40,9 @@ test( 'product display is asked in the page language and the permalink is kept',
 	const products = await storeClient( '/wp-json/', fetcher ).products(
 		[ 4107, 1957 ],
 		'de'
+	);
+	expect( products[ 0 ].name ).toBe(
+		'SAJ CB2-100.3-HV5 (100.3 kWh C&I battery cabinet)'
 	);
 	expect( fetcher ).toHaveBeenCalledWith(
 		'/wp-json/wc/store/v1/products?include=4107,1957&per_page=2&lang=de',
@@ -73,6 +76,10 @@ test( 'product display is asked in the page language and the permalink is kept',
 const proof = 'signed-list';
 
 test( 'one complete write uses the server proof and actual readback', async () => {
+	const cartChanged = vi.fn();
+	document.addEventListener( 'wc-blocks_added_to_cart', cartChanged, {
+		once: true,
+	} );
 	const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
 		if ( String( input ).endsWith( '/cart' ) ) {
 			return json(
@@ -107,6 +114,7 @@ test( 'one complete write uses the server proof and actual readback', async () =
 			proof
 		)
 	).toBe( true );
+	expect( cartChanged ).toHaveBeenCalledOnce();
 	expect( [ ...statuses.values() ] ).toEqual( [ 'added', 'added' ] );
 	expect( fetcher ).toHaveBeenCalledTimes( 2 );
 	expect(

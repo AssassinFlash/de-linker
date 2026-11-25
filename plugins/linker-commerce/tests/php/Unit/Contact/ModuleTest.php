@@ -81,6 +81,19 @@ final class ModuleTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** An embedded form keeps the article's language and does not load the page draft script. */
+	public function test_article_dialog_skips_language_script(): void {
+		$this->on_page( 6907, 'kontakt', 6907 );
+		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 0 ) );
+		$_GET[ Form::ARTICLE_VIEW ] = '1';
+		try {
+			$this->module()->enqueue_language();
+		} finally {
+			unset( $_GET[ Form::ARTICLE_VIEW ] );
+		}
+		$this->assertConditionsMet();
+	}
+
 	/** Only the canonical page's Polylang twin qualifies, independently of its slug. */
 	public function test_enqueues_on_the_native_german_contact_twin(): void {
 		$this->on_page( 6907, 'a-translated-slug', 6907 );

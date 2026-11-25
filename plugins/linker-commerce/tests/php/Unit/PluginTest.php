@@ -105,6 +105,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'woocommerce_email_order_meta', array( new AnyInstance( \Linker\Commerce\Contact\SelectionView::class ), 'email' ), 10, 4 ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)
 		WP_Mock::expectFilterAdded( 'woocommerce_privacy_remove_order_personal_data_meta', array( new AnyInstance( \Linker\Commerce\Contact\SelectionView::class ), 'erase' ) ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( $search_scope, 'scope' ) );
+		WP_Mock::expectFilterAdded( 'posts_search', array( $search_scope, 'include_models' ), 10, 2 );
 
 		// AnyInstance matches the object the registration constructs.
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( ProductFilters::class ), 'normalize_query' ), 0 ); // @phpstan-ignore argument.type

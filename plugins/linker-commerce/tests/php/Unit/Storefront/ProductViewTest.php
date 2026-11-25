@@ -211,7 +211,7 @@ final class ProductViewTest extends TestCase {
 		WP_Mock::userFunction( 'esc_url_raw', array( 'return' => static fn( string $url ): string => $url ) );
 		$product = \Mockery::mock( \WC_Product::class );
 		$product->allows( 'get_id' )->andReturn( 7 );
-		$product->allows( 'get_name' )->andReturn( 'GoodWe GW10K-ET' );
+		$product->allows( 'get_name' )->andReturn( 'SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)' );
 		$product->allows( 'get_permalink' )->andReturn( 'http://linker.test/de/produkt/goodwe-gw10k-et/' );
 
 		$view   = new ProductView( new CommerceState() );
@@ -221,6 +221,7 @@ final class ProductViewTest extends TestCase {
 		$this->assertStringStartsWith( 'http://linker.test/de/kontakt/?', $url );
 		$this->assertStringContainsString( 'intent=product', $url );
 		$this->assertStringContainsString( 'product_id=7', $url );
+		$this->assertStringNotContainsString( 'amp', $url );
 	}
 
 	/** Rejected URLs cannot borrow an allowed path's identity or consume its row. */

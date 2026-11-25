@@ -37,6 +37,7 @@ final class SearchScopeTest extends TestCase {
 	public function test_registers_the_query_filter(): void {
 		$scope = new SearchScope();
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( $scope, 'scope' ) );
+		WP_Mock::expectFilterAdded( 'posts_search', array( $scope, 'include_models' ), 10, 2 );
 		$scope->register();
 		$this->assertConditionsMet();
 	}

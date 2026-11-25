@@ -258,3 +258,31 @@ test( 'site search shows linked model suggestions and preserves native search su
 		assert.equal( input.value, '' );
 	} finally { dom.window.close(); }
 } );
+
+test( 'cached headers show the native draft total on both links, and a clean visitor makes no cart request', async () => {
+	const link = '<a class="tv-header-cart-link" data-cart-count-url="/wp-json/wc/store/v1/cart" aria-label="Solution draft">Draft</a>';
+	const dom = new JSDOM( '<header id="tv-header-v2">' + link + link + '</header>', { url: 'https://linker.test/about/', runScripts: 'outside-only' } );
+	const { window } = dom;
+	let calls = 0;
+	let count = 3;
+	window.fetch = async ( url ) => {
+		assert.equal( new URL( url ).searchParams.get( '_fields' ), 'items_count' );
+		calls++;
+		return { ok: true, json: async () => ( { items_count: count } ) };
+	};
+	window.eval( source );
+	assert.equal( calls, 0 );
+	window.document.cookie = 'woocommerce_items_in_cart=1; path=/';
+	window.dispatchEvent( new window.PageTransitionEvent( 'pageshow', { persisted: true } ) );
+	await new Promise( resolve => setTimeout( resolve, 0 ) );
+	const badges = () => Array.from( window.document.querySelectorAll( '.tv-b2b-acct-count' ), item => item.textContent );
+	assert.deepEqual( badges(), [ '3', '3' ] );
+	count = 5;
+	window.document.body.dispatchEvent( new window.CustomEvent( 'wc-blocks_added_to_cart', { bubbles: true } ) );
+	await new Promise( resolve => setTimeout( resolve, 0 ) );
+	assert.deepEqual( badges(), [ '5', '5' ] );
+	window.document.cookie = 'woocommerce_items_in_cart=; path=/; max-age=0';
+	window.dispatchEvent( new window.PageTransitionEvent( 'pageshow', { persisted: true } ) );
+	assert.deepEqual( badges(), [] );
+	dom.window.close();
+} );
