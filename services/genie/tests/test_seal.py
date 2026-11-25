@@ -1722,7 +1722,7 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
             language=locale,
             blocks=[
                 TextBlock(
-                    text=f"{lead}\n- {first}\n- {side}\n\n{installation}",
+                    text=f"### Installation\n\n{lead}\n\n- {first}\n- {side}\n\n{installation}",
                     refs=[cid, "u4"],
                 )
             ],

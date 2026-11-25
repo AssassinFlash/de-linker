@@ -2807,17 +2807,18 @@ def _clearance_answer(
         for index, piece in enumerate(pieces):
             if not piece.rstrip().endswith(":"):
                 continue
-            end = index + 1
+            first = index + 1
+            while first < len(pieces) and not original_pieces[first].strip():
+                first += 1
+            end = first
             while (
                 end < len(pieces)
                 and original_pieces[end].strip()
                 and not pieces[end].strip()
             ):
                 end += 1
-            if end > index + 1 and (
-                end == len(pieces) or not original_pieces[end].strip()
-            ):
-                pieces[index] = ""
+            if end > first and (end == len(pieces) or not original_pieces[end].strip()):
+                pieces[index:first] = [""] * (first - index)
         field = "text" if isinstance(block, TextBlock) else "summary"
         sealed.append(block.model_copy(update={field: "".join(pieces).strip()}))
     return output.model_copy(update={"blocks": sealed}), retained
