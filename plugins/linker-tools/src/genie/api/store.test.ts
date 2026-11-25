@@ -283,23 +283,29 @@ test.each( [
 	}
 );
 
-test( 'a refused write cannot be confirmed from a product already in the cart', async () => {
-	const fetcher = vi
-		.fn< typeof fetch >()
-		.mockResolvedValueOnce(
-			json( { items: [ { id: 4106, quantity: 1 } ] }, { Nonce: 'guest' } )
-		)
-		.mockResolvedValueOnce(
-			Response.json( { code: 'rest_forbidden' }, { status: 403 } )
-		);
-	const onStatus = vi.fn();
-	expect(
-		await storeClient( '/wp-json/', fetcher ).addAll(
-			[ { productId: 4106, quantity: 1 } ],
-			onStatus,
-			proof
-		)
-	).toBe( false );
-	expect( onStatus ).toHaveBeenLastCalledWith( 4106, 'unverified' );
-	expect( fetcher ).toHaveBeenCalledTimes( 2 );
-} );
+test.each( [ 403, 503 ] )(
+	'an explicit %i refusal cannot be confirmed from a product already in the cart',
+	async ( status ) => {
+		const fetcher = vi
+			.fn< typeof fetch >()
+			.mockResolvedValueOnce(
+				json(
+					{ items: [ { id: 4106, quantity: 1 } ] },
+					{ Nonce: 'guest' }
+				)
+			)
+			.mockResolvedValueOnce(
+				Response.json( { code: 'rest_forbidden' }, { status } )
+			);
+		const onStatus = vi.fn();
+		expect(
+			await storeClient( '/wp-json/', fetcher ).addAll(
+				[ { productId: 4106, quantity: 1 } ],
+				onStatus,
+				proof
+			)
+		).toBe( false );
+		expect( onStatus ).toHaveBeenLastCalledWith( 4106, 'unverified' );
+		expect( fetcher ).toHaveBeenCalledTimes( 2 );
+	}
+);

@@ -85,14 +85,11 @@ export function storeClient(
 						return 'stale';
 					}
 				}
-				if ( response.status < 500 ) {
-					return 'unverified';
-				}
-			} else {
-				const receipt = await response.json();
-				if ( containsSelection( receipt.items ?? [], lines ) ) {
-					return 'added';
-				}
+				return 'unverified';
+			}
+			const receipt = await response.json();
+			if ( containsSelection( receipt.items ?? [], lines ) ) {
+				return 'added';
 			}
 		} catch {
 			// Woo can commit the draft before the browser receives a complete receipt.
