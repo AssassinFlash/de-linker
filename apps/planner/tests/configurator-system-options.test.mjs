@@ -956,3 +956,48 @@ test("an 11.09 kWp project compares the nearest cited AC ratings before paging, 
 		/None of the configurations found|Electrical checks passed/,
 	);
 });
+
+test("a grid-connected plant compares its total installed battery capacity with the declared plant target", async (t) => {
+	const options = [40, 20, null].map((kwh, i) => {
+		const { selection: chosen, ...row } = candidates[0];
+		return {
+			...row,
+			id: String(i + 1).repeat(64),
+			usable_energy_kwh: kwh,
+			nominal_ac_kw: 20,
+			plant: {
+				schema_version: 1,
+				requirements: { required_usable_kwh: 19, pv_dc_kw: 20 },
+				units: [
+					{ id: "a", name: "East", selection: chosen },
+					{ id: "b", name: "West", selection: chosen },
+				],
+				parallel_groups: [],
+			},
+		};
+	});
+	await mount(t, {
+		run: {
+			...run,
+			result: { search: { ...run.result.search, candidates: options } },
+		},
+		client: {
+			isCurrentScope: () => true,
+			query: async () => {
+				throw Error("No detailed assessment");
+			},
+		},
+		scope: "plant-fit",
+		locale: "en",
+		disabled: false,
+		selectedId: null,
+		onSelect: async () => {},
+	});
+	const capacities = Array.from(
+		document.querySelectorAll(".sc-package-capacity"),
+		(n) => n.textContent,
+	);
+	assert.match(capacities[0], /^20 kWhCombined usable battery capacity/);
+	assert.match(capacities[1], /^40 kWh/);
+	assert.match(capacities[2], /confirm/);
+});

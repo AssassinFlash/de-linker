@@ -5769,11 +5769,29 @@ def test_plant_search_keeps_unknown_allocations_and_joint_delivery_unresolved(
     parsed = PlantSearchPlan.from_inputs(demand)
     for candidate in result["candidates"]:
         assert candidate["status"] == "unresolved"
-        assert candidate["usable_energy_kwh"] is None
         assert parsed.matches_plant(EquipmentPlant.read(candidate["plant"]))
         checks = json_object(workspace.blobs.object(candidate["assessment_sha256"]))[
             "checks"
         ]
+        batteries = [
+            u
+            for u in candidate["plant"]["units"]
+            if u["selection"]["battery_product_id"] is not None
+        ]
+        capacities = [
+            c["actual"]
+            for c in checks
+            if c.get("semantic_id") == "usable_energy"
+            and c.get("unit_id") in {u["id"] for u in batteries}
+        ]
+        expected_kwh = (
+            sum(capacities)
+            if batteries
+            and len(capacities) == len(batteries)
+            and None not in capacities
+            else None
+        )
+        assert candidate["usable_energy_kwh"] == expected_kwh
         joint = [c for c in checks if c["id"].startswith("plant:")]
         assert joint and all(c["status"] == "unresolved" for c in joint)
         assert all(c["required"] is None for c in joint)

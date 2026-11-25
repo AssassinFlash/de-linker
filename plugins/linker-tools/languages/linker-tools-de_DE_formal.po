@@ -17379,3 +17379,7 @@ msgstr "Für dieses Land ist im Konfigurator keine Regel hinterlegt. Prüfen Sie
 #: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js:1
 msgid "Project starting point"
 msgstr "Ausgangssituation"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Combined usable battery capacity"
+msgstr "Summe der nutzbaren Batteriekapazitäten"

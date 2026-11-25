@@ -142,15 +142,11 @@ export function chooseCountryRules(
 	const basis = (Object.keys(ruleCountries) as RuleBasis[]).find(
 		(key) => ruleCountries[key] === country,
 	);
-	const {
-		grid_connection: _grid,
-		country_rule_inputs: _rules,
-		...rest
-	} = inputs;
+	const { country_rule_inputs: _rules, ...rest } = inputs;
 	return basis
 		? {
 				...rest,
-				grid_connection: emptyGridConnection(),
+				grid_connection: inputs.grid_connection ?? emptyGridConnection(),
 				country_rule_inputs: newCountryRuleInputs(basis),
 			}
 		: rest;

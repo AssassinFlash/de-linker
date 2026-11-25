@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import cast
+from decimal import Decimal
+from typing import Any, cast
 
 from .backup_demand import BackupDemand
 from .canonical import Json, Object, digest, encode
@@ -17,9 +18,30 @@ def candidate_record(
     key: str, value: Object, assessment: Object, store: EquipmentCandidateStore
 ) -> Object:
     checks = cast(list[Object], assessment["checks"])
-    backup = next(
-        (row["actual"] for row in checks if row["id"] == "plant:backup_runtime"), None
-    )
+    usable: Json
+    if key == "plant":
+        battery_units = {
+            unit["id"]
+            for unit in cast(list[dict[str, Any]], value["units"])
+            if unit["selection"]["battery_product_id"] is not None
+        }
+        capacities = {
+            row["unit_id"]: row["actual"]
+            for row in checks
+            if row.get("semantic_id") == "usable_energy"
+            and row["unit_id"] in battery_units
+        }
+        usable = (
+            float(sum((Decimal(str(n)) for n in capacities.values()), Decimal(0)))
+            if battery_units
+            and battery_units == capacities.keys()
+            and all(isinstance(n, (int, float)) for n in capacities.values())
+            else None
+        )
+    else:
+        usable = next(
+            (row["actual"] for row in checks if row["id"] == "usable_energy"), None
+        )
     converters = [
         row["actual"]
         for row in checks
@@ -36,10 +58,7 @@ def candidate_record(
         "id": digest(encode(value)),
         key: value,
         "status": assessment["overall_status"],
-        "usable_energy_kwh": next(
-            (row["actual"] for row in checks if row["id"] == "usable_energy"),
-            backup.get("usable_energy_kwh") if isinstance(backup, dict) else None,
-        ),
+        "usable_energy_kwh": usable,
         "assessment_sha256": store.put(assessment),
         "violated_checks": sum(row["status"] == "violated" for row in checks),
         "unresolved_checks": sum(row["status"] == "unresolved" for row in checks),

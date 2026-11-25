@@ -88,6 +88,9 @@
   [data-linker-planner] .sc-obstacle-shape { fill: var(--proto-neutral-500); fill-opacity: .25; stroke: var(--proto-neutral-600); stroke-width: 1px; }
   [data-linker-planner] .sc-canvas-caption { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; font-size: 10px; letter-spacing: .04em; color: var(--proto-neutral-600); border-top: 1px solid var(--proto-color-line); }
   [data-linker-planner] .sc-canvas-caption label { display: flex; align-items: center; gap: 6px; letter-spacing: 0; }
+  [data-linker-planner] .sc-plan-view > .sc-field-help, [data-linker-planner] .sc-scene-view > .sc-field-help { padding: 0 16px 12px; margin: 0; font-size: 11px; }
+  [data-linker-planner] .sc-scene-view { min-height: 540px; }
+  [data-linker-planner] .sc-scene-view > div:has(canvas) { height: 460px !important; }
   [data-linker-planner] .sc-geometry-form { display: grid; gap: 20px; }
   [data-linker-planner] .sc-geometry-form h3, [data-linker-planner] .sc-geometry-form p { margin: 0; }
   [data-linker-planner] .sc-geometry-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
@@ -101,6 +104,7 @@
   @media (max-width: 640px) {
     [data-linker-planner] .sc-plan-svg { height: 350px; }
     [data-linker-planner] .sc-plan-view { padding-top: 98px; }
+    [data-linker-planner] .sc-scene-view > div:has(canvas) { height: 350px !important; }
     [data-linker-planner] .sc-geometry-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     [data-linker-planner] .sc-import-panel .sc-geometry-fields { grid-template-columns: minmax(0, 1fr); }
     [data-linker-planner] .sc-profile-facts { grid-template-columns: minmax(0, 1fr); }

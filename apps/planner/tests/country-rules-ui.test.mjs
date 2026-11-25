@@ -8,6 +8,8 @@ import { GridConnectionResult } from "../src/components/equipment/GridConnection
 import { readCountryAssessment } from "../src/data/readCountryAssessment.ts";
 import {
 	readCountryRuleInputs,
+	chooseCountryRules,
+	emptyCountryRuleInputs,
 	replaceCountryRuleInputs,
 } from "../src/domain/countryRules.ts";
 import {
@@ -371,3 +373,32 @@ for (const de of [false, true]) {
 		);
 	});
 }
+
+test("changing country retains the site's declared operator, voltage and documents without transferring a country's rule answers", () => {
+	const grid = {
+		schema_version: 1,
+		dso_name: "Local operator",
+		dso_source_url: "https://example.test/operator",
+		voltage_level: "low",
+		tab: {
+			title: "Connection conditions",
+			source_url: "https://example.test/conditions",
+			edition: "A",
+			date: "2026-06-01",
+		},
+	};
+	const inputs = {
+		grid_connection: grid,
+		country_rule_inputs: {
+			...emptyCountryRuleInputs("de_pv_installed"),
+			power_kw: 12,
+		},
+	};
+	const italian = chooseCountryRules(inputs, "IT");
+	assert.deepEqual(italian.grid_connection, grid);
+	assert.equal(italian.country_rule_inputs.basis, "it_lv_generation_spi");
+	assert.equal(italian.country_rule_inputs.power_kw, null);
+	const other = chooseCountryRules(inputs, "NO");
+	assert.deepEqual(other.grid_connection, grid);
+	assert.equal(other.country_rule_inputs, undefined);
+});

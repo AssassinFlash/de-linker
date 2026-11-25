@@ -1024,7 +1024,11 @@ export function SystemOptions({
 							{!solarOnly && (
 								<div className="sc-package-capacity">
 									<strong>{capacity(item)}</strong>
-									<span>{__("Usable battery capacity", "linker-tools")}</span>
+									<span>
+										{isPlantCandidate(item)
+											? __("Combined usable battery capacity", "linker-tools")
+											: __("Usable battery capacity", "linker-tools")}
+									</span>
 								</div>
 							)}
 						</div>
