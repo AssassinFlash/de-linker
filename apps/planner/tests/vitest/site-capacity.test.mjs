@@ -1,8 +1,19 @@
+import { authoredDiscoveryInputs } from "../../src/domain/currentCalculation.ts";
 import { expect, test, vi } from "vitest";
 import { act, createElement } from "react";
 import { IDBFactory } from "fake-indexeddb";
-import { setupDom, enter, until } from "../dom-fixture.mjs";
+import { setupDom, enter } from "../dom-fixture.mjs";
 import { DraftStore } from "../../src/data/DraftStore.ts";
+
+async function until(predicate) {
+	await vi.waitFor(
+		async () => {
+			await act(async () => {});
+			expect(predicate()).toBeTruthy();
+		},
+		{ timeout: 10_000 },
+	);
+}
 
 test("the system comparison uses the capacity edited after entering project details", async () => {
 	const page = setupDom();
@@ -40,7 +51,7 @@ test("the system comparison uses the capacity edited after entering project deta
 		},
 	};
 	let project, run;
-	const comparedCapacities = [];
+	let comparedCapacity;
 	const client = {
 		origin: location.origin,
 		isCurrentScope: (value) => value === scope,
@@ -48,7 +59,8 @@ test("the system comparison uses the capacity edited after entering project deta
 		probeScope: async () => scope,
 		invalidate() {},
 		query: async (operation) => {
-			if (operation === "projects/list" || operation === "projects/runs")
+			if (operation === "projects/runs") return { items: [], next: null };
+			if (operation === "projects/list")
 				return { schema_version: 1, items: [], next: null };
 			if (operation === "projects/read") return project;
 			if (operation === "products/current")
@@ -66,6 +78,14 @@ test("the system comparison uses the capacity edited after entering project deta
 			if (operation === "places/lookup")
 				return { imagery: null, viewing_imagery: null };
 			if (operation === "runs/read") return run;
+			if (operation === "runs/inputs")
+				return {
+					schema_version: 1,
+					project_id: id,
+					run_id: run.id,
+					manifest_sha256: sha,
+					inputs: project.inputs,
+				};
 			throw new Error(operation);
 		},
 		send: async (operation, body) => {
@@ -77,16 +97,21 @@ test("the system comparison uses the capacity edited after entering project deta
 			) {
 				project = {
 					id,
-					revision: (project?.revision ?? 0) + 1,
+					revision: command.expected_revision
+						? command.expected_revision + 1
+						: 1,
 					title: command.title ?? project.title,
-					inputs: command.inputs,
+					inputs:
+						operation === "runs/find-equipment"
+							? authoredDiscoveryInputs(command.inputs)
+							: command.inputs,
 					input_sha256: sha,
 				};
 				if (operation !== "runs/find-equipment") return project;
-				comparedCapacities.push(project.inputs.equipment_setup.pv_dc_kw);
+				comparedCapacity = project.inputs.equipment_setup.pv_dc_kw;
 				const kind = "search_woo_equipment_v1";
 				run = {
-					id: "b".repeat(32),
+					id: project.revision.toString(16).padStart(32, "0"),
 					project_id: id,
 					revision: project.revision,
 					state: "succeeded",
@@ -119,10 +144,11 @@ test("the system comparison uses the capacity edited after entering project deta
 								template: "one_converter_one_external_battery_assembly",
 								gaps: {},
 							},
-							completion: "complete",
+							completion: "exhausted_supported_domain",
 							work_used: 0,
 							work_budget: 1000,
 							candidates: [],
+							qualified_count: 0,
 							products: [],
 							ranking: "not_performed_before_qualification",
 						},
@@ -200,10 +226,14 @@ test("the system comparison uses the capacity edited after entering project deta
 		expect(sidebarCapacity()).toBe("13.7 kWp");
 		await click("Continue with energy use");
 		await click("Compare systems");
-		await until(() => comparedCapacities.at(-1) === 13.7);
+		await until(() =>
+			page.element.textContent.includes(
+				"No configurations were found using the available product data.",
+			),
+		);
 		expect(run.state).toBe("succeeded");
 		expect(run.revision).toBe(project.revision);
-		expect(comparedCapacities.at(-1)).toBe(13.7);
+		expect(comparedCapacity).toBe(13.7);
 		expect(project.inputs.equipment_setup.pv_dc_kw).toBe(13.7);
 		expect(project.inputs.pvgis_reference_setup.arrays[0].peak_power_kwp).toBe(
 			13.7,
