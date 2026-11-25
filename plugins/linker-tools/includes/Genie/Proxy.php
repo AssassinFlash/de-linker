@@ -760,7 +760,7 @@ class Proxy {
 		if ( is_wp_error( $identity ) || ! hash_equals( $turn['owner_binding'], $identity->binding() ) ) {
 			return array();
 		}
-		$progress = $this->pending_progress( $turn );
+		$progress = $this->pending_progress( $turn, true );
 		if ( ! $progress ) {
 			return array();
 		}
@@ -786,18 +786,31 @@ class Proxy {
 	/** Resume or reap a persisted turn. Only the service knows when queued work actually started.
 	 *
 	 * @param array<string,mixed> $turn Original service acceptance.
+	 * @param bool                $resume A customer is reopening an active turn.
 	 * @return array<string,mixed> Public progress, or empty after expiry.
 	 */
-	private function pending_progress( array $turn ): array {
-		if ( microtime( true ) < PendingTurns::deadline( $turn ) ) {
-			return PendingTurns::progress( $turn );
-		}
-		if ( 'waiting' === $turn['stage'] ) {
+	private function pending_progress( array $turn, bool $resume = false ): array {
+		$due = microtime( true ) >= PendingTurns::deadline( $turn );
+		if ( 'waiting' === $turn['stage'] && ( $due || $resume ) ) {
 			$state = $this->job_request( $this->base() . '/assistant/turn/' . $turn['job_id'], $turn['subject_hash'] );
-			if ( ! is_wp_error( $state ) && PendingTurns::deadline( $turn, $state ) > microtime( true ) ) {
-				wp_schedule_single_event( (int) ceil( PendingTurns::deadline( $turn, $state ) ), 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );
-				return PendingTurns::progress( $turn ) + array( 'queued_seconds' => $state['queued_seconds'] );
+			if ( is_wp_error( $state ) && 'linker_genie_connection' === $state->get_error_code() ) {
+				if ( $due ) {
+					wp_schedule_single_event( time() + self::TURN_BUDGET, 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );
+				}
+				return PendingTurns::progress( $turn );
 			}
+			if ( ! is_wp_error( $state ) ) {
+				$deadline = PendingTurns::deadline( $turn, $state );
+				if ( microtime( true ) < $deadline ) {
+					if ( $due ) {
+						wp_schedule_single_event( (int) ceil( $deadline ), 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );
+					}
+					return PendingTurns::progress( $turn, $state );
+				}
+			}
+		}
+		if ( ! $due ) {
+			return PendingTurns::progress( $turn );
 		}
 		PendingTurns::abandon( $turn );
 		return array();
@@ -833,12 +846,7 @@ class Proxy {
 			}
 		}
 		if ( ! is_wp_error( $result ) && 'running' === $result['status'] && is_string( $result['stage'] ?? null ) ) {
-			$progress = PendingTurns::progress( $turn );
-			if ( $progress['stage'] !== $result['stage'] ) {
-				$progress['stage'] = $result['stage'];
-				wp_cache_set( $job, $result['stage'], 'linker_genie_stage', self::TURN_BUDGET );
-			}
-			return new WP_REST_Response( $progress + array_intersect_key( $result, array( 'queued_seconds' => true ) ) );
+			return new WP_REST_Response( PendingTurns::progress( $turn, $result ) );
 		}
 
 		// Re-read ownership and the full original input under the operation lock before any terminal write.
@@ -969,10 +977,16 @@ class Proxy {
 			}
 			$raw  = wp_remote_retrieve_body( $response );
 			$code = (int) wp_remote_retrieve_response_code( $response );
+			if ( null === $body && $code >= 500 ) {
+				return new WP_Error( 'linker_genie_connection', 'Could not reach Genie.', array( 'status' => 503 ) );
+			}
 			if ( $code >= 400 ) {
 				$error = json_decode( $raw, true );
 				return self::job_error( $code, (string) ( $error['code'] ?? ( is_string( $error['detail'] ?? null ) ? $error['detail'] : '' ) ) );
 			}
+		}
+		if ( is_wp_error( $raw ) ) {
+			return $raw;
 		}
 		$state = is_string( $raw ) ? json_decode( $raw, true ) : null;
 		return is_array( $state ) && isset( $state['status'] ) ? $state : self::job_error( 502 );

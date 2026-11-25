@@ -101,14 +101,19 @@ final class PendingTurns {
 	/** Public progress only.
 	 *
 	 * @param array<string,mixed> $turn Pending context.
+	 * @param array<string,mixed> $service Latest service state when available.
 	 * @return array<string,mixed>
 	 */
-	public static function progress( array $turn ): array {
+	public static function progress( array $turn, array $service = array() ): array {
 		$stage = wp_cache_get( $turn['job_id'], 'linker_genie_stage' );
 		if ( false === $stage ) {
 			$stage = get_post_meta( $turn['receipt'], self::STAGE, true );
 		}
-		return array(
+		if ( isset( $service['stage'] ) && $stage !== $service['stage'] ) {
+			$stage = $service['stage'];
+			wp_cache_set( $turn['job_id'], $stage, 'linker_genie_stage', Proxy::TURN_BUDGET );
+		}
+		return array_intersect_key( $service, array( 'queued_seconds' => true ) ) + array(
 			'job_id'          => $turn['job_id'],
 			'conversation_id' => $turn['conversation_id'],
 			'status'          => 'running',

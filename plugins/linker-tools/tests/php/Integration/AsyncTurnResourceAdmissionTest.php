@@ -89,7 +89,10 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 		$starts = 0;
 		$reads  = 0;
 		$stream = "event: reading\ndata: {\"id\":\"att1\",\"text\":\"private extraction\"}\n\nevent: block\ndata: {\"type\":\"text\",\"text\":\"Look at the AC output.\",\"refs\":[]}\n\nevent: done\ndata: {}\n\n";
-		$fetch  = function ( string $url, array $body, array $headers ) use ( &$job, &$scope, &$starts, &$reads, $stage, $stream, $outcome, $worker_status, &$id ) {
+		$queue  = new class() {
+			public string $state = 'running';
+		};
+		$fetch  = function ( string $url, array $body, array $headers ) use ( &$job, &$scope, &$starts, &$reads, $stage, $stream, $outcome, $worker_status, &$id, $queue ) {
 			if ( str_ends_with( $url, '/start' ) ) {
 				++$starts;
 				$scope = $headers['X-Linker-Resource-Subject'];
@@ -108,7 +111,10 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			if ( 'owner-deleted' === $outcome && 3 === $reads ) {
 				$this->assertTrue( ( new Conversations() )->delete( $id ) );
 			}
-			if ( $reads <= 2 ) {
+			if ( 'waited' === $outcome && 'offline' === $queue->state ) {
+				return new WP_Error( 'linker_genie_connection', 'Temporary disconnect', array( 'status' => 503 ) );
+			}
+			if ( 'waited' === $outcome ? 'running' === $queue->state : $reads <= 2 ) {
 				return (string) wp_json_encode(
 					array(
 						'status'         => 'running',
@@ -170,7 +176,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$foreign = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_Error::class, $foreign );
 			$this->assertSame( 404, $foreign->get_error_data()['status'] );
-			$this->assertSame( 0, $reads );
+			$this->assertSame( 'waited' === $outcome ? 1 : 0, $reads );
 			$_COOKIE = $owner;
 			$running = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_REST_Response::class, $running );
@@ -190,7 +196,13 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$joining = $proxy->poll( $poll );
 				$this->assertInstanceOf( WP_REST_Response::class, $joining );
 				$this->assertSame( 'running', $joining->get_data()['status'] );
-				$this->assertSame( 'expired' === $outcome ? 1 : 2, $reads );
+				$this->assertSame(
+					array(
+						'expired' => 1,
+						'waited'  => 4,
+					)[ $outcome ] ?? 2,
+					$reads
+				);
 				$this->assertSame( '', get_post_meta( $receipt, \Linker\Tools\Genie\PendingTurns::STAGE, true ) );
 			} finally {
 				$peer->get_var( $peer->prepare( 'SELECT RELEASE_LOCK(%s)', $key ) );
@@ -200,11 +212,17 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			if ( 'waited' === $outcome ) {
 				$this->assertEquals( Proxy::TURN_BUDGET, $joining->get_data()['queued_seconds'] );
 				wp_clear_scheduled_hook( 'linker_tools_expire_genie_turn', array( $id, $job ) );
+				$queue->state = 'offline';
+				$proxy->expire( $id, $job );
+				$this->assertSame( $job, $proxy->conversation()->get_data()['pending_job']['job_id'] );
+				$queue->state = 'running';
 				$proxy->expire( $id, $job );
 				$this->assertGreaterThan( time(), wp_next_scheduled( 'linker_tools_expire_genie_turn', array( $id, $job ) ) );
 				$reopened = $proxy->conversation()->get_data()['pending_job'];
 				$this->assertSame( $job, $reopened['job_id'] );
 				$this->assertEquals( Proxy::TURN_BUDGET, $reopened['queued_seconds'] );
+				$this->assertSame( $stage, $reopened['stage'] );
+				$queue->state = 'completed';
 			}
 			$recover = in_array( $outcome, array( 'receipt-poll', 'receipt-cron' ), true );
 			if ( $recover ) {
@@ -272,7 +290,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$again = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_REST_Response::class, $again );
 			$this->assertSame( $final->get_data(), $again->get_data() );
-			$this->assertSame( 'waited' === $outcome ? 5 : 3, $reads );
+			$this->assertSame( 'waited' === $outcome ? 9 : 3, $reads );
 			$thread = $proxy->conversation()->get_data();
 			$this->assertArrayNotHasKey( 'pending_job', $thread );
 			$this->assertSame( $operation, $thread['operation_id'] );
