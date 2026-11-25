@@ -1713,6 +1713,37 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
             assert (
                 "1500 mm on the right" if locale == "en" else "rechts 1500 mm"
             ) not in _text(product_answer)
+        lead = (
+            "Die folgenden Flächen für die Luftzirkulation:"
+            if locale == "de"
+            else "The following spaces for air circulation:"
+        )
+        model_output = TurnOutput(
+            language=locale,
+            blocks=[
+                TextBlock(
+                    text=f"{lead}\n- {first}\n- {side}\n\n{installation}",
+                    refs=[cid, "u4"],
+                )
+            ],
+        )
+        compound = (
+            f"Welche Mindestabstände gelten bei der Installation des SAJ {model} und mit welchen Wechselrichtern ist er kompatibel?"
+            if locale == "de"
+            else f"What installation clearances does the SAJ {model} need and which inverters are compatible?"
+        )
+        complete = seal(
+            hydrate(model_output, facts, locale),
+            facts,
+            route,
+            compound,
+            "other",
+            original=model_output,
+        )
+        compound_text = answer_text([b.model_dump() for b in complete.blocks])
+        assert all(pair in compound_text for pair in directions)
+        assert lead not in compound_text
+        assert installation in compound_text
         if locale == "de":
             plural = seal(
                 hydrated,

@@ -10,6 +10,7 @@ import os
 import re
 import signal
 import tempfile
+import time
 from collections.abc import Iterator
 from contextlib import ExitStack, contextmanager
 from pathlib import Path
@@ -29,6 +30,28 @@ from .worker_policy import WorkerPolicy
 from .workspace import Workspace
 
 LOG = logging.getLogger(__name__)
+
+
+class Readiness:
+    """The ready file follows completed polls and checkpoints in the active calculation."""
+
+    def __init__(self, path: Path, lease_seconds: float) -> None:
+        self.path = path
+        self.lease_seconds = lease_seconds
+        self.progress()
+
+    def progress(self) -> None:
+        self.last_progress = time.monotonic()
+
+    def pulse(self) -> None:
+        age = time.monotonic() - self.last_progress
+        if age >= self.lease_seconds:
+            return
+        timestamp = time.time() - age
+        try:
+            os.utime(self.path, (timestamp, timestamp))
+        except OSError:
+            LOG.exception("could not update worker readiness")
 
 
 @contextmanager
@@ -115,6 +138,7 @@ def serve(
         normal_keys = tuple(
             key for key in registry.execution_keys() if key not in expanded_keys
         )
+        readiness = Readiness(ready, policy.lease_seconds)
         normal_active = Event()
         stop = Event()
         expanded_failure = Event()
@@ -129,6 +153,7 @@ def serve(
                 registry.execution_key(), policy.routing_batch_size, normal_keys
             ),
             active=normal_active,
+            progress=readiness.progress,
         )
         expanded_thread: Thread | None = None
         if expanded_keys:
@@ -187,7 +212,7 @@ def serve(
 
         def pulse() -> None:
             while not stop.wait(policy.heartbeat_seconds):
-                os.utime(ready, None)
+                readiness.pulse()
 
         heartbeat = Thread(target=pulse, name="planner-readiness", daemon=True)
         try:
@@ -197,7 +222,9 @@ def serve(
             if expanded_thread is not None:
                 expanded_thread.start()
             while not stop.is_set():
-                if not worker.run_once():
+                worked = worker.run_once()
+                readiness.progress()
+                if not worked:
                     stop.wait(policy.poll_seconds)
             if expanded_failure.is_set():
                 raise RuntimeError("expanded worker failed")

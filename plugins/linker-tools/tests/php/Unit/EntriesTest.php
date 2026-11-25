@@ -35,6 +35,7 @@ final class EntriesTest extends TestCase {
 		);
 		$html = ( new Entries( '/plugin/linker-tools.php' ) )->workspace_shortcode();
 		$this->assertStringContainsString( 'data-register-url="https://de-linker.test/de/mein-konto/register/"', $html );
+		$this->assertStringContainsString( 'data-genie-nonce-url="https://de-linker.test/wp-admin/admin-ajax.php?action=rest-nonce"', $html );
 		$this->assertStringContainsString( 'data-account-url=', $html );
 		$this->assertStringNotContainsString( 'linker-guest-account-links', $html );
 	}
@@ -681,6 +682,13 @@ JS
 					42 => 'https://de-linker.test/de/genie/',
 					default => 'https://de-linker.test/',
 				},
+			)
+		);
+		WP_Mock::userFunction(
+			'admin_url',
+			array(
+				'args'   => array( 'admin-ajax.php?action=rest-nonce' ),
+				'return' => 'https://de-linker.test/wp-admin/admin-ajax.php?action=rest-nonce',
 			)
 		);
 		WP_Mock::userFunction(

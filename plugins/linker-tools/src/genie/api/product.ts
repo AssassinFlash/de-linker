@@ -1,3 +1,4 @@
+import { genieFetch } from './restFetch';
 import type { Locale } from '../types';
 
 type Fetch = typeof fetch;
@@ -45,7 +46,7 @@ export async function productPresentation(
 	productId: number,
 	locale: Locale,
 	nonce: string,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< ProductPresentation | null > {
 	const controller = new AbortController();
 	let timer: ReturnType< typeof setTimeout > | undefined;

@@ -321,6 +321,37 @@ def test_a_document_question_searches_the_documents_of_its_product() -> None:
     assert route.no_handoff
 
 
+@pytest.mark.parametrize("intent", ["documents_specs", "pairing_compatibility"])
+@pytest.mark.parametrize(
+    ("lang", "question"),
+    [
+        (
+            "de",
+            "Welche Mindestabstände gelten bei der Installation des SAJ CB2-100.3-HV5 und mit welchen Wechselrichtern ist er kompatibel?",
+        ),
+        (
+            "en",
+            "What installation clearances does the SAJ CB2-100.3-HV5 need and which inverters are compatible?",
+        ),
+    ],
+)
+def test_installation_and_pairing_fetch_both_sources(
+    lang: str, question: str, intent: str
+) -> None:
+    model = "CB2-100.3-HV5"
+    subject = Subject((4106,), {4106: "battery-systems"}, {4106: model})
+    route = plan(question, [_model(model, 4106)], _reading(intent), subject, lang)
+    assert route.name == "documents"
+    assert any(
+        c.ability == "linker/search-knowledge" and c.arguments["product_ids"] == [4106]
+        for c in route.calls
+    )
+    assert any(
+        c.arguments.get("with_pairings") and c.arguments.get("text") == model
+        for c in route.calls
+    )
+
+
 def test_a_family_document_question_brings_the_family_facts() -> None:
     message = "Is the EcoFlow OCEAN 2 single-phase or three-phase?"
     matches = [

@@ -1,3 +1,4 @@
+import { genieFetch } from '../api/restFetch';
 /** Installer desktop project-brief staging and same-tab recovery. */
 import type { GenieConfig } from '../config';
 import { TAB_KEY } from './nativeScope';
@@ -203,7 +204,7 @@ export async function stageProjectBrief(
 	if ( input.expectedRevision && input.briefId !== UNSTAGED_BRIEF_ID ) {
 		payload.expected_revision = input.expectedRevision;
 	}
-	const response = await fetch(
+	const response = await genieFetch(
 		`${ config.restUrl }linker-ai/v1/genie/project-brief`,
 		{
 			method: 'POST',

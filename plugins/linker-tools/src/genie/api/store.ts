@@ -1,3 +1,4 @@
+import { genieFetch } from './restFetch';
 /**
  * Current product display and one server-verified, atomic solution-draft write.
  * The browser cannot turn a stale complete design into a subset of its lines.
@@ -37,7 +38,7 @@ function quantities( items: { id: number; quantity: number }[] ) {
 
 export function storeClient(
 	restUrl: string,
-	fetcher: Fetch = ( ...args ) => fetch( ...args ),
+	fetcher: Fetch = genieFetch,
 	restNonce = ''
 ): StoreClient {
 	const base = `${ restUrl }wc/store/v1`;

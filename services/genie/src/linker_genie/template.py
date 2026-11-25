@@ -75,6 +75,7 @@ from linker_genie.facts import (
 from linker_genie.failure import FailureClass
 from linker_genie.figures import chunk_of, is_code
 from linker_genie.hydrate import PLACEHOLDER, hydrate
+from linker_genie.manual_evidence import clearance_question as clearance_question
 from linker_genie.prefill import BACKUP_CHOICES
 from linker_genie.route import (
     SEARCH_LIMIT,
@@ -898,8 +899,7 @@ def _cabinet_clearance_answer(
 ) -> TurnOutput | None:
     """Render a cabinet's directional clearances from its current reviewed figure."""
     from linker_genie.figures import tag
-    from linker_genie.manual_diagram_records import DIAGRAMS
-    from linker_genie.manual_evidence import evidence_id
+    from linker_genie.manual_evidence import cabinet_clearance
     from linker_genie.source_models import codes
 
     if route.name != "documents" or not clearance_question(question):
@@ -918,16 +918,10 @@ def _cabinet_clearance_answer(
     model = models.pop()
     if any(note.code.upper() != model for note in route.named_models):
         return None
-    diagram = next(
-        row for row in DIAGRAMS if row["figure"] == "CB2 installation space requirement"
-    )
-    cid = evidence_id(
-        diagram["sha256"],
-        diagram["source_page"],
-        model,
-        diagram["source_id"],
-        diagram["excerpt"],
-    )
+    reviewed = cabinet_clearance(model)
+    if reviewed is None:
+        return None
+    cid, diagram = reviewed
     source = facts.documents.get(cid)
     text = facts.facts.get(f"{cid}.text")
     tagged = tag(cid, diagram["excerpt"])
@@ -2449,13 +2443,6 @@ def _seal_attachment_figures(
     return output.model_copy(update={"blocks": blocks})
 
 
-def clearance_question(question: str) -> bool:
-    folded = question.casefold()
-    return any(
-        word in folded for word in ("clearance", "mindestabstand", "mindestabstände")
-    )
-
-
 def _usable_question(question: str) -> bool:
     folded = question.casefold()
     return "usable capacity" in folded or "nutzbare kapazität" in folded
@@ -2809,12 +2796,27 @@ def _clearance_answer(
             continue
         _, text = next(revised)
         pieces = re.split(r"(?<=[.!?;])(?=\s)|(?=\n)", text)
+        original_pieces = pieces.copy()
         for index, piece in enumerate(pieces):
             if marker not in piece:
                 continue
             if re.search(r"\ue000Q+\ue001", piece):
                 pieces[index] = re.sub(rf"{re.escape(marker)}(?:\s*mm\b)?", "—", piece)
             else:
+                pieces[index] = ""
+        for index, piece in enumerate(pieces):
+            if not piece.rstrip().endswith(":"):
+                continue
+            end = index + 1
+            while (
+                end < len(pieces)
+                and original_pieces[end].strip()
+                and not pieces[end].strip()
+            ):
+                end += 1
+            if end > index + 1 and (
+                end == len(pieces) or not original_pieces[end].strip()
+            ):
                 pieces[index] = ""
         field = "text" if isinstance(block, TextBlock) else "summary"
         sealed.append(block.model_copy(update={field: "".join(pieces).strip()}))

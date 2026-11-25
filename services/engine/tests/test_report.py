@@ -277,6 +277,50 @@ def test_pdf_in_both_languages_with_a_logo(
         assert word in text
 
 
+def test_quoted_site_link_exports_the_exact_uri_and_same_pdf(engine: Engine) -> None:
+    built = build(engine, "en")
+    url = "https://de-linker.com/products/"
+    note = f"""See "{url}" in the installer's notes."""
+    built.sections[0].paragraphs.append(note)
+    first = pdf.render(built)
+    assert first == pdf.render(built)
+    assert note in text_of(first)
+    links = [
+        annotation.get_object()["/A"]["/URI"]
+        for page in PdfReader(io.BytesIO(first)).pages
+        for annotation in page.get("/Annots", [])
+        if annotation.get_object().get("/A", {}).get("/S") == "/URI"
+    ]
+    assert url in links and url + '"' not in links
+
+
+@pytest.mark.parametrize("policy", ["decoded", "pillow"])
+def test_logo_decode_limits_apply_to_quick_pdf_and_saved_report(
+    monkeypatch: pytest.MonkeyPatch, policy: str
+) -> None:
+    from PIL import Image as PillowImage
+
+    from linker_engine import report_logo
+    from linker_engine.planning.report_inputs import InvalidReportLogo, ReportOptions
+
+    if policy == "decoded":
+        monkeypatch.setattr(report_logo, "MAX_LOGO_PIXELS", 1)
+    else:
+        monkeypatch.setattr(PillowImage, "MAX_IMAGE_PIXELS", 0)
+    logo = f"data:image/png;base64,{PNG}"
+    with pytest.raises(pdf.LogoError):
+        pdf.logo_image(logo)
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=None,
+        pv_run_id=None,
+        equipment_run_id=None,
+        logo=logo,
+    )
+    with pytest.raises(InvalidReportLogo):
+        options.logo_bytes()
+
+
 def test_a_logo_that_is_no_image_is_refused() -> None:
     with pytest.raises(pdf.LogoError):
         pdf.logo_image("data:image/png;base64,bm90IGFuIGltYWdl")

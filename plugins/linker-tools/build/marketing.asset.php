@@ -3,5 +3,5 @@
 		'wp-dom-ready',
 		'wp-i18n'
 	),
-	'version' => 'f9cfc18f5b39dc88af31'
+	'version' => '4f9c59b03455ec5b004c'
 );

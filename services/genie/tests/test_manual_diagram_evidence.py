@@ -254,10 +254,9 @@ def test_runtime_requires_original_pixels_and_live_association() -> None:
     )
 
 
-def test_figure_passages_reach_sqlite_and_withdrawals_are_enforced(
-    tmp_path: Path,
-) -> None:
-    raw, units, proofs = compiled()
+def figure_index(
+    tmp_path: Path, raw: dict[str, Any], units: list[Chunk], proofs: dict[str, Any]
+) -> DocumentIndex:
     source_dir = tmp_path / "corpus"
     corpus.write(
         source_dir,
@@ -293,7 +292,14 @@ def test_figure_passages_reach_sqlite_and_withdrawals_are_enforced(
     )
     target = tmp_path / "index.sqlite"
     store.export(source_dir, target)
-    loaded = DocumentIndex(target, encoder=None)
+    return DocumentIndex(target, encoder=None)
+
+
+def test_figure_passages_reach_sqlite_and_withdrawals_are_enforced(
+    tmp_path: Path,
+) -> None:
+    raw, units, proofs = compiled()
+    loaded = figure_index(tmp_path, raw, units, proofs)
     try:
         for pid in [3595, 6507, 6508, 6509, 6510, 6511]:
             hits = loaded.search(
@@ -463,7 +469,9 @@ def test_figure_passages_reach_sqlite_and_withdrawals_are_enforced(
         loaded.close()
 
 
-def test_cb2_clearances_bind_five_directions_to_four_current_cabinets() -> None:
+def test_cb2_clearances_bind_five_directions_to_four_current_cabinets(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     raw, chunks, images = fixture(FIXTURE.with_name("cb2-clearance-evidence.json.gz"))
     sha = chunks[0].doc_sha256
     pdf = RenderedPDF(sha, images)
@@ -493,6 +501,24 @@ def test_cb2_clearances_bind_five_directions_to_four_current_cabinets() -> None:
         assert "400 mm behind" in unit.text
         assert "500 mm on the left" in unit.text
         assert "500 mm above" in unit.text
+    for proof in proofs.values():
+        proof["model_identity_revision"] = raw["model_identity_revision"]
+    index = figure_index(tmp_path, raw, units, proofs)
+    try:
+        # The compound question's ranked inverter passages can omit the cabinet drawing.
+        monkeypatch.setattr(index, "keyword_ranking", lambda *args: [])
+        query = "Welche Mindestabstände gelten bei der Installation des SAJ CB2-100.3-HV5 und mit welchen Wechselrichtern ist er kompatibel?"
+        results = index.search(query, "de", [4106], publication=source)
+        assert [h.product_ids for h in results] == [(4106,)]
+        assert "1000 mm on the right" in results[0].text
+        assert (
+            index.search(
+                query, "de", [4106], publication=Snapshot.read({**raw, "documents": []})
+            )
+            == []
+        )
+    finally:
+        index.close()
     images[record["figure"]] = images[record["anchor_figure"]]
     changed = extract_diagram_evidence(RenderedPDF(sha, images), sha, chunks)
     rejected, _ = compile_manual_evidence(

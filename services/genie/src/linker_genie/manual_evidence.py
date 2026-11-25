@@ -26,6 +26,29 @@ def normalized(value: str) -> str:
     return re.sub(r"(?<=-)\s+(?=[A-Za-z0-9])", "", value)
 
 
+def clearance_question(question: str) -> bool:
+    folded = question.casefold()
+    return any(
+        word in folded for word in ("clearance", "mindestabstand", "mindestabstände")
+    )
+
+
+def cabinet_clearance(model: str) -> tuple[str, dict[str, Any]] | None:
+    record = next(
+        row for row in DIAGRAMS if row["figure"] == "CB2 installation space requirement"
+    )
+    if not subject_matches(record, model):
+        return None
+    cid = evidence_id(
+        record["sha256"],
+        record["source_page"],
+        model,
+        record["source_id"],
+        record["excerpt"],
+    )
+    return cid, record
+
+
 def subject_matches(record: Mapping[str, Any], model: str) -> bool:
     """Match only the manufacturer's role-specific declaration, not metadata."""
     quote = normalized(str(record["anchor_quote"]))

@@ -1,3 +1,4 @@
+import { genieFetch } from './restFetch';
 import { buildQuestion } from '../shared/conversation';
 import { keepJobFiles, removeFiles } from '../attachments/turnFiles';
 /**
@@ -522,7 +523,7 @@ async function pollTurn(
 	job: Pick< PendingJob, 'job_id' | 'conversation_id' | 'stage' >,
 	signal: AbortSignal
 ): Promise< Turn > {
-	const fetcher = request.fetcher ?? fetch;
+	const fetcher = request.fetcher ?? genieFetch;
 	const initialPollDelays = [ 600, 600, 900, 900, 900 ];
 	let stage = job.stage;
 	request.onStage?.( stage );
@@ -591,7 +592,7 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 		messages,
 		page,
 		uploads = [],
-		fetcher = ( ...args ) => fetch( ...args ),
+		fetcher = genieFetch,
 	} = request;
 	return withinTurn(
 		request.timeoutMs ?? TURN_TIMEOUT_MS,
@@ -726,7 +727,7 @@ export function assistantMessage( turn: Turn ): TurnMessage {
 export async function readThread(
 	threadUrl: string,
 	nonce: string,
-	fetcher: Fetch = ( ...args ) => fetch( ...args ),
+	fetcher: Fetch = genieFetch,
 	artifacts?: ArtifactContext,
 	proof?: {
 		plannerNonce?: string;
@@ -975,7 +976,7 @@ export async function readThread(
 export async function listConversations(
 	url: string,
 	nonce: string,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< ConversationList > {
 	const failed = { currentId: 0, conversations: [], ok: false };
 	try {
@@ -1018,7 +1019,7 @@ export async function selectConversation(
 	url: string,
 	nonce: string,
 	id?: number,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< ConversationList > {
 	const response = await resourceFetch( fetcher, url, {
 		method: 'POST',
@@ -1053,7 +1054,7 @@ export async function deleteConversation(
 	url: string,
 	nonce: string,
 	id: number,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< ConversationList > {
 	const response = await resourceFetch( fetcher, `${ url }/${ id }`, {
 		method: 'DELETE',
@@ -1135,7 +1136,7 @@ export async function emailConversation(
 	locale: Locale,
 	email?: string,
 	guard?: EmailGuard,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< EmailResult > {
 	try {
 		const response = await resourceFetch(
@@ -1187,7 +1188,7 @@ export async function sendVote(
 	nonce: string,
 	turnId: number,
 	vote: 1 | -1,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< boolean > {
 	try {
 		const response = await resourceFetch(
