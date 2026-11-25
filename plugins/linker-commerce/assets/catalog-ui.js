@@ -48,7 +48,6 @@
 				if (!result || !filters) throw new Error('Missing catalogue results');
 				listing.replaceWith(result);
 				sidebar.replaceWith(filters);
-				window.history.replaceState(window.history.state, '', url);
 				window.linkerComparePaint?.();
 			} catch (error) {
 				if (!controller.signal.aborted) {

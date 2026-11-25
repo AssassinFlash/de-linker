@@ -69,6 +69,7 @@ test('typing a model replaces the catalogue with the matching archive, including
  input.dispatchEvent(new window.Event('input',{bubbles:true}));
  await new Promise(resolve=>setTimeout(resolve,400));
  assert.equal(requested?.searchParams.get('q'),'ZZ9117');
+ assert.equal(window.location.search,'');
  assert.equal(requested.searchParams.get('brand'),'goodwe');
  assert.equal(window.document.querySelector('[data-catalog-listing] a').pathname,'/de/produkte/');
  assert.equal(window.document.querySelector('[data-catalog-listing]').textContent.includes('Old cards'),false);
