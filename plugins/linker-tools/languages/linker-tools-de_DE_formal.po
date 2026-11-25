@@ -17102,6 +17102,10 @@ msgid "Reading your file…"
 msgstr "Ihre Datei wird gelesen…"
 
 #: build/genie.js build/hero.js
+msgid "Your question is queued…"
+msgstr "Ihre Frage ist in der Warteschlange …"
+
+#: build/genie.js build/hero.js
 msgid "Understanding your question…"
 msgstr "Ihre Frage wird eingeordnet…"
 

@@ -102,3 +102,63 @@ def test_checked_file_readings_expire_and_deleted_threads_forget_them(
     jobs.forget("conversation")
     assert jobs.read(job, SUBJECT) is None
     assert b"private-nameplate-reading" not in slots.path.read_bytes()
+
+
+def test_waiting_job_uses_only_actual_execution_for_its_deadline(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    clock = [1000.0]
+    monkeypatch.setattr("linker_genie.jobs.time.time", lambda: clock[0])
+    jobs = Jobs(Slots(tmp_path / "private/work.sqlite"))
+    job = str(uuid.uuid4())
+    jobs.begin(job, "card-en", SUBJECT, "waiting")
+    clock[0] += 110
+    waiting = jobs.read(job, SUBJECT)
+    assert waiting and waiting["queued_seconds"] == 110
+    assert jobs.claim(job, SUBJECT, "understanding") == "claimed"
+    clock[0] += 3
+    running = jobs.read(job, SUBJECT)
+    assert (
+        running
+        and running["stage"] == "understanding"
+        and running["queued_seconds"] == 110
+    )
+    jobs.finish(job, "done")
+    clock[0] += 2
+    complete = jobs.read(job, SUBJECT)
+    assert (
+        complete
+        and complete["status"] == "completed"
+        and complete["queued_seconds"] == 110
+    )
+
+
+def test_deleting_a_queued_conversation_prevents_execution(tmp_path: Path) -> None:
+    jobs = Jobs(Slots(tmp_path / "private/work.sqlite"))
+    job = str(uuid.uuid4())
+    jobs.begin(job, "card-en", SUBJECT, "waiting")
+    jobs.forget("card-en")
+    assert jobs.claim(job, SUBJECT, "reading_attachments") == "gone"
+    assert jobs.read(job, SUBJECT) is None
+
+
+def test_old_jobs_can_finish_after_queue_schema_upgrade(tmp_path: Path) -> None:
+    slots = Slots(tmp_path / "private/work.sqlite")
+    job = slots.acquire(SUBJECT)
+    assert job
+    with slots.transaction() as db:
+        db.execute("""CREATE TABLE turn_jobs (job_id TEXT PRIMARY KEY, conversation_id TEXT NOT NULL,
+              subject TEXT NOT NULL,pid INTEGER NOT NULL,slot_id TEXT NOT NULL,status TEXT NOT NULL,
+              stage TEXT NOT NULL,result_stream TEXT,error_status INTEGER,error_code TEXT,error_detail TEXT,
+              created_at REAL NOT NULL,updated_at REAL NOT NULL,expires_at REAL)""")
+        db.execute(
+            "INSERT INTO turn_jobs (job_id,conversation_id,subject,pid,slot_id,status,stage,created_at,updated_at) VALUES(?,?,?,?,?,'running','understanding',?,?)",
+            (job, "old", SUBJECT, os.getpid(), job, time.time(), time.time()),
+        )
+    jobs = Jobs(slots)
+    assert jobs.finish(job, "old stream")
+    assert jobs.read(job, SUBJECT) == {
+        "job_id": job,
+        "status": "completed",
+        "stream": "old stream",
+    }

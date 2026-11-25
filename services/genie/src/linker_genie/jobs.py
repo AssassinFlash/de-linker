@@ -7,11 +7,13 @@ import logging
 import os
 import sqlite3
 import time
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
+from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import contextmanager
-from typing import Any
+from threading import Event
+from typing import Any, Literal
 
-from .work import Slots, WorkError, configured_slots
+from .work import SITE_SLOTS, Slots, WorkError, configured_slots
 
 RETENTION_SECONDS = 180
 
@@ -30,12 +32,16 @@ class Jobs:
                 subject TEXT NOT NULL, pid INTEGER NOT NULL, slot_id TEXT NOT NULL,
                 status TEXT NOT NULL, stage TEXT NOT NULL, result_stream TEXT,
                 error_status INTEGER, error_code TEXT, error_detail TEXT,
-                created_at REAL NOT NULL, updated_at REAL NOT NULL, expires_at REAL
+                created_at REAL NOT NULL, updated_at REAL NOT NULL, expires_at REAL, execution_at REAL
             )""")
+            if "execution_at" not in {
+                row["name"] for row in db.execute("PRAGMA table_info(turn_jobs)")
+            }:
+                db.execute("ALTER TABLE turn_jobs ADD COLUMN execution_at REAL")
             yield db
 
     def begin(self, slot: str, conversation: str, subject: str, stage: str) -> float:
-        # The slot's UUID4 identifies exactly one admitted turn through completion.
+        # The accepted job keeps its ID when a worker becomes available.
         now = time.time()
         with self.transaction() as db:
             db.execute(
@@ -45,6 +51,25 @@ class Jobs:
                 (slot, conversation, subject, os.getpid(), slot, stage, now, now),
             )
         return now
+
+    def claim(
+        self, job: str, subject: str, stage: str
+    ) -> Literal["gone", "waiting", "claimed"]:
+        with self.transaction() as db:
+            row = db.execute(
+                "SELECT 1 FROM turn_jobs WHERE job_id=? AND subject=? AND status='running' AND stage='waiting'",
+                (job, subject),
+            ).fetchone()
+            if row is None:
+                return "gone"
+            if not self.slots.reserve(db, subject, job):
+                return "waiting"
+            now = time.time()
+            db.execute(
+                "UPDATE turn_jobs SET execution_at=?,updated_at=?,stage=? WHERE job_id=?",
+                (now, now, stage, job),
+            )
+            return "claimed"
 
     def stage(self, job: str, value: str) -> None:
         with self.transaction() as db:
@@ -98,16 +123,30 @@ class Jobs:
                 return None
             if row["status"] == "running" and self._reap_dead(db, row):
                 row = db.execute(select, (job, subject)).fetchone()
+            timing = {}
+            if row["execution_at"] is not None:
+                timing["queued_seconds"] = max(
+                    0.0, row["execution_at"] - row["created_at"]
+                )
+            elif row["stage"] == "waiting":
+                timing["queued_seconds"] = max(0.0, time.time() - row["created_at"])
             if row["status"] == "running":
                 return dict(
+                    **timing,
                     job_id=job,
                     status="running",
                     stage=row["stage"],
                     updated_at=row["updated_at"],
                 )
             if row["status"] == "completed":
-                return dict(job_id=job, status="completed", stream=row["result_stream"])
+                return dict(
+                    **timing,
+                    job_id=job,
+                    status="completed",
+                    stream=row["result_stream"],
+                )
             return dict(
+                **timing,
                 job_id=job,
                 status="failed",
                 http_status=row["error_status"],
@@ -130,6 +169,52 @@ class Jobs:
                 db.execute(
                     "DELETE FROM turn_jobs WHERE conversation_id=?", (conversation,)
                 )
+
+
+class TurnWorkers:
+    """A bounded set of threads services accepted requests from this API process."""
+
+    def __init__(self) -> None:
+        self.stopped = Event()
+        self.pool = ThreadPoolExecutor(
+            max_workers=SITE_SLOTS, thread_name_prefix="genie-turn"
+        )
+
+    def submit(
+        self,
+        jobs: Jobs,
+        job: str,
+        subject: str,
+        first_stage: str,
+        execute: Callable[[], None],
+    ) -> None:
+        def run() -> None:
+            try:
+                while not self.stopped.is_set():
+                    claim = jobs.claim(job, subject, first_stage)
+                    if claim == "gone":
+                        return
+                    if claim == "claimed":
+                        execute()
+                        return
+                    # Another API process or the synchronous route owns the slot.
+                    self.stopped.wait(0.6)
+                jobs.fail(job, 503, "genie_worker_stopped", "genie_worker_stopped")
+            except (OSError, sqlite3.Error):
+                logging.getLogger(__name__).exception(
+                    "could not claim queued Genie turn"
+                )
+                jobs.fail(job, 503, "genie_resource_storage", "genie_resource_storage")
+
+        def cancel_unstarted(future: Future[None]) -> None:
+            if future.cancelled():
+                jobs.fail(job, 503, "genie_worker_stopped", "genie_worker_stopped")
+
+        self.pool.submit(run).add_done_callback(cancel_unstarted)
+
+    def close(self) -> None:
+        self.stopped.set()
+        self.pool.shutdown(wait=False, cancel_futures=True)
 
 
 async def expire_results(stop: asyncio.Event) -> None:

@@ -427,6 +427,7 @@ export interface TurnOwner {
 }
 
 export type TurnStage =
+	| 'waiting'
 	| 'reading_attachments'
 	| 'understanding'
 	| 'checking_catalog'
@@ -439,6 +440,7 @@ export interface PendingJob {
 	conversation_id: number;
 	stage: TurnStage;
 	started_at: number;
+	queued_seconds?: number;
 	user_message: string;
 	operation_id?: string;
 }
@@ -466,15 +468,20 @@ function turnRoute( url: string, suffix: string ): string {
 }
 
 /**
- * One deadline covers the start, each poll, and reading the final body.
+ * Start and execution share one deadline. Add only the wait measured by the service.
  * @param budget
  * @param external
  * @param attempt
+ * @param queuedSeconds
  */
 async function withinTurn< T >(
 	budget: number,
 	external: AbortSignal | undefined,
-	attempt: ( signal: AbortSignal ) => Promise< T >
+	attempt: (
+		signal: AbortSignal,
+		setQueueTime: ( seconds: number ) => void
+	) => Promise< T >,
+	queuedSeconds = 0
 ): Promise< T > {
 	const controller = new AbortController();
 	const cancel = () => controller.abort( external?.reason );
@@ -490,17 +497,24 @@ async function withinTurn< T >(
 	} else {
 		external?.addEventListener( 'abort', cancel, { once: true } );
 	}
-	// The deadline also covers reading the response body.
-	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-	const timeout = setTimeout(
-		() =>
-			controller.abort(
-				new DOMException( 'The turn timed out.', 'AbortError' )
-			),
-		Math.max( 0, budget )
-	);
+	const deadline = Date.now() + budget;
+	let timeout: ReturnType< typeof setTimeout > | undefined;
+	const setQueueTime = ( seconds: number ) => {
+		clearTimeout( timeout );
+		timeout = setTimeout(
+			() =>
+				controller.abort(
+					new DOMException( 'The turn timed out.', 'AbortError' )
+				),
+			Math.max( 0, deadline + seconds * 1000 - Date.now() )
+		);
+	};
+	setQueueTime( queuedSeconds );
 	try {
-		return await Promise.race( [ aborted, attempt( controller.signal ) ] );
+		return await Promise.race( [
+			aborted,
+			attempt( controller.signal, setQueueTime ),
+		] );
 	} finally {
 		clearTimeout( timeout );
 		external?.removeEventListener( 'abort', cancel );
@@ -521,7 +535,8 @@ async function replyBody( response: Response ) {
 async function pollTurn(
 	request: TurnTransport,
 	job: Pick< PendingJob, 'job_id' | 'conversation_id' | 'stage' >,
-	signal: AbortSignal
+	signal: AbortSignal,
+	setQueueTime: ( seconds: number ) => void
 ): Promise< Turn > {
 	const fetcher = request.fetcher ?? genieFetch;
 	const initialPollDelays = [ 600, 600, 900, 900, 900 ];
@@ -554,6 +569,9 @@ async function pollTurn(
 		) {
 			throw new UnfinishedStreamError();
 		}
+		if ( typeof body.queued_seconds === 'number' ) {
+			setQueueTime( body.queued_seconds );
+		}
 		if ( body.status === 'completed' ) {
 			return parseStream( body.stream );
 		}
@@ -576,8 +594,12 @@ export function resumeTurn(
 		job.started_at * 1000 +
 		( request.timeoutMs ?? TURN_TIMEOUT_MS ) -
 		Date.now();
-	return withinTurn( remaining, signal, ( active ) =>
-		pollTurn( request, job, active )
+	return withinTurn(
+		remaining,
+		signal,
+		( active, setQueueTime ) =>
+			pollTurn( request, job, active, setQueueTime ),
+		job.queued_seconds ?? 0
 	);
 }
 
@@ -597,7 +619,7 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 	return withinTurn(
 		request.timeoutMs ?? TURN_TIMEOUT_MS,
 		request.owner?.signal,
-		async ( signal ) => {
+		async ( signal, setQueueTime ) => {
 			const response = await resourceFetch(
 				async ( ...args ) => {
 					signal.throwIfAborted();
@@ -659,7 +681,12 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 					originalText
 				);
 				request.onStarted?.( body.conversation_id );
-				const answer = await pollTurn( request, body, signal );
+				const answer = await pollTurn(
+					request,
+					body,
+					signal,
+					setQueueTime
+				);
 				if ( uploads.length ) {
 					await removeFiles( body.job_id ).catch( () => undefined );
 				}

@@ -868,3 +868,53 @@ test.each( [ 'deadline', 'cancellation' ] )(
 		}
 	}
 );
+
+test( 'excludes measured waiting time once and still times out an executing job', async () => {
+	vi.useFakeTimers();
+	try {
+		vi.setSystemTime( TURN_TIMEOUT_MS + 15000 );
+		const job = {
+			job_id: 'aa21e940-4d9c-4426-844b-6527cedd68de',
+			conversation_id: 18,
+			stage: 'waiting' as const,
+			started_at: 0,
+			queued_seconds: 15.7,
+			user_message: 'Question',
+		};
+		const fetcher = vi
+			.fn()
+			.mockResolvedValueOnce(
+				Response.json( {
+					...job,
+					status: 'running',
+					queued_seconds: 17,
+				} )
+			)
+			.mockResolvedValueOnce(
+				Response.json( {
+					...job,
+					status: 'running',
+					stage: 'understanding',
+					queued_seconds: 17,
+				} )
+			)
+			.mockResolvedValueOnce(
+				Response.json( {
+					...job,
+					status: 'running',
+					stage: 'understanding',
+					queued_seconds: 17,
+				} )
+			);
+		const result = resumeTurn(
+			{ turnUrl: '/turn', nonce: 'n', fetcher },
+			job
+		).catch( ( e: unknown ) => e );
+		await vi.advanceTimersByTimeAsync( 1900 );
+		expect( fetcher ).toHaveBeenCalledTimes( 2 );
+		await vi.advanceTimersByTimeAsync( 100 );
+		await expect( result ).resolves.toMatchObject( { name: 'AbortError' } );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
