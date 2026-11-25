@@ -144,6 +144,17 @@ export function knownReferenceArrays(
 	return readPvgisReference({ ...active, model: KNOWN_PV_MODEL, arrays })
 		.arrays;
 }
+export function knownArrayCapacity(
+	arrays: readonly KnownPvArray[] | undefined,
+): number | null {
+	if (!arrays?.length) return null;
+	let total = 0;
+	for (const array of arrays) {
+		if (array.peak_power_kwp === null || array.peak_power_kwp <= 0) return null;
+		total += array.peak_power_kwp;
+	}
+	return total;
+}
 export function compilePvgisReference(value: PvgisReferenceDraft): JsonObject {
 	if (
 		!(value.model === KNOWN_PV_MODEL

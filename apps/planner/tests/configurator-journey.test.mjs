@@ -548,6 +548,21 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 			{ equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 11.09 } },
 			"11.09 kWp",
 		],
+		...[[null], [4.5, null], [4.5, 6.5]].map((powers) => [
+			{
+				geometry: flatRoof,
+				equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 11.09 },
+				pvgis_reference_setup: {
+					...knownPv.project.inputs.pvgis_reference,
+					arrays: powers.map((power, index) => ({
+						...knownPv.project.inputs.pvgis_reference.arrays[0],
+						id: "array-" + index,
+						peak_power_kwp: power,
+					})),
+				},
+			},
+			powers.includes(null) ? "11.09 kWp" : "11 kWp",
+		]),
 		[{ geometry: flatRoof }, "2.5 kWp"],
 		[{ geometry: allExcluded }, "—"],
 		[{}, "—"],

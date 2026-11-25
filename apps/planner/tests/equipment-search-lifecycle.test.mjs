@@ -1,3 +1,4 @@
+import savedRoof from "../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import knownPv from "./fixtures/known-pv-reference.json" with { type: "json" };
 import nativePreparation from "./fixtures/preparation-flow-darwin-arm64.json" with { type: "json" };
 import { authoredDiscoveryInputs } from "../src/domain/currentCalculation.ts";
@@ -888,15 +889,29 @@ for (const entry of ["navigation", "direct"])
 			}
 		});
 
-for (const partialArray of [false, true])
-	test(`Solar carries the site capacity into the next comparison (stored array with no power: ${partialArray})`, async (t) => {
+for (const source of ["project", "partial array", "roof to known"])
+	test(`Solar carries the site capacity into the next comparison (${source})`, async (t) => {
 		const id = "e".repeat(32);
 		const app = await equipmentApp(t, {
 			projectId: id,
 			hash: "#sc-solar",
 			inputs: {
 				equipment_setup: { ...savedSetup, pv_dc_kw: 11.09 },
-				...(partialArray
+				...(source === "roof to known"
+					? {
+							geometry: savedRoof,
+							inactive_known_pv_arrays: [
+								{
+									id: "previous-array",
+									peak_power_kwp: null,
+									tilt_deg: 30,
+									azimuth_north_clockwise_deg: null,
+									source_note: "",
+								},
+							],
+						}
+					: {}),
+				...(source === "partial array"
 					? {
 							pvgis_reference_setup: {
 								...knownPv.project.inputs.pvgis_reference,

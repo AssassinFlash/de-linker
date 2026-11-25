@@ -130,6 +130,7 @@ import { isEnergyTask } from "../../data/readEnergyResult.ts";
 import { comparisonPair } from "../../data/energyComparison.ts";
 import { energyErrorText } from "../energy/EnergyError.tsx";
 import {
+	knownArrayCapacity,
 	referenceDraft,
 	KNOWN_PV_MODEL,
 	PVGIS_REFERENCE_TASK,
@@ -1430,18 +1431,28 @@ export default function ProjectWorkbench({
 			: [selectedCandidate.selection]
 		: [];
 	const siteArrayFeedsEquipment = usesSiteArrayForEquipment(inputs);
-	const pvSizes = pvArrays?.length
-		? pvArrays.map((a) => a.peak_power_kwp)
-		: siteArrayFeedsEquipment
-			? selectedUnits.map((u) => u.pv_dc_kw)
-			: [];
-	const hasPvSize = pvSizes.some((size) => size != null);
+	const declaredPv = siteArrayFeedsEquipment
+		? demandEquipment(inputs).pv_dc_kw
+		: null;
+	const unitSizes = siteArrayFeedsEquipment
+		? selectedUnits.map((u) => u.pv_dc_kw)
+		: [];
+	const hasUnitSize = unitSizes.some((size) => size != null);
 	const roofModules =
 		brief.system_scope !== "storage_only" &&
-		!hasPvSize &&
+		reference.model !== KNOWN_PV_MODEL &&
+		!hasUnitSize &&
 		inputs.geometry !== undefined
 			? moduleSummary(activePvGeometry(inputs.geometry).geometry)
 			: null;
+	const pvSizes =
+		reference.model === KNOWN_PV_MODEL
+			? [knownArrayCapacity(pvArrays) ?? declaredPv]
+			: roofModules?.count
+				? [roofModules.stc_kwp]
+				: hasUnitSize
+					? unitSizes
+					: [declaredPv];
 	const assessment = selectedDetail.data;
 	const assessments = assessment?.systems
 		? (assessment.systems as JsonObject[]).map((u) => readObject(u.assessment))
@@ -2312,20 +2323,7 @@ export default function ProjectWorkbench({
 								{brief.system_scope !== "storage_only" && (
 									<div>
 										<dt>{__("Solar capacity", "linker-tools")}</dt>
-										<dd>
-											{total(
-												roofModules?.count
-													? [roofModules.stc_kwp]
-													: hasPvSize
-														? pvSizes
-														: [
-																siteArrayFeedsEquipment
-																	? demandEquipment(inputs).pv_dc_kw
-																	: null,
-															],
-												"kWp",
-											)}
-										</dd>
+										<dd>{total(pvSizes, "kWp")}</dd>
 									</div>
 								)}
 								{brief.system_scope !== "pv_only" && (

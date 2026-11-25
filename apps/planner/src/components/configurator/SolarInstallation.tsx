@@ -58,6 +58,7 @@ import {
 	referenceInputs,
 	KNOWN_PV_MODEL,
 	knownReferenceArrays,
+	knownArrayCapacity,
 	REFERENCE_DATABASES,
 	REFERENCE_TECHNOLOGIES,
 	type PvgisReferenceDraft,
@@ -230,7 +231,8 @@ export function SolarInstallation({
 		savedPanel && !editingPanel
 			? savedPanel
 			: panelSpecification(savedPanel?.id ?? newPanelId, measurements);
-	const known = knownReferenceArrays(inputs)?.[0];
+	const knownArrays = knownReferenceArrays(inputs);
+	const known = knownArrays?.[0];
 	const knownPanels = inputs.known_panel_details as
 		| {
 				count: number | null;
@@ -241,9 +243,11 @@ export function SolarInstallation({
 	const declaredPower = usesSiteArrayForEquipment(inputs)
 		? demandEquipment(inputs).pv_dc_kw
 		: null;
+	const sitePower = typeof declaredPower === "number" ? declaredPower : null;
 	const knownPower =
 		known?.peak_power_kwp ??
-		(typeof declaredPower === "number" ? declaredPower : null);
+		(knownArrays && knownArrays.length > 1 ? null : sitePower);
+	const knownTotal = knownArrayCapacity(knownArrays) ?? sitePower;
 	const typedPower =
 		knownPanels?.system_kwp ??
 		(knownPanels?.count && knownPanels.power_w ? null : knownPower);
@@ -730,18 +734,15 @@ export function SolarInstallation({
 				arrays,
 			});
 			if (panels === undefined) return next;
-			const power = arrays.reduce<number | null>(
-				(sum, array) =>
-					sum !== null && typeof array.peak_power_kwp === "number"
-						? sum + array.peak_power_kwp
-						: null,
-				0,
-			);
+			const power = knownArrayCapacity(arrays);
+			const updateDemand =
+				usesSiteArrayForEquipment(current) &&
+				(power !== null || arrays.length === 1) &&
+				power !== demandEquipment(current).pv_dc_kw;
 			return {
-				...(!usesSiteArrayForEquipment(current) ||
-				power === demandEquipment(current).pv_dc_kw
-					? next
-					: changeDemandEquipment(next, { pv_dc_kw: power })),
+				...(updateDemand
+					? changeDemandEquipment(next, { pv_dc_kw: power })
+					: next),
 				known_panel_details: panels,
 			};
 		});
@@ -1776,8 +1777,8 @@ export function SolarInstallation({
 							<strong>
 								{mode === "roof" && geometry.roofs.length > 0
 									? `${summary.count} ${__("placed modules", "linker-tools")} · ${formatComputedDecimal(summary.stc_kwp, config.locale)} kWp`
-									: mode === "known" && knownPower != null
-										? `${formatComputedDecimal(knownPower, config.locale)} kWp`
+									: mode === "known" && knownTotal != null
+										? `${formatComputedDecimal(knownTotal, config.locale)} kWp`
 										: __("Not specified", "linker-tools")}
 							</strong>
 						</div>
