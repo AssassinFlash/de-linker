@@ -129,13 +129,20 @@ export function createWidgets( config: WidgetConfig ): Widgets {
 					'expired-callback': () => onToken?.( '' ),
 					'error-callback': ( code ) => {
 						container.dataset.turnstileError = code;
-						// Cloudflare retries network errors, timeouts and challenge failures.
+						// Challenge failures retry natively. The iframe load error only invokes this callback.
 						const temporary =
 							/^(?:300|600)/.test( code ) ||
 							[ '200500', '110600', '110620' ].includes( code );
 						if ( temporary && ! retrying ) {
 							retrying = true;
 							onToken?.( '' );
+							if ( code === '200500' ) {
+								queueMicrotask( () => {
+									if ( ! disposed && id !== undefined ) {
+										api.reset( id );
+									}
+								} );
+							}
 							return true;
 						}
 						return failed();

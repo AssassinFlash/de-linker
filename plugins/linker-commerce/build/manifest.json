@@ -14,7 +14,7 @@
 		"src/css.d.ts": "da5bf71d48cf909584a01c80b445f730507068f5b34c920f352e2bfcf0315e4c",
 		"src/protection/index.ts": "40b4dcc2a2bed55be056492d8984d8229fdac7d6d6042662489e7bc20aa46963",
 		"src/protection/types.ts": "28be5ad390c77d7c4cee51a47cef368a52f4ea6d2b69d33ee791eca938e612b6",
-		"src/protection/widget.ts": "939a060a012cb5636fecc7767d59179d74d7a32a0a10dc202f3302551c87d0c0",
+		"src/protection/widget.ts": "7fccc994622f61a0aa776caffb48ecc5e04560374d7cb03410c894944fcecbb1",
 		"webpack.config.js": "d5a7aa4228fb1358c3ffcf141babbc80e3765a35203947ee8639090918797a07"
 	},
 	"build": {
@@ -22,8 +22,8 @@
 		"build/accounts.js": "b218e5fb42efd2bcf5d801f9cffeea684a8327f13ec63b5d2f78bbf279fb7f6d",
 		"build/contact-language.asset.php": "1b8ea722ca6498f4e6c8704b74f1d16f51ec79e5c3e8d8ba084a0a4259c8aab2",
 		"build/contact-language.js": "90493c7ecec583584ff0bda64b7fbe03eaa89b1ed37ee765b5d204a14b581e11",
-		"build/protection.asset.php": "0f31d4a90b504ea4bdb0ee2e356934ea70e63006b42faa63cc4a8cdbef02f098",
-		"build/protection.js": "c818201dc1aae5a4891c96750823b4af28d50478b1eec23735ba50db0829d94f",
+		"build/protection.asset.php": "5d4bc2663ea6e6ecb331c181d767671067defbab4b7a16a71d7be2a4fc2fd460",
+		"build/protection.js": "5d6527d840030a0f682e912011c3af22771d0c261b54481f03d638330aa607e6",
 		"build/style-accounts-rtl.css": "76b9f280e93eec63bcf3e2e18a0c4f7fe191002c3bc9c01642b63983ee4d02ea",
 		"build/style-accounts.css": "bf3039f48fd4dfb07f9752fe763d29f52eee185031f5217edf999ea6fa62e516"
 	}

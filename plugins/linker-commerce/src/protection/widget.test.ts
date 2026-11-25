@@ -165,6 +165,9 @@ it( 'mounts the registration widget once the final pane has a width', async () =
 		const options = render.mock.calls[ 0 ][ 1 ] as TurnstileOptions;
 		expect( options.size ).toBe( 'flexible' );
 		options[ 'error-callback' ]( '200500' );
+		await vi.waitFor( () =>
+			expect( window.turnstile!.reset ).toHaveBeenCalledWith( 'register' )
+		);
 		expect( marker.dataset.turnstileError ).toBe( '200500' );
 		expect( marker.querySelector( 'button' ) ).toHaveAttribute( 'hidden' );
 		options[ 'error-callback' ]( '110200' );
