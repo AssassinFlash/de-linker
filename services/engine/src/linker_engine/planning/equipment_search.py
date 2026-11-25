@@ -20,7 +20,19 @@ def candidate_record(
     backup = next(
         (row["actual"] for row in checks if row["id"] == "plant:backup_runtime"), None
     )
+    converters = [
+        row["actual"]
+        for row in checks
+        if row.get("semantic_id", row["id"]) == "converter_identity"
+    ]
+    nominal_ac_kw = (
+        sum(cast(list[float], converters))
+        if converters
+        and all(isinstance(kw, (int, float)) and kw > 0 for kw in converters)
+        else None
+    )
     return {
+        "nominal_ac_kw": nominal_ac_kw,
         "id": digest(encode(value)),
         key: value,
         "status": assessment["overall_status"],

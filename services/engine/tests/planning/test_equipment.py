@@ -5616,6 +5616,7 @@ def test_unknown_sizing_preserves_supported_stacks_and_assessed_capacity(
                 workspace.blobs.object(candidate["assessment_sha256"])
             )["checks"]
         }
+        assert candidate["nominal_ac_kw"] == checks["converter_identity"]["actual"]
         assert candidate["usable_energy_kwh"] == checks["usable_energy"]["actual"]
         expected = (
             None
