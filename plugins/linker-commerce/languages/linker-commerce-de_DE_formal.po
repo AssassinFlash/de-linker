@@ -4894,7 +4894,7 @@ msgstr "Prüfschlüssel"
 
 #: includes/Protection/HealthPage.php:36
 msgid "Hostname"
-msgstr ""
+msgstr "Hostname"
 
 #. translators: %d is the number of complete inquiries awaiting staff review.
 #: includes/Protection/IntakeAdmin.php:71
