@@ -214,9 +214,7 @@ final class ProductViewTest extends TestCase {
 		$product->allows( 'get_name' )->andReturn( 'SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)' );
 		$product->allows( 'get_permalink' )->andReturn( 'http://linker.test/de/produkt/goodwe-gw10k-et/' );
 
-		$view   = new ProductView( new CommerceState() );
-		$method = new \ReflectionMethod( ProductView::class, 'ask_url' );
-		$url    = $method->invoke( $view, $product );
+		$url = \Linker\Commerce\Presentation\PageUrls::product_contact( $product );
 
 		$this->assertStringStartsWith( 'http://linker.test/de/kontakt/?', $url );
 		$this->assertStringContainsString( 'intent=product', $url );

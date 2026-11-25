@@ -60,7 +60,7 @@ final class ProductView {
 				'designation' => Materials::apply_terms( $this->designation( $product->get_name(), $fields['brand'], $this->term_name( $product_id, 'pa_model' ) ) ),
 				'brand_logo'  => $this->brand_logo( $product_id ),
 				'cta_label'   => $this->cta_label(),
-				'ask_url'     => $this->ask_url( $product ),
+				'ask_url'     => PageUrls::product_contact( $product ),
 				'intro'       => Materials::apply_terms( '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ) ),
 				'body'        => Materials::apply_terms( $product->get_description() ),
 				'spec_groups' => $this->spec_groups( $product_id ),
@@ -367,29 +367,6 @@ final class ProductView {
 	 */
 	private function cta_url( \WC_Product $product ): string {
 		return esc_url_raw( add_query_arg( 'add-to-cart', (string) $product->get_id(), wc_get_cart_url() ) );
-	}
-
-	/**
-	 * The "Ask about this product" contact URL, in the product page's own
-	 * language: a German page opens the German contact form, whose receipt
-	 * then speaks German (AUDIT.md H1).
-	 *
-	 * @param \WC_Product $product The product.
-	 */
-	private function ask_url( \WC_Product $product ): string {
-		return esc_url_raw(
-			add_query_arg(
-				array(
-					'intent'     => 'product',
-					'kind'       => 'product',
-					'title'      => rawurlencode( html_entity_decode( $product->get_name(), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ),
-					'source_id'  => $product->get_id(),
-					'product_id' => $product->get_id(),
-					'source'     => $product->get_permalink(),
-				),
-				PageUrls::page( 'contact' )
-			)
-		);
 	}
 
 	/**
