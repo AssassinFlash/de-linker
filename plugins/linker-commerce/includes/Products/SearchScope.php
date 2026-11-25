@@ -44,13 +44,15 @@ final class SearchScope {
 		if ( ! preg_match( '/[0-9]/', $term ) ) {
 			return $search;
 		}
-		$ids = ( new ProductSearch() )->matching_ids( $term, null );
-		if ( array() === $ids ) {
-			return $search;
-		}
 		global $wpdb;
+		// A power mentioned in the body (for example, a compatible device) is not the product's own rating.
+		$native = preg_match( ProductSearch::POWER_QUERY, $term ) ? $search . " AND {$wpdb->posts}.post_type <> 'product'" : $search;
+		$ids    = ( new ProductSearch() )->matching_ids( $term, null );
+		if ( array() === $ids ) {
+			return $native;
+		}
 		$matches = implode( ',', array_map( 'absint', $ids ) );
-		return " AND ((1=1 {$search}) OR ({$wpdb->posts}.ID IN ({$matches}) AND {$wpdb->posts}.post_password = '')) ";
+		return " AND ((1=1 {$native}) OR ({$wpdb->posts}.ID IN ({$matches}) AND {$wpdb->posts}.post_password = '')) ";
 	}
 
 	/**

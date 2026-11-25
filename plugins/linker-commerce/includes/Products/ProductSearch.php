@@ -46,6 +46,9 @@ final class ProductSearch {
 	 */
 	public const MIN_LENGTH = 2;
 
+	/** A stated power rating, including a German decimal comma and optional space. */
+	public const POWER_QUERY = '/\b(\d+(?:[.,]\d+)?)\s*kW\b/iu';
+
 	/**
 	 * The published, catalogue-visible products whose name or SKU holds the
 	 * query, in the catalogue's own order, at most $limit of them.
@@ -148,11 +151,8 @@ final class ProductSearch {
 			return false;
 		}
 		$text = self::normalize( html_entity_decode( $product->get_name(), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) . ' ' . self::sku( $product ) );
-		if ( str_contains( $text, $needle ) ) {
-			return true;
-		}
-		if ( ! preg_match( '/\b(\d+(?:[.,]\d+)?)\s*kW\b/iu', $query, $power ) ) {
-			return false;
+		if ( ! preg_match( self::POWER_QUERY, $query, $power ) ) {
+			return str_contains( $text, $needle );
 		}
 		foreach ( wp_parse_list( str_replace( $power[0], ' ', $query ) ) as $word ) {
 			if ( ! str_contains( $text, self::normalize( $word ) ) ) {
