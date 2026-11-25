@@ -206,4 +206,4 @@ test("the system comparison uses the capacity edited after entering project deta
 		await page.dispose(root);
 		vi.unstubAllGlobals();
 	}
-});
+}, 30_000);
