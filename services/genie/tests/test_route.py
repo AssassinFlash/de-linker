@@ -437,6 +437,31 @@ def test_guest_inquiry_clause_leaves_a_specification_question_intact(
     assert not route.answer
 
 
+@pytest.mark.parametrize(
+    ("lang", "question"),
+    [
+        (
+            "en",
+            "Can you help plan my whole solar project, and what is the usable capacity of this battery?",
+        ),
+        (
+            "de",
+            "Können Sie mein gesamtes PV-Projekt planen und wie hoch ist die nutzbare Kapazität dieses Speichers?",
+        ),
+    ],
+)
+@pytest.mark.parametrize("intent", ["sizing", None])
+def test_product_page_followup_reads_the_battery_named_by_the_page(
+    lang: str, question: str, intent: str | None
+) -> None:
+    battery = Subject((1832,), {1832: "home-storage"}, {1832: "B2-10.0-HV1"})
+    reading = _reading(intent) if intent else None
+    route = plan(question, [], reading, battery, lang)
+    assert route.name == "documents"
+    assert Call("linker/get-product", {"product_id": 1832, "lang": lang}) in route.calls
+    assert any(call.ability == "linker/search-knowledge" for call in route.calls)
+
+
 def test_esa_pairing_sentence_does_not_replace_an_extra_specification() -> None:
     route = plan(
         "Which battery fits the GoodWe ESA 10 kW, and what AC current is allowed?",

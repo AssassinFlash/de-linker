@@ -823,16 +823,24 @@ def _plan_turn(
     unknown_codes = _unknown_codes(message, subject)
     scripted = _scripted(message, lang, reasons)
     if scripted is not None:
-        if not (
-            written
-            or unknown_codes
-            or _ENGINEERING_DETAIL.search(message)
-            or intent in ("documents_specs", "pairing_compatibility")
+        kind, reply = scripted
+        only_scope = kind == "weather" or _catalog_request(message, [], _SCOPE_WORDS)
+        equipment = bool(
+            written or unknown_codes or _ENGINEERING_DETAIL.search(message)
+        )
+        if (
+            only_scope
+            and not equipment
+            and intent not in ("documents_specs", "pairing_compatibility")
         ):
-            return scripted
+            return reply
         # A remit or guest-inquiry clause can dominate the classifier while the
         # rest of the question still needs a manufacturer's evidence.
-        if intent not in ("compare", "pairing_compatibility", "find_products"):
+        if (equipment or subject.ids) and intent not in (
+            "compare",
+            "pairing_compatibility",
+            "find_products",
+        ):
             intent = "documents_specs"
     # The Roof detail step's role and the cost of skipping it (#497). The
     # sentence is signed, and the configurator action's URL comes from
@@ -1760,8 +1768,8 @@ _PRICE_WORDS = frozenset(
 # Explicit equipment data that must be answered alongside a compatibility request.
 _ENGINEERING_DETAIL = re.compile(
     r"\b(?:voltage|(?:AC|DC|input|output|rated|charging|discharge) currents?|power rating|"
-    r"clearances?|installation|wiring|datasheets?|manuals?|"
-    r"\w*spannung|\w*strom|\w*abstand|\w*abstände|nennleistung|montage|anschluss|"
+    r"capacit(?:y|ies)|clearances?|installation|wiring|datasheets?|manuals?|"
+    r"\w*kapazit[äa]t\w*|\w*spannung|\w*strom|\w*abstand|\w*abstände|nennleistung|montage|anschluss|"
     r"datenbl[aä]tt?\w*|handb[uü]ch\w*)\b",
     re.I,
 )
@@ -2694,7 +2702,21 @@ _ABSENCE = (
 _INQUIRY_NOUN = ("quote", "inquiry", "enquiry", "anfrage", "angebot")
 
 
-def _scripted(message: str, lang: str, reasons: list[str]) -> Route | None:
+# A fixed project-remit or guest-inquiry sentence can answer the whole request
+# only when every word belongs to that question. Other words remain available
+# for product and manufacturer lookups, including references to the current page.
+_SCOPE_WORDS = frozenset(
+    "can could may would is it possible you i me us please also help with on for plan planning design "
+    "my our a an the and whole entire complete full solar pv system installation project projects "
+    "get make ask request submit send quote quotation inquiry enquiry as guest without having no account "
+    "kann können koennen ich wir sie mir uns bitte auch ist es möglich moeglich bei der die das den "
+    "dem des mit für fuer zu zur und ein eine einen einem meines meiner mein unsere unser gesamtes "
+    "gesamten gesamte ganzen ganze kompletten pv anlage projekt planung planen helfen "
+    "angebot angebotsanfrage anfrage stellen anfragen senden erhalten ohne konto kundenkonto anmeldung".split()
+)
+
+
+def _scripted(message: str, lang: str, reasons: list[str]) -> tuple[str, Route] | None:
     """A fixed sentence that beats a confident misreading (#440).
 
     An inquiry a guest may send, the whole-project remit, and the weather.
@@ -2715,7 +2737,7 @@ def _scripted(message: str, lang: str, reasons: list[str]) -> Route | None:
     from linker_genie.template import SCRIPTED
 
     language = "de" if lang == "de" else "en"
-    return Route(
+    return kind, Route(
         "scripted",
         no_cards=True,
         no_handoff=True,
