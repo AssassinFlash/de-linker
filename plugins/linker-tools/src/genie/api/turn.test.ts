@@ -893,11 +893,11 @@ test( 'refreshes a resumed queue clock before applying its running deadline', as
 			{ turnUrl: '/turn', nonce: 'n', fetcher },
 			job
 		);
-		const ready = expect( answer ).resolves.toMatchObject( {
-			blocks: [ { text: 'Ready' } ],
-		} );
-		await vi.advanceTimersByTimeAsync( 600 );
-		await ready;
+		const [ result ] = await Promise.all( [
+			answer,
+			vi.advanceTimersByTimeAsync( 600 ),
+		] );
+		expect( result.blocks ).toMatchObject( [ { text: 'Ready' } ] );
 		expect( fetcher ).toHaveBeenCalledOnce();
 	} finally {
 		vi.useRealTimers();

@@ -91,7 +91,18 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 		$reads  = 0;
 		$stream = "event: reading\ndata: {\"id\":\"att1\",\"text\":\"private extraction\"}\n\nevent: block\ndata: {\"type\":\"text\",\"text\":\"Look at the AC output.\",\"refs\":[]}\n\nevent: done\ndata: {}\n\n";
 		$queue  = new class() {
-			public string $state         = 'running';
+			/**
+			 * Service state returned by the next poll.
+			 *
+			 * @var string
+			 */
+			public string $state = 'running';
+
+			/**
+			 * Whether the reader can renew the account credential.
+			 *
+			 * @var bool
+			 */
 			public bool $expect_identity = false;
 		};
 		$fetch  = function ( string $url, array $body, array $headers ) use ( &$job, &$scope, &$starts, &$reads, $stage, $stream, $outcome, $worker_status, &$id, $queue, $queued, $account ) {
