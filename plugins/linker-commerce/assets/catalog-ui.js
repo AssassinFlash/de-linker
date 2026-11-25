@@ -46,8 +46,16 @@
 				var result = source.content.querySelector('[data-catalog-listing]');
 				var filters = source.content.getElementById('sidebar-filters');
 				if (!result || !filters) throw new Error('Missing catalogue results');
+				var focused = sidebar.contains(document.activeElement) ? document.activeElement : null;
 				listing.replaceWith(result);
-				sidebar.replaceWith(filters);
+				sidebar.replaceChildren(...filters.childNodes);
+				if (focused) {
+					var replacement = focused.id && document.getElementById(focused.id);
+					if (!replacement && focused.matches('a[href]')) {
+						replacement = Array.from(sidebar.querySelectorAll('a[href]')).find(link => link.href === focused.href);
+					}
+					(replacement || document.getElementById('product-filter-close'))?.focus({preventScroll: true});
+				}
 				window.linkerComparePaint?.();
 			} catch (error) {
 				if (!controller.signal.aborted) {

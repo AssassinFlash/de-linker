@@ -76,3 +76,27 @@ test('typing a model replaces the catalogue with the matching archive, including
  assert.equal(window.document.querySelector('#sidebar-filters').textContent,'0');
  dom.window.close();
 });
+
+test('a pending catalogue search keeps an open filter drawer focused and usable', async () => {
+ const window=fixture();
+ const doc=window.document;
+ doc.body.insertAdjacentHTML('beforeend','<form action="https://linker.test/products/"><input id="search-box" name="q"></form><div data-catalog-listing></div>');
+ let resolveResponse, requestStarted;
+ const started=new Promise(resolve=>{ requestStarted=resolve; });
+ window.fetch=()=>new Promise(resolve=>{ resolveResponse=resolve; requestStarted(); });
+ const input=doc.querySelector('#search-box');
+ input.value='SAJ';
+ input.dispatchEvent(new window.Event('input',{bubbles:true}));
+ await started;
+ doc.querySelector('#product-filter-open').click();
+ const html='<aside id="sidebar-filters"><button id="product-filter-close">Close</button><button id="product-filter-apply">Show products</button></aside><div data-catalog-listing>SAJ</div>';
+ resolveResponse({ok:true,text:async()=>html});
+ await new Promise(resolve=>setTimeout(resolve,0));
+ assert.equal(doc.querySelector('[data-catalog-listing]').textContent,'SAJ');
+ assert.equal(doc.querySelector('#sidebar-filters').classList.contains('is-mobile-open'),true);
+ assert.equal(doc.activeElement.id,'product-filter-close');
+ doc.querySelector('#product-filter-apply').click();
+ assert.equal(doc.body.classList.contains('product-filter-open'),false);
+ assert.equal(doc.activeElement.id,'product-filter-open');
+ window.close();
+});
