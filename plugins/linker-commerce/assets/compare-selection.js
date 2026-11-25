@@ -259,6 +259,64 @@
 	syncFromPage();
 	paint();
 
+	var differences = document.querySelector('[data-compare-differences]');
+	if (differences) {
+		differences.addEventListener('change', function () {
+			document.querySelectorAll('#linker-compare [data-compare-different="false"]').forEach(function (row) {
+				row.hidden = differences.checked;
+			});
+		});
+	}
+
+	var picker = document.querySelector('[data-compare-picker]');
+	if (picker) {
+		var input = picker.querySelector('input');
+		var matches = picker.querySelector('[data-compare-matches]');
+		var feedback = picker.querySelector('[role="status"]');
+		var selection = clean(document.getElementById('linker-compare').dataset.compareIds.split(','));
+		var lookup;
+		var delay;
+		input.addEventListener('input', function () {
+			window.clearTimeout(delay);
+			lookup?.abort();
+			matches.replaceChildren();
+			feedback.textContent = '';
+			var term = input.value.trim();
+			if (term.length < Number(picker.dataset.min)) return;
+			var controller = new AbortController();
+			lookup = controller;
+			delay = window.setTimeout(async function () {
+				var url = new URL(picker.dataset.searchUrl, document.baseURI);
+				url.searchParams.set('q', term);
+				url.searchParams.set('lang', picker.dataset.language);
+				try {
+					var response = await window.fetch(url, { signal: controller.signal });
+					if (!response.ok) throw new Error(String(response.status));
+					var result = await response.json();
+					if (controller.signal.aborted) return;
+					result.items.forEach(function (item) {
+						var id = aliases[String(item.id)] || String(item.id);
+						if (selection.includes(id)) return;
+						var li = document.createElement('li');
+						var link = document.createElement('a');
+						link.href = picker.dataset.pageUrl + '?ids=' + selection.concat(id).join(',');
+						link.textContent = item.title;
+						if (item.sku) {
+							var sku = document.createElement('small');
+							sku.textContent = item.sku;
+							link.append(sku);
+						}
+						li.append(link);
+						matches.append(li);
+					});
+					if (!matches.children.length) feedback.textContent = picker.dataset.noMatches;
+				} catch (error) {
+					if (!controller.signal.aborted) feedback.textContent = picker.dataset.failed;
+				}
+			}, 200);
+		});
+	}
+
 	var scroll = document.querySelector('#linker-compare .linker-compare-scroll');
 	var hint = document.querySelector('[data-compare-scroll-hint]');
 	if (scroll && hint) {

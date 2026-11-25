@@ -53,3 +53,25 @@ test('the first tap on Filters works while the catalog page is still arriving', 
  assert.equal(document.activeElement.id, 'product-filter-open');
  dom.window.close();
 });
+
+test('typing a model replaces the catalogue with the matching archive, including its empty state', async () => {
+ const dom = new JSDOM('<form class="wb-search" action="/de/produkte/"><input id="search-box" name="q"><input type="hidden" name="brand" value="goodwe"><span role="status"></span></form><aside id="sidebar-filters">Old facets</aside><div data-catalog-listing>Old cards</div>', {url:'https://linker.test/de/produkte/', runScripts:'outside-only'});
+ const {window}=dom;
+ let requested;
+ window.fetch=async (url, options)=>{
+  requested=new URL(url);
+  assert.equal(options.credentials,'same-origin');
+  return {ok:true,text:async()=>'<aside id="sidebar-filters">0</aside><div data-catalog-listing><p role="status">Keine Produkte gefunden</p><a href="/de/produkte/">Alle Produkte</a></div>'};
+ };
+ window.eval(readFileSync(new URL('../../assets/catalog-ui.js',import.meta.url),'utf8'));
+ const input=window.document.querySelector('input');
+ input.value='ZZ9117';
+ input.dispatchEvent(new window.Event('input',{bubbles:true}));
+ await new Promise(resolve=>setTimeout(resolve,400));
+ assert.equal(requested?.searchParams.get('q'),'ZZ9117');
+ assert.equal(requested.searchParams.get('brand'),'goodwe');
+ assert.equal(window.document.querySelector('[data-catalog-listing] a').pathname,'/de/produkte/');
+ assert.equal(window.document.querySelector('[data-catalog-listing]').textContent.includes('Old cards'),false);
+ assert.equal(window.document.querySelector('#sidebar-filters').textContent,'0');
+ dom.window.close();
+});

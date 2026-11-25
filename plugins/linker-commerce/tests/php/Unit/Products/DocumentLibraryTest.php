@@ -355,6 +355,30 @@ final class DocumentLibraryTest extends TestCase {
 		$this->assertSame( 'manual', DocumentLibrary::type( 'Handbuch' ) );
 	}
 
+	/** Same-type source documents follow the reader's language in both registers. */
+	public function test_datasheets_follow_the_page_language(): void {
+		$library = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
+		$this->assertSame( array( 'DE', 'EN' ), array_column( array_slice( $library->documents( 'de' ), 0, 2 ), 'language' ) );
+		$this->assertSame( array( 'EN', 'DE' ), array_column( array_slice( $library->documents( 'en' ), 0, 2 ), 'language' ) );
+	}
+
+	/** Prefer the general edition to a regional file even when Woo describes both languages as English. */
+	public function test_australian_edition_follows_general_manuals(): void {
+		$general = array(
+			'title'    => 'General datasheet',
+			'url'      => 'https://de-linker.test/global.pdf',
+			'type'     => 'datasheet',
+			'role'     => 'datasheet',
+			'language' => 'EN',
+		);
+		$au      = array_merge( $general, array( 'url' => 'https://de-linker.test/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf' ) );
+		$view    = new \Linker\Commerce\Storefront\ProductView( new \Linker\Commerce\Gating\CommerceState(), static fn(): array => array( $au, $general ) );
+		$library = new DocumentLibrary( $view, fn (): array => $this->manifest() );
+		foreach ( array( 'de', 'en' ) as $lang ) {
+			$this->assertSame( array( 'EN', 'EN-AU' ), array_column( $library->documents( $lang ), 'language' ) );
+		}
+	}
+
 	/**
 	 * The register is ordered by type first, then by title — the order the
 	 * live register used.
