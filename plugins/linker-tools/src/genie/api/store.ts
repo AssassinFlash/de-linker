@@ -78,18 +78,26 @@ export function storeClient(
 					body: JSON.stringify( { proof } ),
 				}
 			);
-			if ( ! response.ok ) {
-				if ( response.status === 409 ) {
-					const error = await response.json().catch( () => null );
-					if ( error?.code === 'linker_solution_changed' ) {
-						return 'stale';
-					}
+			if ( response.ok ) {
+				const receipt = await response.json();
+				if ( containsSelection( receipt.items ?? [], lines ) ) {
+					return 'added';
 				}
-				return 'unverified';
-			}
-			const receipt = await response.json();
-			if ( containsSelection( receipt.items ?? [], lines ) ) {
-				return 'added';
+			} else {
+				const refusal = await response.json().catch( () => null );
+				if (
+					response.status === 409 &&
+					refusal?.code === 'linker_solution_changed'
+				) {
+					return 'stale';
+				}
+				// An intermediary's HTML or empty gateway response cannot confirm whether Woo committed.
+				if (
+					refusal !== null ||
+					! [ 502, 504 ].includes( response.status )
+				) {
+					return 'unverified';
+				}
 			}
 		} catch {
 			// Woo can commit the draft before the browser receives a complete receipt.

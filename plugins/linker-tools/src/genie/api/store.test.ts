@@ -197,6 +197,18 @@ test( 'a refused product read rejects instead of passing an empty shelf', async 
 } );
 
 test.each( [
+	{
+		receipt: 'HTML from a bad gateway',
+		write: () =>
+			new Response( '<html>Bad Gateway</html>', {
+				status: 502,
+				headers: { 'Content-Type': 'text/html' },
+			} ),
+	},
+	{
+		receipt: 'empty gateway timeout',
+		write: () => new Response( null, { status: 504 } ),
+	},
 	{ receipt: 'incomplete JSON', write: () => new Response( '{"items":' ) },
 	{ receipt: 'missing line', write: () => json( { items: [] } ) },
 	{
@@ -283,7 +295,7 @@ test.each( [
 	}
 );
 
-test.each( [ 403, 503 ] )(
+test.each( [ 403, 502, 503, 504 ] )(
 	'an explicit %i refusal cannot be confirmed from a product already in the cart',
 	async ( status ) => {
 		const fetcher = vi
