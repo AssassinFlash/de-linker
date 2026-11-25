@@ -485,7 +485,6 @@
   .sc-configurator .sc-field, .sc-configurator .sc-fields .sc-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; font-size: 14px; font-weight: 500; }
   .sc-configurator .sc-fields .sc-field > span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; }
   .sc-configurator .sc-fields .sc-field :is(input, select, textarea) { min-height: 46px; padding: 11px; border: 1px solid var(--proto-input-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); box-shadow: none; }
-  .sc-configurator .linker-inquiry-form button[type="submit"] { background-color: var(--proto-accent); color: var(--proto-neutral-0); }
   .sc-configurator :is(input, select, textarea) { width: 100%; min-width: 0; min-height: 46px; padding: 11px; border: 1px solid var(--proto-input-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); }
   .sc-configurator textarea { min-height: 90px; resize: vertical; }
   .sc-configurator :is(input[type="checkbox"], input[type="radio"]) { width: 20px; height: 20px; min-height: 20px; accent-color: var(--proto-accent); }
@@ -501,7 +500,7 @@
   .sc-configurator .sc-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 44px; max-width: 100%; padding: 9px 15px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-neutral-0); color: var(--proto-ink-deep); font-weight: 600; line-height: 1.55; text-align: center; text-decoration: none; transition: background var(--proto-duration) var(--proto-ease); }
   .sc-configurator .sc-button:hover:enabled { background: var(--proto-teal-50); }
   .sc-configurator .sc-primary { background: var(--proto-accent); color: var(--proto-neutral-0); border-color: var(--proto-accent); }
-  .sc-configurator .sc-primary:hover:enabled { background: var(--proto-teal-700); border-color: var(--proto-teal-700); }
+  .sc-configurator :is(.sc-primary, .linker-form-primary):hover:enabled { background: var(--proto-teal-700); border-color: var(--proto-teal-700); }
   .sc-configurator .sc-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 26px; }
   .sc-configurator .sc-system-options > p + p { margin-top: 12px; }
   .sc-configurator .sc-product-filter { margin-block: 16px 20px; }
@@ -668,7 +667,10 @@
   .sc-configurator .sc-review .sc-actions { margin-top: 16px; }
   .sc-configurator .sc-main nav:not(.sc-nav) { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-block: 16px 24px; }
   .sc-configurator .sc-draft-transfer .sc-scenario-block > p { margin-block: 12px; }
-  .sc-configurator .sc-draft-transfer .sc-button.sc-primary { min-height: 44px; padding: 9px 15px; border-radius: var(--proto-radius-md); font: inherit; font-weight: 600; background: var(--proto-accent); color: var(--proto-neutral-0); border-color: var(--proto-accent); white-space: normal; }
+  .sc-configurator .linker-inquiry-form .linker-form-consent { display: flex; align-items: flex-start; gap: var(--proto-space-2); margin-block: var(--proto-space-3); }
+  .sc-configurator .linker-inquiry-form .linker-form-consent input { flex: none; margin: 0; padding: 0; }
+  .sc-configurator .linker-inquiry-form .linker-form-primary { display: flex; width: fit-content; max-width: 100%; align-items: center; justify-content: center; gap: var(--proto-space-2); margin-block: var(--proto-space-3); cursor: pointer; }
+  .sc-configurator .sc-draft-transfer :is(.sc-button.sc-primary, .linker-form-primary) { min-height: 44px; padding: 9px 15px; border-radius: var(--proto-radius-md); font: inherit; font-weight: 600; background: var(--proto-accent); color: var(--proto-neutral-0); border-color: var(--proto-accent); white-space: normal; }
   .sc-configurator .sc-draft-transfer .sc-secondary { background: var(--proto-neutral-0); color: var(--proto-ink-deep); border-color: var(--proto-color-line); }
   .sc-configurator .sc-draft-transfer .sc-table-scroll { max-width: 100%; overflow-x: auto; }
   @media (prefers-reduced-motion: reduce) {
