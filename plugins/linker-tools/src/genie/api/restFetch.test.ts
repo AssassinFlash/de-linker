@@ -82,6 +82,48 @@ it( 'keeps an expired anonymous page usable when core confirms the visitor is st
 	).toBe( false );
 } );
 
+it( 'polls a confirmed guest once per read and recognizes a login in another tab on return', async () => {
+	const mount = document.createElement( 'div' );
+	mount.dataset.genieNonceUrl = '/wp-admin/admin-ajax.php?action=rest-nonce';
+	mount.dataset.signedIn = '0';
+	document.body.append( mount );
+	const denied = () =>
+		Response.json( { code: 'rest_cookie_invalid_nonce' }, { status: 403 } );
+	const transport = vi
+		.fn< typeof fetch >()
+		.mockResolvedValueOnce( denied() )
+		.mockResolvedValueOnce( new Response( '0', { status: 400 } ) )
+		.mockResolvedValueOnce( new Response( 'guest' ) )
+		.mockResolvedValueOnce( new Response( 'guest poll' ) )
+		.mockResolvedValueOnce( denied() )
+		.mockResolvedValueOnce( new Response( 'newnonce02' ) )
+		.mockResolvedValueOnce( new Response( 'signed-in poll' ) );
+	vi.stubGlobal( 'fetch', transport );
+	const request = { headers: { 'X-WP-Nonce': 'guestpage2' } };
+	await genieFetch( '/turn/job', request );
+	await genieFetch( '/turn/job', request );
+	expect(
+		new Headers( transport.mock.calls[ 3 ][ 1 ]?.headers ).get(
+			'X-WP-Nonce'
+		)
+	).toBeNull();
+	window.dispatchEvent( new Event( 'focus' ) );
+	expect( await ( await genieFetch( '/turn/job', request ) ).text() ).toBe(
+		'signed-in poll'
+	);
+	expect(
+		new Headers( transport.mock.calls[ 4 ][ 1 ]?.headers ).get(
+			'X-WP-Nonce'
+		)
+	).toBe( 'guestpage2' );
+	expect(
+		new Headers( transport.mock.calls[ 6 ][ 1 ]?.headers ).get(
+			'X-WP-Nonce'
+		)
+	).toBe( 'newnonce02' );
+	expect( transport ).toHaveBeenCalledTimes( 7 );
+} );
+
 it( 'returns the second 403 without starting another renewal', async () => {
 	const mount = document.createElement( 'div' );
 	mount.dataset.genieNonceUrl = '/wp-admin/admin-ajax.php?action=rest-nonce';

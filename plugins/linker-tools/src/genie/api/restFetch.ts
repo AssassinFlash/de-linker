@@ -1,5 +1,20 @@
 /** Renew the WordPress session nonce only after core rejected authentication. */
-let renewed: { initial: string; current: string } | undefined;
+let renewed: { initial: string; current: string | null } | undefined;
+
+function checkGuestSession() {
+	if ( renewed?.current === null ) {
+		renewed = undefined;
+	}
+}
+
+if ( typeof window !== 'undefined' ) {
+	window.addEventListener( 'focus', checkGuestSession );
+	window.addEventListener( 'pageshow', checkGuestSession );
+	window.addEventListener(
+		'linker-genie-identity-change',
+		checkGuestSession
+	);
+}
 
 export const genieFetch: typeof fetch = async ( input, init ) => {
 	const headers = new Headers( init?.headers );
@@ -8,7 +23,11 @@ export const genieFetch: typeof fetch = async ( input, init ) => {
 		return fetch( input, init );
 	}
 	if ( renewed?.initial === initial ) {
-		headers.set( 'X-WP-Nonce', renewed.current );
+		if ( renewed.current === null ) {
+			headers.delete( 'X-WP-Nonce' );
+		} else {
+			headers.set( 'X-WP-Nonce', renewed.current );
+		}
 		init = { ...init, headers };
 	}
 	const response = await fetch( input, init );
@@ -38,6 +57,7 @@ export const genieFetch: typeof fetch = async ( input, init ) => {
 		mount?.dataset.signedIn === '0'
 	) {
 		// Core's rest-nonce action has no logged-out handler.
+		renewed = { initial, current: null };
 		headers.delete( 'X-WP-Nonce' );
 		return fetch( input, { ...init, headers } );
 	}
