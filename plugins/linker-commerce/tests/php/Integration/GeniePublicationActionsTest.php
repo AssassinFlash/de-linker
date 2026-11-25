@@ -132,6 +132,8 @@ final class GeniePublicationActionsTest extends IntegrationTestCase {
 		$answer = ( new DraftActions() )->save( $this->request( $this->token( $a, $b ) ) );
 		$this->assertInstanceOf( WP_REST_Response::class, $answer );
 		$this->assertSame( 201, $answer->get_status() );
+		$this->assertSame( array( 'id', 'url' ), array_keys( $answer->get_data() ) );
+		$this->assertSame( ( new PublicationGuard() )->dependencies(), EnginePublication::dependencies( $answer ) );
 		$id = $answer->get_data()['id'];
 		$this->later(
 			static function () use ( $id ): void {
@@ -149,6 +151,24 @@ final class GeniePublicationActionsTest extends IntegrationTestCase {
 		$b->save();
 		$this->assertSame( $before, $store->historical_items( $id ) );
 		$this->assertSame( $snapshot, $store->snapshot( $id ) );
+	}
+
+	/** Guests receive their saved-solution destination without the private publication manifest. */
+	public function test_guest_save_returns_the_same_compact_receipt(): void {
+		$a = $this->product( '100' );
+		$b = $this->product( '200' );
+		$this->as_user( 0 );
+		$answer = ( new DraftActions() )->save( $this->request( $this->token( $a, $b ) ) );
+		$this->assertInstanceOf( WP_REST_Response::class, $answer );
+		$this->assertSame( 202, $answer->get_status() );
+		$this->assertSame(
+			array(
+				'id'  => 0,
+				'url' => SavedSolutions::url( 0 ),
+			),
+			$answer->get_data()
+		);
+		$this->assertSame( ( new PublicationGuard() )->dependencies(), EnginePublication::dependencies( $answer ) );
 	}
 
 	/** A source change during saving removes only the new private record. */

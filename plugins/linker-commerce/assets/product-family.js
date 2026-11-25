@@ -103,34 +103,21 @@
 		}
 	}
 
-	var cards = document.querySelectorAll( '[data-linker-family-card]' );
-	Array.prototype.forEach.call( cards, function ( card ) {
-		var rows = memberRows( card );
-		Array.prototype.forEach.call(
-			card.querySelectorAll( '[data-linker-select-product]' ),
-			function ( button ) {
-				button.addEventListener( 'click', function () {
-					var member = memberById( rows, button.getAttribute( 'data-linker-select-product' ) );
-					if ( ! member ) {
-						return;
-					}
-					select( card, member );
-					Array.prototype.forEach.call(
-						card.querySelectorAll( '[data-linker-select-product]' ),
-						function ( other ) {
-							if ( other === button ) {
-								other.setAttribute( 'aria-current', 'true' );
-							} else {
-								other.removeAttribute( 'aria-current' );
-							}
-						}
-					);
-					var picker = card.querySelector( '.card-product-picker' );
-					if ( picker ) {
-						picker.open = false;
-					}
-				} );
+	document.addEventListener( 'click', function ( event ) {
+		var button = event.target.closest?.( '[data-linker-select-product]' );
+		var card = button?.closest( '[data-linker-family-card]' );
+		if ( ! card ) return;
+		var member = memberById( memberRows( card ), button.getAttribute( 'data-linker-select-product' ) );
+		if ( ! member ) return;
+		select( card, member );
+		card.querySelectorAll( '[data-linker-select-product]' ).forEach( function ( other ) {
+			if ( other === button ) {
+				other.setAttribute( 'aria-current', 'true' );
+			} else {
+				other.removeAttribute( 'aria-current' );
 			}
-		);
+		} );
+		var picker = card.querySelector( '.card-product-picker' );
+		if ( picker ) picker.open = false;
 	} );
 } )( window, document );

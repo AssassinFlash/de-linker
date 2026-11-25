@@ -253,8 +253,27 @@ export function NewProject({
 					: (seedBrief.system_scope ?? "new_pv_storage"),
 		},
 	};
-	const seeded =
-		useHints && entryHints?.backup && entryHints.backup !== "none"
+	const goal = useHints ? entryHints?.commercialGoal : undefined;
+	const commercialInputs =
+		goal === "ev_buffer"
+			? {
+					...initialInputs,
+					brief: {
+						...initialInputs.brief,
+						project_note: __("Buffer peaks from EV charging.", "linker-tools"),
+					},
+				}
+			: initialInputs;
+	const seeded = goal
+		? changeEnergyGoal(
+				commercialInputs,
+				goal === "backup"
+					? "backup"
+					: goal === "self_consumption"
+						? "self"
+						: "peak",
+			)
+		: useHints && entryHints?.backup && entryHints.backup !== "none"
 			? changeEnergyGoal(initialInputs, "backup")
 			: initialInputs;
 	const draftInputs = draft ?? seeded;
@@ -1339,8 +1358,7 @@ export function NewProject({
 						edit={edit}
 						creation={{
 							...(returnToComparison &&
-								!profileForm.file &&
-								Object.keys(inputs).every((key) => key === "brief") && {
+								!profileForm.file && {
 									returnToComparison,
 									comparisonDisabled: invalidDemand.has("annual"),
 								}),

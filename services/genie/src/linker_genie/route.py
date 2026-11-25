@@ -720,11 +720,14 @@ def _esa_battery_fit(compact: str) -> bool:
     Speicher passt zum SAJ" do not match. A compare names the ESA and is
     excluded so this sentence does not replace that answer.
     """
-    if "compare" in compact or "vergleichen" in compact:
-        return False
-    if "goodweesa" not in compact:
-        return False
-    return "whichbatteryfits" in compact or "welcherspeicherpasst" in compact
+    return (
+        re.fullmatch(
+            r"(?:whichbatteryfits(?:the)?goodweesa|welcherspeicherpasst(?:zum|zur)?goodweesa)"
+            r"(?:[0-9]+kw)?",
+            compact,
+        )
+        is not None
+    )
 
 
 def _attach_esa_battery(route: Route, message: str, lang: str) -> Route:
@@ -816,9 +819,29 @@ def _plan_turn(
     # fixed sentences (#440). They beat a confident inquiry, sizing or company
     # reading: those readings called inquiry-status, size-hint or handoff-team,
     # and the model then stated facts the reference does not contain.
+    written = _written_models(matches, message)
+    unknown_codes = _unknown_codes(message, subject)
     scripted = _scripted(message, lang, reasons)
     if scripted is not None:
-        return scripted
+        kind, reply = scripted
+        only_scope = kind == "weather" or _catalog_request(message, [], _SCOPE_WORDS)
+        equipment = bool(
+            written or unknown_codes or _ENGINEERING_DETAIL.search(message)
+        )
+        if (
+            only_scope
+            and not equipment
+            and intent not in ("documents_specs", "pairing_compatibility")
+        ):
+            return reply
+        # A remit or guest-inquiry clause can dominate the classifier while the
+        # rest of the question still needs a manufacturer's evidence.
+        if (equipment or subject.ids) and intent not in (
+            "compare",
+            "pairing_compatibility",
+            "find_products",
+        ):
+            intent = "documents_specs"
     # The Roof detail step's role and the cost of skipping it (#497). The
     # sentence is signed, and the configurator action's URL comes from
     # size-hint. A named product, a stated or asked size or a company reading
@@ -840,9 +863,7 @@ def _plan_turn(
     # conflict hint would also demand that product's card.
     # Dossier §1.1 and §1.11 have no procedure for either mix.
     # Written codes, unknown codes and the aggregate are read once.
-    written = _written_models(matches, message)
     several_written = len(written) >= SEVERAL_MODELS
-    unknown_codes = _unknown_codes(message, subject)
     brand_conflict = _conflicts_with_written_brand(written, matches, subject)
     aggregate = None if brand_conflict else extreme_input(message, matches, lang)
     # The extreme is the turn in the same cases the blocks below return it:
@@ -1077,7 +1098,16 @@ def _plan_turn(
             reasons=tuple(reasons),
         )
     asks_clearance = clearance_question(message)
-    if intent == "documents_specs" or (asks_clearance and subject.ids):
+    pairing_detail = (
+        pairing_question
+        and bool(subject.ids)
+        and (asks_clearance or _ENGINEERING_DETAIL.search(message))
+    )
+    if (
+        intent == "documents_specs"
+        or (asks_clearance and subject.ids)
+        or pairing_detail
+    ):
         # Known products are fetched with get-product; a code with no product
         # id is searched. Either call counts as searched. What does not fit
         # the four-call budget is searched=False — never reported absent.
@@ -1085,7 +1115,7 @@ def _plan_turn(
         doc_calls, notes = _documents_calls(
             calls, notes, message, matches, subject, lang
         )
-        if asks_clearance and pairing_question and (pairing := _pairing(subject, lang)):
+        if pairing_question and (pairing := _pairing(subject, lang)):
             doc_calls, notes = _limit_route_calls(
                 (doc_calls[0], pairing, *doc_calls[1:]), notes
             )
@@ -1733,6 +1763,15 @@ _DIRECT_PRICE = re.compile(
 _PRICE_WORDS = frozenset(
     "what is are the a this model product price prices for of how much do does it cost costs "
     "was ist der die das den dem dieses modell produkt für fuer von preis preise wie viel kostet kosten".split()
+)
+
+# Explicit equipment data that must be answered alongside a compatibility request.
+_ENGINEERING_DETAIL = re.compile(
+    r"\b(?:voltage|(?:AC|DC|input|output|rated|charging|discharge) currents?|power rating|"
+    r"capacit(?:y|ies)|clearances?|installation|wiring|datasheets?|manuals?|"
+    r"\w*kapazit[äa]t\w*|\w*spannung|\w*strom|\w*abstand|\w*abstände|nennleistung|montage|anschluss|"
+    r"datenbl[aä]tt?\w*|handb[uü]ch\w*)\b",
+    re.I,
 )
 
 _PAIRING_CUE = re.compile(
@@ -2663,7 +2702,21 @@ _ABSENCE = (
 _INQUIRY_NOUN = ("quote", "inquiry", "enquiry", "anfrage", "angebot")
 
 
-def _scripted(message: str, lang: str, reasons: list[str]) -> Route | None:
+# A fixed project-remit or guest-inquiry sentence can answer the whole request
+# only when every word belongs to that question. Other words remain available
+# for product and manufacturer lookups, including references to the current page.
+_SCOPE_WORDS = frozenset(
+    "can could may would is it possible you i me us please also help with on for plan planning design "
+    "my our a an the and whole entire complete full solar pv system installation project projects "
+    "get make ask request submit send quote quotation inquiry enquiry as guest without having no account "
+    "kann können koennen ich wir sie mir uns bitte auch ist es möglich moeglich bei der die das den "
+    "dem des mit für fuer zu zur und ein eine einen einem meines meiner mein unsere unser gesamtes "
+    "gesamten gesamte ganzen ganze kompletten pv anlage projekt planung planen helfen "
+    "angebot angebotsanfrage anfrage stellen anfragen senden erhalten ohne konto kundenkonto anmeldung".split()
+)
+
+
+def _scripted(message: str, lang: str, reasons: list[str]) -> tuple[str, Route] | None:
     """A fixed sentence that beats a confident misreading (#440).
 
     An inquiry a guest may send, the whole-project remit, and the weather.
@@ -2684,7 +2737,7 @@ def _scripted(message: str, lang: str, reasons: list[str]) -> Route | None:
     from linker_genie.template import SCRIPTED
 
     language = "de" if lang == "de" else "en"
-    return Route(
+    return kind, Route(
         "scripted",
         no_cards=True,
         no_handoff=True,

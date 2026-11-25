@@ -198,7 +198,7 @@ export function HomepageDemand({
 				validity={validity}
 				requireSource
 			/>
-			{brief.system_scope &&
+			{(brief.system_scope || typeof equipment.pv_dc_kw === "number") &&
 				brief.system_scope !== "storage_only" &&
 				!hasPlant(inputs) && (
 					<NumberField

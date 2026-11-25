@@ -7881,3 +7881,27 @@ msgstr "Mit der Erstellung eines Kontos stimmen Sie unseren %1$s zu und nehmen u
 
 msgid "Privacy Policy"
 msgstr "Datenschutzerklärung"
+
+#: includes/Presentation/ComparePage.php:311
+msgid "No more matching products."
+msgstr "Keine weiteren passenden Produkte gefunden."
+
+#: includes/Presentation/ComparePage.php:311
+msgid "Search is unavailable. Try again."
+msgstr "Die Suche ist derzeit nicht verfügbar. Bitte versuchen Sie es erneut."
+
+#: includes/Presentation/ComparePage.php:312
+msgid "Add a product to compare"
+msgstr "Produkt zum Vergleich hinzufügen"
+
+#: includes/Presentation/ComparePage.php:313
+msgid "Search by model, item number or power"
+msgstr "Nach Modell, Produktnummer oder Leistung suchen"
+
+#: includes/Presentation/ComparePage.php:320
+msgid "Show differences only"
+msgstr "Nur Unterschiede anzeigen"
+
+#: includes/Presentation/ProductShortcodes.php:210
+msgid "Press Search to reload the results."
+msgstr "Wählen Sie „Suchen“, um die Ergebnisse erneut zu laden."

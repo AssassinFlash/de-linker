@@ -683,7 +683,8 @@ export function Workspace({
 	const bareComparison = canCompareDirections && !route;
 	const firstVisitComparison =
 		canCompareDirections &&
-		(route === "sc-preliminary-options" || (bareComparison && !entryHints));
+		(route === "sc-preliminary-options" ||
+			(bareComparison && (!entryHints || entryHints.commercial === true)));
 	const directEntry =
 		!projectIndex &&
 		savedSource === null &&
@@ -704,7 +705,7 @@ export function Workspace({
 		url.searchParams.delete("view");
 		url.searchParams.set("compare", "preliminary");
 		url.hash = anchor;
-		window.history.pushState(null, "", url);
+		window.history.pushState(window.history.state, "", url);
 		setRoute(anchor);
 		window.dispatchEvent(new Event(PLANNER_NAVIGATION));
 	}

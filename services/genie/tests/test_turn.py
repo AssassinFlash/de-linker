@@ -554,9 +554,9 @@ def test_follow_up_uses_the_options_actually_shown(
     elif 0 in expected.values():
         assert blocks[0]["text"] == "How many units would you like?"
     elif language == "en":
-        assert "solution draft" in blocks[0]["text"]
+        assert "change the quantity in your solution draft" in blocks[0]["text"]
     else:
-        assert "Lösungsentwurf" in blocks[0]["text"]
+        assert "Die Menge können Sie im Lösungsentwurf ändern" in blocks[0]["text"]
 
 
 def test_explicitly_adding_an_earlier_parts_list_keeps_its_quantities(

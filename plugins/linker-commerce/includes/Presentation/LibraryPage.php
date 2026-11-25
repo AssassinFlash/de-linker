@@ -537,9 +537,9 @@ final class LibraryPage {
 			$out .= '<span class="linker-library-thumb is-type is-' . esc_attr( $document['type'] ) . '" aria-hidden="true">' . self::FILE_ICON . '</span>';
 		}
 		$out .= '<span class="linker-library-doc-lead"><span class="linker-library-badge is-' . esc_attr( $document['type'] ) . '">' . esc_html( $document['type_label'] ) . '</span>';
+		$out .= '<span class="linker-library-lang"><span aria-hidden="true">' . esc_html( $document['language'] ) . '</span><span class="linker-library-sr">' . esc_html( $document['language_label'] ) . '</span></span>';
 		$out .= '<span class="linker-library-doc-title">' . esc_html( $document['title'] ) . '</span></span>';
-		$out .= '<p class="linker-library-doc-meta"><span class="linker-library-doc-covers">' . esc_html( $document['covers'] ) . '</span>';
-		$out .= '<span class="linker-library-lang"><span aria-hidden="true">' . esc_html( $document['language'] ) . '</span><span class="linker-library-sr">' . esc_html( $document['language_label'] ) . '</span></span></p>';
+		$out .= '<p class="linker-library-doc-meta"><span class="linker-library-doc-covers">' . esc_html( $document['covers'] ) . '</span></p>';
 		$out .= '<a class="linker-library-dl" data-doc-kind="' . esc_attr( $document['type'] ) . '" data-doc-brand="' . esc_attr( $brand ) . '" href="' . esc_url( $document['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) __( 'Download', 'linker-commerce' ) ) . '<span class="linker-library-sr"> ' . esc_html( $document['title'] ) . '</span>' . self::DOWNLOAD_ICON . '</a>';
 		$out .= '</li>';
 

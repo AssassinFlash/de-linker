@@ -21,7 +21,7 @@ trait MocksSelectionFacts {
 	/**
 	 * Mocks the given products' facts (and nothing else).
 	 *
-	 * @param array<int, array{brand: string, application: string, phase: int, kw?: float|null}> $products Products by ID.
+	 * @param array<int, array{brand: string, application: string, phase: int, kw?: float|null, family?: list<int>}> $products Products by ID.
 	 *                                                                                                      A product without a `kw`
 	 *                                                                                                      (or with it null) carries no
 	 *                                                                                                      AC power figure, the state
@@ -77,6 +77,9 @@ trait MocksSelectionFacts {
 			'get_post_meta',
 			array(
 				'return' => static function ( int $id, string $key ) use ( $products ) {
+					if ( '_tv_legacy_acf_json' === $key && isset( $products[ $id ]['family'] ) ) {
+						return (string) json_encode( array( 'family_variants' => array_map( static fn( int $variant ): array => array( 'id' => $variant ), $products[ $id ]['family'] ) ) );
+					}
 					if ( \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY !== $key ) {
 						return '';
 					}

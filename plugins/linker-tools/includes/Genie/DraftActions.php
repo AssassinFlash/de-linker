@@ -122,9 +122,8 @@ final class DraftActions {
 			}
 			return $this->response(
 				array(
-					'id'          => $id,
-					'url'         => SavedSolutions::url( $id ),
-					'publication' => $result['publication'],
+					'id'  => $id,
+					'url' => SavedSolutions::url( $id ),
 				),
 				$result['publication'],
 				201
@@ -138,9 +137,8 @@ final class DraftActions {
 		}
 		return $this->response(
 			array(
-				'id'          => 0,
-				'url'         => SavedSolutions::url( 0 ),
-				'publication' => $result['publication'],
+				'id'  => 0,
+				'url' => SavedSolutions::url( 0 ),
 			),
 			$result['publication'],
 			202

@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import cast
 
 from .assets import Asset, Assets
-from .canonical import Object
+from .canonical import Json, Object
+from .equipment_candidate_store import candidate_ratings
 from .records import Actor, Project, Run
 from .retained_panels import display_document, project_panels
 from .workspace import Workspace
@@ -43,6 +44,26 @@ def owned_run_view(workspace: Workspace, actor: Actor, run: Run) -> Object:
     panels = project_panels(project.inputs)
     view = display_document(run_view(run), panels)
     result = view.get("result")
+    if (
+        isinstance(result, dict)
+        and result.get("kind") == "search_woo_equipment_v1"
+        and isinstance(search := result.get("search"), dict)
+    ):
+        candidates = cast(list[Object], search["candidates"])
+        if any("nominal_ac_kw" not in row for row in candidates):
+            expanded: list[Json] = []
+            for row in candidates:
+                if "nominal_ac_kw" in row:
+                    expanded.append(row)
+                    continue
+                frozen = workspace.blobs.object(cast(str, row["assessment_sha256"]))
+                selection = cast(Object, row.get("plant") or row["selection"])
+                expanded.append({**row, **candidate_ratings(selection, frozen)})
+            return {
+                **view,
+                "result": {**result, "search": {**search, "candidates": expanded}},
+            }
+        return view
     if not isinstance(result, dict) or result.get("kind") != "planning_report_v1":
         return view
     prepared = result.get("prepared_asset")

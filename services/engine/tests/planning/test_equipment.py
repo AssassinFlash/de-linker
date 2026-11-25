@@ -50,10 +50,11 @@ from linker_engine.planning.errors import (
 )
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
+from linker_engine.planning.http_views import owned_run_view
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.plant_search_plan import PlantSearchPlan
 from linker_engine.planning.product_sources import ProductSources
-from linker_engine.planning.records import Actor
+from linker_engine.planning.records import Actor, Run
 from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.report_model import build_report
@@ -5616,6 +5617,7 @@ def test_unknown_sizing_preserves_supported_stacks_and_assessed_capacity(
                 workspace.blobs.object(candidate["assessment_sha256"])
             )["checks"]
         }
+        assert candidate["nominal_ac_kw"] == checks["converter_identity"]["actual"]
         assert candidate["usable_energy_kwh"] == checks["usable_energy"]["actual"]
         expected = (
             None
@@ -5768,11 +5770,29 @@ def test_plant_search_keeps_unknown_allocations_and_joint_delivery_unresolved(
     parsed = PlantSearchPlan.from_inputs(demand)
     for candidate in result["candidates"]:
         assert candidate["status"] == "unresolved"
-        assert candidate["usable_energy_kwh"] is None
         assert parsed.matches_plant(EquipmentPlant.read(candidate["plant"]))
         checks = json_object(workspace.blobs.object(candidate["assessment_sha256"]))[
             "checks"
         ]
+        batteries = [
+            u
+            for u in candidate["plant"]["units"]
+            if u["selection"]["battery_product_id"] is not None
+        ]
+        capacities = [
+            c["actual"]
+            for c in checks
+            if c.get("semantic_id") == "usable_energy"
+            and c.get("unit_id") in {u["id"] for u in batteries}
+        ]
+        expected_kwh = (
+            sum(capacities)
+            if batteries
+            and len(capacities) == len(batteries)
+            and None not in capacities
+            else None
+        )
+        assert candidate["usable_energy_kwh"] == expected_kwh
         joint = [c for c in checks if c["id"].startswith("plant:")]
         assert joint and all(c["status"] == "unresolved" for c in joint)
         assert all(c["required"] is None for c in joint)
@@ -8458,3 +8478,77 @@ def test_profile_goal_search_uses_owned_load_without_battery_preparation(
             )
             assert stale.status_code == 422, stale.text
             assert stale.json()["error"]["code"] == "report_inputs_changed"
+
+
+def test_old_comparison_reads_its_frozen_rating_without_replacing_the_selected_plan_or_report(
+    workspace: Workspace, owner: Actor
+) -> None:
+    from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
+
+    project = workspace.create(
+        owner,
+        "Historic selection",
+        {},
+        key="frozen-ratings",
+        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+    )
+    proof = workspace.blobs.put_object(
+        {
+            "checks": [
+                {"id": "converter_identity", "actual": 12},
+                {"id": "usable_energy", "actual": 9.6},
+            ]
+        }
+    )
+    row: Object = {
+        "id": "chosen",
+        "selection": {"inverter_product_id": 123},
+        "assessment_sha256": proof,
+        "usable_energy_kwh": 9.6,
+    }
+    # A current-format unknown has no evidence blob to resolve on this read.
+    unknown: Object = {
+        **row,
+        "id": "unknown",
+        "nominal_ac_kw": None,
+        "assessment_sha256": "0" * 64,
+    }
+    original: Object = {
+        "kind": "search_woo_equipment_v1",
+        "search": {"candidates": [row, unknown]},
+    }
+    run = Run(
+        "1" * 32,
+        project.id,
+        project.revision,
+        "succeeded",
+        "2" * 64,
+        {},
+        "3" * 64,
+        original,
+        None,
+        False,
+    )
+    seen = json_object(owned_run_view(workspace, owner, run))
+    assert seen["result"]["search"]["candidates"] == [
+        {**row, "nominal_ac_kw": 12},
+        unknown,
+    ]
+    assert "nominal_ac_kw" not in row
+    assert (
+        seen["result_sha256"] == run.result_sha256
+        and seen["revision"] == project.revision
+    )
+    report: Object = {"kind": "planning_report_v1", "report": {"selected": "chosen"}}
+    assert (
+        owned_run_view(workspace, owner, replace(run, result=report))["result"]
+        == report
+    )
+    retained: Object = {
+        "kind": "search_woo_equipment_v1",
+        "retained_inverter": {"existing_system": {}},
+    }
+    assert (
+        owned_run_view(workspace, owner, replace(run, result=retained))["result"]
+        == retained
+    )

@@ -487,7 +487,7 @@ final class ProductFilters {
 			$facts[]                    = array( (int) $product_id, $fact );
 			$by_id[ (int) $product_id ] = $fact;
 		}
-		$active = \array_diff_key( $selected, array( 'q' => '' ) );
+		$families = new ProductFamilies( $product_ids );
 
 		$counts = array(
 			'application' => array(),
@@ -569,14 +569,14 @@ final class ProductFilters {
 		// The converged counts: each facet counted over the products every
 		// OTHER selected facet keeps.
 		foreach ( array( 'application', 'brand', 'phase', 'power' ) as $facet ) {
-			$others  = \array_diff_key( $active, array( $facet => '' ) );
+			$others  = \array_diff_key( $selected, array( $facet => '' ) );
 			$context = $product_ids;
 			if ( array() !== $others ) {
 				$context = $this->matching( $product_ids, $others );
 			}
-			$context_ids = array_fill_keys( array_map( 'intval', $context ), true );
 			foreach ( $counts[ $facet ] as $value => $option ) {
-				$counts[ $facet ][ $value ]['count'] = $this->facet_value_count( $facet, (string) $value, $product_ids, $context_ids, $by_id );
+				$matching                            = array_filter( $context, fn( int $id ): bool => $this->matches( $id, $by_id[ $id ], array( $facet => (string) $value ) ) );
+				$counts[ $facet ][ $value ]['count'] = count( $families->rows( $matching ) );
 			}
 		}
 		// A facet section lists when two of the view's own values answer; the
@@ -588,18 +588,19 @@ final class ProductFilters {
 		// "6 to 15 kW" greyed beside the two tiers it answers,
 		// cat-acc-en-1440-live.png). With a filter active the listed sections
 		// keep their zero rows, disabled.
-		$keep_empty = array() !== $active;
+		$keep_empty = array() !== $selected;
+		$visible    = $counts;
 		foreach ( array( 'application', 'brand', 'phase' ) as $facet ) {
 			$answered = \array_filter(
 				$full_counts[ $facet ],
 				static fn( array $value ): bool => $value['count'] > 0
 			);
 			if ( \count( $answered ) < 2 ) {
-				unset( $counts[ $facet ] );
+				unset( $visible[ $facet ] );
 				continue;
 			}
 			if ( ! $keep_empty ) {
-				$counts[ $facet ] = $answered;
+				$visible[ $facet ] = array_intersect_key( $counts[ $facet ], $answered );
 			}
 		}
 		$power_answered = \array_filter(
@@ -607,22 +608,19 @@ final class ProductFilters {
 			static fn( array $value ): bool => $value['count'] > 0
 		);
 		if ( array() === $power_answered ) {
-			unset( $counts['power'] );
+			unset( $visible['power'] );
 		}
 		/** The facets with their labels and counts, the thin sections gone.
 		 *
 		 * @var array<string, array<string, array{label: string, count: int}>> $facets
 		 */
-		$facets = $counts;
+		$facets = $visible;
 		return $facets;
 	}
 
 	/**
 	 * How many of the view's products carry a scalar energy and AC power
-	 * value: the live shelf rendered each range fold only when at least
-	 * three rows carried the value (ranges alone did not count), so the rail
-	 * asks these two numbers before it prints the "AC power" and "Usable
-	 * energy" forms.
+	 * value: a shelf offers each range with measured values.
 	 *
 	 * @param int[] $product_ids The archive's products.
 	 * @return array{has_energy: int, has_power: int} The folds' row counts.
@@ -643,46 +641,6 @@ final class ProductFilters {
 			'has_energy' => $has_energy,
 			'has_power'  => $has_power,
 		);
-	}
-
-	/**
-	 * One facet value's converged count: the products the other facets keep
-	 * whose facts answer the value.
-	 *
-	 * @param string                       $facet       The facet's query parameter.
-	 * @param string                       $value       The facet value.
-	 * @param int[]                        $product_ids The archive's products.
-	 * @param array<int, true>             $context_ids The products the other facets keep.
-	 * @param array<int, SelectionFactSet> $by_id      Every archive product's facts.
-	 */
-	private function facet_value_count( string $facet, string $value, array $product_ids, array $context_ids, array $by_id ): int {
-		$count = 0;
-		foreach ( $product_ids as $product_id ) {
-			$product_id = (int) $product_id;
-			if ( ! isset( $context_ids[ $product_id ] ) ) {
-				continue;
-			}
-			$fact = $by_id[ $product_id ];
-			$keep = false;
-			switch ( $facet ) {
-				case 'application':
-					$keep = SelectionFactSet::UNKNOWN !== $fact->application && (string) $fact->application === $value;
-					break;
-				case 'phase':
-					$keep = \is_int( $fact->phase ) && (string) $fact->phase === $value;
-					break;
-				case 'power':
-					$keep = \is_float( $fact->ac_power_kw ) && isset( self::POWER_BUCKETS[ $value ] ) && $this->in_bucket( $fact->ac_power_kw, self::POWER_BUCKETS[ $value ] );
-					break;
-				case 'brand':
-					$keep = has_term( $value, 'pa_brand', $product_id );
-					break;
-			}
-			if ( $keep ) {
-				++$count;
-			}
-		}
-		return $count;
 	}
 
 	/**

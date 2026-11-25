@@ -867,6 +867,7 @@ final class ProductShortcodesTest extends TestCase {
 	 * on the shop fixture below.
 	 */
 	public function test_rail_omits_power_when_no_product_carries_it(): void {
+		WP_Mock::userFunction( 'pll_get_post', array( 'return_arg' => 0 ) );
 		$this->mock_selection_facts(
 			array(
 				71 => array(
@@ -897,6 +898,7 @@ final class ProductShortcodesTest extends TestCase {
 	 * captures). The empty tiers are not links.
 	 */
 	public function test_rail_lists_power_with_its_empty_tiers_disabled(): void {
+		WP_Mock::userFunction( 'pll_get_post', array( 'return_arg' => 0 ) );
 		$this->mock_selection_facts(
 			array(
 				81 => array(
@@ -919,6 +921,7 @@ final class ProductShortcodesTest extends TestCase {
 		$rail = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_filters();
 
 		$this->assertStringContainsString( '<summary class="filter-title">Power</summary>', $rail );
+		$this->assertStringContainsString( '<details class="filter-section fgroup" open><summary class="filter-title">AC power</summary>', $rail );
 		// One product in "15 to 30 kW" and one in "Over 30 kW": the two empty
 		// tiers still list, and they are not links.
 		$this->assertStringContainsString( '<span class="filter-option is-disabled" aria-disabled="true">', $rail );
@@ -1347,7 +1350,8 @@ final class ProductShortcodesTest extends TestCase {
 		$shortcodes = new ProductShortcodes( new ProductFilters(), new ProductView() );
 		$sort       = $shortcodes->products_sort();
 		self::assertStringContainsString( 'class="wbsort woocommerce-ordering" method="get" action="http://linker.test/products/"', $sort );
-		self::assertStringContainsString( 'class="select-dropdown orderby"', $sort );
+		self::assertStringContainsString( 'id="sort-select" name="sort"', $sort );
+		self::assertStringNotContainsString( 'select-dropdown orderby', $sort );
 		self::assertStringContainsString( 'name="q" value="ESA"', $sort );
 		self::assertStringContainsString( 'name="brand" value="goodwe"', $sort );
 		self::assertStringNotContainsString( 'name="product-page"', $sort );

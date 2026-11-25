@@ -175,3 +175,22 @@ test("retrofit links bring the project scope without inventing equipment or cons
 	);
 	assert.equal(inputs.equipment_setup, undefined);
 });
+
+test("commercial links preserve the selected use and distinguish charging peaks from backup", () => {
+	for (const goal of [
+		"peak_shaving",
+		"self_consumption",
+		"ev_buffer",
+		"backup",
+	]) {
+		const hints = readEntryHints(
+			new URLSearchParams({ application: "commercial", goal }),
+		);
+		assert.equal(hints?.commercialGoal, goal);
+		assert.equal(
+			(entryInputs(hints!, "", "").brief as { project_use: string })
+				.project_use,
+			"commercial",
+		);
+	}
+});

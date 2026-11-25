@@ -715,12 +715,13 @@ test("a guest can add a first selection to the draft from the inquiry review", a
 			}),
 		),
 	);
-	const add = button("Add selected products to solution draft");
+	const add = button("Add to solution draft");
 	assert.ok(add);
 	assert.equal(add.disabled, false);
 	assert.equal(
-		add.closest("details").querySelector("summary").textContent,
-		"Project report",
+		add.closest("details"),
+		null,
+		"the reviewed equipment action is visible immediately",
 	);
 	await act(async () =>
 		root.render(
@@ -741,7 +742,7 @@ test("a guest can add a first selection to the draft from the inquiry review", a
 		),
 	);
 	assert.equal(
-		add.closest("details").open,
+		!add.closest("details"),
 		true,
 		"the confirmed receipt stays visible",
 	);

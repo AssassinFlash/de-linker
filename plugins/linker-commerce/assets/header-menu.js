@@ -6,6 +6,17 @@
 	const cartLinks = Array.from( header.querySelectorAll( '[data-cart-count-url]' ) );
 	if ( cartLinks.length ) {
 		let read;
+		const draftMarker = 'linker-draft-active';
+		function draftActive() {
+			try { return window.sessionStorage.getItem( draftMarker ) === '1'; }
+			catch { return false; } // Browser storage can be disabled for this visit.
+		}
+		function rememberDraft( active ) {
+			try {
+				if ( active ) window.sessionStorage.setItem( draftMarker, '1' );
+				else window.sessionStorage.removeItem( draftMarker );
+			} catch { /* Woo still owns the count on this page. */ }
+		}
 		function showCount( count ) {
 			cartLinks.forEach( link => {
 				let badge = link.querySelector( '.tv-b2b-acct-count' );
@@ -25,8 +36,8 @@
 		}
 		async function syncCart( changed = false ) {
 			read?.abort();
-			if ( ! changed && ! /(?:^|;\s*)(?:woocommerce_items_in_cart|wp_woocommerce_session_[^=]+)=/.test( document.cookie ) ) {
-				showCount( 0 );
+			const hasWooCookie = /(?:^|;\s*)woocommerce_(?:items_in_cart|cart_hash)=/.test( document.cookie );
+			if ( ! changed && ! hasWooCookie && ! draftActive() && ! cartLinks.some( link => link.querySelector( '.tv-b2b-acct-count' ) ) ) {
 				return;
 			}
 			const controller = new AbortController();
@@ -37,7 +48,10 @@
 				const response = await fetch( url, { credentials: 'same-origin', cache: 'no-store', signal: controller.signal } );
 				if ( ! response.ok ) throw new Error( String( response.status ) );
 				const { items_count: count } = await response.json();
-				if ( ! controller.signal.aborted && Number.isInteger( count ) ) showCount( count );
+				if ( ! controller.signal.aborted && Number.isInteger( count ) ) {
+					showCount( count );
+					rememberDraft( count > 0 );
+				}
 			} catch ( error ) {
 				if ( ! controller.signal.aborted ) console.warn( 'Solution draft count unavailable', error );
 			}
@@ -45,7 +59,10 @@
 		syncCart();
 		window.addEventListener( 'pageshow', event => { if ( event.persisted ) syncCart(); } );
 		document.addEventListener( 'visibilitychange', () => { if ( ! document.hidden ) syncCart(); } );
-		const changed = () => syncCart( true );
+		const changed = () => {
+			rememberDraft( true );
+			syncCart( true );
+		};
 		document.addEventListener( 'wc-blocks_added_to_cart', changed );
 		document.addEventListener( 'wc-blocks_removed_from_cart', changed );
 		window.jQuery?.( document.body ).on( 'added_to_cart removed_from_cart updated_cart_totals', changed );
@@ -275,4 +292,38 @@
 		document.fonts.ready.then( schedule );
 		fit();
 	}
+
+	// Keep page actions reachable wherever the closed assistant shares their corner.
+	function positionGenieLauncher() {
+		const launcher = document.querySelector( '.linker-genie-open' );
+		if ( ! launcher ) return;
+		const hero = document.querySelector( '#home-a .hero-cinematic' );
+		if ( hero ) {
+			new IntersectionObserver( ( [ entry ] ) => {
+				document.body.toggleAttribute( 'data-genie-hero-away', ! entry.isIntersecting );
+			} ).observe( hero );
+		}
+		const areas = document.querySelectorAll( '#linker-faq-page .linker-library-main, #linker-compare, #tv-storefront-pdp .pdp-spec-deck, #tv-storefront-pdp .pdp-spec-list, #tv-blog-single-v1 .reader-all, #service-redesign section' );
+		if ( ! areas.length ) return;
+		let observer;
+		function observeLauncherArea() {
+			const bounds = launcher.getBoundingClientRect();
+			if ( ! bounds.width || ! bounds.height ) return;
+			observer?.disconnect();
+			const intersecting = new Set();
+			const margins = [ -bounds.top, bounds.right - document.documentElement.clientWidth, bounds.bottom - document.documentElement.clientHeight, -bounds.left ];
+			observer = new IntersectionObserver( entries => {
+				for ( const entry of entries ) {
+					if ( entry.isIntersecting ) intersecting.add( entry.target );
+					else intersecting.delete( entry.target );
+				}
+				document.body.toggleAttribute( 'data-genie-over-content', intersecting.size > 0 );
+			}, { rootMargin: margins.map( value => value + 'px' ).join( ' ' ) } );
+			areas.forEach( area => observer.observe( area ) );
+		}
+		new ResizeObserver( observeLauncherArea ).observe( launcher );
+		window.addEventListener( 'resize', observeLauncherArea, { passive: true } );
+	}
+	if ( document.readyState === 'loading' ) document.addEventListener( 'DOMContentLoaded', positionGenieLauncher, { once: true } );
+	else positionGenieLauncher();
 } )();

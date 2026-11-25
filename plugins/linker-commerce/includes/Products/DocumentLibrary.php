@@ -123,11 +123,12 @@ final class DocumentLibrary {
 	 * The register: one row per file, in brand and title order, each carrying
 	 * the products that state it.
 	 *
+	 * @param 'en'|'de' $lang Page language.
 	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>
 	 */
-	public function documents(): array {
+	public function documents( string $lang = 'en' ): array {
 		$manifest = $this->current();
-		return $this->documents_in( $manifest, $this->products( $manifest ) );
+		return $this->documents_in( $manifest, $this->products( $manifest ), $lang );
 	}
 
 	/**
@@ -145,7 +146,7 @@ final class DocumentLibrary {
 
 		return array(
 			'answers'   => $this->answers_in( $lang, $manifest, $products ),
-			'documents' => $this->documents_in( $manifest, $products ),
+			'documents' => $this->documents_in( $manifest, $products, $lang ),
 		);
 	}
 
@@ -154,9 +155,10 @@ final class DocumentLibrary {
 	 *
 	 * @param array<string,mixed> $manifest Current authority for this assembly.
 	 * @param int[]               $products Native locale product IDs.
+	 * @param string              $lang     Page language.
 	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>
 	 */
-	private function documents_in( array $manifest, array $products ): array {
+	private function documents_in( array $manifest, array $products, string $lang ): array {
 		$files    = array();
 		$previous = array();
 		foreach ( $products as $id ) {
@@ -170,12 +172,13 @@ final class DocumentLibrary {
 				}
 				$key = (string) $document['url'];
 				if ( ! isset( $files[ $key ] ) ) {
-					$previous[ $key ] = true === ( Materials::document_edition( $key )['previous'] ?? false );
+					$edition          = Materials::document_edition( $key );
+					$previous[ $key ] = true === ( $edition['previous'] ?? false );
 					$files[ $key ]    = array(
 						'title'    => Materials::localized_document_title( '' !== trim( $document['title'] ) ? $document['title'] : __( 'Document', 'linker-commerce' ), null, $document['url'] ),
 						'url'      => (string) $document['url'],
 						'type'     => self::type( (string) $document['type'], (string) $document['role'] ),
-						'language' => self::language( (string) $document['language'] ),
+						'language' => self::language( (string) ( $edition['locale'] ?? $document['language'] ) ),
 						'brand'    => $brand,
 						'covers'   => array(),
 						'skus'     => array(),
@@ -192,14 +195,35 @@ final class DocumentLibrary {
 		$documents = array_values( $files );
 		usort(
 			$documents,
-			static function ( array $a, array $b ) use ( $previous ): int {
-				$order = array( self::rank( $a['type'] ), $previous[ $a['url'] ] ) <=> array( self::rank( $b['type'] ), $previous[ $b['url'] ] );
+			static function ( array $a, array $b ) use ( $previous, $lang ): int {
+				$order = array( self::rank( $a['type'] ), $previous[ $a['url'] ], self::locale_rank( $a['language'], $lang ) ) <=> array( self::rank( $b['type'] ), $previous[ $b['url'] ], self::locale_rank( $b['language'], $lang ) );
 
 				return 0 !== $order ? $order : strcasecmp( $a['title'], $b['title'] );
 			}
 		);
 
 		return $documents;
+	}
+
+	/**
+	 * Within a document type and edition, prefer the visitor's language.
+	 *
+	 * @param string $language Published language or regional edition.
+	 * @param string $page     Requested library language.
+	 */
+	private static function locale_rank( string $language, string $page ): int {
+		$en = in_array( $language, array( 'EN', 'EN-EU', 'EN-GB', 'EU' ), true );
+		$de = in_array( $language, array( 'DE', 'DE-DE' ), true );
+		if ( 'de' === $page ? $de : $en ) {
+			return 0;
+		}
+		if ( in_array( $language, array( 'MUL', 'DE/EN', 'EN/DE' ), true ) ) {
+			return 1;
+		}
+		if ( $en || $de ) {
+			return 2;
+		}
+		return 'EN-AU' === $language ? 4 : 3;
 	}
 
 	/**

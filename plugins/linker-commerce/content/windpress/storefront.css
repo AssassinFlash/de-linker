@@ -2645,3 +2645,37 @@ body.woocommerce-checkout #payment div.payment_box,
 body.woocommerce-checkout #payment li.wc_payment_method {
 	display: none !important;
 }
+
+.linker-compare-picker { max-inline-size: 42rem; margin-block-end: 1.5rem; }
+.linker-compare-picker label { display: block; margin-block-end: .45rem; font-weight: 650; }
+#linker-compare .linker-compare-picker input[type="search"] {
+	display: block;
+	inline-size: 100%;
+	min-block-size: var(--proto-input-height);
+	padding: var(--proto-space-2) var(--proto-space-4);
+	border: 1px solid var(--proto-input-line);
+	border-radius: var(--proto-input-radius);
+	background: white;
+	color: var(--proto-ink);
+	font: inherit;
+}
+#linker-compare .linker-compare-picker input[type="search"]:focus {
+	outline: 0;
+	border-color: var(--proto-input-line-focus);
+	box-shadow: var(--proto-form-focus-ring);
+}
+.linker-compare-differences input { inline-size: 1.125rem; block-size: 1.125rem; accent-color: var(--proto-accent); }
+.linker-compare-picker ul { margin: .375rem 0; padding: 0; list-style: none; }
+.linker-compare-picker li { border-block-end: 1px solid var(--proto-neutral-200); }
+.linker-compare-picker li a { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; padding: .65rem .5rem; color: var(--proto-ink); text-decoration: none; }
+.linker-compare-picker li a:is(:hover, :focus-visible) { background: var(--proto-neutral-50); text-decoration: underline; }
+.linker-compare-picker li small { color: var(--proto-neutral-600); overflow-wrap: anywhere; }
+.linker-compare-differences { display: inline-flex; align-items: center; min-block-size: var(--proto-form-control-height); gap: .5rem; margin: 0 0 .5rem; cursor: pointer; }
+.linker-compare-row[data-compare-different="true"] > th { box-shadow: inset 3px 0 var(--proto-accent); }
+.linker-compare-row[hidden] { display: none; }
+@media (min-width: 1280px) {
+	body #compare-chip { background: var(--proto-ink); border: 1px solid white; }
+	body #compare-chip [data-compare-count] { background: white; color: var(--proto-ink); padding: .1rem .55rem; border-radius: 999px; }
+}
+#linker-products [data-catalog-search-status]:empty { display: none; }
+#linker-products [data-catalog-search-status]:not(:empty) { grid-column: 1 / -1; color: var(--proto-neutral-700); }

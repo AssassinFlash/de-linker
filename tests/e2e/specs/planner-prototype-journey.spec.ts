@@ -226,7 +226,9 @@ for (const lang of ['en', 'de'] as const) {
 				name: words.enterDetails,
 				exact: true,
 			});
-			await expect(workspace.locator('.sc-scene-grid')).toBeInViewport();
+			await expect(
+				workspace.locator('select[name="project_start"]')
+			).toBeInViewport();
 			await expect(details).toBeVisible();
 			await screen(page, 'known-project-entry');
 			await details.click();

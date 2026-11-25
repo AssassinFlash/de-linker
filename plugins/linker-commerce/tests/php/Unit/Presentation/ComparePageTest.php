@@ -170,6 +170,7 @@ final class ComparePageTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'has_filter', array( 'return' => fn (): bool => $this->product_twins ) );
+		WP_Mock::userFunction( 'rest_url', array( 'return' => static fn ( string $path ): string => 'https://de-linker.test/wp-json/' . $path ) );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ): string => (string) json_encode( $value ) ) );
 		WP_Mock::userFunction(
 			'pll_get_post',
@@ -285,6 +286,10 @@ final class ComparePageTest extends TestCase {
 
 		$html = ( new ComparePage( $this->comparison() ) )->table();
 
+		$this->assertStringContainsString( 'data-compare-picker', $html );
+		$this->assertStringContainsString( 'data-compare-differences', $html );
+		$this->assertStringContainsString( 'data-compare-different="true"', $html );
+		$this->assertStringContainsString( 'data-compare-different="false"', $html );
 		$this->assertStringContainsString( 'data-compare-ids="4107,1832"', $html );
 		$this->assertStringContainsString( 'Inverter 4107', $html );
 		$this->assertStringContainsString( 'Battery 1832', $html );

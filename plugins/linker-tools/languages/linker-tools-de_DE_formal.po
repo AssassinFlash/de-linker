@@ -129,7 +129,7 @@ msgstr "Wählen Sie Wohngebäude, Gewerbe oder alle Einsatzbereiche."
 
 #: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
 msgid "Enter the documented battery modules per stack."
-msgstr "Geben Sie die dokumentierte Anzahl der Batteriemodule je Stack ein."
+msgstr "Geben Sie die dokumentierte Anzahl der Batteriemodule je Batteriestapel ein."
 
 #: ../../apps/planner/src/components/equipment/equipmentLabels.ts build/planner/assets/planner.js:1
 msgid "Enter the number of parallel stacks or systems."
@@ -8726,7 +8726,7 @@ msgstr "Ersatzstrombetrieb"
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:272
 #: build/planner/assets/planner.js
 msgid "Battery modules per stack"
-msgstr "Batteriemodule je Stack"
+msgstr "Batteriemodule je Batteriestapel"
 
 #: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx
 #: build/planner/assets/planner.js
@@ -15883,11 +15883,11 @@ msgstr "Umgang mit der Batterie"
 
 #: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
 msgid "Modules per stack"
-msgstr "Batteriemodule je Stack"
+msgstr "Batteriemodule je Batteriestapel"
 
 #: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
 msgid "Parallel stacks"
-msgstr "Parallel geschaltete Stacks"
+msgstr "Parallel geschaltete Batteriestapel"
 
 #: ../../apps/planner/src/components/configurator/ProjectEquipment.tsx build/planner/assets/planner.js:1
 msgid "There is an existing system"
@@ -17359,3 +17359,27 @@ msgid ""
 msgstr ""
 "Die aktuellen Produktdaten konnten nicht geprüft werden. Ihre Angaben "
 "bleiben erhalten."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Each option falls short of a project requirement. Review the checks before choosing equipment."
+msgstr "Jede Variante verfehlt mindestens eine Projektanforderung. Prüfen Sie die Details, bevor Sie Geräte auswählen."
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Some checks are still open. Review the equipment and local grid requirements for your chosen option."
+msgstr "Einige Prüfungen sind noch offen. Prüfen Sie für die gewünschte Variante die Geräteangaben und die örtlichen Netzanforderungen."
+
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
+msgid "Buffer peaks from EV charging."
+msgstr "Lastspitzen beim Laden von Elektrofahrzeugen abfangen."
+
+#: ../../apps/planner/src/components/CountryRuleForm.tsx build/planner/assets/planner.js:1
+msgid "This country has no rule in the configurator. Check the local grid requirements."
+msgstr "Für dieses Land ist im Konfigurator keine Regel hinterlegt. Prüfen Sie die örtlichen Netzanforderungen."
+
+#: ../../apps/planner/src/components/configurator/ProjectDirections.tsx build/planner/assets/planner.js:1
+msgid "Project starting point"
+msgstr "Ausgangssituation"
+
+#: ../../apps/planner/src/components/configurator/SystemOptions.tsx build/planner/assets/planner.js:1
+msgid "Combined usable battery capacity"
+msgstr "Summe der nutzbaren Batteriekapazitäten"

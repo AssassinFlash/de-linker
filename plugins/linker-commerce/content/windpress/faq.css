@@ -193,11 +193,11 @@
 #linker-faq-page .linker-library-doc-lead { grid-area: lead; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: flex-start; min-width: 0; }
 #linker-faq-page .linker-library-doc-title { flex: 1 1 180px; min-width: 0; font-size: 15px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
 #linker-faq-page .linker-library-doc-meta { grid-area: meta; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; color: var(--ll-muted); }
-#linker-faq-page .linker-library-lang { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: var(--ll-mist); color: #3e524c; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+#linker-faq-page .linker-library-lang { display: inline-flex; align-items: center; min-height: 22px; padding: 0 8px; border: 1px solid var(--ll-line); border-radius: 999px; background: var(--ll-mist); color: var(--ll-ink); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
 #linker-faq-page .linker-library-dl { grid-area: dl; align-self: center; justify-self: end; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 8px 12px; border: 1px solid var(--ll-line); border-radius: 8px; background: #fff; color: var(--ll-accent-dark); text-decoration: none; font-size: 13px; font-weight: 700; white-space: nowrap; }
 #linker-faq-page .linker-library-dl:hover { border-color: var(--ll-accent); background: #f3fbfa; }
 #linker-faq-page .linker-library-dl:active { background: var(--ll-accent); color: #fff; border-color: var(--ll-accent); }
-#linker-faq-page .linker-library-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: var(--ll-mist); color: #3e524c; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+#linker-faq-page .linker-library-badge { display: inline-flex; align-items: center; min-height: 22px; padding: 0 8px; border: 1px solid var(--ll-line); border-radius: 999px; background: var(--ll-mist); color: var(--ll-ink); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
 #linker-faq-page .linker-library-badge.is-datasheet { background: #e5f4f2; color: var(--ll-accent-dark); }
 #linker-faq-page .linker-library-badge.is-manual { background: #e8eef2; color: #1d3d4a; }
 #linker-faq-page .linker-library-badge.is-certificate { background: #f3efe4; color: #6a5420; }

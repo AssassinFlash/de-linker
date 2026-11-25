@@ -273,15 +273,44 @@ function compareFit(
 	backupEnergy: number | null,
 ) {
 	const rank = fitRank(left, backupEnergy) - fitRank(right, backupEnergy);
-	if (rank || backupEnergy === null || fitRank(left, backupEnergy) !== 3)
-		return rank;
-	const shortfall = (item: EquipmentCandidate) =>
-		typeof item.usable_energy_kwh === "number"
-			? Math.max(0, backupEnergy - item.usable_energy_kwh)
-			: Infinity;
-	const a = shortfall(left);
-	const b = shortfall(right);
-	return a === b ? 0 : a < b ? -1 : 1;
+	if (rank) return rank;
+	const distances = (candidate: EquipmentCandidate) => {
+		const targets = isPlantCandidate(candidate)
+			? candidate.plant.requirements
+			: candidate.selection;
+		const pv =
+			typeof targets.pv_dc_kw === "number" && targets.pv_dc_kw > 0
+				? targets.pv_dc_kw
+				: 0;
+		const load =
+			typeof targets.required_discharge_ac_kw === "number"
+				? targets.required_discharge_ac_kw
+				: 0;
+		const kw = Math.max(pv, load);
+		const kwh = Math.max(
+			backupEnergy ?? 0,
+			typeof targets.required_usable_kwh === "number"
+				? targets.required_usable_kwh
+				: 0,
+		);
+		const ac = candidate.nominal_ac_kw,
+			energy = candidate.usable_energy_kwh;
+		return [
+			kw ? (typeof ac === "number" ? Math.abs(ac - kw) : Infinity) : 0,
+			kw && typeof ac === "number" && ac < kw ? 1 : 0,
+			kwh
+				? typeof energy === "number"
+					? Math.abs(energy - kwh)
+					: Infinity
+				: 0,
+		];
+	};
+	const a = distances(left),
+		b = distances(right);
+	for (const [i, value] of a.entries()) {
+		if (value !== b[i]) return value < b[i]! ? -1 : 1;
+	}
+	return 0;
 }
 
 function readCountryReview(assessment: JsonObject): JsonObject | undefined {
@@ -803,11 +832,16 @@ export function SystemOptions({
 			)}
 			{candidates.length > 0 &&
 				!candidates.some((item) => fitRank(item, backupEnergy) === 0) && (
-					<p className="sc-muted">
-						{__(
-							"None of the configurations found has been confirmed to meet all project requirements.",
-							"linker-tools",
-						)}
+					<p className="sc-note">
+						{candidates.every((item) => fitRank(item, backupEnergy) === 3)
+							? __(
+									"Each option falls short of a project requirement. Review the checks before choosing equipment.",
+									"linker-tools",
+								)
+							: __(
+									"Some checks are still open. Review the equipment and local grid requirements for your chosen option.",
+									"linker-tools",
+								)}
 					</p>
 				)}
 			{backupEnergy !== null &&
@@ -990,7 +1024,11 @@ export function SystemOptions({
 							{!solarOnly && (
 								<div className="sc-package-capacity">
 									<strong>{capacity(item)}</strong>
-									<span>{__("Usable battery capacity", "linker-tools")}</span>
+									<span>
+										{isPlantCandidate(item)
+											? __("Combined usable battery capacity", "linker-tools")
+											: __("Usable battery capacity", "linker-tools")}
+									</span>
 								</div>
 							)}
 						</div>

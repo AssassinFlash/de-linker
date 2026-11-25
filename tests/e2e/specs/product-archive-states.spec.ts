@@ -209,6 +209,9 @@ test('en 390: the filter drawer stacks two facets on the listing', async ({
 		/is-mobile-open/
 	);
 
+	await expect(page.locator('.linker-genie-open')).toBeHidden();
+	await drawer.locator('#product-filter-apply').click({ trial: true });
+
 	await drawer.locator('a[href*="brand=goodwe"]').first().click();
 	await page.waitForLoadState('load');
 	expect(page.url(), 'the brand facet is in the address').toContain(

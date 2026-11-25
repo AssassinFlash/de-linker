@@ -387,6 +387,92 @@ def test_pairing_of_one_inverter_reads_its_documented_batteries() -> None:
     assert call.arguments["text"] == "H2-10K-T3"
 
 
+@pytest.mark.parametrize(
+    ("lang", "question"),
+    [
+        (
+            "en",
+            "Can you help plan my whole solar project? Which battery fits the H2-10K-T3 and what installation clearance does it need?",
+        ),
+        (
+            "de",
+            "Können Sie mein gesamtes PV-Projekt planen? Welcher Speicher passt zum H2-10K-T3 und welchen Montageabstand benötigt er?",
+        ),
+    ],
+)
+def test_mixed_project_question_reads_the_named_model_pairing_and_manual(
+    lang: str, question: str
+) -> None:
+    route = plan(
+        question,
+        [_model("H2-10K-T3", 4107)],
+        _reading("pairing_compatibility"),
+        H2,
+        lang,
+    )
+    assert route.name == "documents"
+    assert any(call.ability == "linker/search-knowledge" for call in route.calls)
+    assert any(call.arguments.get("with_pairings") for call in route.calls)
+    assert not route.answer
+
+
+@pytest.mark.parametrize(
+    ("lang", "question"),
+    [
+        (
+            "en",
+            "Can I request a quote without an account, and what input voltage is supported?",
+        ),
+        (
+            "de",
+            "Kann ich ohne Kundenkonto ein Angebot anfragen und welche Eingangsspannung wird unterstützt?",
+        ),
+    ],
+)
+def test_guest_inquiry_clause_leaves_a_specification_question_intact(
+    lang: str, question: str
+) -> None:
+    route = plan(question, [], _reading("documents_specs"), NONE, lang)
+    assert route.name == "documents"
+    assert not route.answer
+
+
+@pytest.mark.parametrize(
+    ("lang", "question"),
+    [
+        (
+            "en",
+            "Can you help plan my whole solar project, and what is the usable capacity of this battery?",
+        ),
+        (
+            "de",
+            "Können Sie mein gesamtes PV-Projekt planen und wie hoch ist die nutzbare Kapazität dieses Speichers?",
+        ),
+    ],
+)
+@pytest.mark.parametrize("intent", ["sizing", None])
+def test_product_page_followup_reads_the_battery_named_by_the_page(
+    lang: str, question: str, intent: str | None
+) -> None:
+    battery = Subject((1832,), {1832: "home-storage"}, {1832: "B2-10.0-HV1"})
+    reading = _reading(intent) if intent else None
+    route = plan(question, [], reading, battery, lang)
+    assert route.name == "documents"
+    assert Call("linker/get-product", {"product_id": 1832, "lang": lang}) in route.calls
+    assert any(call.ability == "linker/search-knowledge" for call in route.calls)
+
+
+def test_esa_pairing_sentence_does_not_replace_an_extra_specification() -> None:
+    route = plan(
+        "Which battery fits the GoodWe ESA 10 kW, and what AC current is allowed?",
+        [],
+        _reading("pairing_compatibility"),
+        NONE,
+        "en",
+    )
+    assert not route.answer
+
+
 def test_pairing_of_two_products_checks_the_pair() -> None:
     subject = Subject((4107, 1832), H2.device_class, H2.labels)
     route = plan("does it fit?", [], _reading("pairing_compatibility"), subject, "en")

@@ -78,7 +78,6 @@ sc-direction-details
 sc-direction-entry
 sc-direction-fields
 sc-direction-name
-sc-direction-start
 sc-direction-symbol
 sc-direction-tools
 sc-disclosure
@@ -181,6 +180,7 @@ sc-module-table
 sc-muted
 sc-nav
 sc-next
+sc-note
 sc-notice
 sc-object-actions
 sc-object-branch
@@ -301,8 +301,6 @@ sc-scenario-fields
 sc-scenario-period
 sc-scenario-sources
 sc-scenario-steps
-sc-scene
-sc-scene-grid
 sc-scene-view
 sc-section
 sc-section-head

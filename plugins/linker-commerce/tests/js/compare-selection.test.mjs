@@ -121,3 +121,28 @@ test('the visible mobile comparison row follows the header through scroll and re
  nextFrame();
  assert.equal(row.style.getPropertyValue('--compare-chip-top'),'127px');
 });
+
+test('the comparison picker adds a different model in the active language and hides only identical rows',async()=>{
+ const dom=new JSDOM(`<div id="linker-compare" data-compare-ids="101" data-compare-identities='{"201":101}'><div data-compare-picker data-search-url="/wp-json/linker/v1/catalog-search" data-page-url="/de/produkte-vergleichen/" data-language="de" data-min="2"><input><ul data-compare-matches></ul><p role="status"></p></div><input type="checkbox" data-compare-differences><table><tbody><tr data-compare-different="false"></tr><tr data-compare-different="true"></tr></tbody></table></div>`,{url:'https://linker.test/de/produkte-vergleichen/?ids=101',runScripts:'outside-only'});
+ const {window}=dom;
+ const calls=[];
+ window.fetch=async url=>{calls.push(new URL(url));return {ok:true,json:async()=>({items:[{id:201,title:'Ausgewählt',sku:'A'},{id:202,title:'Zweites Modell',sku:'B'}]})};};
+ window.eval(script);
+ const input=window.document.querySelector('input');
+ input.value='10 kW';
+ input.dispatchEvent(new window.Event('input',{bubbles:true}));
+ await new Promise(resolve=>setTimeout(resolve,320));
+ assert.equal(calls[0].searchParams.get('lang'),'de');
+ assert.equal(calls[0].searchParams.get('q'),'10 kW');
+ const links=window.document.querySelectorAll('[data-compare-matches] a');
+ assert.equal(links.length,1);
+ assert.equal(links[0].getAttribute('href'),'/de/produkte-vergleichen/?ids=101,202');
+ const toggle=window.document.querySelector('[data-compare-differences]');
+ toggle.click();
+ assert.equal(window.document.querySelector('[data-compare-different="false"]').hidden,true);
+ assert.equal(window.document.querySelector('[data-compare-different="true"]').hidden,false);
+ toggle.click();
+ assert.equal(window.document.querySelector('[data-compare-different="false"]').hidden,false);
+ assert.equal(calls.length,1);
+ dom.window.close();
+});

@@ -207,7 +207,7 @@ final class ProductShortcodes {
 		// The live shop and archives both carry the generic subtitle; the
 		// category's own description is not printed on the page.
 		$html .= '<p class="wb-intro">' . esc_html__( 'Search products or filter by category and project requirements.', 'linker-commerce' ) . '</p></div>';
-		$html .= '<form class="wb-search" method="get" action="' . esc_url( $action ) . '" role="search">';
+		$html .= '<form class="wb-search" data-search-failed="' . esc_attr__( 'Press Search to reload the results.', 'linker-commerce' ) . '" method="get" action="' . esc_url( $action ) . '" role="search">';
 		foreach ( $this->selection_parameters() as $key => $value ) {
 			if ( 'q' !== $key ) {
 				$html .= '<input type="hidden" name="' . esc_attr( (string) $key ) . '" value="' . esc_attr( (string) $value ) . '">';
@@ -216,7 +216,7 @@ final class ProductShortcodes {
 		$html .= '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
 		$html .= '<input id="search-box" name="q" type="search" placeholder="' . esc_attr__( 'Search model or item number', 'linker-commerce' ) . '" value="' . esc_attr( $q ) . '" aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">';
 		$html .= '<button type="submit" class="wb-go">' . esc_html__( 'Search', 'linker-commerce' ) . '</button>';
-		$html .= '</form>';
+		$html .= '</form><p class="wb-search-feedback" role="status" data-catalog-search-status></p>';
 		// The catalogue's AI entry, at the position the live page keeps its
 		// toolbar chips: the delivered chip shows itself when the typed text
 		// reads as a question (spec 13 §C); the live page's other two chips
@@ -360,10 +360,10 @@ final class ProductShortcodes {
 			$html .= '</div></details>';
 		}
 
-		if ( $ranges['has_power'] >= 3 ) {
+		if ( $ranges['has_power'] > 0 ) {
 			$html .= $this->range_form( __( 'AC power', 'linker-commerce' ), 'kw', __( 'Minimum AC power in kilowatts', 'linker-commerce' ), __( 'Maximum AC power in kilowatts', 'linker-commerce' ), 'kW', $selected );
 		}
-		if ( $ranges['has_energy'] >= 3 ) {
+		if ( $ranges['has_energy'] > 0 ) {
 			$html .= $this->range_form( __( 'Usable energy', 'linker-commerce' ), 'kwh', __( 'Minimum usable energy in kilowatt hours', 'linker-commerce' ), __( 'Maximum usable energy in kilowatt hours', 'linker-commerce' ), 'kWh', $selected );
 		}
 
@@ -397,8 +397,7 @@ final class ProductShortcodes {
 	 * @param array<string, string|float> $selected   The request's selections.
 	 */
 	private function range_form( string $title, string $prefix, string $min_label, string $max_label, string $unit, array $selected ): string {
-		$active           = isset( $selected[ $prefix . '_min' ] ) || isset( $selected[ $prefix . '_max' ] );
-		$html             = '<details class="filter-section fgroup"' . ( $active ? ' open' : '' ) . '>';
+		$html             = '<details class="filter-section fgroup" open>';
 		$html            .= '<summary class="filter-title">' . esc_html( $title ) . '</summary>';
 		$html            .= '<div class="filter-options"><form class="frange" method="get" action="' . esc_url( $this->archive_root_url() ) . '">';
 		$selected['sort'] = $this->filters->requested_sort();
@@ -447,8 +446,7 @@ final class ProductShortcodes {
 		foreach ( $selected as $key => $value ) {
 			$html .= '<input type="hidden" name="' . esc_attr( (string) $key ) . '" value="' . esc_attr( (string) $value ) . '" />';
 		}
-		// Woo's already loaded ordering handler submits this native GET form on change.
-		$html .= '<select class="select-dropdown orderby" id="sort-select" name="sort" aria-label="' . esc_attr__( 'Sort products', 'linker-commerce' ) . '">';
+		$html .= '<select class="select-dropdown" id="sort-select" name="sort" aria-label="' . esc_attr__( 'Sort products', 'linker-commerce' ) . '">';
 		foreach ( $labels as $value => $label ) {
 			$html .= '<option value="' . esc_attr( $value ) . '"' . selected( $sort, $value, false ) . '>' . esc_html( $label ) . '</option>';
 		}
@@ -2013,24 +2011,7 @@ final class ProductShortcodes {
 	 * @return array<int, array{lead: int, ids: array<int>}>
 	 */
 	private function family_rows( array $ids ): array {
-		$present = array_fill_keys( array_map( 'intval', $ids ), true );
-		$lists   = $this->family_lists( $ids );
-		$rows    = array();
-		$seen    = array();
-		foreach ( $ids as $id ) {
-			$id = (int) $id;
-			if ( isset( $seen[ $id ] ) ) {
-				continue;
-			}
-			$members = $this->family_members( $id, $present, $lists );
-			foreach ( $members as $member ) {
-				$seen[ $member ] = true;
-			}
-			$rows[] = array(
-				'lead' => $id,
-				'ids'  => $members,
-			);
-		}
+		$rows = ( new \Linker\Commerce\Storefront\ProductFamilies( $ids ) )->rows( $ids );
 		if ( 'name' === $this->filters->requested_sort() ) {
 			// Sort complete families before pagination by the title the card prints.
 			$titles = array();
@@ -2045,114 +2026,6 @@ final class ProductShortcodes {
 			usort( $rows, static fn( array $a, array $b ): int => strcasecmp( $titles[ $a['lead'] ], $titles[ $b['lead'] ] ) );
 		}
 		return $rows;
-	}
-
-	/**
-	 * Every catalogue product's own family list, in the current language
-	 * (the English product carries the list; the German twin resolves through
-	 * the pair).
-	 *
-	 * @param array<int> $ids The catalogue's product ids.
-	 * @return array<int, array<int, array<string, mixed>>> Lists by product id.
-	 */
-	private function family_lists( array $ids ): array {
-		$lang  = \function_exists( 'pll_current_language' ) ? (string) pll_current_language() : '';
-		$lists = array();
-		foreach ( $ids as $id ) {
-			$id     = (int) $id;
-			$source = $id;
-			if ( '' !== $lang && \function_exists( 'pll_get_post' ) ) {
-				$english = (int) pll_get_post( $id, 'en' );
-				if ( $english > 0 ) {
-					$source = $english;
-				}
-			}
-			$legacy       = json_decode( (string) get_post_meta( $source, '_tv_legacy_acf_json', true ), true );
-			$variants     = \is_array( $legacy ) ? ( $legacy['family_variants'] ?? null ) : null;
-			$lists[ $id ] = \is_array( $variants ) ? array_values( $variants ) : array();
-		}
-		return $lists;
-	}
-
-	/**
-	 * Whether the sibling names the family back (in the current language).
-	 *
-	 * @param int                                          $sibling    The sibling id.
-	 * @param int                                          $product_id The product asking.
-	 * @param array<int, array<int, array<string, mixed>>> $lists      The catalogue's lists.
-	 * @param string                                       $lang       The current language.
-	 */
-	private function names_family( int $sibling, int $product_id, array $lists, string $lang ): bool {
-		foreach ( $lists[ $sibling ] ?? array() as $row ) {
-			$id = (int) ( $row['id'] ?? 0 );
-			if ( $id <= 0 ) {
-				continue;
-			}
-			if ( '' !== $lang && \function_exists( 'pll_get_post' ) ) {
-				$translated = (int) pll_get_post( $id, $lang );
-				if ( $translated > 0 ) {
-					$id = $translated;
-				}
-			}
-			if ( $id === $product_id ) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * One product's family members, filtered to the catalogue's set: the
-	 * product plus the sibling ids its data lists, ordered as the data lists
-	 * them (the picker's order) with the product first only when it leads its
-	 * own list.
-	 *
-	 * @param int                                          $product_id The product.
-	 * @param array<int, true>                             $present    The ids the catalogue shows.
-	 * @param array<int, array<int, array<string, mixed>>> $lists      Every product's own family list.
-	 * @return array<int>
-	 */
-	private function family_members( int $product_id, array $present, array $lists ): array {
-		$lang = \function_exists( 'pll_current_language' ) ? (string) pll_current_language() : '';
-		// The family list lives on the English product; the German twin
-		// carries the same family through the translation pair of every
-		// member.
-		$source = $product_id;
-		if ( '' !== $lang && \function_exists( 'pll_get_post' ) ) {
-			$english = (int) pll_get_post( $product_id, 'en' );
-			if ( $english > 0 ) {
-				$source = $english;
-			}
-		}
-		$rows = $lists[ $product_id ] ?? array();
-		$ids  = array();
-		foreach ( $rows as $row ) {
-			$id = (int) ( $row['id'] ?? 0 );
-			if ( $id <= 0 ) {
-				continue;
-			}
-			if ( '' !== $lang && \function_exists( 'pll_get_post' ) ) {
-				$translated = (int) pll_get_post( $id, $lang );
-				if ( $translated > 0 ) {
-					$id = $translated;
-				}
-			}
-			// A sibling counts as family only when it names the family back:
-			// the live page renders the same list this way (the products that
-			// carry no list of their own stay single cards — EVIDENCE §6-2).
-			if ( isset( $present[ $id ] ) && $this->names_family( $id, $product_id, $lists, $lang ) ) {
-				$ids[] = $id;
-			}
-		}
-		if ( ! \in_array( $product_id, $ids, true ) ) {
-			$ids[] = $product_id;
-		}
-		$ids = \array_values( \array_unique( $ids ) );
-		if ( $product_id !== $ids[0] ) {
-			$ids = \array_values( \array_filter( $ids, static fn( int $id ): bool => $id !== $product_id ) );
-			\array_unshift( $ids, $product_id );
-		}
-		return $ids;
 	}
 
 	/**

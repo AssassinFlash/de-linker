@@ -7,7 +7,7 @@ from typing import cast
 
 from .backup_demand import BackupDemand
 from .canonical import Json, Object, digest, encode
-from .equipment_candidate_store import EquipmentCandidateStore
+from .equipment_candidate_store import EquipmentCandidateStore, candidate_ratings
 from .equipment_requirements import EquipmentRequirements
 from .equipment_search_limits import EquipmentSearchLimits
 from .equipment_search_space import EquipmentSearchSpace
@@ -17,17 +17,11 @@ def candidate_record(
     key: str, value: Object, assessment: Object, store: EquipmentCandidateStore
 ) -> Object:
     checks = cast(list[Object], assessment["checks"])
-    backup = next(
-        (row["actual"] for row in checks if row["id"] == "plant:backup_runtime"), None
-    )
     return {
+        **candidate_ratings(value, assessment),
         "id": digest(encode(value)),
         key: value,
         "status": assessment["overall_status"],
-        "usable_energy_kwh": next(
-            (row["actual"] for row in checks if row["id"] == "usable_energy"),
-            backup.get("usable_energy_kwh") if isinstance(backup, dict) else None,
-        ),
         "assessment_sha256": store.put(assessment),
         "violated_checks": sum(row["status"] == "violated" for row in checks),
         "unresolved_checks": sum(row["status"] == "unresolved" for row in checks),

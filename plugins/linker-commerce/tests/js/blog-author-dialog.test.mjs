@@ -28,3 +28,17 @@ for ( const failure of [ 'error', 'timeout' ] ) {
 		dom.window.close();
 	} );
 }
+
+test( 'shows the form frame at its dialog width before the embedded widget measures it', () => {
+	const dom = new JSDOM( '<a class="reader-author-cta" href="/contact/">Contact</a><dialog id="tv-blog-author-dialog"><span class="reader-author-dialog-loading">Loading</span><a class="reader-author-dialog-fallback" hidden>Contact</a><iframe class="reader-author-dialog-frame" data-src="/contact/?article_contact=1" hidden></iframe></dialog>', { url: 'https://linker.test/article/', runScripts: 'outside-only' } );
+	const { window } = dom;
+	const dialog = window.document.querySelector( 'dialog' );
+	const frame = dialog.querySelector( 'iframe' );
+	dialog.showModal = () => dialog.setAttribute( 'open', '' );
+	window.eval( source );
+	window.document.querySelector( '.reader-author-cta' ).click();
+	assert.equal( dialog.open, true );
+	assert.equal( frame.hidden, false );
+	assert.equal( frame.src, 'https://linker.test/contact/?article_contact=1' );
+	dom.window.close();
+} );

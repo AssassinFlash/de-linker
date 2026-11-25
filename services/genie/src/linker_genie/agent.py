@@ -873,7 +873,11 @@ def _user_prompt(
         else:
             lines.append("The previous answer failed grounding: " + retry_reason)
         lines.append("Produce a new structured turn that passes the checks.")
-    for message in request.messages:
+    if len(request.messages) > 1:
+        lines.append("Earlier conversation (context for references and selections):")
+    for index, message in enumerate(request.messages):
+        if index and index == len(request.messages) - 1:
+            lines.append("Current request: answer only the following message.")
         lines.append(f"{message.role}: {message.content}")
     lines.append(
         "Reminder: answer as strict TurnOutput JSON. No number in text in any form — no digits (10) "

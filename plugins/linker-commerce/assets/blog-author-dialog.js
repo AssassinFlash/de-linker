@@ -31,6 +31,7 @@
 		dialog.showModal();
 		if ( ! frame.hasAttribute( 'src' ) ) {
 			timeout = setTimeout( showFallback, 10000 );
+			frame.hidden = false;
 			frame.src = frame.dataset.src;
 		}
 	} );

@@ -307,10 +307,18 @@ final class ComparePage {
 				)
 			);
 		}
+		if ( count( $columns ) < Comparison::MAX_PRODUCTS ) {
+			$html .= '<div class="linker-compare-picker" data-compare-picker data-search-url="' . esc_url( rest_url( 'linker/v1/catalog-search' ) ) . '" data-language="' . esc_attr( self::language() ) . '" data-page-url="' . esc_url( $this->page_url() ) . '" data-min="' . \Linker\Commerce\Products\ProductSearch::MIN_LENGTH . '" data-no-matches="' . esc_attr__( 'No more matching products.', 'linker-commerce' ) . '" data-failed="' . esc_attr__( 'Search is unavailable. Try again.', 'linker-commerce' ) . '">';
+			$html .= '<label for="compare-search">' . esc_html__( 'Add a product to compare', 'linker-commerce' ) . '</label>';
+			$html .= '<input id="compare-search" type="search" autocomplete="off" placeholder="' . esc_attr__( 'Search by model, item number or power', 'linker-commerce' ) . '"><ul data-compare-matches></ul><p role="status"></p></div>';
+		}
 		if ( array() === $columns ) {
 			return $html . '<p class="linker-compare-empty text-neutral-600">' . esc_html__( 'Choose products to compare their specifications.', 'linker-commerce' ) . '</p></div>';
 		}
 
+		if ( count( $columns ) >= 2 ) {
+			$html .= '<label class="linker-compare-differences"><input type="checkbox" data-compare-differences> ' . esc_html__( 'Show differences only', 'linker-commerce' ) . '</label>';
+		}
 		$html .= '<p class="linker-compare-actions mb-4 text-sm"><a class="text-(--proto-accent) underline" href="' . esc_url( $this->page_url() ) . '">' . esc_html__( 'Clear comparison', 'linker-commerce' ) . '</a></p>';
 		$html .= '<p class="linker-compare-hint" data-compare-scroll-hint hidden>' . esc_html__( 'Scroll sideways to compare products.', 'linker-commerce' ) . '</p>';
 		$html .= '<div class="linker-compare-scroll overflow-x-auto" role="region" tabindex="0" aria-label="' . esc_attr__( 'Product comparison table', 'linker-commerce' ) . '">';
@@ -435,7 +443,8 @@ final class ComparePage {
 	 * @param bool     $trusted Whether the values are already safe markup (a formatted price).
 	 */
 	private function row( string $label, array $values, bool $trusted = false ): string {
-		$html = '<tr class="linker-compare-row"><th scope="row" class="linker-compare-cell border-b border-neutral-200 p-3 text-left align-top font-semibold text-neutral-500">' . esc_html( $label ) . '</th>';
+		$distinct = array_unique( array_map( static fn( string $value ): string => '' === trim( $value ) ? self::EM_DASH : trim( $value ), $values ) );
+		$html     = '<tr class="linker-compare-row" data-compare-different="' . ( count( $distinct ) > 1 ? 'true' : 'false' ) . '"><th scope="row" class="linker-compare-cell border-b border-neutral-200 p-3 text-left align-top font-semibold text-neutral-500">' . esc_html( $label ) . '</th>';
 		foreach ( $values as $value ) {
 			$cell  = trim( $value );
 			$html .= '<td class="linker-compare-cell border-b border-neutral-200 p-3 align-top">' . ( $trusted && '' !== $cell ? wp_kses_post( $cell ) : esc_html( '' === $cell ? self::EM_DASH : $cell ) ) . '</td>';

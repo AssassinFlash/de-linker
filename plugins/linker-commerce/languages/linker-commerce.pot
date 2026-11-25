@@ -6277,3 +6277,27 @@ msgid ""
 "Reply to %s to confirm or adjust this Quotation. We agree on billing and "
 "delivery with you personally."
 msgstr ""
+
+#: includes/Presentation/ComparePage.php:311
+msgid "No more matching products."
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:311
+msgid "Search is unavailable. Try again."
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:312
+msgid "Add a product to compare"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:313
+msgid "Search by model, item number or power"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:320
+msgid "Show differences only"
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php:210
+msgid "Press Search to reload the results."
+msgstr ""

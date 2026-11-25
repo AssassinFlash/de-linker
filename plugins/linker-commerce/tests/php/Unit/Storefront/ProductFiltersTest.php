@@ -394,6 +394,33 @@ final class ProductFiltersTest extends TestCase {
 		$this->assertSame( array( 3, 5, 7, 4 ), $ordered );
 	}
 
+	/** A matched model is counted once per card, including a family matched by just one member. */
+	public function test_brand_counts_match_visible_family_cards(): void {
+		$model = array(
+			'brand'       => 'goodwe',
+			'application' => 'home',
+			'phase'       => 3,
+			'kw'          => 6.0,
+			'family'      => array( 31, 32 ),
+		);
+		$this->mock_facts(
+			array(
+				31 => $model,
+				32 => array_merge( $model, array( 'kw' => 12.0 ) ),
+				33 => array_merge(
+					$model,
+					array(
+						'brand'  => 'saj',
+						'family' => array(),
+					)
+				),
+			)
+		);
+		$filters = new ProductFilters();
+		$this->assertSame( 1, $filters->facet_counts( array( 31, 32, 33 ) )['brand']['goodwe']['count'] );
+		$this->assertSame( 1, $filters->facet_counts( array( 31, 32, 33 ), array( 'kw_min' => 10.0 ) )['brand']['goodwe']['count'] );
+	}
+
 	/**
 	 * A facet section lists only when two of the view's own values answer:
 	 * the live rail hides Application and Phase on the all-in-one archive
