@@ -505,8 +505,9 @@ export function ReviewInquiry({
 		retrofitOptions(project.inputs)?.find(
 			(option) => option.keep === inverter.keep_inverter,
 		);
-	const changes = review?.changes ?? [];
-	const lines = review?.lines;
+	const visibleReview = canSubmit ? review : null;
+	const changes = visibleReview?.changes ?? [];
+	const lines = visibleReview?.lines;
 	return (
 		<section
 			className="sc-main sc-draft-transfer sc-preliminary-review"

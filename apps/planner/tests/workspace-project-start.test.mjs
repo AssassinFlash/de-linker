@@ -556,7 +556,7 @@ test("visitors with project data can open setup from the comparison and keep the
 		baseUrl: location.origin + "/api/",
 		nonceUrl: location.origin + "/nonce",
 		locale: "en-US",
-		countries: { NO: "Norway" },
+		countries: { IT: "Italy", NO: "Norway" },
 	};
 	const root = createRoot(fixture.element);
 	t.after(async () => {
@@ -599,9 +599,29 @@ test("visitors with project data can open setup from the comparison and keep the
 		"Known project details can lead directly to the project form",
 	);
 	await until(() => !setup().disabled);
+	const chooseCountry = document.querySelector(
+		'select[name="project_country"]',
+	);
+	await act(async () => {
+		chooseCountry.value = "IT";
+		chooseCountry.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await enter(document.querySelector('[name="annual_load_kwh"]'), "7200");
+	await enter(document.querySelector('[name="site_pv_kw"]'), "11.09");
 	await act(async () => setup().click());
 	await until(() => document.querySelector('select[name="system_scope"]'));
 	assert.equal(location.hash, "#sc-project");
+	assert.equal(document.querySelector('select[name="country"]').value, "IT");
+	assert.equal(
+		document.querySelector('[name="annual_load_kwh"]').value,
+		"7200",
+	);
+	assert.equal(document.querySelector('[name="pv_dc_kw"]').value, "11.09");
+	assert.equal(
+		JSON.parse(window.sessionStorage.getItem("linker-comparison-draft")).inputs
+			.country_rule_inputs.basis,
+		"it_lv_generation_spi",
+	);
 	assert.equal(document.activeElement.textContent, "What is the project?");
 	assert.equal(new URL(location.href).searchParams.get("project"), null);
 	assert.equal(new URL(location.href).searchParams.get("plz"), "0150");
@@ -2011,24 +2031,23 @@ async function compareEntryRetrofit(t, view) {
 	);
 	if (!view) {
 		const scene = () =>
-			[...document.querySelectorAll("button")].find(
-				(b) =>
-					b.getAttribute("aria-label") === "Storage retrofit" &&
-					b.matches(":enabled") &&
-					!b.closest("fieldset:disabled"),
-			);
+			document.querySelector('select[name="project_start"]:enabled');
 		await until(scene);
-		await act(async () => scene().click());
-		const known = document.querySelector('button[aria-label="Known PV size"]');
-		await act(async () => known.click());
-		assert.equal(known.getAttribute("aria-pressed"), "true");
+		const selectScene = async (value) =>
+			act(async () => {
+				scene().value = value;
+				scene().dispatchEvent(new window.Event("change", { bubbles: true }));
+			});
+		await selectScene("retrofit");
+		await selectScene("known");
+		assert.equal(scene().value, "known");
 		assert.ok(!document.querySelector("#sc-direction-keep"));
 		assert.equal(
 			JSON.parse(window.sessionStorage.getItem("linker-comparison-draft"))
 				.scene,
 			"known",
 		);
-		await act(async () => scene().click());
+		await selectScene("retrofit");
 	} else {
 		const selector = 'select[name="system_scope"]';
 		await until(() => document.querySelector(selector));

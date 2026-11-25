@@ -78,7 +78,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 				};
 		},
 	};
-	const render = (key, locale = "en") =>
+	const render = (key, locale = "en", reviewedSelection = false) =>
 		act(async () =>
 			root.render(
 				React.createElement(DraftTransferButton, {
@@ -91,6 +91,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 					blocked: false,
 					locale,
 					reportOnly,
+					reviewedSelection,
 					recheck() {},
 				}),
 			),
@@ -204,6 +205,22 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	await act(async () => button("Attach report to inquiry").click());
 	assert.match(dom.element.textContent, /GoodWe inverter/);
 	assert.equal(applied.length, 3);
+	reportOnly = false;
+	phaseConflict = undefined;
+	phaseConflicts = undefined;
+	returnReceipt = true;
+	current = true;
+	window.wp.i18n.__ = (message) => message;
+	await render("reviewed-selection", "en", true);
+	const writes = applied.length;
+	let refreshed = 0;
+	document.body.addEventListener("wc-blocks_added_to_cart", () => refreshed++, {
+		once: true,
+	});
+	await act(async () => button("Add to solution draft").click());
+	assert.equal(applied.length, writes + 1);
+	assert.equal(refreshed, 1);
+	assert.ok(button("Add to solution draft"));
 });
 
 for (const current of [true, false])

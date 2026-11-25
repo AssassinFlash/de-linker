@@ -2,7 +2,9 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { __, sprintf } from "../i18n.ts";
 import { calendarDate } from "../domain/gridConnection.ts";
 import {
-	emptyCountryRuleInputs,
+	newCountryRuleInputs,
+	ruleCountries,
+	CHECKED_SOURCE_DATES,
 	type CountryRuleInputs,
 	type RuleBasis,
 } from "../domain/countryRules.ts";
@@ -16,34 +18,6 @@ import {
 	isEuBasis,
 } from "../domain/euCountryRules.ts";
 
-const countries: Record<RuleBasis, string> = {
-	ch_lv_generation_control: "CH",
-	be_small_plant_limits: "BE",
-	pl_renewable_electric_installation: "PL",
-	gb_lv_microgeneration: "GB",
-	es_self_consumption: "ES",
-	it_lv_generation_spi: "IT",
-	fr_generation_pmax: "FR",
-	nl_storage_max_active: "NL",
-	de_pv_installed: "DE",
-	at_tor_typ_a_max_capacity: "AT",
-	se_rfg_maximum_capacity: "SE",
-};
-// Source-reading dates: docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md
-// and docs/research/2026-11-12-se-country-rules/EVIDENCE.md.
-const CHECKED_SOURCE_DATES: Record<RuleBasis, string> = {
-	ch_lv_generation_control: "2026-11-24",
-	be_small_plant_limits: "2026-11-24",
-	pl_renewable_electric_installation: "2026-11-24",
-	gb_lv_microgeneration: "2026-11-24",
-	es_self_consumption: "2026-11-24",
-	it_lv_generation_spi: "2026-11-24",
-	fr_generation_pmax: "2026-11-04",
-	nl_storage_max_active: "2026-11-04",
-	de_pv_installed: "2026-11-04",
-	at_tor_typ_a_max_capacity: "2026-11-11",
-	se_rfg_maximum_capacity: "2026-11-11",
-};
 function checkedSourceDate(basis: RuleBasis, locale: string): string {
 	return new Intl.DateTimeFormat(locale, {
 		dateStyle: "long",
@@ -114,6 +88,14 @@ export function CountryRuleForm({
 	return (
 		<section className="sc-section" aria-labelledby={id + "-title"}>
 			<h3 id={id + "-title"}>{__("National rule inputs", "linker-tools")}</h3>
+			{country && !Object.values(ruleCountries).includes(country) && (
+				<p>
+					{__(
+						"This country has no rule in the configurator. Check the local grid requirements.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			<p>
 				{__(
 					"These inputs select a dated rule reading. They are project declarations; operator requirements, device evidence and grid permission still require separate verification.",
@@ -126,16 +108,7 @@ export function CountryRuleForm({
 					value={value?.basis ?? ""}
 					onChange={(event) => {
 						const basis = event.currentTarget.value as RuleBasis | "";
-						onChange(
-							basis
-								? {
-										...emptyCountryRuleInputs(basis),
-										rule_date: isEuBasis(basis)
-											? CHECKED_SOURCE_DATES[basis]
-											: null,
-									}
-								: undefined,
-						);
+						onChange(basis ? newCountryRuleInputs(basis) : undefined);
 					}}
 				>
 					<option value="">
@@ -160,7 +133,7 @@ export function CountryRuleForm({
 						.filter(
 							(basis) =>
 								!country ||
-								countries[basis] === country ||
+								ruleCountries[basis] === country ||
 								value?.basis === basis,
 						)
 						.map((basis) => (
@@ -172,7 +145,7 @@ export function CountryRuleForm({
 			</label>
 			{value && (
 				<>
-					{country !== countries[value.basis] && (
+					{country !== ruleCountries[value.basis] && (
 						<p role="status">
 							{__(
 								"The selected rule does not match this project's country. No rule result will be added until they match.",

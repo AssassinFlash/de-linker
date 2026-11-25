@@ -542,10 +542,7 @@ test("backup comparison shows the closest evidence-supported options first and k
 	assert.match(cards()[0].textContent, /Backup duration to confirm/);
 	assert.match(cards()[0].textContent, /1 stack × 2 battery modules/);
 	assert.match(document.body.textContent, /5 kW × 4 h = 20 kWh/);
-	assert.match(
-		document.body.textContent,
-		/None of the configurations found has been confirmed/,
-	);
+	assert.match(document.body.textContent, /Some checks are still open/);
 	const pager = document.querySelector('nav[aria-label="Configurations"]');
 	assert.ok(pager.classList.contains("sc-actions"));
 	await act(async () => pager.querySelectorAll("button")[1].click());
@@ -913,4 +910,49 @@ test("retaining an unverified inverter shows the measured baseline without a can
 	assert.match(document.body.textContent, /Electricity use4 kWh/);
 	assert.match(document.body.textContent, /Grid import without storage2 kWh/);
 	assert.equal(document.querySelectorAll(".sc-package").length, 0);
+});
+
+test("an 11.09 kWp project compares the nearest cited AC ratings before paging, without promising grid approval", async (t) => {
+	const options = [25, 30, 20, 12, 10].map((kw, i) => ({
+		...candidates[0],
+		id: String(i + 1).repeat(64),
+		nominal_ac_kw: kw,
+		usable_energy_kwh: kw,
+		selection: { ...selection, pv_dc_kw: 11.09 },
+	}));
+	const client = {
+		isCurrentScope: () => true,
+		query: async (_path, body) => {
+			const c = options.find((row) => row.id === body.candidate_id);
+			return {
+				run_id: run.id,
+				candidate_id: c.id,
+				assessment_sha256: c.assessment_sha256,
+				assessment: assessment(c),
+			};
+		},
+	};
+	await mount(t, {
+		run: {
+			...run,
+			result: { search: { ...run.result.search, candidates: options } },
+		},
+		client,
+		scope: "fit",
+		locale: "en",
+		disabled: false,
+		selectedId: null,
+		onSelect: async () => {},
+	});
+	assert.deepEqual(
+		Array.from(
+			document.querySelectorAll(".sc-package-capacity strong"),
+			(n) => n.textContent,
+		),
+		["12 kWh", "10 kWh", "20 kWh"],
+	);
+	assert.doesNotMatch(
+		document.body.textContent,
+		/None of the configurations found|Electrical checks passed/,
+	);
 });

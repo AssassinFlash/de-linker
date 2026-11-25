@@ -513,17 +513,11 @@ for (const lang of ['en', 'de'] as const) {
 			});
 			await page.goto(instance().url + path);
 			await page.locator('[data-cky-tag="reject-button"]').click();
-			const scenarios = page.locator('.sc-scene-grid button');
-			await expect(scenarios).toHaveCount(4);
-			const retrofit = scenarios.filter({
-				hasText:
-					lang === 'de' ? 'Speicher nachrüsten' : 'Storage retrofit',
-			});
-			await expect(retrofit).toBeEnabled();
-			if (width === 1440)
-				await expect(retrofit).toBeInViewport({ ratio: 1 });
+			const scenarios = page.locator('select[name="project_start"]');
+			await expect(scenarios).toBeEnabled();
+			if (width === 1440) await expect(scenarios).toBeInViewport();
 			await screenshot(page, `bare-entry-${lang}-${width}`);
-			await retrofit.click();
+			await scenarios.selectOption('retrofit');
 			const rows = page.locator('.sc-direction-comparison tbody tr');
 			await expect(rows).toHaveCount(2);
 			const keep =

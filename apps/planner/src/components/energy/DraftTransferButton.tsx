@@ -27,6 +27,7 @@ export function DraftTransferButton({
 	blocked,
 	locale,
 	recheck,
+	reviewedSelection = false,
 	reportOnly = run.result?.has_report_only_handoff === true,
 }: {
 	run: PlanningRun;
@@ -37,6 +38,7 @@ export function DraftTransferButton({
 	blocked: boolean;
 	locale: string;
 	recheck: () => void;
+	reviewedSelection?: boolean;
 	reportOnly?: boolean;
 }) {
 	const pending = operations.records.some((record) => record.resultId === null);
@@ -189,8 +191,10 @@ export function DraftTransferButton({
 				} else {
 					setPresent(null);
 					if (
-						reportOnly &&
-						value.changes.length === 0 &&
+						(reportOnly
+							? value.changes.length === 0
+							: reviewedSelection &&
+								value.changes.every((row) => row.before === 0)) &&
 						value.phaseConflicts.length === 0
 					) {
 						await confirm(value);
@@ -240,6 +244,10 @@ export function DraftTransferButton({
 			return;
 		confirmed.current = { key: reply.intent.key, receipt: reply.receipt };
 		setReceipt(reply.receipt);
+		if (!reportOnly && reply.receipt.active !== false)
+			document.body.dispatchEvent(
+				new CustomEvent("wc-blocks_added_to_cart", { bubbles: true }),
+			);
 		setPreview(null);
 		setError(null);
 		if (
@@ -282,7 +290,9 @@ export function DraftTransferButton({
 		);
 	const addLabel = reportOnly
 		? __("Attach report to inquiry", "linker-tools")
-		: __("Add selected products to solution draft", "linker-tools");
+		: reviewedSelection
+			? __("Add to solution draft", "linker-tools")
+			: __("Add selected products to solution draft", "linker-tools");
 	return (
 		<section className="sc-draft-operation">
 			{!reportOnly && (

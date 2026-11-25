@@ -4,6 +4,8 @@ import { equipmentDraft } from "./equipment.ts";
 
 export const ENTRY_QUERY_KEYS = [
 	"scope",
+	"application",
+	"goal",
 	"pv_kwp",
 	"annual_kwh",
 	"phase",
@@ -15,6 +17,8 @@ export const ENTRY_QUERY_KEYS = [
 ] as const;
 export type ProductEntryField = "inverter" | "battery" | "accessory";
 export interface EntryHints {
+	commercialGoal?: "peak_shaving" | "self_consumption" | "ev_buffer" | "backup";
+	commercial?: boolean;
 	projectScope?: "storage_addition" | "new_pv_storage";
 	pvKw: number | null;
 	annualKwh: number | null;
@@ -57,6 +61,22 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 		}
 		return value;
 	};
+	const application = one("application");
+	const goal = one("goal");
+	const commercial = application === "commercial";
+	const commercialGoal =
+		commercial &&
+		(goal === "peak_shaving" ||
+			goal === "self_consumption" ||
+			goal === "ev_buffer" ||
+			goal === "backup")
+			? goal
+			: undefined;
+	if (
+		(application !== null && !commercial) ||
+		(goal !== null && !commercialGoal)
+	)
+		invalid = true;
 	const scope = one("scope");
 	if (
 		scope !== null &&
@@ -99,6 +119,8 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 	)
 		invalid = true;
 	return {
+		...(commercial && { commercial }),
+		...(commercialGoal && { commercialGoal }),
 		...(scope === "storage_addition" || scope === "new_pv_storage"
 			? { projectScope: scope }
 			: {}),
@@ -157,7 +179,10 @@ export function entryInputs(
 	const inputs: Record<string, Json> = {
 		brief: {
 			...brief,
-			system_scope: hints.projectScope ?? brief.system_scope,
+			project_use: hints.commercial ? "commercial" : brief.project_use,
+			system_scope:
+				hints.projectScope ??
+				(hints.commercial ? "new_pv_storage" : brief.system_scope),
 			site: { ...brief.site, location_label: hints.postalCode ?? "" },
 			annual_load: {
 				kwh: hints.annualKwh,

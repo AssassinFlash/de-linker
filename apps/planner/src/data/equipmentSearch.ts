@@ -37,6 +37,7 @@ interface CandidateMetadata extends JsonObject {
 	assessment_sha256: string;
 	violated_checks: number;
 	unresolved_checks: number;
+	nominal_ac_kw?: number | null;
 	usable_energy_kwh?: number | null;
 	demand?: CandidateDemandResult;
 }
@@ -216,6 +217,7 @@ export function readEquipmentSearchResult(
 			!["violated", "unresolved", "satisfied"].includes(String(c.status)) ||
 			!count(c.violated_checks) ||
 			!count(c.unresolved_checks) ||
+			(c.nominal_ac_kw != null && !nonnegative(c.nominal_ac_kw)) ||
 			(c.usable_energy_kwh !== undefined &&
 				c.usable_energy_kwh !== null &&
 				(typeof c.usable_energy_kwh !== "number" ||

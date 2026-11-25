@@ -1,3 +1,4 @@
+import { chooseCountryRules } from "../../domain/countryRules.ts";
 import { useCallback, useRef } from "react";
 import type { Configuration } from "../../data/config.ts";
 import type { JsonObject } from "../../data/protocol.ts";
@@ -72,27 +73,6 @@ export function ProjectDirections({
 		retrofit: __("Storage retrofit", "linker-tools"),
 		commercial: __("Commercial & large-scale", "linker-tools"),
 	};
-	const descriptions = {
-		new: __(
-			"Plan panels, an inverter and a battery for a new site.",
-			"linker-tools",
-		),
-		known: __("Start with the solar capacity in kWp.", "linker-tools"),
-		retrofit: __(
-			"Add a battery to the panels already on site.",
-			"linker-tools",
-		),
-		commercial: __(
-			"Compare equipment for a business or multi-system site.",
-			"linker-tools",
-		),
-	};
-	const icons = {
-		new: "solar",
-		known: "overview",
-		retrofit: "layers",
-		commercial: "system",
-	} as const;
 	function pick(selected: Scene) {
 		const applied = edit((current) => {
 			const source = readBrief(current.brief);
@@ -103,7 +83,11 @@ export function ProjectDirections({
 					system_scope:
 						selected === "retrofit" ? "storage_addition" : "new_pv_storage",
 					project_use:
-						selected === "commercial" ? "commercial" : source.project_use,
+						selected === "commercial"
+							? "commercial"
+							: source.project_use === "commercial"
+								? null
+								: source.project_use,
 				},
 			};
 		});
@@ -117,25 +101,6 @@ export function ProjectDirections({
 	}
 	return (
 		<>
-			<fieldset className="sc-card sc-direction-start" disabled={disabled}>
-				<legend>{__("What are you planning?", "linker-tools")}</legend>
-				<div className="sc-scene-grid">
-					{scenes.map((key) => (
-						<button
-							key={key}
-							type="button"
-							className="sc-scene"
-							aria-label={labels[key]}
-							aria-pressed={key === scene}
-							onClick={() => pick(key)}
-						>
-							<Icon name={icons[key]} />
-							<span>{labels[key]}</span>
-							<small>{descriptions[key]}</small>
-						</button>
-					))}
-				</div>
-			</fieldset>
 			<fieldset
 				ref={fields}
 				className="sc-card sc-direction-fields"
@@ -143,6 +108,23 @@ export function ProjectDirections({
 			>
 				<legend>{__("Project details (optional)", "linker-tools")}</legend>
 				<div className="sc-fields">
+					<label className="sc-field">
+						<span>{__("Project starting point", "linker-tools")}</span>
+						<select
+							name="project_start"
+							value={scene ?? ""}
+							onChange={(event) => pick(event.currentTarget.value as Scene)}
+						>
+							<option value="" disabled>
+								{__("Choose an option", "linker-tools")}
+							</option>
+							{scenes.map((key) => (
+								<option key={key} value={key}>
+									{labels[key]}
+								</option>
+							))}
+						</select>
+					</label>
 					<label className="sc-field">
 						<span>{__("Project name", "linker-tools")}</span>
 						<input
@@ -162,7 +144,9 @@ export function ProjectDirections({
 								edit((current) => {
 									const b = readBrief(current.brief);
 									return {
-										...invalidateEnergyReplay(current),
+										...invalidateEnergyReplay(
+											chooseCountryRules(current, code),
+										),
 										brief: {
 											...b,
 											site: {
@@ -275,6 +259,7 @@ export function ProjectDirections({
 						{__("Open roof studio", "linker-tools")} <Icon name="arrow" />
 					</button>
 				</div>
+				{brief.project_note && <p>{brief.project_note}</p>}
 				{compare && (
 					<button
 						type="button"

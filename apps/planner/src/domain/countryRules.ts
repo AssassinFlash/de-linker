@@ -1,7 +1,8 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/country-rules.schema.json" with { type: "json" };
 import { ApiError, type JsonObject } from "../data/protocol.ts";
-import { calendarDate } from "./gridConnection.ts";
+import { isEuBasis } from "./euCountryRules.ts";
+import { calendarDate, emptyGridConnection } from "./gridConnection.ts";
 
 export type RuleBasis =
 	| "fr_generation_pmax"
@@ -96,4 +97,61 @@ export function replaceCountryRuleInputs(
 	return value === undefined
 		? rest
 		: { ...rest, country_rule_inputs: readCountryRuleInputs(value)! };
+}
+
+export const ruleCountries: Record<RuleBasis, string> = {
+	ch_lv_generation_control: "CH",
+	be_small_plant_limits: "BE",
+	pl_renewable_electric_installation: "PL",
+	gb_lv_microgeneration: "GB",
+	es_self_consumption: "ES",
+	it_lv_generation_spi: "IT",
+	fr_generation_pmax: "FR",
+	nl_storage_max_active: "NL",
+	de_pv_installed: "DE",
+	at_tor_typ_a_max_capacity: "AT",
+	se_rfg_maximum_capacity: "SE",
+};
+// Source-reading dates: docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md
+// and docs/research/2026-11-12-se-country-rules/EVIDENCE.md.
+export const CHECKED_SOURCE_DATES: Record<RuleBasis, string> = {
+	ch_lv_generation_control: "2026-11-24",
+	be_small_plant_limits: "2026-11-24",
+	pl_renewable_electric_installation: "2026-11-24",
+	gb_lv_microgeneration: "2026-11-24",
+	es_self_consumption: "2026-11-24",
+	it_lv_generation_spi: "2026-11-24",
+	fr_generation_pmax: "2026-11-04",
+	nl_storage_max_active: "2026-11-04",
+	de_pv_installed: "2026-11-04",
+	at_tor_typ_a_max_capacity: "2026-11-11",
+	se_rfg_maximum_capacity: "2026-11-11",
+};
+
+export function newCountryRuleInputs(basis: RuleBasis): CountryRuleInputs {
+	return {
+		...emptyCountryRuleInputs(basis),
+		rule_date: isEuBasis(basis) ? CHECKED_SOURCE_DATES[basis] : null,
+	};
+}
+
+export function chooseCountryRules(
+	inputs: JsonObject,
+	country: string | null,
+): JsonObject {
+	const basis = (Object.keys(ruleCountries) as RuleBasis[]).find(
+		(key) => ruleCountries[key] === country,
+	);
+	const {
+		grid_connection: _grid,
+		country_rule_inputs: _rules,
+		...rest
+	} = inputs;
+	return basis
+		? {
+				...rest,
+				grid_connection: emptyGridConnection(),
+				country_rule_inputs: newCountryRuleInputs(basis),
+			}
+		: rest;
 }

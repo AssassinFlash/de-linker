@@ -622,12 +622,6 @@ export function ReviewProposal({
 		blocked || operations.busy || operations.checking || waiting || logoPending;
 	const reportOnly = run?.result?.has_report_only_handoff === true;
 	const transferable = reportCanTransfer(run, report);
-	const revealPendingTransfer = useCallback(
-		(panel: HTMLDetailsElement | null) => {
-			if (panel && recoverTransfer && !reportOnly) panel.open = true;
-		},
-		[recoverTransfer, reportOnly],
-	);
 
 	const facts = projectFacts(inputs, locale);
 	const overviewSections =
@@ -676,6 +670,7 @@ export function ReviewProposal({
 				scope={scope}
 				operations={operations}
 				reportOnly={reportOnly}
+				reviewedSelection={Boolean(inquiry)}
 				current={current}
 				blocked={transferBlocked}
 				locale={locale}
@@ -894,13 +889,10 @@ export function ReviewProposal({
 					)}
 				</InquiryExportBar>
 				{inquiry}
-				{reportOnly && recoverTransfer && draftTransfer}
-				<details
-					className="sc-card sc-review-details"
-					ref={revealPendingTransfer}
-				>
+				{ready && (!reportOnly || recoverTransfer) && draftTransfer}
+				<details className="sc-card sc-review-details">
 					<summary>{__("Project report", "linker-tools")}</summary>
-					{ready && !reportOnly && draftTransfer}
+
 					{ready && <ReportBody report={report} />}
 				</details>
 				{historyPanel}

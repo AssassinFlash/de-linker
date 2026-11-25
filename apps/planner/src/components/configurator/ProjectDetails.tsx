@@ -1,3 +1,4 @@
+import { chooseCountryRules } from "../../domain/countryRules.ts";
 import { GridConnectionForm } from "../GridConnectionForm.tsx";
 import { CountryRuleForm } from "../CountryRuleForm.tsx";
 import {
@@ -242,7 +243,12 @@ export function ProjectDetails({
 			const before =
 				current.brief === undefined ? emptyBrief() : readBrief(current.brief);
 			return {
-				...invalidateEnergyReplay(current),
+				...invalidateEnergyReplay(
+					patch.country_code !== undefined &&
+						patch.country_code !== before.site.country_code
+						? chooseCountryRules(current, patch.country_code)
+						: current,
+				),
 				brief: {
 					...before,
 					site: {
@@ -475,7 +481,7 @@ export function ProjectDetails({
 					</div>
 				)}
 				{!equipmentFirst && existingEquipment}
-				{!creation && (
+				{(!creation || country) && (
 					<details className="sc-selection-evidence">
 						<summary>{__("Grid connection review", "linker-tools")}</summary>
 						<CountryRuleForm
