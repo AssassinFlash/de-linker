@@ -6,12 +6,14 @@ interface FileRef {
 	name: string;
 }
 interface Snapshot {
+	fileIds?: string[];
 	text?: string;
 	id: string;
 	uploads: Upload[];
 	expires?: number;
 }
 const prefix = 'linker-genie-turn-failure:v2:';
+const draftLifetime = 90 * 24 * 60 * 60 * 1000;
 const loaded = new Map< string, Upload >();
 function fileKey( scope: string, upload: Upload ): string | undefined {
 	for ( const [ id, file ] of loaded ) {
@@ -125,7 +127,7 @@ export async function keepPickedFile( scope: string, upload: Upload ) {
 		await write( {
 			id,
 			uploads: [ upload ],
-			expires: Date.now() + 90 * 24 * 60 * 60 * 1000,
+			expires: Date.now() + draftLifetime,
 		} )
 	) {
 		loaded.set( id, upload );
@@ -251,10 +253,39 @@ export async function keepJobFiles(
 	jobId: string,
 	uploads: Upload[],
 	until: number,
-	text: string
+	text: string,
+	queuedScope?: string
 ) {
+	if ( queuedScope && uploads.length ) {
+		// The files keep the ownership and expiry they acquired when picked.
+		const fileIds: string[] = [];
+		for ( const upload of uploads ) {
+			await keepPickedFile( queuedScope, upload );
+			const id = fileKey( queuedScope, upload );
+			if ( id ) {
+				fileIds.push( id );
+			}
+		}
+		if ( fileIds.length === uploads.length ) {
+			await write( {
+				id: jobId,
+				uploads: [],
+				fileIds,
+				expires: Date.now() + draftLifetime,
+			} );
+			return;
+		}
+	}
 	if ( uploads.length ) {
 		await write( { id: jobId, uploads, expires: until, text } );
 	}
 }
-export const readJobDraft = read;
+export async function readJobDraft( jobId: string ) {
+	const job = await read( jobId );
+	if ( ! job?.fileIds ) {
+		return job;
+	}
+	const files = await Promise.all( job.fileIds.map( ( id ) => read( id ) ) );
+	const uploads = files.flatMap( ( file ) => file?.uploads ?? [] );
+	return { ...job, uploads };
+}

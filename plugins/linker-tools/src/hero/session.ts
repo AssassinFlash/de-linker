@@ -324,6 +324,7 @@ export class HeroSession {
 		const page = this.config.page;
 		const request = {
 			surface: 'hero' as const,
+			...( uploads.length ? { uploadScope: entryScope } : {} ),
 			...( current?.owner ? { owner: current.owner } : {} ),
 			turnUrl: this.config.turnUrl,
 			nonce: this.config.nonce,
