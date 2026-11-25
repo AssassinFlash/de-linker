@@ -55,6 +55,7 @@
 .sc-configurator select,
 .linker-account .linker-auth-register .form-row select[name],
 .linker-account .linker-auth-register .form-row .select2-selection--single {
+  -webkit-appearance: none;
   appearance: none;
   padding-inline-end: 42px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233a4242' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
@@ -124,6 +125,6 @@
 }
 @media (forced-colors: active) {
   .lk-field select.linker-form-input, .sc-configurator select, .linker-account .linker-auth-register .form-row select[name],
-.linker-account .linker-auth-register .form-row .select2-selection--single { appearance: auto; background-image: none; }
+.linker-account .linker-auth-register .form-row .select2-selection--single { -webkit-appearance: auto; appearance: auto; background-image: none; }
   .lk-dropzone:focus-within, .lk-field :focus-visible { outline: 2px solid Highlight; }
 }
