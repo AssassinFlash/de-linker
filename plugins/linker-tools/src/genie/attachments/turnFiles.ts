@@ -6,6 +6,7 @@ interface FileRef {
 	name: string;
 }
 interface Snapshot {
+	conversationId?: number;
 	fileIds?: string[];
 	text?: string;
 	id: string;
@@ -260,19 +261,53 @@ export function releasePickedFiles( uploads: Upload[], scope?: string ) {
 				( [ , file ] ) => file === upload
 			)?.[ 0 ];
 		if ( id ) {
-			try {
-				const journal = sessionStorage.getItem(
-					prefix + id.split( ':' )[ 0 ]
-				);
-				if ( journal?.includes( JSON.stringify( id ) ) ) {
-					continue;
-				}
-			} catch {
-				continue;
-			}
-			void removeFiles( id, true ).catch( () => undefined );
+			void releasePick( id ).catch( () => undefined );
 		}
 	}
+}
+
+async function releasePick( id: string ) {
+	try {
+		const journal = sessionStorage.getItem( prefix + id.split( ':' )[ 0 ] );
+		if ( journal?.includes( JSON.stringify( id ) ) ) {
+			return;
+		}
+	} catch {
+		return;
+	}
+	await removeFiles( id, true );
+}
+
+export async function forgetConversationFiles( conversationId: number ) {
+	if ( typeof indexedDB === 'undefined' ) {
+		return;
+	}
+	const db = await database();
+	const tx = db.transaction( 'snapshots', 'readwrite' );
+	const picks = new Set< string >();
+	const query = tx.objectStore( 'snapshots' ).openCursor();
+	query.onsuccess = () => {
+		const row = query.result;
+		if ( row ) {
+			if (
+				typeof row.key === 'string' &&
+				! row.key.includes( ':' ) &&
+				row.value.conversationId === conversationId
+			) {
+				const job: Snapshot = row.value;
+				for ( const id of job.fileIds ?? [] ) {
+					picks.add( id );
+				}
+				row.delete();
+			}
+			row.continue();
+		}
+	};
+	await new Promise< void >( ( resolve, reject ) => {
+		tx.oncomplete = () => resolve();
+		tx.onabort = () => reject( tx.error );
+	} );
+	await Promise.all( Array.from( picks, releasePick ) );
 }
 
 export async function keepJobFiles(
@@ -280,7 +315,8 @@ export async function keepJobFiles(
 	uploads: Upload[],
 	until: number,
 	text: string,
-	queuedScope?: string
+	queuedScope?: string,
+	conversationId?: number
 ) {
 	if ( queuedScope && uploads.length ) {
 		// The files keep the ownership and expiry they acquired when picked.
@@ -295,6 +331,7 @@ export async function keepJobFiles(
 		if ( fileIds.length === uploads.length ) {
 			await write( {
 				id: jobId,
+				conversationId,
 				uploads: [],
 				fileIds,
 				expires: Date.now() + draftLifetime,
@@ -303,7 +340,13 @@ export async function keepJobFiles(
 		}
 	}
 	if ( uploads.length ) {
-		await write( { id: jobId, uploads, expires: until, text } );
+		await write( {
+			id: jobId,
+			conversationId,
+			uploads,
+			expires: until,
+			text,
+		} );
 	}
 }
 export async function readJobDraft( jobId: string ) {

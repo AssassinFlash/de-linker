@@ -1,6 +1,10 @@
 import { genieFetch } from './restFetch';
 import { inputBeforeUploads } from '../shared/conversation';
-import { keepJobFiles, removeFiles } from '../attachments/turnFiles';
+import {
+	forgetConversationFiles,
+	keepJobFiles,
+	removeFiles,
+} from '../attachments/turnFiles';
 /**
  * One turn through the REST proxy: POST, then read the service's SSE events
  * from the answer (docs/specs/13-genie.md).
@@ -524,9 +528,12 @@ async function withinTurn< T >(
 	}
 }
 
-async function replyBody( response: Response ) {
+async function replyBody( response: Response, jobId?: string ) {
 	if ( ! response.ok ) {
 		const refusal = await response.json().catch( () => ( {} ) );
+		if ( jobId && refusal?.data?.unrecorded === true ) {
+			await removeFiles( jobId ).catch( () => undefined );
+		}
 		throw new TurnError(
 			response.status,
 			typeof refusal?.code === 'string' ? refusal.code : ''
@@ -565,7 +572,7 @@ async function pollTurn(
 				},
 			}
 		);
-		const body = await replyBody( response );
+		const body = await replyBody( response, job.job_id );
 		if (
 			body.job_id !== job.job_id ||
 			body.conversation_id !== job.conversation_id
@@ -579,6 +586,9 @@ async function pollTurn(
 			return parseStream( body.stream );
 		}
 		if ( body.status !== 'running' ) {
+			if ( body.status === 'failed' ) {
+				await removeFiles( job.job_id ).catch( () => undefined );
+			}
 			throw new TurnError( body.http_status ?? 503, body.code ?? '' );
 		}
 		if ( body.stage !== stage ) {
@@ -680,7 +690,8 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 					uploads,
 					Date.now() + TURN_TIMEOUT_MS,
 					inputBeforeUploads( question, uploads ),
-					body.stage === 'waiting' ? request.uploadScope : undefined
+					body.stage === 'waiting' ? request.uploadScope : undefined,
+					body.conversation_id
 				);
 				request.onStarted?.( body.conversation_id );
 				const answer = await pollTurn(
@@ -1098,6 +1109,7 @@ export async function deleteConversation(
 		current_id?: number;
 		conversations?: ConversationSummary[];
 	};
+	await forgetConversationFiles( id ).catch( () => undefined );
 	return {
 		currentId: body.current_id ?? 0,
 		conversations: body.conversations ?? [],
