@@ -24,6 +24,8 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	let phaseConflict = { actual: 1, required: 3 };
 	let reportOnly = false;
 	let reportChanges = [];
+	let alreadyPresent = false;
+	let beforeQuantity = 0;
 	let phaseConflicts;
 	const inquiryUrls = { en: `${origin}/inquiry/`, de: `${origin}/de/anfrage/` };
 	const client = {
@@ -40,7 +42,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 				handoff_id: "c".repeat(32),
 				draft_sha256: "d".repeat(64),
 				snapshot_sha256: "e".repeat(64),
-				already_present: false,
+				already_present: alreadyPresent,
 				draft_urls: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
 				inquiry_urls: inquiryUrls,
 				...(reportOnly
@@ -50,7 +52,7 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 								{
 									product_id: 1,
 									label: "GoodWe inverter",
-									before: 0,
+									before: beforeQuantity,
 									after: 1,
 								},
 							],
@@ -73,7 +75,10 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 					path: "draft/apply",
 					intent: { key: "attached" },
 					receipt: {
-						urls: { en: `${origin}/inquiry/`, de: `${origin}/de/anfrage/` },
+						inquiryUrls,
+						urls: reportOnly
+							? inquiryUrls
+							: { en: `${origin}/draft/`, de: `${origin}/de/entwurf/` },
 					},
 				};
 		},
@@ -214,13 +219,45 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	await render("reviewed-selection", "en", true);
 	const writes = applied.length;
 	let refreshed = 0;
-	document.body.addEventListener("wc-blocks_added_to_cart", () => refreshed++, {
-		once: true,
-	});
+	document.addEventListener("wc-blocks_added_to_cart", () => refreshed++);
+	const assertInline = () => {
+		assert.equal(dom.element.querySelectorAll(".sc-primary").length, 0);
+		assert.equal(button("Confirm and continue to inquiry"), undefined);
+		assert.ok(
+			![...dom.element.querySelectorAll("a")].some(
+				(a) => a.textContent === "Continue to inquiry",
+			),
+		);
+	};
+	assertInline();
 	await act(async () => button("Add to solution draft").click());
 	assert.equal(applied.length, writes + 1);
 	assert.equal(refreshed, 1);
-	assert.ok(button("Add to solution draft"));
+	assertInline();
+	assert.equal(
+		dom.element.querySelector("a").textContent,
+		"View solution draft",
+	);
+	assert.equal(button("Add to solution draft"), undefined);
+	beforeQuantity = 2;
+	await render("changed-selection", "en", true);
+	await act(async () => button("Add to solution draft").click());
+	assert.equal(applied.length, writes + 1);
+	assertInline();
+	await act(async () => button("Confirm changes").click());
+	assert.equal(applied.length, writes + 2);
+	assert.equal(refreshed, 2);
+	assertInline();
+	alreadyPresent = true;
+	await render("same-selection", "en", true);
+	await act(async () => button("Add to solution draft").click());
+	assert.equal(applied.length, writes + 2);
+	assert.equal(refreshed, 3);
+	assert.match(
+		dom.element.querySelector('[role="status"]').textContent,
+		/added to solution draft/,
+	);
+	assertInline();
 });
 
 for (const current of [true, false])
@@ -440,6 +477,7 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 	const { default: Configurator } =
 		await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const { equipmentDraft } = await import("../src/domain/equipment.ts");
 	const scope = "3".repeat(64);
 	const cache = new QueryClient();
 	const root = createRoot(dom.element);
@@ -485,6 +523,10 @@ test("the configuration sidebar counts included roof modules when no PV capacity
 		})),
 	};
 	for (const [inputs, expected] of [
+		[
+			{ equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 11.09 } },
+			"11.09 kWp",
+		],
 		[{ geometry: flatRoof }, "2.5 kWp"],
 		[{ geometry: allExcluded }, "—"],
 		[{}, "—"],

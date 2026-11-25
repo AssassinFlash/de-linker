@@ -63,6 +63,10 @@ import {
 	type PvgisReferenceDraft,
 } from "../../domain/pvgisReference.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
+import {
+	changeDemandEquipment,
+	demandEquipment,
+} from "../../domain/equipmentPlant.ts";
 import { readBrief } from "../../domain/brief.ts";
 import {
 	formatComputedDecimal,
@@ -233,6 +237,11 @@ export function SolarInstallation({
 				system_kwp: number | null;
 		  }
 		| undefined;
+	const declaredPower = demandEquipment(inputs).pv_dc_kw;
+	const knownPower =
+		known?.peak_power_kwp ??
+		(typeof declaredPower === "number" ? declaredPower : null);
+	const typedPower = knownPanels ? knownPanels.system_kwp : knownPower;
 	const [selected, select] = useState<string | null>(
 		geometry.roofs[0]?.id ?? null,
 	);
@@ -704,18 +713,31 @@ export function SolarInstallation({
 			const existing = knownReferenceArrays(current) ?? [];
 			const first = existing[0] ?? {
 				id: id(),
-				peak_power_kwp: null,
+				peak_power_kwp: knownPower,
 				tilt_deg: null,
 				azimuth_north_clockwise_deg: null,
 				source_note: "",
 			};
+			const arrays = [{ ...first, ...patch }, ...existing.slice(1)];
 			const next = referenceInputs(current, {
 				...draft,
 				model: KNOWN_PV_MODEL,
-				arrays: [{ ...first, ...patch }, ...existing.slice(1)],
+				arrays,
 			});
 			if (panels === undefined) return next;
-			return { ...next, known_panel_details: panels };
+			const power = arrays.reduce<number | null>(
+				(sum, array) =>
+					sum !== null && typeof array.peak_power_kwp === "number"
+						? sum + array.peak_power_kwp
+						: null,
+				0,
+			);
+			return {
+				...(power === demandEquipment(current).pv_dc_kw
+					? next
+					: changeDemandEquipment(next, { pv_dc_kw: power })),
+				known_panel_details: panels,
+			};
 		});
 	}
 	function panelPowerChange(
@@ -725,9 +747,7 @@ export function SolarInstallation({
 		const details = {
 			count: knownPanels?.count ?? null,
 			power_w: knownPanels?.power_w ?? null,
-			system_kwp: knownPanels
-				? knownPanels.system_kwp
-				: (known?.peak_power_kwp ?? null),
+			system_kwp: typedPower,
 			[field]: value,
 		};
 		const computed =
@@ -769,7 +789,7 @@ export function SolarInstallation({
 					: [
 							{
 								id: id(),
-								peak_power_kwp: null,
+								peak_power_kwp: knownPower,
 								tilt_deg: null,
 								azimuth_north_clockwise_deg: null,
 								source_note: "",
@@ -1599,11 +1619,7 @@ export function SolarInstallation({
 										type="number"
 										min="0"
 										step="any"
-										value={
-											(knownPanels
-												? knownPanels.system_kwp
-												: known?.peak_power_kwp) ?? ""
-										}
+										value={typedPower ?? ""}
 										placeholder={
 											knownPanels?.count &&
 											knownPanels.power_w &&
@@ -1754,8 +1770,8 @@ export function SolarInstallation({
 							<strong>
 								{mode === "roof" && geometry.roofs.length > 0
 									? `${summary.count} ${__("placed modules", "linker-tools")} · ${formatComputedDecimal(summary.stc_kwp, config.locale)} kWp`
-									: mode === "known" && known?.peak_power_kwp != null
-										? `${formatComputedDecimal(known.peak_power_kwp, config.locale)} kWp`
+									: mode === "known" && knownPower != null
+										? `${formatComputedDecimal(knownPower, config.locale)} kWp`
 										: __("Not specified", "linker-tools")}
 							</strong>
 						</div>

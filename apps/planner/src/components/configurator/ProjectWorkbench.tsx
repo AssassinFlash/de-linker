@@ -83,7 +83,11 @@ import {
 	comparisonModels,
 	equipmentDraft,
 } from "../../domain/equipment.ts";
-import { hasPlant, readPlantDraft } from "../../domain/equipmentPlant.ts";
+import {
+	demandEquipment,
+	hasPlant,
+	readPlantDraft,
+} from "../../domain/equipmentPlant.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import { takeRoofImageryConsent } from "../../data/roofImageryConsent.ts";
 import { dropGeometricRoofAc } from "../../domain/profiles.ts";
@@ -2308,7 +2312,11 @@ export default function ProjectWorkbench({
 										<dt>{__("Solar capacity", "linker-tools")}</dt>
 										<dd>
 											{total(
-												roofModules?.count ? [roofModules.stc_kwp] : pvSizes,
+												roofModules?.count
+													? [roofModules.stc_kwp]
+													: pvSizes.length
+														? pvSizes
+														: [demandEquipment(inputs).pv_dc_kw],
 												"kWp",
 											)}
 										</dd>

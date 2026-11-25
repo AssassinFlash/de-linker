@@ -89,6 +89,24 @@ export function hasPlant(inputs: JsonObject): boolean {
 		inputs.equipment_plant_setup !== undefined
 	);
 }
+export function demandEquipment(inputs: JsonObject): JsonObject {
+	return hasPlant(inputs)
+		? readPlantDraft(inputs).requirements
+		: equipmentDraft(inputs);
+}
+
+export function changeDemandEquipment(
+	inputs: JsonObject,
+	patch: JsonObject,
+): JsonObject {
+	if (!hasPlant(inputs)) return changeEquipment(inputs, patch);
+	const plant = readPlantDraft(inputs);
+	return plantInputs(inputs, {
+		...plant,
+		requirements: { ...plant.requirements, ...patch },
+	});
+}
+
 const equipmentFields = [
 	"equipment_plant",
 	"equipment_plant_setup",

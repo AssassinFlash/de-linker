@@ -893,7 +893,7 @@ test("Solar opens System using the edited array capacity rather than a previous 
 	const app = await equipmentApp(t, {
 		projectId: id,
 		hash: "#sc-solar",
-		inputs: { equipment_setup: savedSetup },
+		inputs: { equipment_setup: { ...savedSetup, pv_dc_kw: 11.09 } },
 		savedRun: makeRun(id, "succeeded"),
 	});
 	const field = () => app.fieldInput("Solar capacity (kWp)");
@@ -904,13 +904,18 @@ test("Solar opens System using the edited array capacity rather than a previous 
 	if (option.getAttribute("aria-pressed") !== "true")
 		await act(async () => option.click());
 	await untilRun(field);
+	assert.equal(field().value, "11.09");
+	assert.match(
+		document.querySelector(".sc-solar-total").textContent,
+		/11.09 kWp/,
+	);
 	await enter(field(), "13.7");
 	await app.step("Matched equipment");
 	await untilRun(() => searchRequests(app).length === 1);
 	assert.equal(app.button("Use this configuration"), undefined);
-	assert.ok(
-		JSON.stringify(searchRequests(app)[0].body.inputs).includes("13.7"),
-	);
+	const submitted = searchRequests(app)[0].body.inputs;
+	assert.equal(submitted.equipment_setup.pv_dc_kw, 13.7);
+	assert.equal(submitted.pvgis_reference_setup.arrays[0].peak_power_kwp, 13.7);
 });
 
 test("a saved roof goes from Project through PVGIS generation, System and Review", async (t) => {

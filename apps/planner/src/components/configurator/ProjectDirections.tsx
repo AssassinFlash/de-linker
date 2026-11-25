@@ -10,8 +10,8 @@ import { __ } from "../../i18n.ts";
 import { Icon } from "../Icon.tsx";
 import { NumberField } from "../NumberField.tsx";
 import { AnnualElectricityUse } from "./HomepageDemand.tsx";
+import { changeDemandEquipment } from "../../domain/equipmentPlant.ts";
 import {
-	changeDemandEquipment,
 	changeEnergyGoal,
 	energyGoal,
 	type EnergyGoal,
