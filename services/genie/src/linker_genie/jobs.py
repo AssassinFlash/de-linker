@@ -18,6 +18,16 @@ from .work import SITE_SLOTS, Slots, WorkError, configured_slots
 RETENTION_SECONDS = 180
 
 
+def _expiry(token: str) -> int:
+    # WP verifies the signature at the ability. Only WP's signed expiry orders renewals.
+    fields = token.split("|", 2)
+    return (
+        int(fields[1])
+        if len(fields) == 3 and fields[1].isascii() and fields[1].isdigit()
+        else 0
+    )
+
+
 class Jobs:
     def __init__(self, slots: Slots) -> None:
         self.slots = slots
@@ -32,12 +42,16 @@ class Jobs:
                 subject TEXT NOT NULL, pid INTEGER NOT NULL, slot_id TEXT NOT NULL,
                 status TEXT NOT NULL, stage TEXT NOT NULL, result_stream TEXT,
                 error_status INTEGER, error_code TEXT, error_detail TEXT,
-                created_at REAL NOT NULL, updated_at REAL NOT NULL, expires_at REAL, execution_at REAL
+                created_at REAL NOT NULL, updated_at REAL NOT NULL, expires_at REAL, execution_at REAL,
+                owner_context TEXT
             )""")
-            if "execution_at" not in {
+            columns = {
                 row["name"] for row in db.execute("PRAGMA table_info(turn_jobs)")
-            }:
+            }
+            if "execution_at" not in columns:
                 db.execute("ALTER TABLE turn_jobs ADD COLUMN execution_at REAL")
+            if "owner_context" not in columns:
+                db.execute("ALTER TABLE turn_jobs ADD COLUMN owner_context TEXT")
             yield db
 
     def begin(self, slot: str, conversation: str, subject: str, stage: str) -> float:
@@ -82,7 +96,7 @@ class Jobs:
         now = time.time()
         with self.transaction() as db:
             recorded = db.execute(
-                "UPDATE turn_jobs SET status='completed',result_stream=?,updated_at=?,expires_at=? WHERE job_id=?",
+                "UPDATE turn_jobs SET status='completed',owner_context=NULL,result_stream=?,updated_at=?,expires_at=? WHERE job_id=?",
                 (stream, now, now + RETENTION_SECONDS, job),
             )
             db.execute("DELETE FROM slots WHERE id=?", (job,))
@@ -98,7 +112,7 @@ class Jobs:
     ) -> None:
         now = time.time()
         db.execute(
-            """UPDATE turn_jobs SET status='failed',error_status=?,error_code=?,error_detail=?,
+            """UPDATE turn_jobs SET status='failed',owner_context=NULL,error_status=?,error_code=?,error_detail=?,
             updated_at=?,expires_at=? WHERE job_id=? AND status='running'""",
             (status, code, detail, now, now + RETENTION_SECONDS, job),
         )
@@ -114,7 +128,23 @@ class Jobs:
             return True
         return False
 
-    def read(self, job: str, subject: str) -> dict[str, Any] | None:
+    def user_context(self, job: str, subject: str, original: str) -> str:
+        """Private account reads use the newest credential issued by this turn's owner."""
+        with self.transaction() as db:
+            row = db.execute(
+                "SELECT owner_context FROM turn_jobs WHERE job_id=? AND subject=? AND status='running'",
+                (job, subject),
+            ).fetchone()
+        token = (row["owner_context"] or original) if row else ""
+        if token.partition("|")[0] != original.partition("|")[0] or _expiry(
+            token
+        ) < int(time.time()):
+            raise WorkError("user_context_expired", 401)
+        return str(token)
+
+    def read(
+        self, job: str, subject: str, owner_context: str | None = None
+    ) -> dict[str, Any] | None:
         with self.transaction() as db:
             db.execute("DELETE FROM turn_jobs WHERE expires_at<=?", (time.time(),))
             select = "SELECT * FROM turn_jobs WHERE job_id=? AND subject=?"
@@ -123,6 +153,15 @@ class Jobs:
                 return None
             if row["status"] == "running" and self._reap_dead(db, row):
                 row = db.execute(select, (job, subject)).fetchone()
+            if (
+                owner_context
+                and row["status"] == "running"
+                and _expiry(owner_context) > _expiry(row["owner_context"] or "")
+            ):
+                db.execute(
+                    "UPDATE turn_jobs SET owner_context=? WHERE job_id=?",
+                    (owner_context, job),
+                )
             timing = {}
             if row["execution_at"] is not None:
                 timing["queued_seconds"] = max(

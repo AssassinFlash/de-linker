@@ -840,7 +840,9 @@ class Proxy {
 		if ( ( $completion['operation_id'] ?? null ) === $turn['operation_id'] || ( 'waiting' !== $turn['stage'] && microtime( true ) >= PendingTurns::deadline( $turn ) ) ) {
 			$result = self::job_error( 503 );
 		} else {
-			$result = $this->job_request( $this->base() . '/assistant/turn/' . $job, $turn['subject_hash'] );
+			// Only an authenticated owner poll can renew the ability credential. Cron reads carry none.
+			$context = 'waiting' === $turn['stage'] && microtime( true ) - $turn['started_at'] >= UserContext::TTL - self::TURN_BUDGET ? $this->user_context->mint() : '';
+			$result  = $this->job_request( $this->base() . '/assistant/turn/' . $job, $turn['subject_hash'], null, $context );
 			if ( ! is_wp_error( $result ) && microtime( true ) >= PendingTurns::deadline( $turn, $result ) ) {
 				$result = self::job_error( 503 );
 			}
@@ -940,13 +942,17 @@ class Proxy {
 	 * @param string                   $url Private URL.
 	 * @param string                   $subject Native identity hash.
 	 * @param array<string,mixed>|null $body Start payload or null for a poll.
+	 * @param string                   $context Short-lived account credential from the checked owner.
 	 * @return array<string,mixed>|WP_Error
 	 */
-	private function job_request( string $url, string $subject, ?array $body = null ): array|WP_Error {
+	private function job_request( string $url, string $subject, ?array $body = null, string $context = '' ): array|WP_Error {
 		$headers = $this->headers() + array(
 			'Accept'                    => 'application/json',
 			'X-Linker-Resource-Subject' => $subject,
 		);
+		if ( '' !== $context ) {
+			$headers[ UserContext::HEADER ] = $context;
+		}
 		if ( is_callable( $this->fetch ) ) {
 			$raw = ( $this->fetch )( $url, $body ?? array(), $headers );
 		} else {

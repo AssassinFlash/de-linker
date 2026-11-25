@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 
 from linker_genie.jobs import RETENTION_SECONDS, Jobs
-from linker_genie.work import Slots
+from linker_genie.work import Slots, WorkError
 
 SUBJECT = "a" * 64
 
@@ -162,3 +162,34 @@ def test_old_jobs_can_finish_after_queue_schema_upgrade(tmp_path: Path) -> None:
         "status": "completed",
         "stream": "old stream",
     }
+
+
+def test_private_reads_use_the_current_owner_after_a_long_wait(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The queue and the poll run in different API workers.
+    now = [1000.0]
+    monkeypatch.setattr(time, "time", lambda: now[0])
+    slots = Slots(tmp_path / "private/work.sqlite")
+    worker, poll = Jobs(slots), Jobs(slots)
+    worker.begin("job", "conversation", SUBJECT, "waiting")
+    original = "44|1120|start-signature"
+    now[0] += 110
+    assert poll.read("job", "other-subject", "99|1230|other") is None
+    assert worker.user_context("job", SUBJECT, original) == original
+    renewed = "44|1230|current-signature"
+    state = poll.read("job", SUBJECT, renewed)
+    assert state and renewed not in repr(state)
+    assert worker.claim("job", SUBJECT, "understanding") == "claimed"
+    now[0] += 11
+    assert worker.user_context("job", SUBJECT, original) == renewed
+    # An older in-flight poll cannot replace the newer credential.
+    poll.read("job", SUBJECT, original)
+    assert worker.user_context("job", SUBJECT, original) == renewed
+    now[0] += 110
+    with pytest.raises(WorkError) as expired:
+        worker.user_context("job", SUBJECT, original)
+    assert expired.value.status == 401
+    worker.finish("job", "answer")
+    with slots.transaction() as db:
+        assert db.execute("SELECT owner_context FROM turn_jobs").fetchone() == (None,)

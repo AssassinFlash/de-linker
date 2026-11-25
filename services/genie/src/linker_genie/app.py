@@ -49,7 +49,7 @@ from linker_genie import (
     summary,
     timing,
 )
-from linker_genie.abilities import Abilities, AbilityClient
+from linker_genie.abilities import USER_CONTEXT_HEADER, Abilities, AbilityClient
 from linker_genie.agent import (
     deepseek_access,
     make_generate,
@@ -343,6 +343,11 @@ def start_turn(body: TurnRequest, request: Request) -> JSONResponse:
     except (OSError, sqlite3.Error) as error:
         raise WorkError("storage") from error
 
+    if body.user.logged_in and body.user.context:
+        request.state.current_user_context = lambda token: jobs.user_context(
+            slot, subject, token
+        )
+
     def execute() -> None:
         try:
             snapshot = _start_permission(body, authority)
@@ -393,7 +398,9 @@ def read_turn(job_id: str, request: Request) -> dict[str, Any]:
     subject = request.headers.get("x-linker-resource-subject", "")
     require_subject(subject)
     try:
-        state = Jobs(configured_slots()).read(job_id, subject)
+        state = Jobs(configured_slots()).read(
+            job_id, subject, request.headers.get(USER_CONTEXT_HEADER)
+        )
     except (OSError, sqlite3.Error) as error:
         raise WorkError("storage") from error
     if state is None:
@@ -422,7 +429,9 @@ def _compute_turn(
     # behind, so the unfinished turns the p95 tail must not silently omit are
     # countable (TurnLog.start; ops/turn_latency.py reports them).
     start_token = turn_log().start(body.conversation_id, body.locale)
-    abilities = ability_client().for_turn(original_permission)
+    abilities = ability_client().for_turn(
+        original_permission, getattr(request.state, "current_user_context", None)
+    )
     prepare = getattr(request.app.state, "prepare", None)
     try:
         with timing.phase(clock, timing.UNDERSTAND):
