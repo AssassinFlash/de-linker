@@ -278,15 +278,21 @@
 		};
 		window.clarity('consentv2', {analytics_Storage: 'denied', ad_Storage: 'denied'});
 	}
-	function setStatistics(allowed) {
+	// CookieYes changes the shared cookie but emits its event only in the active tab.
+	const consentChannel = window.BroadcastChannel ? new BroadcastChannel('linker-analytics-consent') : null;
+	if (consentChannel) consentChannel.onmessage = function () {
+		if (!cookieAllowsAnalytics()) setStatistics(false);
+	};
+	function setStatistics(allowed, notifyTabs = false) {
 		const id = measurementId();
-		const wasDenied = statistics === false;
+		const previous = statistics;
 		statistics = allowed;
 		if (id) window['ga-disable-' + id] = optedOut || !allowed;
 		if (allowed) {
 			releaseTag();
 			releaseClarity();
-		} else if (!wasDenied) {
+		} else if (previous !== false) {
+			if (notifyTabs && previous === true) consentChannel?.postMessage('withdrawn');
 			if (clarityTag) withdrawClarity();
 			clearAnalyticsCookies();
 			if (clarityTag || document.querySelector(liveTag)) location.reload();
@@ -297,11 +303,11 @@
 	});
 	document.addEventListener('cookieyes_consent_update', function (event) {
 		const accepted = event.detail?.accepted;
-		setStatistics(Array.isArray(accepted) ? accepted.includes('analytics') : cookieAllowsAnalytics());
+		setStatistics(Array.isArray(accepted) ? accepted.includes('analytics') : cookieAllowsAnalytics(), true);
 	}, true);
 	document.addEventListener('wp_listen_for_consent_change', function (event) {
 		if (Object.hasOwn(event.detail || {}, 'statistics')) {
-			setStatistics(event.detail.statistics === 'allow');
+			setStatistics(event.detail.statistics === 'allow', true);
 		}
 	}, true);
 })();

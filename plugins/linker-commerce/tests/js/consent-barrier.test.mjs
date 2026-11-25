@@ -314,3 +314,21 @@ test('Clarity follows the analytics choice once across acceptance, return and wi
 	await new Promise(done => next.document.addEventListener('DOMContentLoaded', done));
 	assert.equal(next.document.querySelectorAll('script[src*="clarity.ms"]').length, 1);
 });
+
+test('a withdrawal in another tab stops a running collector and disables Google', async () => {
+	const channels = [];
+	const window = page(held, {beforeParse(win) {
+		win.BroadcastChannel = class {
+			constructor(name) { this.name = name; channels.push(this); }
+			postMessage() { throw Error('Received withdrawal must not be rebroadcast'); }
+		};
+	}});
+	window.linkerClarityProject = 'test123';
+	window.document.cookie = 'cookieyes-consent=analytics:yes';
+	await new Promise(done => window.document.addEventListener('DOMContentLoaded', done));
+	window.document.cookie = 'cookieyes-consent=analytics:no';
+	channels[0].onmessage({data:'withdrawn'});
+	assert.equal(window['ga-disable-G-TEST201123'], true);
+	assert.equal(window.__reloads, 1);
+	assert.equal(window.clarity.q.at(-1)[1].analytics_Storage, 'denied');
+});
