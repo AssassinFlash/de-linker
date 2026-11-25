@@ -37,7 +37,6 @@ final class OutcomeTest extends TestCase {
 		'includes/Protection/BusinessCapacity.php' => array( 'problem' ),
 		'includes/Protection/Fingerprint.php'      => array(),
 		'includes/Protection/Identity.php'         => array(),
-		'includes/Protection/Intake.php'           => array( 'run', 'begin', 'write', 'problem', 'full', 'grouped' ),
 		'includes/Protection/IntakeStore.php'      => array( 'edit', 'edit_native', 'save', 'read' ),
 		'includes/Protection/Ledger.php'           => array(),
 	);
@@ -234,9 +233,6 @@ final class OutcomeTest extends TestCase {
 	 */
 	public function review_refusals(): array {
 		return array(
-			'full queue'  => array( 'linker_intake_full', 'review_full' ),
-			'oversized'   => array( 'linker_intake_size', 'review_size' ),
-			'grouped'     => array( 'linker_intake_grouped', 'grouped' ),
 			'no capacity' => array( 'linker_business_capacity', 'reception_full' ),
 			'no journal'  => array( 'linker_admission_capacity', 'reception_full' ),
 		);

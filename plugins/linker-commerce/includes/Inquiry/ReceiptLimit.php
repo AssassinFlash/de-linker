@@ -64,6 +64,9 @@ final class ReceiptLimit {
 		if ( ! is_array( $state ) ) {
 			return 'pending';
 		}
+		if ( in_array( $state['status'] ?? '', array( 'pending', 'processing' ), true ) && ( $order->has_status( Statuses::RECEIVED ) || 'assessment_pending' === $reason || 'review_hold' === $reason ) && ! \Linker\Commerce\Mail\NotificationHold::held( $order ) ) {
+			return 'pending';
+		}
 		if ( $state && ! SendAuthorization::receipt_source( $order, $state ) ) {
 			return 'omitted';
 		}

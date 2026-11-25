@@ -182,7 +182,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		);
 		$email->trigger( $order->get_id(), $order );
 
-		$this->assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $marker ) );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$state = $this->authorization->process( $order );
 		$jobs  = array( $state['jobs']['receipt']['id'] );
 		$this->assertCount( 2, self::mail_jobs_after( $marker ), 'The normal verdict adds the team notification to the existing German receipt.' );

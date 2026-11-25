@@ -17,7 +17,6 @@ const replayFields = new Set([
 	"linker_draft_hash",
 	"linker_project_notes_present",
 	"linker_include_project_notes",
-	"linker_individual_review",
 	"billing_address_1",
 	"billing_address_2",
 	"billing_city",

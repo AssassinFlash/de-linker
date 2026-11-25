@@ -170,7 +170,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 			$this->assertSame( '', $order->get_meta( SelectionContext::META ) );
 		}
 		$order->read_meta_data( true );
-		$this->assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $marker ) );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$this->authorization->drain();
 		$jobs = self::mail_jobs_after( $marker );
 		$this->assertCount( 2, $jobs );
@@ -231,7 +231,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		$this->assertSame( $post[ SelectionContext::INCLUDE_FIELD ], $recovered[ SelectionContext::INCLUDE_FIELD ] );
 		$this->assertSame( $post['message'], $recovered['message'] );
 		$this->assertSame( $post['linker_request_id'], $recovered['linker_request_id'] );
-		$this->assertSame( '1', $recovered['linker_individual_review'], 'Selection and the individual-review request survive the same native recovery.' );
+		$this->assertArrayNotHasKey( 'linker_individual_review', $recovered );
 		$this->assertArrayNotHasKey( 'linker_proof', $recovered );
 		FormRecovery::save( 'contact', $post );
 		$html = ( new Form() )->render();

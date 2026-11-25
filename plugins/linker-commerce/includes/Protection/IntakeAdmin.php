@@ -65,7 +65,7 @@ final class IntakeAdmin {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
-		$summary = Intake::pending_summary();
+		$summary = IntakeStore::pending_summary();
 		if ( ! is_wp_error( $summary ) && $summary['count'] > 0 ) {
 			/* translators: %d is the number of complete inquiries awaiting staff review. */
 			echo '<div class="notice notice-warning"><p>' . esc_html( sprintf( __( '%d public requests are waiting for staff review. No individual notification has been sent for these requests.', 'linker-commerce' ), $summary['count'] ) ) . ' <a href="' . esc_url( $summary['url'] ) . '">' . esc_html__( 'View saved requests', 'linker-commerce' ) . '</a></p></div>';
@@ -90,7 +90,7 @@ final class IntakeAdmin {
 					'value' => 'held',
 				),
 				array(
-					'key'     => Intake::LANE_META,
+					'key'     => IntakeStore::LANE_META,
 					'value'   => array( 'verification', 'individual' ),
 					'compare' => 'IN',
 				),
@@ -159,7 +159,7 @@ final class IntakeAdmin {
 			return;
 		}
 		$order  = $subject instanceof WC_Order ? $subject : wc_get_order( is_object( $subject ) && isset( $subject->ID ) ? (int) $subject->ID : 0 );
-		$record = $order instanceof WC_Order ? $order->get_meta( Intake::META ) : null;
+		$record = $order instanceof WC_Order ? $order->get_meta( IntakeStore::META ) : null;
 		if ( is_array( $record ) ) {
 			echo '<p><strong>' . esc_html__( 'Saved for staff review', 'linker-commerce' ) . '</strong></p><dl><dt>' . esc_html__( 'Review class', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $record['lane'] ) . '</dd><dt>' . esc_html__( 'Rule version', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $record['rule'] ) . '</dd></dl>';
 		}
@@ -221,7 +221,7 @@ final class IntakeAdmin {
 	 * @return list<array{name:string,value:mixed}>
 	 */
 	public function export( array $data, WC_Order $order ): array {
-		$value = $order->get_meta( Intake::META );
+		$value = $order->get_meta( IntakeStore::META );
 		if ( is_array( $value ) ) {
 			$data[] = array(
 				'name'  => __( 'Public request review', 'linker-commerce' ),

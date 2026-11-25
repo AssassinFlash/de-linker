@@ -271,7 +271,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		}
 		$this->assertCount( 1, $contacts );
 		$contacts[0]->read_meta_data( true );
-		$this->assertSame( array( self::fixed_receipt_job( $contacts[0] ) ), self::mail_jobs_after( $marker ) );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$emails = WC()->mailer()->get_emails();
 		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\ReceiptEmail', $emails );
 		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\TeamMessageEmail', $emails );

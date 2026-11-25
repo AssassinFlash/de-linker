@@ -288,12 +288,6 @@ final class Form {
 		}
 		return match ( $state ) {
 			'reception_full' => $this->notice( \Linker\Commerce\Protection\BusinessCapacity::message() ),
-			/* translators: %s: public team email address. */
-			'review_size' => $this->notice( sprintf( __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ),
-			/* translators: %s: public team email address. */
-			'review_full' => $this->notice( sprintf( __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ),
-			/* translators: %s: public team email address. */
-			'grouped' => $this->notice( sprintf( __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ),
 			'invalid'   => $this->notice( __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
 			/* translators: %s: public team email address. */
 			'throttled' => $this->notice( sprintf( __( 'The message limit has been reached. Your entries are still here. You can try again later or email %s.', 'linker-commerce' ), ( new Options() )->team_mailbox() ) ),
@@ -314,7 +308,7 @@ final class Form {
 		if ( 'saved_review' === $state && ! isset( $_GET[ self::ORDER_PARAM ] ) ) {
 			$number = (string) WC()->session->get( 'linker_review_saved', '' );
 			$order  = ctype_digit( $number ) ? wc_get_order( (int) $number ) : false;
-			if ( ! $order instanceof \WC_Order || $number !== (string) $order->get_order_number() || 'individual' !== $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) || 'contact' !== $order->get_meta( '_linker_inquiry_source' ) || $order->has_status( 'trash' ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
+			if ( ! $order instanceof \WC_Order || $number !== (string) $order->get_order_number() || 'individual' !== $order->get_meta( \Linker\Commerce\Protection\IntakeStore::LANE_META ) || 'contact' !== $order->get_meta( '_linker_inquiry_source' ) || $order->has_status( 'trash' ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
 				return null;
 			}
 			$owner = (int) $order->get_customer_id();
@@ -342,7 +336,7 @@ final class Form {
 	 * @param string    $back  Embedded view URL, or an empty string on the Contact page.
 	 */
 	private function receipt_notice( \WC_Order $order, string $back ): string {
-		if ( 'individual' === $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) && $order->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) && \Linker\Commerce\Mail\NotificationHold::held( $order ) ) {
+		if ( 'individual' === $order->get_meta( \Linker\Commerce\Protection\IntakeStore::LANE_META ) && $order->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) && \Linker\Commerce\Mail\NotificationHold::held( $order ) ) {
 			$text = \Linker\Commerce\Protection\IntakeAdmin::saved_message( $order );
 		} else {
 			/* translators: %s: inquiry number. */

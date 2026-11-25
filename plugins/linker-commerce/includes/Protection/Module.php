@@ -34,7 +34,7 @@ final class Module {
 		( new BusinessCapacity() )->register();
 		( new \Linker\Commerce\Registration\VatNotice() )->register();
 		( new IntakeAdmin() )->register();
-		add_filter( 'linker_commerce_pending_review_summary', array( Intake::class, 'pending_summary' ), 10, 0 );
+		add_filter( 'linker_commerce_pending_review_summary', array( IntakeStore::class, 'pending_summary' ), 10, 0 );
 		// Acquire the release boundary before other native erasure listeners write.
 		add_action( 'woocommerce_privacy_before_remove_order_personal_data', array( IntakeStore::class, 'forget' ), 0 );
 		add_action( 'woocommerce_customer_reset_password', array( \Linker\Commerce\Inquiry\ReceiptLimit::class, 'confirmed_mailbox' ) );

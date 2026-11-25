@@ -121,7 +121,7 @@ final class CheckoutTest extends TestCase {
 		$order->shouldReceive( 'get_customer_id' )->andReturn( 12 );
 		$order->shouldReceive( 'get_meta' )->andReturnUsing(
 			static fn ( string $key ) => match ( $key ) {
-				\Linker\Commerce\Protection\Intake::LANE_META => 'verification',
+				\Linker\Commerce\Protection\IntakeStore::LANE_META => 'verification',
 				\Linker\Commerce\Mail\NotificationHold::META => array( 'reason' => 'authorization_unresolved' ),
 				default => '',
 			}

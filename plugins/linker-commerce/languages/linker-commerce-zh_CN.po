@@ -246,3 +246,19 @@ msgstr[0] "晚 %d 小时"
 msgid "%d day late"
 msgid_plural "%d days late"
 msgstr[0] "晚 %d 天"
+
+msgid "Jev: manual review required"
+msgstr "Jev 待人工复核"
+
+msgid "Approve and send the customer receipt"
+msgstr "确认并向客户补发回执"
+
+msgid "Customer receipt approved for delivery."
+msgstr "已确认补发客户回执。"
+
+#, php-format
+msgid "Last attempt: %1$s UTC. Reason: %2$s. The outbox retries internal notifications through authenticated SMTP."
+msgstr "最近尝试时间为 %1$s UTC。原因为 %2$s。发件队列将通过已认证的 SMTP 重试。"
+
+msgid "Internal notifications are queued. Check the SMTP configuration on the server."
+msgstr "内部通知正在排队。请检查服务器的 SMTP 配置。"

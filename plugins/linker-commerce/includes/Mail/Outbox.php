@@ -75,13 +75,6 @@ final class Outbox {
 	private bool $internal = false;
 
 	/**
-	 * Whether this pass must use PHP mail after an SMTP failure.
-	 *
-	 * @var bool
-	 */
-	private bool $fallback = false;
-
-	/**
 	 * Whether the active delivery selected SMTP, including identity rejection.
 	 *
 	 * @var bool
@@ -265,7 +258,7 @@ final class Outbox {
 	 */
 	public function configure_mailer( PHPMailer $mailer ): void {
 		if ( $this->delivering ) {
-			$this->smtp_attempt = $this->internal && ! $this->fallback;
+			$this->smtp_attempt = $this->internal;
 			if ( ! $this->smtp->configure( $mailer, $this->smtp_attempt ) && $this->smtp_attempt ) {
 				throw new Exception( esc_html( InternalSmtp::FAILURE_MESSAGE ) );
 			}
@@ -328,7 +321,7 @@ final class Outbox {
 		}
 		$now       = time();
 		$critical  = $message->critical || ( $job_id > 0 && $this->jobs->critical( $job_id ) );
-		$transport = $message->is_internal() && $this->smtp->available() ? Throttle::SMTP : Throttle::PHP;
+		$transport = $this->throttle->transport( $message );
 		$slot      = $this->throttle->reserve( $now, $transport, $critical, $message->category );
 		if ( $slot > $now ) {
 			if ( $job_id > 0 ) {
@@ -343,8 +336,8 @@ final class Outbox {
 			$this->throttle->release( $now, $transport, $message->category );
 			$this->jobs->resolve_attempt( $job_id, $attempt_token );
 			if ( 'unavailable' === $receipt ) {
-				$this->schedule( $job_id, $now + self::RETRY_DELAYS[0] );
-			} elseif ( in_array( $receipt, array( 'target_cap', 'daily_cap' ), true ) ) {
+				$this->record_failure( $message, $attempts + 1, $job_id, $now, $critical, 'Receipt authorization temporarily unavailable.' );
+			} else {
 				$this->jobs->delete( $job_id );
 			}
 			return false;
@@ -356,46 +349,20 @@ final class Outbox {
 		// Test mode rewrites the recipients on the way out alone. $message is
 		// what was queued, and it keeps the recipients the routing data names
 		// (Mail\TestMode); only this attempt's copy is redirected.
-		$delivery          = $this->test_mode->redirect( $message );
-		$this->fallback    = Throttle::PHP === $transport;
-		$transport_id      = '';
-		$fallback_now      = 0;
-		$fallback_reserved = false;
+		$delivery = $this->test_mode->redirect( $message );
 		try {
 			$sent = $this->deliver( $delivery );
-			if ( $sent ) {
-				$transport_id = $this->transport_message_id;
-			}
 			if ( $this->smtp_attempt ) {
-				$reason = $this->smtp->failure_reason();
-				$this->outcome->record( $sent, $reason );
-				if ( ! $sent ) {
-					wc_get_logger()->warning(
-						'Internal SMTP failed; PHP fallback requires its own available budget. Reason: ' . $reason . '.',
-						array( 'source' => self::LOG_SOURCE )
-					);
-					$fallback_now = time();
-					$wait_until   = \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ? $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical, $message->category ) : PHP_INT_MAX;
-					if ( $wait_until === $fallback_now ) {
-						$fallback_reserved = true;
-						$this->fallback    = true;
-						$sent              = $this->deliver( $delivery );
-						$transport_id      = $sent ? $this->transport_message_id : '';
-					}
-				}
+				$this->outcome->record( $sent, $this->smtp->failure_reason() );
 			}
 		} finally {
 			$this->delivering   = false;
 			$this->internal     = false;
-			$this->fallback     = false;
 			$this->smtp_attempt = false;
 		}
 
 		if ( $sent ) {
-			if ( $fallback_reserved && Throttle::SMTP === $transport ) {
-				$this->throttle->release( $now, Throttle::SMTP, $message->category );
-			}
-			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::delivered( $message, $job_id, $transport_id );
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::delivered( $message, $job_id, $this->transport_message_id );
 			if ( $job_id > 0 ) {
 				$this->jobs->delete( $job_id );
 			}
@@ -413,30 +380,40 @@ final class Outbox {
 		}
 
 		$this->throttle->release( $now, $transport, $message->category );
-		if ( $fallback_reserved ) {
-			$this->throttle->release( $fallback_now, Throttle::PHP, $message->category );
-		}
-		++$attempts;
 		if ( $job_id > 0 ) {
 			$this->jobs->resolve_attempt( $job_id, $attempt_token );
 		}
 		$job_id = $job_id > 0 ? $job_id : $this->jobs->create( $message );
+		$this->record_failure( $message, $attempts + 1, $job_id, $now, $critical, $this->error );
+		return false;
+	}
+
+	/**
+	 * Record a definite failure and retry the original job on its own transport.
+	 *
+	 * @param Message $message  Original message.
+	 * @param int     $attempts Failed attempts including this one.
+	 * @param int     $job_id   Durable job.
+	 * @param int     $now      Attempt time.
+	 * @param bool    $critical Staff delivery priority.
+	 * @param string  $reason   Diagnostic.
+	 */
+	private function record_failure( Message $message, int $attempts, int $job_id, int $now, bool $critical, string $reason ): void {
 		if ( $attempts > count( self::RETRY_DELAYS ) ) {
-			$this->jobs->fail( $job_id, $attempts, $this->error );
+			$this->jobs->fail( $job_id, $attempts, $reason );
 			wc_get_logger()->error(
-				sprintf( 'Email "%s" to %s not sent after %d attempts: %s', $message->subject, implode( ', ', $message->to ), $attempts, $this->error ),
+				sprintf( 'Email "%s" to %s not sent after %d attempts: %s', $message->subject, implode( ', ', $message->to ), $attempts, $reason ),
 				array( 'source' => self::LOG_SOURCE )
 			);
-			return false;
+			return;
 		}
-		$this->jobs->record_failure( $job_id, $attempts, $this->error );
+		$this->jobs->record_failure( $job_id, $attempts, $reason );
 		$delay = self::RETRY_DELAYS[ $attempts - 1 ];
 		$this->schedule( $job_id, $this->throttle->next_message_slot( $now + $delay, $message, $critical ) );
 		wc_get_logger()->warning(
-			sprintf( 'Email "%s" to %s failed (attempt %d: %s); next attempt in %d s.', $message->subject, implode( ', ', $message->to ), $attempts, $this->error, $delay ),
+			sprintf( 'Email "%s" to %s failed (attempt %d: %s); next attempt in %d s.', $message->subject, implode( ', ', $message->to ), $attempts, $reason, $delay ),
 			array( 'source' => self::LOG_SOURCE )
 		);
-		return false;
 	}
 
 	/**

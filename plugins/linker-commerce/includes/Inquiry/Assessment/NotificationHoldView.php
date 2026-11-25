@@ -22,8 +22,15 @@ final class NotificationHoldView {
 	 */
 	public static function render( WC_Order $order ): void {
 		$released = $order->get_meta( NotificationHold::RELEASED );
+		if ( 'jev_review' === $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) && ! NotificationHold::held( $order ) ) {
+			echo '<p>' . esc_html__( 'Jev: manual review required', 'linker-commerce' ) . '</p>';
+			self::button( $order, __( 'Approve and send the customer receipt', 'linker-commerce' ) );
+			return;
+		}
 		if ( ! NotificationHold::held( $order ) ) {
-			if ( is_array( $released ) ) {
+			if ( 'receipt' === ( $released['purpose'] ?? '' ) ) {
+				echo '<p>' . esc_html__( 'Customer receipt approved for delivery.', 'linker-commerce' ) . '</p>';
+			} elseif ( is_array( $released ) ) {
 				echo '<h3>' . esc_html__( 'Internal notification', 'linker-commerce' ) . '</h3><p><strong>' . esc_html__( 'Released for delivery', 'linker-commerce' ) . '</strong><br />' . esc_html( EvidenceView::date( (int) ( $released['at'] ?? 0 ) ) ) . '</p>';
 			}
 			return;
@@ -33,15 +40,25 @@ final class NotificationHoldView {
 		$hold = is_array( $hold ) ? $hold : get_post_meta( $job, NotificationHold::META, true );
 		$hold = is_array( $hold ) ? $hold : array();
 		echo '<h3>' . esc_html__( 'Internal notification', 'linker-commerce' ) . '</h3><p><strong>' . esc_html__( 'Notification on hold', 'linker-commerce' ) . '</strong></p>';
-		echo '<p>' . esc_html( ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) || SendAuthorization::managed( $order->get_id() ) ) ? __( 'The complete inquiry is saved for review. Releasing it queues one internal notification. No customer acknowledgement will be sent.', 'linker-commerce' ) : __( 'The inquiry and its original notification are retained. Releasing the notification queues the same message for delivery.', 'linker-commerce' ) ) . '</p>';
+		echo '<p>' . esc_html( ( $order->get_meta( \Linker\Commerce\Protection\IntakeStore::META ) || SendAuthorization::managed( $order->get_id() ) ) ? __( 'The complete inquiry is saved for review. Releasing it queues one internal notification. No customer acknowledgement will be sent.', 'linker-commerce' ) : __( 'The inquiry and its original notification are retained. Releasing the notification queues the same message for delivery.', 'linker-commerce' ) ) . '</p>';
 		echo '<dl><dt>' . esc_html__( 'Held since', 'linker-commerce' ) . '</dt><dd>' . esc_html( EvidenceView::date( (int) ( $hold['at'] ?? 0 ) ) ) . '</dd><dt>' . esc_html__( 'Hold reason', 'linker-commerce' ) . '</dt><dd>' . esc_html( 'confirmed_campaign_notification_hold' === ( $hold['reason'] ?? '' ) ? __( 'Confirmed abuse campaign', 'linker-commerce' ) : (string) ( $hold['reason'] ?? '' ) ) . '</dd><dt>' . esc_html__( 'Original notification ID', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $job ) . '</dd></dl>';
-		if ( ! SendAuthorization::managed( $order->get_id() ) && ! $order->get_meta( \Linker\Commerce\Protection\Intake::META ) && ( null === ( new JobStore() )->load( $job ) || 'private' !== get_post_status( $job ) ) ) {
+		if ( ! SendAuthorization::managed( $order->get_id() ) && ! $order->get_meta( \Linker\Commerce\Protection\IntakeStore::META ) && ( null === ( new JobStore() )->load( $job ) || 'private' !== get_post_status( $job ) ) ) {
 			echo '<p>' . esc_html__( 'The original notification is unavailable. It has not been recreated.', 'linker-commerce' ) . '</p>';
 			return;
 		}
+		self::button( $order, __( 'Release this notification', 'linker-commerce' ) );
+	}
+
+	/**
+	 * Submit the current order's release control.
+	 *
+	 * @param WC_Order $order Current inquiry.
+	 * @param string   $label Action shown to staff.
+	 */
+	private static function button( WC_Order $order, string $label ): void {
 		$id        = 'linker-notification-release-' . $order->get_id();
 		$reference = NotificationHold::reference( $order );
-		echo '<p><button class="button" type="submit" form="' . esc_attr( $id ) . '">' . esc_html__( 'Release this notification', 'linker-commerce' ) . '</button></p>';
+		echo '<p><button class="button" type="submit" form="' . esc_attr( $id ) . '">' . esc_html( $label ) . '</button></p>';
 		add_action(
 			'admin_footer',
 			static function () use ( $order, $id, $reference ): void {

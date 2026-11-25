@@ -30,7 +30,7 @@ final class FormRecovery {
 	 * @param WP_Error|null $error Native result, never a client-supplied state.
 	 */
 	public static function superseded( ?WP_Error $error ): bool {
-		return null !== $error && in_array( $error->get_error_code(), array( 'linker_admission_payload_changed', 'linker_intake_full', 'linker_review_unavailable', 'planning_project_deleted', 'planning_preliminary_unavailable', 'planning_admission_unavailable' ), true );
+		return null !== $error && in_array( $error->get_error_code(), array( 'linker_admission_payload_changed', 'planning_project_deleted', 'planning_preliminary_unavailable', 'planning_admission_unavailable' ), true );
 	}
 
 	/**
@@ -50,7 +50,7 @@ final class FormRecovery {
 		$fields  = array();
 		$allowed = 'password_reset' === $action
 			? array( 'user_login' )
-			: array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD );
+			: array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD );
 		foreach ( $allowed as $key ) {
 			$value = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? $post[ $key ] : '';
 			if ( \Linker\Commerce\Contact\SelectionContext::FIELD === $key && '' !== $value ) {

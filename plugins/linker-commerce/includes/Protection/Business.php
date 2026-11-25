@@ -131,7 +131,7 @@ final class Business {
 					}
 				}
 			}
-			if ( $order->has_status( 'pending' ) && $order->get_meta( Intake::META ) ) {
+			if ( $order->has_status( 'pending' ) && $order->get_meta( IntakeStore::META ) ) {
 				$order->update_meta_data( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META, 'review_hold' );
 				WC()->mailer();
 				if ( ! $order->update_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) ) {

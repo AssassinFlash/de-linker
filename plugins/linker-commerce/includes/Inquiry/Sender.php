@@ -298,7 +298,6 @@ final class Sender {
 		if ( 'inquiry' === $source ) {
 			( new \Linker\Commerce\Planning\Context() )->capture( $order );
 		}
-		\Linker\Commerce\Protection\Intake::prepare( $order );
 		Assessment\Queue::prepare( $order, $context );
 		if ( 0 === $order->get_id() ) {
 			$order->update_meta_data( Assessment\SendAuthorization::MARKER, Assessment\SendVerdict::POLICY ); }

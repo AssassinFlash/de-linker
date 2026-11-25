@@ -173,9 +173,9 @@ final class MessageIdWitnessTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * A failed SMTP attempt writes nothing; the PHP fallback stores only its own sent ID.
+	 * A failed SMTP attempt writes nothing; the authenticated retry stores its own sent ID.
 	 */
-	public function test_php_fallback_stores_only_the_successful_message_id(): void {
+	public function test_authenticated_retry_stores_only_the_successful_message_id(): void {
 		$order  = $this->inquiry();
 		$state  = $this->authorization->process( $order );
 		$team   = (int) $state['jobs']['team']['id'];
@@ -206,17 +206,18 @@ final class MessageIdWitnessTest extends IntegrationTestCase {
 		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 		$this->assertNotNull( ( new JobStore() )->load( $team ) );
 
+		file_put_contents( $directory . '/smtp.env', str_replace( 'wrong-test-password', 'fake-password', (string) file_get_contents( $directory . '/smtp.env' ) ) );
 		delete_option( Throttle::OPTION );
 		delete_option( OptionBudgetLedger::OPTION );
 		$this->send( $team );
-		$raw     = (string) file_get_contents( $directory . '/mail.eml' );
+		$raw     = $this->mime( (string) file_get_contents( $directory . '/smtp.jsonl' ) );
 		$id      = $this->message_id( $raw );
 		$witness = $this->witness( $order->get_id(), 'team' );
 		$this->assertSame( $id, $witness['message_id'] );
 		$this->assertSame( $hash, $witness['message_sha256'] );
 		$this->assertSame( 'team', $witness['purpose'] );
 		$this->assertSame( $order->get_id(), $witness['inquiry_id'] );
-		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 		$this->assertDoesNotMatchRegularExpression( '/^X-Linker-Message/mi', $raw );
 		foreach ( $failed as $earlier ) {
 			if ( $earlier !== $id ) {

@@ -332,7 +332,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			$this->assertCount( 1, $orders );
 			$order = $orders[0];
 			$order->read_meta_data( true );
-			self::fixed_receipt_job( $order );
+			self::assert_awaiting_assessment( $order );
 			$this->later(
 				static function () use ( $order ): void {
 					$order->delete( true );
@@ -887,7 +887,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				)
 			);
 			$marker = self::newest_mail_job();
-			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'receipt_pending', ( new ContactHandler() )->process( $post ) );
+			$this->assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
 			$found = wc_get_orders(
 				array(
 					'billing_email' => $target,
@@ -904,8 +904,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			$this->assertCount( 1, $matched );
 			$current = $matched[0];
 			$current->read_meta_data( true );
-			$expected = 2 === $i ? array() : array( self::fixed_receipt_job( $current ) );
-			$this->assertSame( $expected, self::mail_jobs_after( $marker ) );
+			$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 			$this->authorization->drain();
 			$current->read_meta_data( true );
 			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'receipt_pending', ContactHandler::receipt_state( $current ), 'Queued mail waits for delivery.' );
@@ -971,7 +970,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					$peer?->close();
 				}
 				$this->assertIsArray( $result );
-				$this->assertSame( 'target_cap' === $reason ? false : null, $result['receipt'] );
+				$this->assertSame( null, $result['receipt'] );
 				$order = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $result['order'] );
 				$this->assertInstanceOf( WC_Order::class, $order );
 				$this->later(
@@ -980,11 +979,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					}
 				);
 				$this->assertSame( 'inquiry-received', $order->get_status() );
-				$this->assertSame( 'target_cap' === $reason ? $reason : 'assessment_pending', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ), $door . '/' . $reason );
+				$this->assertSame( 'assessment_pending', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ), $door . '/' . $reason );
 				if ( 'unavailable' === $reason ) {
 					$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 					\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
-					self::fixed_receipt_job( $order );
+					self::assert_awaiting_assessment( $order );
 				}
 				$this->authorization->drain();
 				$order->read_meta_data( true );

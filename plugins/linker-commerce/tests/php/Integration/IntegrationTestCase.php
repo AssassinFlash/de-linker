@@ -265,6 +265,7 @@ abstract class IntegrationTestCase extends TestCase {
 	 * The ids of the Outbox queue rows written after $marker, oldest first.
 	 *
 	 * @param int $marker A row id; 0 for every row.
+	 * @phpstan-impure
 	 * @return list<int>
 	 */
 	protected static function mail_jobs_after( int $marker ): array {
@@ -281,25 +282,17 @@ abstract class IntegrationTestCase extends TestCase {
 		return array_values( array_filter( array_map( 'intval', $ids ), static fn ( int $id ): bool => $id > $marker ) );
 	}
 
-	/**
-	 * Read the one fixed customer acknowledgement bound to this received order before content review.
+	/** A newly saved source has no messages ready before Jev returns.
 	 *
-	 * @param WC_Order $order Newly saved inquiry.
-	 * @return int Native receipt job ID.
+	 * @param WC_Order $order Saved inquiry.
 	 */
-	protected static function fixed_receipt_job( WC_Order $order ): int {
+	protected static function assert_awaiting_assessment( WC_Order $order ): void {
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
-		self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
-		$receipt = $state['jobs']['receipt'];
-		self::assertTrue( $receipt['fixed'] );
-		$stored = ( new JobStore() )->load( $receipt['id'] );
-		self::assertNotNull( $stored );
-		self::assertSame( array( $order->get_billing_email() ), $stored['message']->to );
-		self::assertSame( $order->get_id(), $stored['message']->origin['record'] );
-		self::assertSame( 'receipt', $stored['message']->origin['purpose'] );
-		return $receipt['id'];
+		self::assertSame( 'pending', $state['status'] );
+		self::assertSame( array(), $state['jobs'] );
 	}
+
 
 	/**
 	 * Deliver this fixture's already queued receipt through its own native Outbox consumer.
@@ -307,6 +300,7 @@ abstract class IntegrationTestCase extends TestCase {
 	 * @param WC_Order $order Received inquiry in the local mail sink.
 	 */
 	protected static function deliver_fixed_receipt( WC_Order $order ): void {
+		( new \Linker\Commerce\Inquiry\Assessment\Queue() )->process( $order->get_id() );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertTrue( $state['jobs']['receipt']['fixed'] );

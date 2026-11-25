@@ -631,7 +631,6 @@ final class ConnectionFenceTest extends IntegrationTestCase {
 	 * @testWith ["reschedule"]
 	 *           ["disposition"]
 	 *           ["forget"]
-	 *           ["intake"]
 	 * @param string $entry Native capacity entry.
 	 */
 	public function test_new_native_entry_first_mutex_cannot_publish_after_caller_loss( string $entry ): void {
@@ -660,14 +659,6 @@ final class ConnectionFenceTest extends IntegrationTestCase {
 			$work = static fn () => $store->reschedule( $id, time() + HOUR_IN_SECONDS );
 			$args = wp_json_encode( array( $id ) );
 			$read = static fn ( \wpdb $peer ) => $peer->get_results( $peer->prepare( 'SELECT action_id,scheduled_date_gmt FROM %i WHERE hook=%s AND args=%s AND status=%s ORDER BY action_id', $wpdb->prefix . 'actionscheduler_actions', \Linker\Commerce\Mail\Outbox::HOOK, $args, 'pending' ), ARRAY_A );
-		} elseif ( 'intake' === $entry ) {
-			$_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] = md5( 'synthetic-native-first-lock' );
-			$identity = \Linker\Commerce\Protection\Identity::current();
-			self::assertInstanceOf( \Linker\Commerce\Protection\Identity::class, $identity );
-			$id   = wp_generate_uuid4();
-			$key  = 'intake-write-' . $id;
-			$work = static fn () => \Linker\Commerce\Protection\Intake::run( 'verification', 'contact', $id, hash( 'sha256', $id ), $identity, array( 'message' => 'Synthetic original caller' ), array( new \Linker\Commerce\Protection\Allowance( 'synthetic_first_lock_site', 'site', 10, HOUR_IN_SECONDS ) ), array(), array(), static fn () => new \WP_Error( 'synthetic_no_business_write' ) );
-			$read = static fn ( \wpdb $peer ) => $peer->get_var( $peer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, \Linker\Commerce\Protection\IntakeStore::OPTION ) );
 		} else {
 			$order = new \WC_Order();
 			$order->set_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED );
@@ -677,7 +668,7 @@ final class ConnectionFenceTest extends IntegrationTestCase {
 				$order->update_meta_data( '_linker_inquiry_source', 'contact' );
 				\Linker\Commerce\Inquiry\Assessment\StructuredMeta::update( $order, \Linker\Commerce\Inquiry\Assessment\Queue::META, array( 'snapshot' => array( 'submission' => array( 'message' => $order->get_customer_note() ) ) ) );
 			} else {
-				$order->update_meta_data( \Linker\Commerce\Protection\Intake::META, 'synthetic-existing-review' );
+				$order->update_meta_data( \Linker\Commerce\Protection\IntakeStore::META, 'synthetic-existing-review' );
 			}
 			$order->save();
 			$id = $order->get_id();

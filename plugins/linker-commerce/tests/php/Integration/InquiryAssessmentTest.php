@@ -197,8 +197,8 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 			$this->assertSame( 'provider_budget_' . $reason, $data['initial_result']['reason'] );
 			$state = AuthorizationStore::read( $order->get_id() );
 			$this->assertIsArray( $state );
-			$this->assertSame( 'pending', $state['status'] );
-			self::fixed_receipt_job( $order );
+			$this->assertSame( 'normal', $state['status'] );
+			self::assertSame( array( 'team' ), array_keys( $state['jobs'] ) );
 			$this->assertSame( 'inquiry-received', $order->get_status() );
 		}
 		$this->assertSame( 'invalid_response', Result::validate( Result::unknown( 'provider_budget_untrusted_text' ) )['reason'] );
@@ -241,9 +241,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$state = AuthorizationStore::read( $order->get_id() );
 		$this->assertIsArray( $state );
 		$this->assertSame( 'quarantined', $state['status'] );
-		$receipt = self::fixed_receipt_job( $order );
-		$this->assertTrue( \Linker\Commerce\Mail\NotificationHold::job_held( $receipt ) );
-		$this->assertArrayNotHasKey( 'delivered_at', $state['jobs']['receipt'] );
+		self::assertSame( array(), $state['jobs'] );
 		$order->set_billing_first_name( 'Later edit' );
 		$order->save();
 		$this->assertSame( $name, Queue::data( $order )['snapshot']['submission']['billing']['first_name'] );
@@ -283,8 +281,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$order  = $this->inquiry();
 		$this->assertSame( 0, $calls );
 		$this->assertSame( 'inquiry-received', $order->get_status() );
-		$receipt = self::fixed_receipt_job( $order );
-		$this->assertSame( array( $receipt ), self::mail_jobs_after( $marker ) );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$data = Queue::data( $order );
 		$this->assertEqualsWithDelta( Queue::WAIT_SECONDS, $data['deadline'] - $data['accepted_at'], .001 );
 		( new Queue() )->process( $order->get_id() );
@@ -292,13 +289,13 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$order->read_meta_data( true );
 		$state = AuthorizationStore::read( $order->get_id() );
 		$this->assertIsArray( $state );
-		$this->assertSame( 'pending', $state['status'] );
+		$this->assertSame( 'normal', $state['status'] );
 		$this->assertSame( 'service_unavailable', $state['verdict']['reason'] );
-		$this->assertGreaterThan( time(), $state['next_at'] );
+		$this->assertLessThanOrEqual( time(), $state['next_at'] );
 		( new Queue() )->process( $order->get_id() );
 		( new Queue() )->expire( $order->get_id() );
 		$this->assertSame( 1, $calls );
-		$this->assertSame( array( $receipt ), self::mail_jobs_after( $marker ) );
+		$this->assertSame( array( $state['jobs']['team']['id'] ), self::mail_jobs_after( $marker ) );
 		$this->assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
 	}
 
@@ -310,7 +307,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 	 * @param string $basis Fixed basis.
 	 * @param string $expected Safe stored label.
 	 */
-	public function test_only_normal_decisions_notify_once( string $label, string $basis, string $expected ): void {
+	public function test_assessment_notifies_the_expected_recipient_once( string $label, string $basis, string $expected ): void {
 		$fetch = static function ( $pre, $args, $url ) use ( $label, $basis ) {
 			if ( ! str_ends_with( $url, '/inquiries/assess' ) ) {
 				return $pre;
@@ -339,8 +336,8 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$state = AuthorizationStore::read( $order->get_id() );
 		$this->assertIsArray( $state );
 		if ( 'normal' !== $expected ) {
-			self::fixed_receipt_job( $order );
-			$this->assertSame( 'suspected_spam' === $expected ? 'quarantined' : 'pending', $state['status'] );
+			self::assertSame( 'uncertain' === $expected ? array( 'team' ) : array(), array_keys( $state['jobs'] ) );
+			$this->assertSame( 'suspected_spam' === $expected ? 'quarantined' : 'normal', $state['status'] );
 			$queue->finish( $order->get_id(), self::result() );
 			$after = AuthorizationStore::read( $order->get_id() );
 			$this->assertIsArray( $after );
@@ -406,7 +403,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		delete_option( Queue::HEARTBEAT );
 		$marker = self::newest_mail_job();
 		$order  = $this->inquiry();
-		$this->assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $marker ) );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$pending = AuthorizationStore::read( $order->get_id() );
 		$this->assertIsArray( $pending );
 		$this->assertSame( 'pending', $pending['status'] );
@@ -436,7 +433,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 			$state = AuthorizationStore::read( $order->get_id() );
 			$this->assertIsArray( $state );
 			$this->assertSame( 'approved', $state['status'] );
-			self::fixed_receipt_job( $order );
+			self::assertSame( array(), $state['jobs'] );
 			$this->assertSame( array(), self::mail_jobs_after( $marker ), 'A partial job is rolled back.' );
 			AuthorizationStore::edit(
 				$order->get_id(),
@@ -449,7 +446,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$this->assertIsArray( $after );
 		$this->assertSame( 'normal', $after['status'] );
 		$this->assertCount( 2, $after['jobs'] );
-		$this->assertSame( array( $after['jobs']['team']['id'] ), self::mail_jobs_after( $marker ) );
+		$this->assertEqualsCanonicalizing( array_column( $after['jobs'], 'id' ), self::mail_jobs_after( $marker ) );
 	}
 
 	/** Snapshot the owned retained transcript/readings and never another account's. */

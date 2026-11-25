@@ -295,14 +295,14 @@ final class FormTest extends TestCase {
 
 		// Every review-store refusal keeps its own honest sentence rather than a
 		// generic verification verdict.
-		foreach ( array( 'review_full', 'review_size', 'grouped', 'reception_full', 'pending' ) as $state ) {
+		foreach ( array( 'reception_full', 'pending' ) as $state ) {
 			$_GET   = array( Form::STATE_PARAM => $state );
 			$notice = ( new Form() )->render();
 			$this->assertStringContainsString( 'role="alert"', $notice, $state );
 			$this->assertStringNotContainsString( 'We have not sent a confirmation email.', $notice, $state );
 		}
 		$_GET = array( Form::STATE_PARAM => 'grouped' );
-		$this->assertStringContainsString( 'repeated spam submission', ( new Form() )->render() );
+		$this->assertStringNotContainsString( 'repeated spam submission', ( new Form() )->render() );
 
 		$_GET = array( Form::STATE_PARAM => 'something-else' );
 		$this->assertStringNotContainsString( 'role="status"', ( new Form() )->render() );

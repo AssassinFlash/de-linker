@@ -24,7 +24,6 @@ use Linker\Commerce\Protection\Allowance;
 use Linker\Commerce\Protection\BusinessRecord;
 use Linker\Commerce\Protection\Campaign;
 use Linker\Commerce\Protection\Identity;
-use Linker\Commerce\Protection\Intake;
 use Linker\Commerce\Protection\IntakeStore;
 use Linker\Commerce\Protection\Ledger;
 use Linker\Commerce\Contact\Submission;
@@ -134,18 +133,47 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		);
 		$fingerprint = Fingerprint::make( $identity, $action, $payload );
 		self::assertIsString( $fingerprint );
-		return Intake::run(
-			'verification',
-			$action,
-			$post['linker_request_id'],
-			$fingerprint,
-			$identity,
-			$payload,
-			array( new Allowance( 'historical_review', $identity->browser, 10, HOUR_IN_SECONDS ) ),
-			array(),
-			array( Allowance::owner_for( Identity::recipient( $details->email ) ) ),
-			static fn () => 'contact' === $action ? ( new Sender() )->message( $details ) : ( new Sender() )->request( $details, $post, false )
+		$id      = $post['linker_request_id'];
+		$binding = $identity->binding();
+		$owners  = array_merge( $identity->owners(), array( Allowance::owner_for( Identity::recipient( $details->email ) ) ) );
+		$entry   = array(
+			'lane'        => 'verification',
+			'action'      => $action,
+			'order'       => 0,
+			'fingerprint' => $fingerprint,
+			'binding'     => $binding,
+			'at'          => time(),
+			'owners'      => $owners,
 		);
+		$state   = get_option( IntakeStore::OPTION, array( 'entries' => array(), 'campaign_count' => 0 ) );
+		$state['entries'][ $id ] = $entry;
+		update_option( IntakeStore::OPTION, $state, false );
+		$ledger = new Ledger();
+		$ledger->reserve( $id, $fingerprint, array( new Allowance( 'historical_review', $identity->browser, 10, HOUR_IN_SECONDS ) ), 120, array(), $action, $binding, $owners );
+		$ledger->dispatch( $id, $fingerprint );
+		$context = static fn (): array => array( 'enforced' => true, 'id' => $id, 'fingerprint' => $fingerprint, 'binding' => $binding );
+		$metadata = static function ( WC_Order $order ): void {
+			if ( 0 === $order->get_id() ) {
+				$order->update_meta_data( IntakeStore::META, array( 'lane' => 'verification', 'at' => time(), 'rule' => '' ) );
+				$order->update_meta_data( IntakeStore::LANE_META, 'verification' );
+				$order->update_meta_data( NotificationHold::META, array( 'reason' => 'verification_review', 'at' => time(), 'rule' => '' ) );
+			}
+		};
+		add_filter( 'linker_commerce_public_business_context', $context );
+		add_action( 'woocommerce_before_order_object_save', $metadata );
+		try {
+			$order = 'contact' === $action ? ( new Sender() )->message( $details ) : ( new Sender() )->request( $details, $post, false );
+		} finally {
+			remove_filter( 'linker_commerce_public_business_context', $context );
+			remove_action( 'woocommerce_before_order_object_save', $metadata );
+		}
+		if ( $order instanceof WC_Order ) {
+			$state = get_option( IntakeStore::OPTION );
+			$state['entries'][ $id ]['order'] = $order->get_id();
+			update_option( IntakeStore::OPTION, $state, false );
+			$ledger->complete( $id, $fingerprint, $order->get_id() );
+		}
+		return $order;
 	}
 
 	/** A guest who has not finished verification creates no new order or notification.
@@ -306,15 +334,15 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( $post['message'], $order->get_customer_note() );
 		self::assertSame( $post['email'], $order->get_billing_email() );
 		self::assertSame( $post['linker_request_id'], $order->get_meta( BusinessRecord::REQUEST ) );
-		self::assertSame( 'verification', $order->get_meta( Intake::META )['lane'] );
+		self::assertSame( 'verification', $order->get_meta( IntakeStore::META )['lane'] );
 		self::assertTrue( NotificationHold::held( $order ) );
 		self::assertSame( $post['message'], Queue::data( $order )['snapshot']['submission']['message'] );
 		$pending = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $pending );
 		self::assertSame( 'pending', $pending['status'] );
 		self::assertSame( 0, $pending['attempts'] );
-		$receipt = self::fixed_receipt_job( $order );
-		self::assertSame( array( $receipt ), self::mail_jobs_after( $jobs ) );
+		self::assertSame( array(), $pending['jobs'] );
+		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
 		self::assertSame( $budget, get_option( Throttle::OPTION ) );
 		$retry = ( new Handler() )->process( $post );
 		self::assertInstanceOf( WC_Order::class, $retry );
@@ -329,7 +357,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$queue->finish( $order->get_id(), Result::unknown( 'late' ) );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
-		self::assertSame( $receipt, $state['jobs']['receipt']['id'] );
+		self::assertArrayNotHasKey( 'receipt', $state['jobs'] );
 		self::assertEqualsCanonicalizing( array_column( $state['jobs'], 'id' ), self::mail_jobs_after( $jobs ) );
 	}
 
@@ -339,13 +367,16 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	 * @dataProvider accepted_verifications
 	 * @param bool $verified Whether the native verification proof is present.
 	 */
-	public function test_accepted_order_acknowledges_once_before_the_team_is_authorized( bool $verified ): void {
+	public function test_accepted_order_acknowledges_once_after_classification( bool $verified ): void {
 		$post    = $this->post( $verified );
 		$handler = new Handler();
 		$order   = $verified ? $handler->process( $post ) : $this->historical_submission( $post );
 		self::assertInstanceOf( WC_Order::class, $order );
 		self::assertSame( ! $verified, NotificationHold::held( $order ) );
-		$job = self::fixed_receipt_job( $order );
+		self::assert_awaiting_assessment( $order );
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$normal = \Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture::install( $this->later( ... ) );
+		$job = $normal->process( $order )['jobs']['receipt']['id'];
 
 		$sent    = 0;
 		$observe = static function () use ( &$sent ): void {
@@ -363,8 +394,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		}
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
-		self::assertSame( 'pending', $state['status'] );
-		self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
+		self::assertSame( 'normal', $state['status'] );
+		self::assertSame( array( 'receipt', 'team' ), array_keys( $state['jobs'] ) );
 		self::assertSame( $job, $state['jobs']['receipt']['id'] );
 		self::assertNotEmpty( $state['jobs']['receipt']['delivered_at'] );
 		self::assertSame( 1, $sent );
@@ -639,8 +670,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertIsArray( $result );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
-		self::assertEqualsCanonicalizing( array( 'team', 'receipt' ), array_keys( $state['jobs'] ) );
-		self::assertSame( $marker, $state['jobs']['receipt']['id'] );
+		self::assertSame( array( 'team' ), array_keys( $state['jobs'] ) );
 		$job = $state['jobs']['team']['id'];
 		self::assertGreaterThan( 0, $job );
 		self::assertFalse( ( new \Linker\Commerce\Mail\JobStore() )->critical( $job ), 'Public content retains the ordinary quota after a native explicit staff release.' );
@@ -661,7 +691,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertInstanceOf( WC_Order::class, $order );
 		\WC_Privacy_Erasers::remove_order_personal_data( $order );
 		$order->read_meta_data( true );
-		self::assertSame( '', $order->get_meta( Intake::META ) );
+		self::assertSame( '', $order->get_meta( IntakeStore::META ) );
 		self::assertSame( '[deleted]', $order->get_meta( BusinessRecord::REQUEST ) );
 		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
 		self::assertStringNotContainsString( 'example.test', (string) wp_json_encode( get_option( IntakeStore::OPTION ) ) );
@@ -718,7 +748,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$marker    = self::newest_mail_job();
 		self::assertSame( 'erased', $this->erase_in_other_connection( $order->get_id() )['status'] );
 		self::assertSame( $post['email'], $order->get_billing_email() );
-		self::assertNotEmpty( $order->get_meta( Intake::META ) );
+		self::assertNotEmpty( $order->get_meta( IntakeStore::META ) );
 		$released = null;
 		self::assertTrue(
 			\Linker\Commerce\Inquiry\Assessment\Lock::run(
@@ -733,7 +763,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$persisted = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $order->get_id() );
 		self::assertInstanceOf( WC_Order::class, $persisted );
 		self::assertSame( 'yes', $persisted->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) );
-		self::assertSame( '', $persisted->get_meta( Intake::META ) );
+		self::assertSame( '', $persisted->get_meta( IntakeStore::META ) );
 		wp_cache_delete( IntakeStore::OPTION, 'options' );
 		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
 	}
@@ -872,7 +902,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$order = $orders[0];
 		self::assertSame( $post['message'], $order->get_customer_note() );
 		self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $order->get_status() );
-		$receipt = self::fixed_receipt_job( $order );
+		$receipt = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		$before  = self::newest_mail_job();
 		unset( $post['cf-turnstile-response'] );
 		self::assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
@@ -880,7 +910,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertIsArray( $again );
 		self::assertCount( 1, $again );
 		self::assertSame( $order->get_id(), $again[0]->get_id() );
-		self::assertSame( $receipt, self::fixed_receipt_job( $again[0] ) );
+		self::assertSame( $receipt, \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $again[0]->get_id() ) );
 		self::assertSame( array(), self::mail_jobs_after( $before ) );
 	}
 	/** The native order keeps the complete native product draft for guest/pending/approved customers. */
@@ -919,7 +949,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$html = (string) ob_get_clean();
 		self::assertStringContainsString( '#' . $order->get_order_number(), $html );
 		self::assertStringNotContainsString( 'a-different-later-record', $html );
-		self::assertStringNotContainsString( 'We have not sent a confirmation email.', $html );
+		self::assertStringContainsString( 'We have not sent a confirmation email.', $html );
 		self::assertStringContainsString( 'We reply within one business day', $html );
 	}
 	/** Erasure can find a crash before the first Woo ID, without refunding its slot. */
@@ -968,8 +998,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			$order = new WC_Order();
 			$order->set_billing_email( $post['email'] );
 			$order->set_customer_note( 'Вам перевод 100 руб. забрать тут https://fredmer.buzz/synthetic-history' );
-			$order->update_meta_data( Intake::META, array( 'lane' => $lane ) );
-			$order->update_meta_data( Intake::LANE_META, $lane );
+			$order->update_meta_data( IntakeStore::META, array( 'lane' => $lane ) );
+			$order->update_meta_data( IntakeStore::LANE_META, $lane );
 			$order->update_meta_data( NotificationHold::META, array( 'reason' => 'historical_fixture' ) );
 			$order->save();
 			$result = IntakeStore::edit(
@@ -987,7 +1017,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			return $order;
 		};
 		$campaign   = $historical( 'campaign' );
-		$summary    = Intake::pending_summary();
+		$summary    = IntakeStore::pending_summary();
 		self::assertIsArray( $summary );
 		self::assertSame( 1, $summary['count'] );
 		self::assertGreaterThan( 0, $summary['oldest'] );
@@ -996,7 +1026,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( $summary, apply_filters( 'linker_commerce_pending_review_summary', null ) );
 		$individual = $historical( 'individual' );
 		self::assertInstanceOf( WC_Order::class, ( new Handler() )->process( $this->post( true ) ) );
-		$summary = Intake::pending_summary();
+		$summary = IntakeStore::pending_summary();
 		self::assertIsArray( $summary );
 		self::assertSame( 2, $summary['count'] );
 		foreach ( array( $campaign, $individual ) as $old ) {
@@ -1006,7 +1036,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		}
 
 		\WC_Privacy_Erasers::remove_order_personal_data( $review );
-		$summary = Intake::pending_summary();
+		$summary = IntakeStore::pending_summary();
 		self::assertIsArray( $summary );
 		self::assertSame( 1, $summary['count'] );
 	}

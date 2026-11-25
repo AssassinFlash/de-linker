@@ -49,7 +49,7 @@ final class IntakeRelease {
 				}
 				$emails = WC()->mailer()->get_emails();
 				$email  = $emails[ NewInquiryEmail::class ] ?? null;
-				if ( ! $registered || ! $email instanceof NewInquiryEmail || ! $order->get_meta( Intake::META ) || ! NotificationHold::held( $order ) || ! hash_equals( NotificationHold::reference( $order ), $reference ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
+				if ( ! $registered || ! $email instanceof NewInquiryEmail || ! $order->get_meta( IntakeStore::META ) || ! NotificationHold::held( $order ) || ! hash_equals( NotificationHold::reference( $order ), $reference ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
 					return self::failed();
 				}
 				$job         = 0;

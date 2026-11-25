@@ -187,7 +187,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$this->assertSame( 1, $count );
 		$order->read_meta_data( true );
 		$this->assertSame( 'provider_budget_quota', Queue::data( $order )['initial_result']['reason'] );
-		$this->assertSame( 0, self::notification_job( $order ) );
+		$this->assertGreaterThan( 0, self::notification_job( $order ) );
 		Queue::defer( $other );
 		AsyncRunner::enqueue( $other->get_id() );
 		$second = $this->dispatches[1]['args']['body']['token'];
@@ -207,7 +207,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		( new Queue() )->process( $other->get_id() );
 		$other->read_meta_data( true );
 		$this->assertSame( 'provider_budget_quota', Queue::data( $other )['initial_result']['reason'] );
-		$this->assertSame( 0, self::notification_job( $other ) );
+		$this->assertGreaterThan( 0, self::notification_job( $other ) );
 		$this->assertSame( 2, $count, 'Expired HTTP capability is refused, while the independent native worker gets its own model attempt.' );
 	}
 
@@ -234,7 +234,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$this->assertSame( 'claimed', $this->close_worker( $first ) );
 		$this->assertSame( "called\n", file_get_contents( $barrier ) );
 		$order->read_meta_data( true );
-		$this->assertSame( 0, self::notification_job( $order ) );
+		$this->assertGreaterThan( 0, self::notification_job( $order ) );
 		$other = $this->inquiry();
 		Queue::defer( $other );
 		AsyncRunner::enqueue( $other->get_id() );
@@ -390,8 +390,8 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 			$order->read_meta_data( true );
 			$data = $this->fresh_data( $order );
 			usleep( 10000 );
-		} while ( ! isset( $data['initial_result'] ) && microtime( true ) < $until );
-		$this->assertSame( 0, self::notification_job( $order ) );
+		} while ( ( ! isset( $data['initial_result'] ) || 0 === self::notification_job( $order ) ) && microtime( true ) < $until );
+		$this->assertGreaterThan( 0, self::notification_job( $order ) );
 		$this->assertSame( 'service_unavailable', $data['initial_result']['reason'] );
 		$before_replay = AuthorizationStore::read( $order->get_id() );
 		$response      = wp_remote_post(
