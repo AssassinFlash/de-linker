@@ -113,13 +113,22 @@ final class PendingTurns {
 			$stage = $service['stage'];
 			wp_cache_set( $turn['job_id'], $stage, 'linker_genie_stage', Proxy::TURN_BUDGET );
 		}
-		return array_intersect_key( $service, array( 'queued_seconds' => true ) ) + array(
+		$progress = array(
 			'job_id'          => $turn['job_id'],
 			'conversation_id' => $turn['conversation_id'],
 			'status'          => 'running',
 			'stage'           => '' !== $stage ? $stage : $turn['stage'],
 			'started_at'      => $turn['started_at'],
 		);
+		if ( 'waiting' === $turn['stage'] ) {
+			$cached = wp_cache_get( $turn['job_id'], 'linker_genie_queue_seconds' );
+			$wait   = $service['queued_seconds'] ?? ( false === $cached ? 0 : $cached );
+			if ( isset( $service['queued_seconds'] ) && $wait !== $cached ) {
+				wp_cache_set( $turn['job_id'], $wait, 'linker_genie_queue_seconds', Proxy::TURN_BUDGET );
+			}
+			$progress['queued_seconds'] = $wait;
+		}
+		return $progress;
 	}
 
 	/** Forget the heavy staging data while keeping the terminal operation receipt.
@@ -129,6 +138,7 @@ final class PendingTurns {
 	public static function clear( array $turn ): void {
 		wp_cache_delete( $turn['job_id'], 'linker_genie_poll' );
 		wp_cache_delete( $turn['job_id'], 'linker_genie_stage' );
+		wp_cache_delete( $turn['job_id'], 'linker_genie_queue_seconds' );
 		delete_post_meta( $turn['conversation_id'], self::PENDING, wp_slash( $turn ) );
 		delete_post_meta( $turn['receipt'], self::STAGE );
 		wp_clear_scheduled_hook( 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );

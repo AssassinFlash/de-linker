@@ -869,6 +869,41 @@ test.each( [ 'deadline', 'cancellation' ] )(
 	}
 );
 
+test( 'refreshes a resumed queue clock before applying its running deadline', async () => {
+	vi.useFakeTimers();
+	try {
+		vi.setSystemTime( TURN_TIMEOUT_MS + 18000 );
+		const job = {
+			job_id: 'aa21e940-4d9c-4426-844b-6527cedd68de',
+			conversation_id: 18,
+			stage: 'waiting' as const,
+			started_at: 0,
+			queued_seconds: 10,
+			user_message: 'Question',
+		};
+		const fetcher = vi.fn().mockResolvedValue(
+			Response.json( {
+				...job,
+				queued_seconds: 90,
+				status: 'completed',
+				stream: 'event: block\ndata: {"type":"text","text":"Ready","refs":[]}\n\nevent: done\ndata: {}\n\n',
+			} )
+		);
+		const answer = resumeTurn(
+			{ turnUrl: '/turn', nonce: 'n', fetcher },
+			job
+		);
+		const ready = expect( answer ).resolves.toMatchObject( {
+			blocks: [ { text: 'Ready' } ],
+		} );
+		await vi.advanceTimersByTimeAsync( 600 );
+		await ready;
+		expect( fetcher ).toHaveBeenCalledOnce();
+	} finally {
+		vi.useRealTimers();
+	}
+} );
+
 test( 'excludes measured waiting time once and still times out an executing job', async () => {
 	vi.useFakeTimers();
 	try {

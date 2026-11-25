@@ -234,7 +234,9 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				wp_clear_scheduled_hook( 'linker_tools_expire_genie_turn', array( $id, $job ) );
 				$queue->state = 'offline';
 				$proxy->expire( $id, $job );
-				$this->assertSame( $job, $proxy->conversation()->get_data()['pending_job']['job_id'] );
+				$offline = $proxy->conversation()->get_data()['pending_job'];
+				$this->assertSame( $job, $offline['job_id'] );
+				$this->assertEquals( Proxy::TURN_BUDGET, $offline['queued_seconds'] );
 				$queue->state = 'running';
 				$proxy->expire( $id, $job );
 				$this->assertGreaterThan( time(), wp_next_scheduled( 'linker_tools_expire_genie_turn', array( $id, $job ) ) );

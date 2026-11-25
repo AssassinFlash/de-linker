@@ -473,7 +473,7 @@ function turnRoute( url: string, suffix: string ): string {
  * @param budget
  * @param external
  * @param attempt
- * @param queuedSeconds
+ * @param firstReadBudget Time for the first owned status read on a resumed queue.
  */
 async function withinTurn< T >(
 	budget: number,
@@ -482,7 +482,7 @@ async function withinTurn< T >(
 		signal: AbortSignal,
 		setQueueTime: ( seconds: number ) => void
 	) => Promise< T >,
-	queuedSeconds = 0
+	firstReadBudget = budget
 ): Promise< T > {
 	const controller = new AbortController();
 	const cancel = () => controller.abort( external?.reason );
@@ -500,17 +500,19 @@ async function withinTurn< T >(
 	}
 	const deadline = Date.now() + budget;
 	let timeout: ReturnType< typeof setTimeout > | undefined;
-	const setQueueTime = ( seconds: number ) => {
+	const arm = ( milliseconds: number ) => {
 		clearTimeout( timeout );
 		timeout = setTimeout(
 			() =>
 				controller.abort(
 					new DOMException( 'The turn timed out.', 'AbortError' )
 				),
-			Math.max( 0, deadline + seconds * 1000 - Date.now() )
+			Math.max( 0, milliseconds )
 		);
 	};
-	setQueueTime( queuedSeconds );
+	const setQueueTime = ( seconds: number ) =>
+		arm( deadline + seconds * 1000 - Date.now() );
+	arm( firstReadBudget );
 	try {
 		return await Promise.race( [
 			aborted,
@@ -600,7 +602,11 @@ export function resumeTurn(
 		signal,
 		( active, setQueueTime ) =>
 			pollTurn( request, job, active, setQueueTime ),
-		job.queued_seconds ?? 0
+		// A previous tab may have last seen the queue before a connection interruption.
+		// Read the live job once; subsequent polls use its measured execution budget.
+		job.queued_seconds !== undefined || job.stage === 'waiting'
+			? ( request.timeoutMs ?? TURN_TIMEOUT_MS )
+			: remaining
 	);
 }
 
