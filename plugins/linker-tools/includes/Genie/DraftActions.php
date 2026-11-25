@@ -79,12 +79,7 @@ final class DraftActions {
 		if ( $items instanceof WP_Error && 'linker_solution_changed' === $items->get_error_code() ) {
 			return DraftProof::changed();
 		}
-		return $items instanceof WP_Error ? $items : $this->response(
-			array(
-				'items'       => $items,
-				'publication' => $result['publication'],
-			)
-		);
+		return $items instanceof WP_Error ? $items : $this->response( array( 'items' => $items ), $result['publication'] );
 	}
 
 	/**
@@ -131,6 +126,7 @@ final class DraftActions {
 					'url'         => SavedSolutions::url( $id ),
 					'publication' => $result['publication'],
 				),
+				$result['publication'],
 				201
 			);
 		}
@@ -146,6 +142,7 @@ final class DraftActions {
 				'url'         => SavedSolutions::url( 0 ),
 				'publication' => $result['publication'],
 			),
+			$result['publication'],
 			202
 		);
 	}
@@ -167,12 +164,13 @@ final class DraftActions {
 	/**
 	 * Current writes and history never enter a shared HTTP cache.
 	 *
-	 * @param array<string,mixed> $data Result with current publication proof.
+	 * @param array<string,mixed> $data Public result returned to the browser.
+	 * @param array<string,mixed> $publication Server-side authority to recheck before delivery.
 	 * @param int                 $status Native result status.
 	 */
-	private function response( array $data, int $status = 200 ): WP_REST_Response {
+	private function response( array $data, array $publication, int $status = 200 ): WP_REST_Response {
 		$reply = new WP_REST_Response( $data, $status );
-		EnginePublication::remember( $reply, $data['publication'], 'genie' );
+		EnginePublication::remember( $reply, $publication, 'genie' );
 		$reply->header( 'Cache-Control', 'private, no-store' );
 		return $reply;
 	}

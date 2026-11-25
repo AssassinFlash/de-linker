@@ -1171,7 +1171,7 @@ def test_async_turn_holds_capacity_and_only_releases_the_checked_stream(
         assert response.status_code == 202
         data = response.json()
         assert UUID(data["job_id"]).version == 4
-        assert data["stage"] == "understanding" and "stream" not in data
+        assert data["stage"] in {"waiting", "understanding"} and "stream" not in data
         assert started.wait(3)
         job = "/turn/" + data["job_id"]
         assert TestClient(app).get(job).status_code == 401
@@ -1181,7 +1181,6 @@ def test_async_turn_holds_capacity_and_only_releases_the_checked_stream(
         )
         progress = client.get(job).json()
         assert progress["stage"] == "writing_answer" and "stream" not in progress
-        assert client.post("/turn/start", json=body).status_code == 429
         assert client.post("/assistant/turn", json=body).status_code == 429
     finally:
         finish.set()
@@ -1194,3 +1193,78 @@ def test_async_turn_holds_capacity_and_only_releases_the_checked_stream(
     assert "10 kW" in data["stream"] and "event: done" in data["stream"]
     assert client.get("/assistant" + job).json() == data
     assert client.post("/turn", json=body).status_code == 200
+
+
+@pytest.mark.parametrize(
+    ("subjects", "waiting_name"),
+    [
+        (("1", "2", "3"), "card-en"),
+        (("1", "1", "3"), "card-de"),
+    ],
+)
+def test_parallel_visitors_receive_jobs_before_their_turn_can_execute(
+    log: TurnLog,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    subjects: tuple[str, str, str],
+    waiting_name: str,
+) -> None:
+    from threading import Event
+    from time import monotonic, sleep
+
+    started = {name: Event() for name in ("manual-de", "card-de", "card-en")}
+    release = Event()
+
+    def generate(body: TurnRequest, retry: str | None) -> tuple[TurnOutput, TurnFacts]:
+        started[body.conversation_id].set()
+        assert release.wait(10)
+        return _generate(body, retry)
+
+    monkeypatch.setenv("LINKER_GENIE_WORK_MODE", "enforce")
+    monkeypatch.setenv("LINKER_GENIE_WORK_PATH", str(tmp_path / "private/work.sqlite"))
+    monkeypatch.setattr(app.state, "generate", generate, raising=False)
+    monkeypatch.setattr(
+        app.state, "commerce", lambda ids: (TurnFacts(), []), raising=False
+    )
+    clients = {}
+    jobs = {}
+    try:
+        for name, subject in zip(started, subjects, strict=True):
+            client = TestClient(
+                app, headers={**SHELL, "X-Linker-Resource-Subject": subject * 64}
+            )
+            clients[name] = client
+            response = client.post(
+                "/assistant/turn/start",
+                json={
+                    "conversation_id": name,
+                    "messages": [{"role": "user", "content": "10 kWp three-phase"}],
+                    "locale": "en" if name == "card-en" else "de",
+                },
+            )
+            assert response.status_code == 202, response.json()
+            jobs[name] = response.json()["job_id"]
+            if name != waiting_name:
+                assert started[name].wait(3)
+        assert (
+            clients[waiting_name].get("/turn/" + jobs[waiting_name]).json()["stage"]
+            == "waiting"
+        )
+        assert not started[waiting_name].is_set()
+        assert (
+            clients[waiting_name]
+            .get("/turn/" + jobs["card-en" if waiting_name == "card-de" else "card-de"])
+            .status_code
+            == 404
+        )
+    finally:
+        release.set()
+    assert started[waiting_name].wait(5)
+    for name, job in jobs.items():
+        until = monotonic() + 5
+        while (data := clients[name].get("/turn/" + job).json())[
+            "status"
+        ] == "running" and monotonic() < until:
+            sleep(0.01)
+        assert data["status"] == "completed"
+        assert "event: done" in data["stream"]

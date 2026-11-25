@@ -64,7 +64,7 @@
 
 ### B. 服务（`services/genie`，FastAPI + Pydantic AI）
 
-客户端通过 WordPress 的 `/wp-json/linker-ai/v1/genie/turn/start` 提交，收到 202 和任务号后，每隔 600 ms 查询同一任务。首页、侧栏、放大视图及工作台从当前会话恢复未答回合。界面的阶段由实际附件解析、问题理解、商品校核、文档检索、生成与核验事件驱动。回合只在对应工作发生时报告其阶段。
+客户端通过 WordPress 的 `/wp-json/linker-ai/v1/genie/turn/start` 提交，收到 202 和任务号后，按 600、900、1200 ms 逐步延长间隔，查询同一任务。执行位置忙时，服务先登记回合并报告 `waiting`。取得位置后校验当下权限并开始执行。服务返回的 `queued_seconds` 是累计排队时间，浏览器与 WordPress 用它扣除等待，只对实际执行应用原有时限。首页、侧栏、放大视图及工作台从当前会话恢复未答回合。界面的阶段由实际附件解析、问题理解、商品校核、文档检索、生成与核验事件驱动。回合只在对应工作发生时报告其阶段。
 
 VPS 的私有 `POST /assistant/turn/start` 和 `GET /assistant/turn/{job_id}` 与短路径别名共用跨进程 SQLite 和并发槽位。同步回归入口继续使用同一套执行逻辑。WordPress 校验访客或账号的会话归属，在完成时复核发布权限、记录本轮并签发草稿凭据。运行中的响应只含任务状态。旧对话仍可读，新记录的早期对比表按商品 ID 和当前可见性恢复。
 - `POST /turn`（SSE 流）：`{conversation_id, messages[], locale, page_context:{type: home|product|category|solution|blog|faq|draft|account|other, url?, title?, product_id?, post_id?, category_id?, solution_id?, draft_ids?, draft_lines?:[{product_id, quantity}]}, user:{logged_in, partner, context?}, attachments?:[{name, type, data}], readings?:[…]}`（`partner` 与 `context` 见「价格跟账号走」）（页面上下文见下文"页面感知"；`attachments` 与 `readings` 见"附件与铭牌"；`type` 另收 `text/csv` 与 `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`，reading 的 `kind` 另收 `list`，见"零件清单 → 产品"）。SSE 事件：`meta`、本轮每个附件一条 `attachment` 与一条 `reading`、每块一条 `block`、`done`。

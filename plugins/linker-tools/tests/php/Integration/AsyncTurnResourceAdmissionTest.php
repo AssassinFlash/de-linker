@@ -45,7 +45,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 		wp_set_current_user( 0 );
 		$account  = 0;
 		$approval = (object) array( 'status' => 'approved' );
-		if ( 'approval-withdrawn' === $outcome ) {
+		if ( in_array( $outcome, array( 'approval-withdrawn', 'waited-account' ), true ) ) {
 			$account = (int) get_users(
 				array(
 					'role'   => 'administrator',
@@ -85,11 +85,27 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 		$permission_failure = in_array( $outcome, array( 'publication_changed', 'publication_unavailable' ), true );
 
 		$stage  = $permission_failure ? 'understanding' : 'searching_documents';
+		$queued = in_array( $outcome, array( 'waited', 'waited-account' ), true );
 		$scope  = '';
 		$starts = 0;
 		$reads  = 0;
 		$stream = "event: reading\ndata: {\"id\":\"att1\",\"text\":\"private extraction\"}\n\nevent: block\ndata: {\"type\":\"text\",\"text\":\"Look at the AC output.\",\"refs\":[]}\n\nevent: done\ndata: {}\n\n";
-		$fetch  = function ( string $url, array $body, array $headers ) use ( &$job, &$scope, &$starts, &$reads, $stage, $stream, $outcome, $worker_status, &$id ) {
+		$queue  = new class() {
+			/**
+			 * Service state returned by the next poll.
+			 *
+			 * @var string
+			 */
+			public string $state = 'running';
+
+			/**
+			 * Whether the reader can renew the account credential.
+			 *
+			 * @var bool
+			 */
+			public bool $expect_identity = false;
+		};
+		$fetch  = function ( string $url, array $body, array $headers ) use ( &$job, &$scope, &$starts, &$reads, $stage, $stream, $outcome, $worker_status, &$id, $queue, $queued, $account ) {
 			if ( str_ends_with( $url, '/start' ) ) {
 				++$starts;
 				$scope = $headers['X-Linker-Resource-Subject'];
@@ -98,21 +114,31 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 					array(
 						'status' => 'running',
 						'job_id' => $job,
-						'stage'  => 'understanding',
+						'stage'  => $queued ? 'waiting' : 'understanding',
 					)
 				);
 			}
 			$this->assertStringEndsWith( $job, $url );
 			$this->assertSame( $scope, $headers['X-Linker-Resource-Subject'] );
 			++$reads;
+			// The second and final browser polls run after the queue wait. Cron and reopen only read.
+			if ( 'waited-account' === $outcome && $queue->expect_identity ) {
+				$this->assertSame( $account, ( new \Linker\Tools\Genie\UserContext() )->user_id( $headers[ \Linker\Tools\Genie\UserContext::HEADER ] ?? '' ) );
+			} else {
+				$this->assertArrayNotHasKey( \Linker\Tools\Genie\UserContext::HEADER, $headers );
+			}
 			if ( 'owner-deleted' === $outcome && 3 === $reads ) {
 				$this->assertTrue( ( new Conversations() )->delete( $id ) );
 			}
-			if ( $reads <= 2 ) {
+			if ( $queued && 'offline' === $queue->state ) {
+				return new WP_Error( 'linker_genie_connection', 'Temporary disconnect', array( 'status' => 503 ) );
+			}
+			if ( $queued ? 'running' === $queue->state : $reads <= 2 ) {
 				return (string) wp_json_encode(
 					array(
-						'status' => 'running',
-						'stage'  => $stage,
+						'status'         => 'running',
+						'stage'          => $stage,
+						'queued_seconds' => $queued ? Proxy::TURN_BUDGET : 0,
 					)
 				);
 			}
@@ -129,8 +155,9 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			}
 			return (string) wp_json_encode(
 				array(
-					'status' => 'completed',
-					'stream' => $stream,
+					'status'         => 'completed',
+					'queued_seconds' => $queued ? Proxy::TURN_BUDGET : 0,
+					'stream'         => $stream,
 				)
 			);
 		};
@@ -168,33 +195,68 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$foreign = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_Error::class, $foreign );
 			$this->assertSame( 404, $foreign->get_error_data()['status'] );
-			$this->assertSame( 0, $reads );
+			$this->assertSame( $queued ? 1 : 0, $reads );
 			$_COOKIE = $owner;
 			$running = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_REST_Response::class, $running );
 			$this->assertSame( $stage, $running->get_data()['stage'] );
 			$this->assertSame( $stage, $proxy->conversation()->get_data()['pending_job']['stage'] );
-			if ( 'expired' === $outcome ) {
+			if ( in_array( $outcome, array( 'expired', 'waited', 'waited-account' ), true ) ) {
 				$input               = \Linker\Tools\Genie\PendingTurns::current( $id );
 				$input['started_at'] = time() - Proxy::TURN_BUDGET - 1;
 				update_post_meta( $id, \Linker\Tools\Genie\PendingTurns::PENDING, wp_slash( $input ) );
 				wp_cache_delete( $job, 'linker_genie_poll' );
 			}
+			if ( 'waited-account' === $outcome ) {
+				wp_set_current_user( 0 );
+				$signed_out = $proxy->poll( $poll );
+				$this->assertInstanceOf( WP_Error::class, $signed_out );
+				$this->assertSame( 404, $signed_out->get_error_data()['status'] );
+				$this->assertSame( 3, $reads );
+				wp_set_current_user( $account );
+			}
+
 			// A second native MySQL connection holds the terminal operation while this tab polls.
 			$peer = new \wpdb( constant( 'DB_USER' ), constant( 'DB_PASSWORD' ), constant( 'DB_NAME' ), constant( 'DB_HOST' ) );
 			$key  = \Linker\Commerce\Inquiry\Assessment\Lock::name( 'genie-operation-' . $operation );
 			$this->assertSame( '1', $peer->get_var( $peer->prepare( 'SELECT GET_LOCK(%s, 0)', $key ) ) );
 			try {
-				$joining = $proxy->poll( $poll );
+				$queue->expect_identity = true;
+				$joining                = $proxy->poll( $poll );
+				$queue->expect_identity = false;
 				$this->assertInstanceOf( WP_REST_Response::class, $joining );
 				$this->assertSame( 'running', $joining->get_data()['status'] );
-				$this->assertSame( 'expired' === $outcome ? 1 : 2, $reads );
+				$this->assertSame(
+					array(
+						'expired'        => 1,
+						'waited'         => 4,
+						'waited-account' => 4,
+					)[ $outcome ] ?? 2,
+					$reads
+				);
 				$this->assertSame( '', get_post_meta( $receipt, \Linker\Tools\Genie\PendingTurns::STAGE, true ) );
 			} finally {
 				$peer->get_var( $peer->prepare( 'SELECT RELEASE_LOCK(%s)', $key ) );
 				$peer->close();
 			}
 
+			if ( $queued ) {
+				$this->assertEquals( Proxy::TURN_BUDGET, $joining->get_data()['queued_seconds'] );
+				wp_clear_scheduled_hook( 'linker_tools_expire_genie_turn', array( $id, $job ) );
+				$queue->state = 'offline';
+				$proxy->expire( $id, $job );
+				$offline = $proxy->conversation()->get_data()['pending_job'];
+				$this->assertSame( $job, $offline['job_id'] );
+				$this->assertEquals( Proxy::TURN_BUDGET, $offline['queued_seconds'] );
+				$queue->state = 'running';
+				$proxy->expire( $id, $job );
+				$this->assertGreaterThan( time(), wp_next_scheduled( 'linker_tools_expire_genie_turn', array( $id, $job ) ) );
+				$reopened = $proxy->conversation()->get_data()['pending_job'];
+				$this->assertSame( $job, $reopened['job_id'] );
+				$this->assertEquals( Proxy::TURN_BUDGET, $reopened['queued_seconds'] );
+				$this->assertSame( $stage, $reopened['stage'] );
+				$queue->state = 'completed';
+			}
 			$recover = in_array( $outcome, array( 'receipt-poll', 'receipt-cron' ), true );
 			if ( $recover ) {
 				$interrupt = static function ( array $post ) {
@@ -217,18 +279,19 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$input['started_at'] = time() - Proxy::TURN_BUDGET - 1;
 				update_post_meta( $id, \Linker\Tools\Genie\PendingTurns::PENDING, wp_slash( $input ) );
 				if ( 'receipt-cron' === $outcome ) {
-					\Linker\Tools\Genie\PendingTurns::expire( $id, $job );
+					$proxy->expire( $id, $job );
 					$this->assertSame( array(), \Linker\Tools\Genie\PendingTurns::current( $id ) );
 				}
 			}
-			$final = $proxy->poll( $poll );
+			$queue->expect_identity = true;
+			$final                  = $proxy->poll( $poll );
 			if ( 'owner-deleted' === $outcome ) {
 				$this->assertInstanceOf( WP_Error::class, $final );
 				$this->assertSame( 404, $final->get_error_data()['status'] );
 				$this->assertSame( '', ( new \Linker\Tools\Genie\Thread() )->read( $id )['stream'] );
 				return;
 			}
-			if ( ! $recover && ! in_array( $outcome, array( 'completed', 'approval-withdrawn' ), true ) ) {
+			if ( ! $recover && ! in_array( $outcome, array( 'completed', 'approval-withdrawn', 'waited', 'waited-account' ), true ) ) {
 				$this->assertInstanceOf( WP_Error::class, $final );
 				$this->assertSame( in_array( $outcome, array( 'revoked', 'publication_changed' ), true ) ? 409 : 503, $final->get_error_data()['status'] );
 				$this->assertTrue( $final->get_error_data()['unrecorded'] );
@@ -261,7 +324,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 			$again = $proxy->poll( $poll );
 			$this->assertInstanceOf( WP_REST_Response::class, $again );
 			$this->assertSame( $final->get_data(), $again->get_data() );
-			$this->assertSame( 3, $reads );
+			$this->assertSame( $queued ? 9 : 3, $reads );
 			$thread = $proxy->conversation()->get_data();
 			$this->assertArrayNotHasKey( 'pending_job', $thread );
 			$this->assertSame( $operation, $thread['operation_id'] );
@@ -274,7 +337,7 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 				$replay = $proxy->poll( $poll );
 				$this->assertInstanceOf( WP_Error::class, $replay );
 				$this->assertSame( 409, $replay->get_error_data()['status'] );
-				$this->assertSame( 3, $reads );
+				$this->assertSame( $queued ? 9 : 3, $reads );
 			}
 		} finally {
 			foreach ( $hooks as $hook => $callbacks ) {
@@ -306,15 +369,17 @@ final class AsyncTurnResourceAdmissionTest extends TestCase {
 	public static function async_outcomes(): array {
 		return array(
 			'deleted while the final response is in flight' => array( 'owner-deleted' ),
-			'completed then restricted'       => array( 'approval-withdrawn' ),
-			'resume committed after deadline' => array( 'receipt-poll' ),
-			'cron recovers unsigned receipt'  => array( 'receipt-cron' ),
-			'checked'                         => array( 'completed' ),
-			'publication withdrawn'           => array( 'revoked' ),
-			'worker failed'                   => array( 'genie_job_failed', 503 ),
-			'worker starts after withdrawal'  => array( 'publication_changed', 409 ),
-			'worker authority unavailable'    => array( 'publication_unavailable', 503 ),
-			'deadline'                        => array( 'expired' ),
+			'completed then restricted'         => array( 'approval-withdrawn' ),
+			'resume committed after deadline'   => array( 'receipt-poll' ),
+			'cron recovers unsigned receipt'    => array( 'receipt-cron' ),
+			'checked'                           => array( 'completed' ),
+			'publication withdrawn'             => array( 'revoked' ),
+			'worker failed'                     => array( 'genie_job_failed', 503 ),
+			'worker starts after withdrawal'    => array( 'publication_changed', 409 ),
+			'worker authority unavailable'      => array( 'publication_unavailable', 503 ),
+			'deadline'                          => array( 'expired' ),
+			'work queued before execution'      => array( 'waited' ),
+			'owner resumes queued account work' => array( 'waited-account' ),
 		);
 	}
 }

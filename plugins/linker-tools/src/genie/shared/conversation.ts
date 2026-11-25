@@ -71,3 +71,22 @@ export function typeModelPrompt(): string {
 		''
 	);
 }
+
+/**
+ * Recover the editable input from the attachment footer sent with a question.
+ *
+ * @param question The owned pending message.
+ * @param uploads  Files restored for that message.
+ */
+export function inputBeforeUploads(
+	question: string,
+	uploads: Upload[]
+): string {
+	const footer = buildQuestion( '', uploads );
+	if ( question === footer ) {
+		return '';
+	}
+	return footer && question.endsWith( '\n' + footer )
+		? question.slice( 0, -footer.length - 1 )
+		: question;
+}

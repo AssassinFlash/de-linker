@@ -1,6 +1,10 @@
 import { genieFetch } from './restFetch';
-import { buildQuestion } from '../shared/conversation';
-import { keepJobFiles, removeFiles } from '../attachments/turnFiles';
+import { inputBeforeUploads } from '../shared/conversation';
+import {
+	forgetConversationFiles,
+	keepJobFiles,
+	removeFiles,
+} from '../attachments/turnFiles';
 /**
  * One turn through the REST proxy: POST, then read the service's SSE events
  * from the answer (docs/specs/13-genie.md).
@@ -390,6 +394,7 @@ export interface ConversationList {
 
 /** One turn. The test seams sit on the object, not further positional arguments. */
 export interface TurnRequest {
+	uploadScope?: string;
 	surface?: 'hero' | 'helper' | 'workspace';
 	/** Current mounted surface, pre-dispatch cancellation and actual transport stage. */
 	owner?: TurnOwner;
@@ -427,6 +432,7 @@ export interface TurnOwner {
 }
 
 export type TurnStage =
+	| 'waiting'
 	| 'reading_attachments'
 	| 'understanding'
 	| 'checking_catalog'
@@ -439,6 +445,7 @@ export interface PendingJob {
 	conversation_id: number;
 	stage: TurnStage;
 	started_at: number;
+	queued_seconds?: number;
 	user_message: string;
 	operation_id?: string;
 }
@@ -466,15 +473,20 @@ function turnRoute( url: string, suffix: string ): string {
 }
 
 /**
- * One deadline covers the start, each poll, and reading the final body.
+ * Start and execution share one deadline. Add only the wait measured by the service.
  * @param budget
  * @param external
  * @param attempt
+ * @param firstReadBudget Time for the first owned status read on a resumed queue.
  */
 async function withinTurn< T >(
 	budget: number,
 	external: AbortSignal | undefined,
-	attempt: ( signal: AbortSignal ) => Promise< T >
+	attempt: (
+		signal: AbortSignal,
+		setQueueTime: ( seconds: number ) => void
+	) => Promise< T >,
+	firstReadBudget = budget
 ): Promise< T > {
 	const controller = new AbortController();
 	const cancel = () => controller.abort( external?.reason );
@@ -490,26 +502,38 @@ async function withinTurn< T >(
 	} else {
 		external?.addEventListener( 'abort', cancel, { once: true } );
 	}
-	// The deadline also covers reading the response body.
-	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-	const timeout = setTimeout(
-		() =>
-			controller.abort(
-				new DOMException( 'The turn timed out.', 'AbortError' )
-			),
-		Math.max( 0, budget )
-	);
+	const deadline = Date.now() + budget;
+	let timeout: ReturnType< typeof setTimeout > | undefined;
+	const arm = ( milliseconds: number ) => {
+		clearTimeout( timeout );
+		timeout = setTimeout(
+			() =>
+				controller.abort(
+					new DOMException( 'The turn timed out.', 'AbortError' )
+				),
+			Math.max( 0, milliseconds )
+		);
+	};
+	const setQueueTime = ( seconds: number ) =>
+		arm( deadline + seconds * 1000 - Date.now() );
+	arm( firstReadBudget );
 	try {
-		return await Promise.race( [ aborted, attempt( controller.signal ) ] );
+		return await Promise.race( [
+			aborted,
+			attempt( controller.signal, setQueueTime ),
+		] );
 	} finally {
 		clearTimeout( timeout );
 		external?.removeEventListener( 'abort', cancel );
 	}
 }
 
-async function replyBody( response: Response ) {
+async function replyBody( response: Response, jobId?: string ) {
 	if ( ! response.ok ) {
 		const refusal = await response.json().catch( () => ( {} ) );
+		if ( jobId && refusal?.data?.unrecorded === true ) {
+			await removeFiles( jobId ).catch( () => undefined );
+		}
 		throw new TurnError(
 			response.status,
 			typeof refusal?.code === 'string' ? refusal.code : ''
@@ -521,7 +545,8 @@ async function replyBody( response: Response ) {
 async function pollTurn(
 	request: TurnTransport,
 	job: Pick< PendingJob, 'job_id' | 'conversation_id' | 'stage' >,
-	signal: AbortSignal
+	signal: AbortSignal,
+	setQueueTime: ( seconds: number ) => void
 ): Promise< Turn > {
 	const fetcher = request.fetcher ?? genieFetch;
 	const initialPollDelays = [ 600, 600, 900, 900, 900 ];
@@ -547,17 +572,23 @@ async function pollTurn(
 				},
 			}
 		);
-		const body = await replyBody( response );
+		const body = await replyBody( response, job.job_id );
 		if (
 			body.job_id !== job.job_id ||
 			body.conversation_id !== job.conversation_id
 		) {
 			throw new UnfinishedStreamError();
 		}
+		if ( typeof body.queued_seconds === 'number' ) {
+			setQueueTime( body.queued_seconds );
+		}
 		if ( body.status === 'completed' ) {
 			return parseStream( body.stream );
 		}
 		if ( body.status !== 'running' ) {
+			if ( body.status === 'failed' ) {
+				await removeFiles( job.job_id ).catch( () => undefined );
+			}
 			throw new TurnError( body.http_status ?? 503, body.code ?? '' );
 		}
 		if ( body.stage !== stage ) {
@@ -576,8 +607,16 @@ export function resumeTurn(
 		job.started_at * 1000 +
 		( request.timeoutMs ?? TURN_TIMEOUT_MS ) -
 		Date.now();
-	return withinTurn( remaining, signal, ( active ) =>
-		pollTurn( request, job, active )
+	return withinTurn(
+		remaining,
+		signal,
+		( active, setQueueTime ) =>
+			pollTurn( request, job, active, setQueueTime ),
+		// A previous tab may have last seen the queue before a connection interruption.
+		// Read the live job once; subsequent polls use its measured execution budget.
+		job.queued_seconds !== undefined || job.stage === 'waiting'
+			? ( request.timeoutMs ?? TURN_TIMEOUT_MS )
+			: remaining
 	);
 }
 
@@ -597,7 +636,7 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 	return withinTurn(
 		request.timeoutMs ?? TURN_TIMEOUT_MS,
 		request.owner?.signal,
-		async ( signal ) => {
+		async ( signal, setQueueTime ) => {
 			const response = await resourceFetch(
 				async ( ...args ) => {
 					signal.throwIfAborted();
@@ -645,21 +684,22 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 				body.conversation_id > 0
 			) {
 				const question = messages.at( -1 )?.content ?? '';
-				const files = buildQuestion( '', uploads );
-				let originalText = question;
-				if ( question === files ) {
-					originalText = '';
-				} else if ( files && question.endsWith( '\n' + files ) ) {
-					originalText = question.slice( 0, -files.length - 1 );
-				}
+
 				await keepJobFiles(
 					body.job_id,
 					uploads,
 					Date.now() + TURN_TIMEOUT_MS,
-					originalText
+					inputBeforeUploads( question, uploads ),
+					body.stage === 'waiting' ? request.uploadScope : undefined,
+					body.conversation_id
 				);
 				request.onStarted?.( body.conversation_id );
-				const answer = await pollTurn( request, body, signal );
+				const answer = await pollTurn(
+					request,
+					body,
+					signal,
+					setQueueTime
+				);
 				if ( uploads.length ) {
 					await removeFiles( body.job_id ).catch( () => undefined );
 				}
@@ -1069,6 +1109,7 @@ export async function deleteConversation(
 		current_id?: number;
 		conversations?: ConversationSummary[];
 	};
+	await forgetConversationFiles( id ).catch( () => undefined );
 	return {
 		currentId: body.current_id ?? 0,
 		conversations: body.conversations ?? [],

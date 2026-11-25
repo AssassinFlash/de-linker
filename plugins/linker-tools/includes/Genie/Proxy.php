@@ -711,7 +711,7 @@ class Proxy {
 		}
 		$active = PendingTurns::current( $conversation );
 		if ( $active ) {
-			PendingTurns::expire( $conversation, $active['job_id'] );
+			$this->expire( $conversation, $active['job_id'] );
 			if ( PendingTurns::current( $conversation ) ) {
 				return self::unrecorded( new WP_Error( 'linker_resource_pending', 'This conversation has a turn in progress.', array( 'status' => 409 ) ) );
 			}
@@ -756,19 +756,64 @@ class Proxy {
 		if ( ! $turn ) {
 			return array();
 		}
-		if ( microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
-			PendingTurns::expire( $id, $turn['job_id'] );
-			return array();
-		}
 		$identity = Identity::current();
 		if ( is_wp_error( $identity ) || ! hash_equals( $turn['owner_binding'], $identity->binding() ) ) {
 			return array();
 		}
+		$progress = $this->pending_progress( $turn, true );
+		if ( ! $progress ) {
+			return array();
+		}
 		$last = end( $turn['messages'] );
-		return PendingTurns::progress( $turn ) + array(
+		return $progress + array(
 			'operation_id' => $turn['operation_id'],
 			'user_message' => $last['content'] ?? '',
 		);
+	}
+
+	/** Expire an abandoned turn against its execution time, including jobs with no open browser.
+	 *
+	 * @param int    $id Pending conversation.
+	 * @param string $job Service job that scheduled this event.
+	 */
+	public function expire( int $id, string $job ): void {
+		$turn = PendingTurns::current( $id );
+		if ( ( $turn['job_id'] ?? null ) === $job ) {
+			$this->pending_progress( $turn );
+		}
+	}
+
+	/** Resume or reap a persisted turn. Only the service knows when queued work actually started.
+	 *
+	 * @param array<string,mixed> $turn Original service acceptance.
+	 * @param bool                $resume A customer is reopening an active turn.
+	 * @return array<string,mixed> Public progress, or empty after expiry.
+	 */
+	private function pending_progress( array $turn, bool $resume = false ): array {
+		$due = microtime( true ) >= PendingTurns::deadline( $turn );
+		if ( 'waiting' === $turn['stage'] && ( $due || $resume ) ) {
+			$state = $this->job_request( $this->base() . '/assistant/turn/' . $turn['job_id'], $turn['subject_hash'] );
+			if ( is_wp_error( $state ) && 'linker_genie_connection' === $state->get_error_code() ) {
+				if ( $due ) {
+					wp_schedule_single_event( time() + self::TURN_BUDGET, 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );
+				}
+				return PendingTurns::progress( $turn );
+			}
+			if ( ! is_wp_error( $state ) ) {
+				$deadline = PendingTurns::deadline( $turn, $state );
+				if ( microtime( true ) < $deadline ) {
+					if ( $due ) {
+						wp_schedule_single_event( (int) ceil( $deadline ), 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );
+					}
+					return PendingTurns::progress( $turn, $state );
+				}
+			}
+		}
+		if ( ! $due ) {
+			return PendingTurns::progress( $turn );
+		}
+		PendingTurns::abandon( $turn );
+		return array();
 	}
 
 	/** Read or finalize one owned service job.
@@ -792,18 +837,18 @@ class Proxy {
 			return ( new Replies() )->read( $receipt, $binding );
 		}
 		$completion = get_post_meta( $conversation, Thread::COMPLETION, true );
-		if ( ( $completion['operation_id'] ?? null ) === $turn['operation_id'] || microtime( true ) - $turn['started_at'] >= self::TURN_BUDGET ) {
+		if ( ( $completion['operation_id'] ?? null ) === $turn['operation_id'] || ( 'waiting' !== $turn['stage'] && microtime( true ) >= PendingTurns::deadline( $turn ) ) ) {
 			$result = self::job_error( 503 );
 		} else {
-			$result = $this->job_request( $this->base() . '/assistant/turn/' . $job, $turn['subject_hash'] );
+			// Only an authenticated owner poll can renew the ability credential. Cron reads carry none.
+			$context = 'waiting' === $turn['stage'] && microtime( true ) - $turn['started_at'] >= UserContext::TTL - self::TURN_BUDGET ? $this->user_context->mint() : '';
+			$result  = $this->job_request( $this->base() . '/assistant/turn/' . $job, $turn['subject_hash'], null, $context );
+			if ( ! is_wp_error( $result ) && microtime( true ) >= PendingTurns::deadline( $turn, $result ) ) {
+				$result = self::job_error( 503 );
+			}
 		}
 		if ( ! is_wp_error( $result ) && 'running' === $result['status'] && is_string( $result['stage'] ?? null ) ) {
-			$progress = PendingTurns::progress( $turn );
-			if ( $progress['stage'] !== $result['stage'] ) {
-				$progress['stage'] = $result['stage'];
-				wp_cache_set( $job, $result['stage'], 'linker_genie_stage', self::TURN_BUDGET );
-			}
-			return new WP_REST_Response( $progress );
+			return new WP_REST_Response( PendingTurns::progress( $turn, $result ) );
 		}
 
 		// Re-read ownership and the full original input under the operation lock before any terminal write.
@@ -853,7 +898,7 @@ class Proxy {
 			return self::unrecorded( PublicationGuard::refused() );
 		}
 		$this->conversations->resume_pending_guest( $id );
-		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'], $turn['operation_id'], $turn['fingerprint'] );
+		$reply = $this->finish( $id, $turn['messages'], $result['stream'], $turn['publication'], $turn['locale'], $turn['started_at'] + ( $result['queued_seconds'] ?? 0 ), $turn['operation_id'], $turn['fingerprint'] );
 		if ( is_wp_error( $reply ) ) {
 			if ( ! empty( $reply->get_error_data()['unrecorded'] ) ) {
 				PendingTurns::fail( $turn );
@@ -897,13 +942,17 @@ class Proxy {
 	 * @param string                   $url Private URL.
 	 * @param string                   $subject Native identity hash.
 	 * @param array<string,mixed>|null $body Start payload or null for a poll.
+	 * @param string                   $context Short-lived account credential from the checked owner.
 	 * @return array<string,mixed>|WP_Error
 	 */
-	private function job_request( string $url, string $subject, ?array $body = null ): array|WP_Error {
+	private function job_request( string $url, string $subject, ?array $body = null, string $context = '' ): array|WP_Error {
 		$headers = $this->headers() + array(
 			'Accept'                    => 'application/json',
 			'X-Linker-Resource-Subject' => $subject,
 		);
+		if ( '' !== $context ) {
+			$headers[ UserContext::HEADER ] = $context;
+		}
 		if ( is_callable( $this->fetch ) ) {
 			$raw = ( $this->fetch )( $url, $body ?? array(), $headers );
 		} else {
@@ -934,10 +983,16 @@ class Proxy {
 			}
 			$raw  = wp_remote_retrieve_body( $response );
 			$code = (int) wp_remote_retrieve_response_code( $response );
+			if ( null === $body && $code >= 500 ) {
+				return new WP_Error( 'linker_genie_connection', 'Could not reach Genie.', array( 'status' => 503 ) );
+			}
 			if ( $code >= 400 ) {
 				$error = json_decode( $raw, true );
 				return self::job_error( $code, (string) ( $error['code'] ?? ( is_string( $error['detail'] ?? null ) ? $error['detail'] : '' ) ) );
 			}
+		}
+		if ( is_wp_error( $raw ) ) {
+			return $raw;
 		}
 		$state = is_string( $raw ) ? json_decode( $raw, true ) : null;
 		return is_array( $state ) && isset( $state['status'] ) ? $state : self::job_error( 502 );

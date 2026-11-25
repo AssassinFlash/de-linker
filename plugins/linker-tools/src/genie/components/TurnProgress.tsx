@@ -4,6 +4,8 @@ import type { TurnStage } from '../api/turn';
 
 function stageLabel( stage?: TurnStage ) {
 	switch ( stage ) {
+		case 'waiting':
+			return __( 'Your question is queued…', 'linker-tools' );
 		case 'reading_attachments':
 			return __( 'Reading your file…', 'linker-tools' );
 		case 'understanding':

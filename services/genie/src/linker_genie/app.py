@@ -27,9 +27,9 @@ import time
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
-from threading import Lock, Thread
+from threading import Lock
 from typing import Any, Literal
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request
@@ -49,7 +49,7 @@ from linker_genie import (
     summary,
     timing,
 )
-from linker_genie.abilities import Abilities, AbilityClient
+from linker_genie.abilities import USER_CONTEXT_HEADER, Abilities, AbilityClient
 from linker_genie.agent import (
     deepseek_access,
     make_generate,
@@ -62,7 +62,7 @@ from linker_genie.facts import TurnFacts
 from linker_genie.failure import from_log, is_row
 from linker_genie.gate import Gate
 from linker_genie.inquiry_assessment import AssessmentInput, assess
-from linker_genie.jobs import Jobs, expire_results
+from linker_genie.jobs import Jobs, TurnWorkers, expire_results
 from linker_genie.knowledge import SEARCH
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
@@ -102,7 +102,6 @@ from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 from linker_genie.work import (
     WorkError,
-    acquire,
     configured_slots,
     hold,
     require_subject,
@@ -138,6 +137,8 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         stop.set()
+        application.state.turn_workers.close()
+        application.state.turn_workers = TurnWorkers()
         await asyncio.gather(task, prewarm, expiration)
 
 
@@ -148,6 +149,7 @@ app = FastAPI(
     openapi_url=None,
     lifespan=lifespan,
 )
+app.state.turn_workers = TurnWorkers()
 logger = logging.getLogger(__name__)
 # The shell's shared token and the body cap, before anything is parsed (gate.py).
 app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)
@@ -331,51 +333,56 @@ def start_turn(body: TurnRequest, request: Request) -> JSONResponse:
     started = time.monotonic()
     subject = request.headers.get("x-linker-resource-subject", "")
     slots = configured_slots()
-    slot = acquire(slots, subject)
+    require_subject(subject)
+    slot = str(uuid4())
     jobs = Jobs(slots)
-    stage = "reading_attachments" if body.attachments else "understanding"
+    first_stage = "reading_attachments" if body.attachments else "understanding"
+    authority = getattr(request.app.state, "publication", None) or current()
     try:
-        authority = getattr(request.app.state, "publication", None) or current()
-        created = jobs.begin(slot, body.conversation_id, subject, stage)
+        created = jobs.begin(slot, body.conversation_id, subject, "waiting")
+    except (OSError, sqlite3.Error) as error:
+        raise WorkError("storage") from error
 
-        def execute() -> None:
-            try:
-                snapshot = _start_permission(body, authority)
-                stream = "".join(
-                    _execute_turn(
-                        body,
-                        request,
-                        authority,
-                        snapshot,
-                        lambda value: jobs.stage(slot, value),
-                    )
-                )
-                if not jobs.finish(slot, stream):
-                    turn_log().forget(body.conversation_id)
-            except HTTPException as error:
-                jobs.fail(slot, error.status_code, str(error.detail), str(error.detail))
-            except (BudgetError, WorkError) as error:
-                jobs.fail(slot, error.status, str(error), str(error))
-            except Exception:
-                logger.exception("background Genie turn failed")
-                jobs.fail(slot, 503, "genie_turn_failed", "genie_turn_failed")
-            finally:
-                slots.release(slot)
+    if body.user.logged_in and body.user.context:
+        request.state.current_user_context = lambda token: jobs.user_context(
+            slot, subject, token
+        )
 
+    def execute() -> None:
         try:
-            Thread(target=execute, name="genie-turn", daemon=True).start()
-        except RuntimeError:
+            snapshot = _start_permission(body, authority)
+            stream = "".join(
+                _execute_turn(
+                    body,
+                    request,
+                    authority,
+                    snapshot,
+                    lambda value: jobs.stage(slot, value),
+                )
+            )
+            if not jobs.finish(slot, stream):
+                turn_log().forget(body.conversation_id)
+        except HTTPException as error:
+            jobs.fail(slot, error.status_code, str(error.detail), str(error.detail))
+        except (BudgetError, WorkError) as error:
+            jobs.fail(slot, error.status, str(error), str(error))
+        except Exception:
+            logger.exception("background Genie turn failed")
             jobs.fail(slot, 503, "genie_turn_failed", "genie_turn_failed")
-            raise WorkError("unavailable") from None
-    except Exception:
-        slots.release(slot)
-        raise
+        finally:
+            slots.release(slot)
+
+    try:
+        request.app.state.turn_workers.submit(jobs, slot, subject, first_stage, execute)
+    except RuntimeError:
+        jobs.fail(slot, 503, "genie_turn_failed", "genie_turn_failed")
+        raise WorkError("unavailable") from None
     return JSONResponse(
         status_code=202,
         content={
             "job_id": slot,
             "status": "running",
-            "stage": stage,
+            "stage": "waiting",
             "started_at": created,
         },
         headers={
@@ -391,7 +398,9 @@ def read_turn(job_id: str, request: Request) -> dict[str, Any]:
     subject = request.headers.get("x-linker-resource-subject", "")
     require_subject(subject)
     try:
-        state = Jobs(configured_slots()).read(job_id, subject)
+        state = Jobs(configured_slots()).read(
+            job_id, subject, request.headers.get(USER_CONTEXT_HEADER)
+        )
     except (OSError, sqlite3.Error) as error:
         raise WorkError("storage") from error
     if state is None:
@@ -420,7 +429,9 @@ def _compute_turn(
     # behind, so the unfinished turns the p95 tail must not silently omit are
     # countable (TurnLog.start; ops/turn_latency.py reports them).
     start_token = turn_log().start(body.conversation_id, body.locale)
-    abilities = ability_client().for_turn(original_permission)
+    abilities = ability_client().for_turn(
+        original_permission, getattr(request.state, "current_user_context", None)
+    )
     prepare = getattr(request.app.state, "prepare", None)
     try:
         with timing.phase(clock, timing.UNDERSTAND):

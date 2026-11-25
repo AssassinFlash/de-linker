@@ -29,6 +29,7 @@ from linker_genie.abilities import (
     AbilityClient,
     AbilityError,
 )
+from linker_genie.publication import Snapshot
 
 
 class Recorder:
@@ -228,3 +229,23 @@ def test_the_ability_name_keeps_its_slash_raw() -> None:
     raw = recorder.requests[0].url.raw_path.decode()
     assert "/abilities/linker/search-products/run" in raw
     assert "%2F" not in raw
+
+
+def test_private_ability_uses_its_jobs_current_owner_at_each_read() -> None:
+    recorder = Recorder()
+    client = client_for(recorder)
+    issued = iter(["44|1300|first", "44|1320|second"])
+    abilities = client.for_turn(
+        Snapshot("source", {}, {}, "pairs"), lambda _: next(issued)
+    )
+    try:
+        abilities.run(USER_CONTEXT_ABILITY, {}, "44|1200|original")
+        abilities.record("linker/handoff-team", {}, "44|1200|original")
+        abilities.record(SOLUTION_ABILITY, {"solution_id": 12}, "44|1200|original")
+    finally:
+        client.close()
+    assert [r.headers.get(USER_CONTEXT_HEADER) for r in recorder.requests] == [
+        "44|1300|first",
+        None,
+        "44|1320|second",
+    ]

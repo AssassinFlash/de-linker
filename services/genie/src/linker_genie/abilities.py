@@ -183,14 +183,16 @@ class AbilityClient:
     def close(self) -> None:
         self._client.close()
 
-    def for_turn(self, permission: Snapshot) -> Abilities:
+    def for_turn(
+        self, permission: Snapshot, current_context: Callable[[str], str] | None = None
+    ) -> Abilities:
         """Bind one service-owned input set without changing this shared client.
 
         The turn service must freshly validate this original permission before
         release. PHP abilities still perform their own fresh before/after reads.
         Standalone run/record calls keep their independent authority checks.
         """
-        return _TurnAbilities(self, permission)
+        return _TurnAbilities(self, permission, current_context)
 
     def run(
         self,
@@ -322,6 +324,7 @@ class _TurnAbilities:
 
     client: AbilityClient
     permission: Snapshot
+    current_context: Callable[[str], str] | None = None
 
     def run(
         self,
@@ -329,6 +332,8 @@ class _TurnAbilities:
         arguments: dict[str, Any] | None = None,
         user_context: str | None = None,
     ) -> Any:
+        if self.current_context and user_context and name in USER_CONTEXT_ABILITIES:
+            user_context = self.current_context(user_context)
         return self.client._run(name, arguments, user_context, self.permission)
 
     def record(

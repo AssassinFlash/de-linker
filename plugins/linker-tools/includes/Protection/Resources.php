@@ -40,7 +40,6 @@ final class Resources {
 		add_filter( 'rest_dispatch_request', array( $this, 'dispatch' ), 10, 4 );
 		add_filter( 'linker_commerce_public_business_context', array( $this, 'context' ) );
 		add_action( 'init', array( $this->replies, 'register' ) );
-		add_action( 'linker_tools_expire_genie_turn', array( \Linker\Tools\Genie\PendingTurns::class, 'expire' ), 10, 2 );
 		add_action( 'linker_tools_reply_cleanup', array( $this->replies, 'expire' ) );
 		add_action( 'wp_print_footer_scripts', array( $this, 'assets' ), 0 );
 		if ( ! wp_next_scheduled( 'linker_tools_reply_cleanup' ) ) {

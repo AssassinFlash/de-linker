@@ -195,3 +195,129 @@ test( 'a refused product read rejects instead of passing an empty shelf', async 
 		storeClient( '/wp-json/', fetcher ).products( [ 4107 ], 'en' )
 	).rejects.toThrow( 'products 403' );
 } );
+
+test.each( [
+	{
+		receipt: 'HTML from a bad gateway',
+		write: () =>
+			new Response( '<html>Bad Gateway</html>', {
+				status: 502,
+				headers: { 'Content-Type': 'text/html' },
+			} ),
+	},
+	{
+		receipt: 'empty gateway timeout',
+		write: () => new Response( null, { status: 504 } ),
+	},
+	{ receipt: 'incomplete JSON', write: () => new Response( '{"items":' ) },
+	{ receipt: 'missing line', write: () => json( { items: [] } ) },
+	{
+		receipt: 'connection lost after sending',
+		write: () => {
+			throw new TypeError( 'Failed to fetch' );
+		},
+	},
+] )(
+	'confirms a committed draft from Woo after $receipt without repeating the write',
+	async ( { write } ) => {
+		const events = vi.fn();
+		document.addEventListener( 'wc-blocks_added_to_cart', events );
+		const fetcher = vi
+			.fn< typeof fetch >()
+			.mockResolvedValueOnce(
+				json(
+					{ items: [ { id: 6530, quantity: 1 } ] },
+					{ Nonce: 'guest-cart' }
+				)
+			)
+			.mockImplementationOnce( async () => write() )
+			.mockResolvedValueOnce(
+				json( {
+					items_count: 2,
+					items: [
+						{ id: 6530, quantity: 1 },
+						{ id: 4106, quantity: 1 },
+					],
+				} )
+			);
+		const status = vi.fn();
+		try {
+			expect(
+				await storeClient( '/wp-json/', fetcher ).addAll(
+					[ { productId: 4106, quantity: 1 } ],
+					status,
+					proof
+				)
+			).toBe( true );
+			expect( status ).toHaveBeenLastCalledWith( 4106, 'added' );
+			expect( events ).toHaveBeenCalledOnce();
+			expect(
+				fetcher.mock.calls.map( ( [ url, init ] ) => [
+					init?.method ?? 'GET',
+					String( url ).split( '?' )[ 0 ],
+				] )
+			).toEqual( [
+				[ 'GET', '/wp-json/wc/store/v1/cart' ],
+				[ 'POST', '/wp-json/linker-ai/v1/genie/draft' ],
+				[ 'GET', '/wp-json/wc/store/v1/cart' ],
+			] );
+			expect( fetcher.mock.calls[ 2 ][ 1 ] ).toMatchObject( {
+				credentials: 'same-origin',
+				cache: 'no-store',
+			} );
+		} finally {
+			document.removeEventListener( 'wc-blocks_added_to_cart', events );
+		}
+	}
+);
+
+test.each( [
+	[ 'another product', [ { id: 4105, quantity: 2 } ] ],
+	[ 'insufficient requested quantity', [ { id: 4106, quantity: 1 } ] ],
+] as const )(
+	'Woo readback of %s cannot confirm the selected model and quantity',
+	async ( _reason, items ) => {
+		const fetcher = vi
+			.fn< typeof fetch >()
+			.mockResolvedValueOnce( json( {}, { Nonce: 'guest' } ) )
+			.mockResolvedValueOnce( new Response( '{' ) )
+			.mockResolvedValueOnce( json( { items } ) );
+		const onStatus = vi.fn();
+		expect(
+			await storeClient( '/wp-json/', fetcher ).addAll(
+				[ { productId: 4106, quantity: 2 } ],
+				onStatus,
+				proof
+			)
+		).toBe( false );
+		expect( onStatus ).toHaveBeenLastCalledWith( 4106, 'unverified' );
+		expect( fetcher ).toHaveBeenCalledTimes( 3 );
+	}
+);
+
+test.each( [ 403, 502, 503, 504 ] )(
+	'an explicit %i refusal cannot be confirmed from a product already in the cart',
+	async ( status ) => {
+		const fetcher = vi
+			.fn< typeof fetch >()
+			.mockResolvedValueOnce(
+				json(
+					{ items: [ { id: 4106, quantity: 1 } ] },
+					{ Nonce: 'guest' }
+				)
+			)
+			.mockResolvedValueOnce(
+				Response.json( { code: 'rest_forbidden' }, { status } )
+			);
+		const onStatus = vi.fn();
+		expect(
+			await storeClient( '/wp-json/', fetcher ).addAll(
+				[ { productId: 4106, quantity: 1 } ],
+				onStatus,
+				proof
+			)
+		).toBe( false );
+		expect( onStatus ).toHaveBeenLastCalledWith( 4106, 'unverified' );
+		expect( fetcher ).toHaveBeenCalledTimes( 2 );
+	}
+);

@@ -10,6 +10,8 @@ from collections.abc import Iterator
 from contextlib import closing, contextmanager
 from pathlib import Path
 
+SITE_SLOTS = 2
+
 
 class Slots:
     """Hold one subject slot and one of two site slots until work finishes.
@@ -38,30 +40,32 @@ class Slots:
             raise OSError("Genie slot store is not private")
         with closing(sqlite3.connect(self.path, timeout=5, isolation_level=None)) as db:
             db.execute("BEGIN IMMEDIATE")
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS slots (id TEXT PRIMARY KEY, subject TEXT UNIQUE NOT NULL, pid INTEGER NOT NULL)"
+            )
             yield db
             db.commit()
 
     def acquire(self, subject: str) -> str | None:
         with self.transaction() as db:
-            db.execute(
-                "CREATE TABLE IF NOT EXISTS slots (id TEXT PRIMARY KEY, subject TEXT UNIQUE NOT NULL, pid INTEGER NOT NULL)"
-            )
-            for ident, pid in db.execute("SELECT id,pid FROM slots").fetchall():
-                try:
-                    os.kill(pid, 0)
-                except ProcessLookupError:
-                    db.execute("DELETE FROM slots WHERE id=?", (ident,))
-            busy = db.execute(
-                "SELECT COUNT(*) FROM slots WHERE subject=?", (subject,)
-            ).fetchone()[0]
-            total = db.execute("SELECT COUNT(*) FROM slots").fetchone()[0]
-            if busy or total >= 2:
-                return None
             ident = str(uuid.uuid4())
-            db.execute(
-                "INSERT INTO slots VALUES (?,?,?)", (ident, subject, os.getpid())
-            )
-            return ident
+            return ident if self.reserve(db, subject, ident) else None
+
+    @staticmethod
+    def reserve(db: sqlite3.Connection, subject: str, ident: str) -> bool:
+        for occupied, pid in db.execute("SELECT id,pid FROM slots").fetchall():
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                db.execute("DELETE FROM slots WHERE id=?", (occupied,))
+        busy = db.execute(
+            "SELECT COUNT(*) FROM slots WHERE subject=?", (subject,)
+        ).fetchone()[0]
+        total = db.execute("SELECT COUNT(*) FROM slots").fetchone()[0]
+        if busy or total >= SITE_SLOTS:
+            return False
+        db.execute("INSERT INTO slots VALUES (?,?,?)", (ident, subject, os.getpid()))
+        return True
 
     def release(self, ident: str) -> None:
         with self.transaction() as db:

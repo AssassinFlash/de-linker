@@ -14,6 +14,7 @@ use Linker\Commerce\Protection\Identity;
 use Linker\Tools\Genie\DraftActions;
 use Linker\Tools\Genie\DraftProof;
 use Linker\Tools\Genie\PublicationGuard;
+use Linker\Tools\Protection\EnginePublication;
 use WC_Product_Simple;
 use WP_Error;
 use WP_REST_Request;
@@ -72,7 +73,23 @@ final class GeniePublicationActionsTest extends IntegrationTestCase {
 			),
 			$this->quantities()
 		);
-		$this->assertArrayHasKey( 'publication', $answer->get_data() );
+		$this->assertSame(
+			array(
+				'items' => array(
+					array(
+						'id'       => $a->get_id(),
+						'quantity' => 2,
+					),
+					array(
+						'id'       => $b->get_id(),
+						'quantity' => 1,
+					),
+				),
+			),
+			$answer->get_data()
+		);
+		$this->assertSame( 'genie', EnginePublication::kind( $answer ) );
+		$this->assertSame( ( new PublicationGuard() )->dependencies(), EnginePublication::dependencies( $answer ) );
 	}
 
 	/** A stale second row refuses the whole list before any new writes. */

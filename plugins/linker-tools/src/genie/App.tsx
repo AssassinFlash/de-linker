@@ -1474,6 +1474,9 @@ export function App( { config }: { config: GenieConfig } ) {
 					};
 					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
+						...( uploads.length
+							? { uploadScope: lease.scope }
+							: {} ),
 						owner: turnOwner,
 						surface: config.surface,
 						...trackTurn( lease, {

@@ -35,7 +35,7 @@ final class PendingTurns {
 			delete_post_meta( $receipt, $key );
 			return false;
 		}
-		wp_schedule_single_event( (int) ceil( $turn['started_at'] + Proxy::TURN_BUDGET ), 'linker_tools_expire_genie_turn', array( $id, $turn['job_id'] ) );
+		wp_schedule_single_event( (int) ceil( self::deadline( $turn ) ), 'linker_tools_expire_genie_turn', array( $id, $turn['job_id'] ) );
 		return true;
 	}
 
@@ -101,20 +101,34 @@ final class PendingTurns {
 	/** Public progress only.
 	 *
 	 * @param array<string,mixed> $turn Pending context.
+	 * @param array<string,mixed> $service Latest service state when available.
 	 * @return array<string,mixed>
 	 */
-	public static function progress( array $turn ): array {
+	public static function progress( array $turn, array $service = array() ): array {
 		$stage = wp_cache_get( $turn['job_id'], 'linker_genie_stage' );
 		if ( false === $stage ) {
 			$stage = get_post_meta( $turn['receipt'], self::STAGE, true );
 		}
-		return array(
+		if ( isset( $service['stage'] ) && $stage !== $service['stage'] ) {
+			$stage = $service['stage'];
+			wp_cache_set( $turn['job_id'], $stage, 'linker_genie_stage', Proxy::TURN_BUDGET );
+		}
+		$progress = array(
 			'job_id'          => $turn['job_id'],
 			'conversation_id' => $turn['conversation_id'],
 			'status'          => 'running',
 			'stage'           => '' !== $stage ? $stage : $turn['stage'],
 			'started_at'      => $turn['started_at'],
 		);
+		if ( 'waiting' === $turn['stage'] ) {
+			$cached = wp_cache_get( $turn['job_id'], 'linker_genie_queue_seconds' );
+			$wait   = $service['queued_seconds'] ?? ( false === $cached ? 0 : $cached );
+			if ( isset( $service['queued_seconds'] ) && $wait !== $cached ) {
+				wp_cache_set( $turn['job_id'], $wait, 'linker_genie_queue_seconds', Proxy::TURN_BUDGET );
+			}
+			$progress['queued_seconds'] = $wait;
+		}
+		return $progress;
 	}
 
 	/** Forget the heavy staging data while keeping the terminal operation receipt.
@@ -124,21 +138,28 @@ final class PendingTurns {
 	public static function clear( array $turn ): void {
 		wp_cache_delete( $turn['job_id'], 'linker_genie_poll' );
 		wp_cache_delete( $turn['job_id'], 'linker_genie_stage' );
+		wp_cache_delete( $turn['job_id'], 'linker_genie_queue_seconds' );
 		delete_post_meta( $turn['conversation_id'], self::PENDING, wp_slash( $turn ) );
 		delete_post_meta( $turn['receipt'], self::STAGE );
 		wp_clear_scheduled_hook( 'linker_tools_expire_genie_turn', array( $turn['conversation_id'], $turn['job_id'] ) );
 	}
 
-	/** An abandoned browser does not leave its provisional guest post or an unusable operation.
+	/** The original execution budget starts after the service's measured queue wait.
 	 *
-	 * @param int    $conversation Pending conversation ID.
-	 * @param string $job Original job.
+	 * @param array<string,mixed> $turn Native operation context.
+	 * @param array<string,mixed> $state Service progress or final result.
 	 */
-	public static function expire( int $conversation, string $job ): void {
-		$turn = self::current( $conversation );
-		if ( ( $turn['job_id'] ?? null ) !== $job || microtime( true ) - $turn['started_at'] < Proxy::TURN_BUDGET ) {
-			return;
-		}
+	public static function deadline( array $turn, array $state = array() ): float {
+		return $turn['started_at'] + ( $state['queued_seconds'] ?? 0 ) + Proxy::TURN_BUDGET;
+	}
+
+	/** Recover a committed answer or release the expired operation under its lock.
+	 *
+	 * @param array<string,mixed> $turn Expired pending context.
+	 */
+	public static function abandon( array $turn ): void {
+		$conversation = $turn['conversation_id'];
+		$job          = $turn['job_id'];
 		Lock::run(
 			'genie-operation-' . $turn['operation_id'],
 			static function () use ( $conversation, $job ): void {

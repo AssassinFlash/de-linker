@@ -18,6 +18,7 @@ import type { GenieConfig } from '../config';
 import type { DraftEditor } from './draftContext';
 import { pageFailureStore, type FailureDraft } from './failure';
 import { verifiedEntryFailure } from './entryFailure';
+import { inputBeforeUploads } from './conversation';
 import type { useFailure } from './useFailure';
 
 type Stored = Awaited< ReturnType< typeof readThread > >;
@@ -104,7 +105,9 @@ export function usePendingTurn(
 								: {} ),
 						}
 					: {
-							text: carried?.text ?? job.user_message,
+							text:
+								carried?.text ??
+								inputBeforeUploads( job.user_message, uploads ),
 							question: job.user_message,
 							conversationId: job.conversation_id,
 							operationId: job.operation_id,
@@ -147,7 +150,9 @@ export function usePendingTurn(
 						} );
 					}
 					if ( draft.uploads.length ) {
-						void removeFiles( job.job_id ).catch( () => undefined );
+						await removeFiles( job.job_id ).catch(
+							() => undefined
+						);
 						releasePickedFiles( draft.uploads );
 					}
 					current.current.view.complete(
