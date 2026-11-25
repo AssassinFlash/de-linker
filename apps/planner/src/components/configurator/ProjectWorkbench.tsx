@@ -1051,6 +1051,7 @@ export default function ProjectWorkbench({
 			return;
 		setError(null);
 		const instance = lifetime.current;
+		const fromChapter = location.hash;
 		const reply = await operations.start("runs/find-equipment", {
 			expected_revision: latest.current.baseline.revision,
 			input_contract: projectInputContract,
@@ -1062,7 +1063,8 @@ export default function ProjectWorkbench({
 			client.isCurrentScope(session.query_scope)
 		) {
 			accepted(reply.run);
-			navigate("system");
+			if (step !== "system" && location.hash === fromChapter)
+				navigate("system");
 		}
 	}
 	const startGuidedComparison = useEffectEvent(() => {
