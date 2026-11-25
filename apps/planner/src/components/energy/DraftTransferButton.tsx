@@ -244,15 +244,11 @@ export function DraftTransferButton({
 		instance: number,
 		continueToInquiry = false,
 	) {
-		if (
-			reply?.path !== "draft/apply" ||
-			instance !== lifetime.current ||
-			!client.isCurrentScope(scope)
-		)
-			return;
+		if (reply?.path !== "draft/apply" || !client.isCurrentScope(scope)) return;
+		if (!reportOnly && reply.receipt.active !== false) notifyDraftChanged();
+		if (instance !== lifetime.current) return;
 		confirmed.current = { key: reply.intent.key, receipt: reply.receipt };
 		setReceipt(reply.receipt);
-		if (!reportOnly && reply.receipt.active !== false) notifyDraftChanged();
 		setPreview(null);
 		setError(null);
 		if (

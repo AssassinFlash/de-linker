@@ -260,8 +260,8 @@ test("draft confirmation shows the frozen phase conflict and still lets the cust
 	assertInline();
 });
 
-for (const current of [true, false])
-	test(`confirmation only opens inquiry for the current report (${current})`, async (t) => {
+for (const view of ["current", "earlier", "another chapter", "another visitor"])
+	test(`confirmation only opens inquiry for the current report (${view})`, async (t) => {
 		const dom = setupDom();
 		const { createRoot } = await import("react-dom/client");
 		const { DraftTransferButton } =
@@ -271,6 +271,13 @@ for (const current of [true, false])
 		const origin = window.location.origin;
 		const run = { id: "b".repeat(32), project_id: "a".repeat(32), revision: 3 };
 		const startUrl = location.href;
+		const current = view === "current";
+		let sameVisitor = true;
+		let badgeNotifications = 0;
+		document.addEventListener(
+			"wc-blocks_added_to_cart",
+			() => badgeNotifications++,
+		);
 		const inquiryUrl = startUrl + "#inquiry";
 		const inquiryUrls = { en: inquiryUrl, de: `${origin}/de/anfrage/` };
 		const inquiryPages = { en: `${origin}/inquiry/`, de: inquiryUrls.de };
@@ -278,7 +285,7 @@ for (const current of [true, false])
 		const started = deferred();
 		const client = {
 			origin,
-			isCurrentScope: () => true,
+			isCurrentScope: () => sameVisitor,
 			async query() {
 				return {
 					schema_version: 1,
@@ -327,7 +334,12 @@ for (const current of [true, false])
 		);
 		await act(async () => button("Confirm and continue to inquiry").click());
 		await started.promise;
-		await render(true, current);
+		if (view === "another chapter" || view === "another visitor")
+			await act(async () =>
+				root.render(React.createElement("main", null, "Project details")),
+			);
+		else await render(true, current);
+		sameVisitor = view !== "another visitor";
 		await act(async () =>
 			applied.resolve({
 				path: "draft/apply",
@@ -339,6 +351,9 @@ for (const current of [true, false])
 			}),
 		);
 		assert.equal(location.href, current ? inquiryUrl : startUrl);
+		assert.equal(badgeNotifications, sameVisitor ? 1 : 0);
+		if (view === "another chapter")
+			assert.equal(dom.element.textContent, "Project details");
 	});
 
 for (const active of [undefined, false])

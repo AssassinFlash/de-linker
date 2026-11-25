@@ -1435,9 +1435,10 @@ export default function ProjectWorkbench({
 		: siteArrayFeedsEquipment
 			? selectedUnits.map((u) => u.pv_dc_kw)
 			: [];
+	const hasPvSize = pvSizes.some((size) => size != null);
 	const roofModules =
 		brief.system_scope !== "storage_only" &&
-		!pvSizes.some((size) => size != null) &&
+		!hasPvSize &&
 		inputs.geometry !== undefined
 			? moduleSummary(activePvGeometry(inputs.geometry).geometry)
 			: null;
@@ -2315,7 +2316,7 @@ export default function ProjectWorkbench({
 											{total(
 												roofModules?.count
 													? [roofModules.stc_kwp]
-													: pvSizes.length
+													: hasPvSize
 														? pvSizes
 														: [
 																siteArrayFeedsEquipment

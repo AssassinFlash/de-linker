@@ -244,7 +244,9 @@ export function SolarInstallation({
 	const knownPower =
 		known?.peak_power_kwp ??
 		(typeof declaredPower === "number" ? declaredPower : null);
-	const typedPower = knownPanels ? knownPanels.system_kwp : knownPower;
+	const typedPower =
+		knownPanels?.system_kwp ??
+		(knownPanels?.count && knownPanels.power_w ? null : knownPower);
 	const [selected, select] = useState<string | null>(
 		geometry.roofs[0]?.id ?? null,
 	);
