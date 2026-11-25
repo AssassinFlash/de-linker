@@ -979,9 +979,22 @@ def _cabinet_clearance_answer(
             for faq in product.get("faq", []):
                 if faq.get("question") == question_label and faq.get("answer"):
                     label = "Produkt-FAQ" if language == "de" else "Product FAQ"
-                    blocks.append(
-                        TextBlock(text=f"{label}: {faq['answer']}", refs=[str(pid)])
-                    )
+                    answer = f"{label}: {faq['answer']}"
+                    if any(
+                        row["product_id"] == pid and row.get("pairings") == []
+                        for search in facts.tool_calls
+                        if search.get("name") == "linker/search-products"
+                        and search.get("ok")
+                        for row in search["result"].get("qualified", [])
+                    ):
+                        answer += (
+                            " Der Katalog führt für diesen Speicher kein einzelnes "
+                            "Wechselrichtermodell als freigegeben auf."
+                            if language == "de"
+                            else " The catalogue lists no individual inverter model "
+                            "as released for this battery."
+                        )
+                    blocks.append(TextBlock(text=answer, refs=[str(pid)]))
                     break
             break
     target_ref = next(

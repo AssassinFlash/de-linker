@@ -1804,6 +1804,23 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         recovered_text = answer_text([block.model_dump() for block in mixed.blocks])
         assert faq["answer"] in recovered_text
         assert all(pair in recovered_text for pair in directions)
+        model_note = (
+            "kein einzelnes Wechselrichtermodell"
+            if locale == "de"
+            else "no individual inverter model"
+        )
+        assert model_note not in recovered_text
+        search = {
+            "name": "linker/search-products",
+            "ok": True,
+            "arguments": {"with_pairings": True},
+            "result": {"qualified": [{"product_id": 4106, "pairings": []}]},
+        }
+        facts.tool_calls.append(search)
+        mixed = fallback(facts, locale, mixed_route, question=compound)
+        recovered_text = answer_text([block.model_dump() for block in mixed.blocks])
+        assert faq["answer"] in recovered_text and model_note in recovered_text
+        facts.tool_calls.pop()
         facts.tool_calls[0]["result"].pop("faq")
 
         assert {b.url for b in delivered.blocks if isinstance(b, DocumentBlock)} >= {
