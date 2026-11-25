@@ -176,6 +176,112 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		}
 	}
 
+	/**
+	 * The Woo editor and its release action agree after a later business transition.
+	 *
+	 * @testWith ["quotation-issued", true]
+	 *           ["completed", true]
+	 *           ["cancelled", false]
+	 * @param string $status Current Woo order status.
+	 * @param bool   $eligible Whether staff may approve the customer receipt.
+	 */
+	public function test_customer_receipt_review_follows_the_inquiry_status( string $status, bool $eligible ): void {
+		$this->provider( 'unknown' );
+		$order = $this->submit();
+		$id    = $order->get_id();
+		do_action( Queue::PROCESS, $id );
+		$team = $this->permissions( $id )['jobs']['team']['id'];
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $team );
+		$order->update_status( $status );
+		wp_set_current_user( 1 );
+		$order = wc_get_order( $id );
+		self::assertInstanceOf( WC_Order::class, $order );
+		ob_start();
+		\Linker\Commerce\Inquiry\Assessment\NotificationHoldView::render( $order );
+		$view = (string) ob_get_clean();
+		self::assertSame( $eligible, str_contains( $view, 'Approve and send the customer receipt' ) );
+		$reference = \Linker\Commerce\Mail\NotificationHold::reference( $order );
+		$released  = \Linker\Commerce\Mail\NotificationHold::release( $id, $reference );
+		$state     = $this->permissions( $id );
+		self::assertSame( $team, $state['jobs']['team']['id'] );
+		if ( ! $eligible ) {
+			self::assertInstanceOf( \WP_Error::class, $released );
+			self::assertArrayNotHasKey( 'receipt', $state['jobs'] );
+			return;
+		}
+		self::assertIsArray( $released );
+		self::assertSame( $released, \Linker\Commerce\Mail\NotificationHold::release( $id, $reference ) );
+		self::assertArrayHasKey( 'receipt', $state['jobs'] );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $state['jobs']['receipt']['id'] );
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+		self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+		self::assertSame( $state['jobs']['receipt']['id'], $this->permissions( $id )['jobs']['receipt']['id'] );
+	}
+
+	/**
+	 * Staff releases an unnotified historical hold without repeating a queued or delivered notice.
+	 *
+	 * @testWith ["unnotified"]
+	 *           ["queued"]
+	 *           ["delivered"]
+	 * @param string $previous Earlier internal notification state.
+	 */
+	public function test_staff_releases_an_unnotified_historical_assessment_once( string $previous ): void {
+		$order = $this->submit();
+		$id    = $order->get_id();
+		if ( 'unnotified' !== $previous ) {
+			$this->provider( 'unknown' );
+			do_action( Queue::PROCESS, $id );
+			if ( 'delivered' === $previous ) {
+				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $this->permissions( $id )['jobs']['team']['id'] );
+			}
+			$order->read_meta_data( true );
+			$order->delete_meta_data( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META );
+		}
+		$before  = $this->permissions( $id )['jobs'];
+		$unknown = \Linker\Commerce\Inquiry\Assessment\SendVerdict::unknown( 'deadline' );
+		\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
+			$id,
+			static function ( array &$state ) use ( $unknown ): void {
+				$state['status']  = 'manual';
+				$state['verdict'] = $unknown;
+			}
+		);
+		$data                   = Queue::data( $order );
+		$data['result']         = $unknown + array( 'label' => 'uncertain' );
+		$data['initial_result'] = $data['result'];
+		\Linker\Commerce\Inquiry\Assessment\StructuredMeta::update( $order, Queue::META, $data );
+		$order->update_meta_data(
+			\Linker\Commerce\Mail\NotificationHold::META,
+			array(
+				'policy'  => $unknown['rubric'],
+				'reason'  => 'assessment_unresolved',
+				'purpose' => 'team',
+			)
+		);
+		$order->update_meta_data( Queue::PENDING, 'held' );
+		$order->save_meta_data();
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+		self::assertSame( $before, $this->permissions( $id )['jobs'] );
+		wp_set_current_user( 1 );
+		$reference = \Linker\Commerce\Mail\NotificationHold::reference( $order );
+		$released  = \Linker\Commerce\Mail\NotificationHold::release( $id, $reference );
+		if ( 'unnotified' !== $previous ) {
+			self::assertInstanceOf( \WP_Error::class, $released );
+			self::assertSame( $before, $this->permissions( $id )['jobs'] );
+			return;
+		}
+		self::assertIsArray( $released );
+		$jobs = $this->permissions( $id )['jobs'];
+		self::assertSame( array( 'team' ), array_keys( $jobs ) );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $jobs['team']['id'] );
+		self::assertSame( $released, \Linker\Commerce\Mail\NotificationHold::release( $id, $reference ) );
+		$after = $this->permissions( $id )['jobs'];
+		self::assertSame( $jobs['team']['id'], $after['team']['id'] );
+		self::assertNotEmpty( $after['team']['delivered_at'] );
+		self::assertArrayNotHasKey( 'receipt', $after );
+	}
+
 	/** A corrected destination between permission checking and charging retires the original receipt. */
 	public function test_revoked_receipt_leaves_no_job_or_transport_debit(): void {
 		$this->provider( 'normal' );

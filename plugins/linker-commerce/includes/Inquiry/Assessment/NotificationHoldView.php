@@ -22,7 +22,7 @@ final class NotificationHoldView {
 	 */
 	public static function render( WC_Order $order ): void {
 		$released = $order->get_meta( NotificationHold::RELEASED );
-		if ( 'jev_review' === $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) && ! NotificationHold::held( $order ) ) {
+		if ( SendAuthorization::awaiting_staff_receipt( $order ) ) {
 			echo '<p>' . esc_html__( 'Jev: manual review required', 'linker-commerce' ) . '</p>';
 			self::button( $order, __( 'Approve and send the customer receipt', 'linker-commerce' ) );
 			return;

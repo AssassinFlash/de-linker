@@ -607,6 +607,17 @@ final class SendAuthorization {
 		return $approved && ( ! NotificationHold::held( $order ) || ( is_array( $hold ) && 'team' === ( $hold['purpose'] ?? '' ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) ) );
 	}
 
+	/** Is the customer acknowledgement waiting for staff on an active business record?
+	 *
+	 * @param WC_Order $order Current inquiry.
+	 */
+	public static function awaiting_staff_receipt( WC_Order $order ): bool {
+		return 'jev_review' === $order->get_meta( ReceiptLimit::SKIPPED_META )
+			&& $order->has_status( array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) )
+			&& ! $order->get_meta( Reviews::ERASED )
+			&& ! NotificationHold::held( $order );
+	}
+
 	/**
 	 * Only the independently granted acknowledgement may pass a content-only hold.
 	 *
@@ -1016,7 +1027,7 @@ final class SendAuthorization {
 		return self::owns_hold( $order ) || ( is_array( $hold ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER ) );
 	}
 
-	/** Explicit native staff release authorizes this source version and the team purpose alone.
+	/** Release the held team notification or the customer receipt selected in the Woo editor.
 	 *
 	 * @param WC_Order $order Native source selected by the capability/nonce checked controller.
 	 * @param string   $reference Version displayed in the release control.
@@ -1032,22 +1043,48 @@ final class SendAuthorization {
 			$id,
 			static function ( array &$state ) use ( $order, $reference, &$result ): void {
 				$order->read_meta_data( true );
-				if ( 'jev_review' === $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
-					if ( ! self::current( $order, $state ) || NotificationHold::held( $order ) || ! hash_equals( NotificationHold::reference( $order ), $reference ) || 'unknown' !== ( $state['verdict']['decision'] ?? '' ) || ! in_array( $state['status'] ?? '', array( 'approved', 'normal' ), true ) ) {
+				if ( ! hash_equals( NotificationHold::reference( $order ), $reference ) || $order->get_meta( Reviews::ERASED ) ) {
+					return;
+				}
+				$hold          = $order->get_meta( NotificationHold::META );
+				$legacy_review = 'manual' === ( $state['status'] ?? '' ) && is_array( $hold ) && 'assessment_unresolved' === ( $hold['reason'] ?? '' );
+				if ( $legacy_review || 'jev_review' === $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
+					if ( 'unknown' !== ( $state['verdict']['decision'] ?? '' ) || SendVerdict::POLICY !== ( $state['policy'] ?? '' ) ) {
 						return;
+					}
+					if ( $legacy_review ) {
+						if ( ! $order->has_status( array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) ) || ! empty( $state['jobs']['team'] ) || ! empty( Queue::data( $order )['notification_job'] ) || $order->get_meta( NotificationHold::RELEASED ) || $order->get_meta( Admin::OVERRIDE ) ) {
+							return;
+						}
+						// Staff releases the current Woo record to the current team mailbox.
+						$state['source_sha256'] = self::source( $order );
+						$state['routing']       = self::routing();
+						$state['review']        = self::review( $order );
+						$state['status']        = 'approved';
+						$state['producer']      = 'human_override';
+						$state['next_at']       = time();
+						$state['team_only']     = true;
+						$order->delete_meta_data( NotificationHold::META );
+						if ( empty( $state['jobs']['receipt']['delivered_at'] ) ) {
+							$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'jev_review' );
+						}
+					} else {
+						if ( ! self::awaiting_staff_receipt( $order ) || ! self::current( $order, $state ) || ! in_array( $state['status'] ?? '', array( 'approved', 'normal' ), true ) ) {
+							return;
+						}
+						unset( $state['team_only'] );
+						$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'assessment_pending' );
 					}
 					$result                 = array(
 						'at'        => time(),
 						'user'      => get_current_user_id(),
 						'reference' => $reference,
-						'purpose'   => 'receipt',
+						'purpose'   => $legacy_review ? 'team' : 'receipt',
 					);
 					$state['staff_release'] = $result;
-					unset( $state['team_only'] );
 					StructuredMeta::update( $order, NotificationHold::RELEASED, $result );
-					$order->delete_meta_data( ReceiptLimit::SKIPPED_META );
 					$order->update_meta_data( Queue::PENDING, 'yes' );
-					$order->add_order_note( __( 'Customer receipt approved for delivery.', 'linker-commerce' ), 0, true );
+					$order->add_order_note( $legacy_review ? __( 'Notification released for delivery.', 'linker-commerce' ) : __( 'Customer receipt approved for delivery.', 'linker-commerce' ), 0, true );
 					$order->save_meta_data();
 					return;
 				}
@@ -1057,7 +1094,7 @@ final class SendAuthorization {
 				if ( ! is_array( $override ) || 'correct' !== ( $override['operation'] ?? '' ) || 'normal' !== ( $override['label'] ?? '' ) || (int) ( $override['user'] ?? 0 ) < 1 || $correction < 1 || get_comment_meta( $correction, Reviews::EVENT, true ) !== $override ) {
 					return;
 				}
-				if ( ! in_array( $state['status'] ?? '', array( 'manual', 'quarantined' ), true ) || ! self::current( $order, $state ) || $order->get_meta( Reviews::ERASED ) || ! NotificationHold::held( $order ) || ! hash_equals( NotificationHold::reference( $order ), $reference ) ) {
+				if ( ! in_array( $state['status'] ?? '', array( 'manual', 'quarantined' ), true ) || ! self::current( $order, $state ) || ! NotificationHold::held( $order ) ) {
 					return;
 				}
 				$event = array(

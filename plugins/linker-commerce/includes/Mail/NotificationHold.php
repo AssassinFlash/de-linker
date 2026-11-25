@@ -76,7 +76,7 @@ final class NotificationHold {
 	 * @param WC_Order $order Fresh native inquiry.
 	 */
 	public static function reference( WC_Order $order ): string {
-		if ( 'jev_review' === $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) && ! self::held( $order ) ) {
+		if ( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::awaiting_staff_receipt( $order ) ) {
 			return \Linker\Commerce\Inquiry\Assessment\SendAuthorization::reference( $order );
 		}
 		$job = (int) ( Queue::data( $order )['notification_job'] ?? 0 );
