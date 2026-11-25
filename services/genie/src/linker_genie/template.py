@@ -896,6 +896,8 @@ def _cabinet_clearance_answer(
     language: Locale,
     documents: list[str],
     page_product_id: int | None,
+    *,
+    include_pairing: bool = False,
 ) -> TurnOutput | None:
     """Render a cabinet's directional clearances from its current reviewed figure."""
     from linker_genie.figures import tag
@@ -957,6 +959,31 @@ def _cabinet_clearance_answer(
         )
     refs = dict.fromkeys([cid, *documents])
     blocks: list[Block] = [TextBlock(text=sentence, refs=[cid])]
+    if include_pairing and any(
+        call.arguments.get("with_pairings") for call in route.calls
+    ):
+        # Use the same published product's answer when the model cannot finish
+        # the second half of an installation and compatibility question.
+        pid = source.evidence.product_id
+        question_label = (
+            f"Welche Wechselrichter arbeiten mit dem {model}?"
+            if language == "de"
+            else f"Which inverters work with the {model}?"
+        )
+        for call in facts.tool_calls:
+            if call.get("name") != "linker/get-product" or not call.get("ok"):
+                continue
+            product = call.get("result") or {}
+            if product.get("product_id") != pid:
+                continue
+            for faq in product.get("faq", []):
+                if faq.get("question") == question_label and faq.get("answer"):
+                    label = "Produkt-FAQ" if language == "de" else "Product FAQ"
+                    blocks.append(
+                        TextBlock(text=f"{label}: {faq['answer']}", refs=[str(pid)])
+                    )
+                    break
+            break
     target_ref = next(
         (
             ref
@@ -1250,7 +1277,13 @@ def fallback(
         )
     if route is not None and route.name == "documents" and facts.documents:
         cabinet = _cabinet_clearance_answer(
-            facts, route, question, language, _document_refs(facts), page_product_id
+            facts,
+            route,
+            question,
+            language,
+            _document_refs(facts),
+            page_product_id,
+            include_pairing=True,
         )
         if cabinet is not None:
             return hydrate(cabinet, facts, language)

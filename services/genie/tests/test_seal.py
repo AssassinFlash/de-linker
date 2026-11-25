@@ -28,7 +28,7 @@ from linker_genie.ground import (
     check as ground_check,
 )
 from linker_genie.language import language_failure
-from linker_genie.route import NamedModel, Route
+from linker_genie.route import Call, NamedModel, Route
 from linker_genie.schema import (
     ActionBlock,
     AskBlock,
@@ -1783,6 +1783,29 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         assert prepared_answer(facts, route, locale, question=unknown_question) is None
         recovered = fallback(facts, locale, route, question=question)
         assert all(pair in _text(recovered) for pair in directions)
+        faq = (
+            {
+                "question": f"Welche Wechselrichter arbeiten mit dem {model}?",
+                "answer": "Das System arbeitet mit SAJ CH2.",
+            }
+            if locale == "de"
+            else {
+                "question": f"Which inverters work with the {model}?",
+                "answer": "The system works with SAJ CH2.",
+            }
+        )
+        facts.tool_calls[0]["result"]["faq"] = [faq]
+        mixed_route = Route(
+            "documents",
+            calls=(Call("linker/search-products", {"with_pairings": True}),),
+            named_models=route.named_models,
+        )
+        mixed = fallback(facts, locale, mixed_route, question=compound)
+        recovered_text = answer_text([block.model_dump() for block in mixed.blocks])
+        assert faq["answer"] in recovered_text
+        assert all(pair in recovered_text for pair in directions)
+        facts.tool_calls[0]["result"].pop("faq")
+
         assert {b.url for b in delivered.blocks if isinstance(b, DocumentBlock)} >= {
             "https://example.test/quick-guide.pdf#page=1",
             "https://example.test/user-manual.pdf#page=4",
