@@ -462,6 +462,8 @@
   .sc-preliminary-review .sc-review-actions { display: flex; flex-wrap: wrap; gap: var(--proto-space-2); }
   .sc-configurator .sc-layout { display: grid; grid-template-columns: minmax(0, 1fr) 272px; align-items: start; gap: 28px; }
   .sc-configurator .sc-main { min-width: 0; scroll-margin-top: calc(var(--sc-header-height, 0px) + 16px); }
+  .sc-configurator .sc-layout:has(> #sc-solar [data-solar-method="roof"]) { grid-template-columns: minmax(0, 1fr); }
+  .sc-configurator .sc-layout:has(> #sc-solar [data-solar-method="roof"]) > .sc-sidebar { display: none; }
   .sc-configurator .sc-sidebar { position: sticky; top: calc(var(--sc-header-height, 0px) + 16px); min-width: 0; overflow-wrap: anywhere; }
   .sc-configurator .sc-card > p + fieldset, .sc-configurator .sc-card > p + div:has(> .sc-fields) { margin-top: 16px; }
   .sc-configurator .sc-card .sc-fields + .sc-actions { margin-top: 18px; }

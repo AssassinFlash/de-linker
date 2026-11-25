@@ -641,7 +641,8 @@ export function ReviewProposal({
 		"Project inputs, layout, equipment and selection basis.",
 		"linker-tools",
 	);
-	const inlineInquiry = Boolean(inquiry) && !reportOnly;
+	const showInquiry = Boolean(inquiry) && !selected;
+	const inlineInquiry = showInquiry && !reportOnly;
 	const draftTransfer = transferable && run && (
 		<section className="sc-draft-transfer">
 			{inlineInquiry ? (
@@ -831,7 +832,7 @@ export function ReviewProposal({
 				)}
 			</section>
 		);
-	if (inquiry && !selected) {
+	if (showInquiry) {
 		const ready = current && run?.state === "succeeded" && report !== null;
 		return (
 			<article

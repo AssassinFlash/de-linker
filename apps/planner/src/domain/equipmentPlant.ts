@@ -95,6 +95,22 @@ export function demandEquipment(inputs: JsonObject): JsonObject {
 		: equipmentDraft(inputs);
 }
 
+/** Only an independent new PV system uses the site's array size as inverter DC demand. */
+export function usesSiteArrayForEquipment(inputs: JsonObject): boolean {
+	const scope = readObject(inputs.brief ?? {}).system_scope;
+	if (scope !== "new_pv_storage" && scope !== "pv_only") return false;
+	if (hasPlant(inputs)) {
+		return (
+			readObject(inputs.energy_plant_setup ?? inputs.energy_plant ?? {})
+				.coupling !== "plant_shared_dc"
+		);
+	}
+	return (
+		readObject(inputs.energy_scenario ?? inputs.energy_replay ?? {})
+			.coupling !== "shared_dc"
+	);
+}
+
 export function changeDemandEquipment(
 	inputs: JsonObject,
 	patch: JsonObject,

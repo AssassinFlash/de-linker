@@ -436,7 +436,13 @@ for (const active of [undefined, false])
 					}),
 				),
 			);
+		let cartNotifications = 0;
+		document.addEventListener(
+			"wc-blocks_added_to_cart",
+			() => cartNotifications++,
+		);
 		await render([record]);
+		assert.equal(cartNotifications, active === false ? 0 : 1);
 		assert.deepEqual(acknowledged, [[record, handoff]]);
 		if (active === false) {
 			assert.equal(

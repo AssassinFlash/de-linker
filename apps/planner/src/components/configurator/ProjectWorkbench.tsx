@@ -87,6 +87,7 @@ import {
 	demandEquipment,
 	hasPlant,
 	readPlantDraft,
+	usesSiteArrayForEquipment,
 } from "../../domain/equipmentPlant.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import { takeRoofImageryConsent } from "../../data/roofImageryConsent.ts";
@@ -1428,9 +1429,12 @@ export default function ProjectWorkbench({
 			? selectedCandidate.plant.units.map((u) => u.selection)
 			: [selectedCandidate.selection]
 		: [];
+	const siteArrayFeedsEquipment = usesSiteArrayForEquipment(inputs);
 	const pvSizes = pvArrays?.length
 		? pvArrays.map((a) => a.peak_power_kwp)
-		: selectedUnits.map((u) => u.pv_dc_kw);
+		: siteArrayFeedsEquipment
+			? selectedUnits.map((u) => u.pv_dc_kw)
+			: [];
 	const roofModules =
 		brief.system_scope !== "storage_only" &&
 		!pvSizes.some((size) => size != null) &&
@@ -1468,6 +1472,7 @@ export default function ProjectWorkbench({
 			: step === "solar" && brief.system_scope === "storage_only"
 				? "energy"
 				: step;
+	const sidebarStep = activeStep === "project" || activeStep === "solar";
 	const guidedReview = guided && activeStep === "review";
 	const guidedView = guidedReview || (guided && activeStep === "system");
 	const guidedChoiceNeedsSave =
@@ -1829,7 +1834,7 @@ export default function ProjectWorkbench({
 					</button>
 				</div>
 			))}
-			<div className={activeStep === "project" ? "sc-layout" : undefined}>
+			<div className={sidebarStep ? "sc-layout" : undefined}>
 				<main
 					id={"sc-" + activeStep}
 					ref={main}
@@ -2295,12 +2300,8 @@ export default function ProjectWorkbench({
 						/>
 					)}
 				</main>
-				{activeStep !== "review" && activeStep !== "solar" && (
-					<aside
-						className={
-							activeStep === "project" ? "sc-sidebar" : "sc-context-summary"
-						}
-					>
+				{activeStep !== "review" && (
+					<aside className={sidebarStep ? "sc-sidebar" : "sc-context-summary"}>
 						<section className="sc-card">
 							<p className="sc-muted">
 								{__("Current configuration", "linker-tools")}
@@ -2316,7 +2317,11 @@ export default function ProjectWorkbench({
 													? [roofModules.stc_kwp]
 													: pvSizes.length
 														? pvSizes
-														: [demandEquipment(inputs).pv_dc_kw],
+														: [
+																siteArrayFeedsEquipment
+																	? demandEquipment(inputs).pv_dc_kw
+																	: null,
+															],
 												"kWp",
 											)}
 										</dd>

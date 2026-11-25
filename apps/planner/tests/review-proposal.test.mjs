@@ -747,3 +747,34 @@ test("a guest can add a first selection to the draft from the inquiry review", a
 		"the confirmed receipt stays visible",
 	);
 });
+
+test("a current report opened from history keeps its own inquiry action", async (t) => {
+	const page = setupDom(),
+		root = createRoot(page.element),
+		value = props();
+	t.after(() => page.dispose(root));
+	value.run.result.has_draft_items = true;
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewProposal, {
+				...value,
+				inquiry: React.createElement("form"),
+				history: {
+					items: [],
+					selected: value.run.id,
+					run: value.run,
+					select() {},
+				},
+			}),
+		),
+	);
+	assert.equal(page.element.querySelector("form"), null);
+	assert.ok(
+		[...page.element.querySelectorAll("h2")].some(
+			(e) => e.textContent === "Request a quotation",
+		),
+	);
+	assert.ok(
+		button("Add selected products to solution draft")?.matches(".sc-primary"),
+	);
+});

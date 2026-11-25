@@ -191,7 +191,13 @@ test("the system comparison uses the capacity edited after entering project deta
 		expect(project.inputs.brief.annual_load.kwh).toBe(7200);
 		const capacity = page.element.querySelector(".sc-solar-inputs input");
 		expect(capacity.value).toBe("11.09");
+		const sidebarCapacity = () =>
+			[...page.element.querySelectorAll("aside dt")].find(
+				(dt) => dt.textContent === "Solar capacity",
+			)?.nextElementSibling?.textContent;
+		expect(sidebarCapacity()).toBe("11.09 kWp");
 		await enter(capacity, "13.7");
+		expect(sidebarCapacity()).toBe("13.7 kWp");
 		await click("Continue with energy use");
 		await click("Compare systems");
 		await until(() => comparedCapacities.at(-1) === 13.7);

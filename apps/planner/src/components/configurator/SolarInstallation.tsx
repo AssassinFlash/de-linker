@@ -66,6 +66,7 @@ import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import {
 	changeDemandEquipment,
 	demandEquipment,
+	usesSiteArrayForEquipment,
 } from "../../domain/equipmentPlant.ts";
 import { readBrief } from "../../domain/brief.ts";
 import {
@@ -237,7 +238,9 @@ export function SolarInstallation({
 				system_kwp: number | null;
 		  }
 		| undefined;
-	const declaredPower = demandEquipment(inputs).pv_dc_kw;
+	const declaredPower = usesSiteArrayForEquipment(inputs)
+		? demandEquipment(inputs).pv_dc_kw
+		: null;
 	const knownPower =
 		known?.peak_power_kwp ??
 		(typeof declaredPower === "number" ? declaredPower : null);
@@ -733,7 +736,8 @@ export function SolarInstallation({
 				0,
 			);
 			return {
-				...(power === demandEquipment(current).pv_dc_kw
+				...(!usesSiteArrayForEquipment(current) ||
+				power === demandEquipment(current).pv_dc_kw
 					? next
 					: changeDemandEquipment(next, { pv_dc_kw: power })),
 				known_panel_details: panels,
@@ -1534,7 +1538,7 @@ export function SolarInstallation({
 		</footer>
 	);
 	return (
-		<section className="sc-solar">
+		<section className="sc-solar" data-solar-method={mode}>
 			<header className="sc-section-head" hidden={editingLayout}>
 				<h1>{__("Define the solar installation", "linker-tools")}</h1>
 				<p>

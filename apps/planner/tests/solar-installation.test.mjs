@@ -7,6 +7,8 @@ import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "j
 import plannerGerman from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json" with { type: "json" };
 import { setupDom, enter, until } from "./dom-fixture.mjs";
 import { buildCalibration } from "../src/domain/imageCalibration.ts";
+import { equipmentDraft } from "../src/domain/equipment.ts";
+import { emptyScenario } from "../src/domain/energyScenario.ts";
 import { emptyBrief } from "../src/domain/brief.ts";
 register("./map-library-loader.mjs", import.meta.url);
 
@@ -255,6 +257,33 @@ test("continuing with edited panel settings preserves roof ownership and group q
 	assert.deepEqual(app.inputs.geometry.arrays, geometry.arrays);
 	assert.deepEqual(app.inputs.geometry.roofs, geometry.roofs);
 });
+for (const [label, system_scope, extra] of [
+	["storage retrofit", "storage_addition", {}],
+	[
+		"shared DC system",
+		"new_pv_storage",
+		{ energy_scenario: { ...emptyScenario(), coupling: "shared_dc" } },
+	],
+]) {
+	test(
+		label + " keeps the inverter DC requirement separate from the site array",
+		async (t) => {
+			const app = await mount(t, {
+				brief: { ...emptyBrief(), system_scope },
+				equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 7 },
+				...extra,
+			});
+			assert.equal(input("Solar capacity").value, "");
+			await enter(input("Solar capacity"), "11.09");
+			assert.equal(
+				app.inputs.pvgis_reference_setup.arrays[0].peak_power_kwp,
+				11.09,
+			);
+			assert.equal(app.inputs.equipment_setup.pv_dc_kw, 7);
+		},
+	);
+}
+
 test("a known system capacity and a partial panel count survive edits independently", async (t) => {
 	const app = await mount(t);
 	await click("Use module details");

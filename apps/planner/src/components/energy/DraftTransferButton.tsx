@@ -128,6 +128,7 @@ export function DraftTransferButton({
 							: { ...receipt, active: status.active };
 					confirmed.current = { key: record.key, receipt: recovered };
 					setReceipt(recovered);
+					if (!reportOnly && recovered.active !== false) notifyDraftChanged();
 					setError(null);
 					await operations.acknowledgeReadback(record, receipt.handoffId);
 				}

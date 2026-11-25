@@ -31,7 +31,6 @@ lk-dropzone-description
 lk-dropzone-icon
 lk-dropzone-title
 md:grid-cols-2
-project
 sc-actions
 sc-array-settings
 sc-assistant-link
