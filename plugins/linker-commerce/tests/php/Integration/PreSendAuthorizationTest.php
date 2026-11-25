@@ -75,6 +75,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	/** Read the stored permissions for a native inquiry.
 	 *
 	 * @param int $id Saved inquiry ID.
+	 * @phpstan-impure
 	 * @return array<string,mixed>
 	 */
 	private function permissions( int $id ): array {
@@ -90,7 +91,9 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		add_filter( 'woocommerce_email_headers', $copies, 20, 2 );
 		add_filter( 'woocommerce_email_attachments', $files, 20, 2 );
 		try {
+			$this->provider( 'normal' );
 			$order = $this->submit();
+			do_action( Queue::PROCESS, $order->get_id() );
 		} finally {
 			remove_filter( 'woocommerce_email_headers', $copies, 20 );
 			remove_filter( 'woocommerce_email_attachments', $files, 20 );
@@ -130,38 +133,210 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertSame( 'target_cap', \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
 	}
 
-	/** The accepted native source grants one fixed customer receipt while content remains pending. */
-	public function test_saved_inquiry_has_one_fixed_receipt_while_assessment_is_unavailable(): void {
-		$attempts = 0;
-		$observe  = static function () use ( &$attempts ): void {
-			++$attempts;
-		};
-		add_action( 'phpmailer_init', $observe, PHP_INT_MAX );
-		$this->later(
-			static function () use ( $observe ): void {
-				remove_action( 'phpmailer_init', $observe, PHP_INT_MAX );
+	/**
+	 * New inquiries get a Woo record immediately. The classifier selects the two recipients.
+	 *
+	 * @testWith ["normal", ["team","receipt"]]
+	 *           ["unknown", ["team"]]
+	 *           ["timeout", ["team"]]
+	 *           ["malicious", []]
+	 * @param string   $decision Classifier response.
+	 * @param string[] $purposes Expected authorized recipients.
+	 */
+	public function test_classification_routes_the_original_inquiry( string $decision, array $purposes ): void {
+		$order = $this->submit();
+		$id    = $order->get_id();
+		self::assertSame( 'Please quote a 10 kWh battery; full original content.', $order->get_customer_note() );
+		self::assertSame( array(), $this->permissions( $id )['jobs'] );
+		$this->provider( $decision );
+		do_action( Queue::PROCESS, $id );
+		$jobs = $this->permissions( $id )['jobs'];
+		self::assertEqualsCanonicalizing( $purposes, array_keys( $jobs ) );
+		if ( in_array( $decision, array( 'unknown', 'timeout' ), true ) ) {
+			$job = ( new \Linker\Commerce\Mail\JobStore() )->load( $jobs['team']['id'] );
+			self::assertNotNull( $job );
+			$team = $job['message'];
+			self::assertTrue( $team->is_internal() );
+			self::assertStringContainsString( 'Jev: manual review required', $team->body );
+			$order->read_meta_data( true );
+			$reference = \Linker\Commerce\Mail\NotificationHold::reference( $order );
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $jobs['team']['id'] );
+			$delivered = $this->permissions( $id )['jobs']['team'];
+			self::assertNotEmpty( $delivered['delivered_at'] );
+			$order->read_meta_data( true );
+			wp_set_current_user( 1 );
+			$released = \Linker\Commerce\Mail\NotificationHold::release( $id, $reference );
+			self::assertIsArray( $released );
+			self::assertSame( $released, \Linker\Commerce\Mail\NotificationHold::release( $id, $reference ) );
+			$approved = $this->permissions( $id )['jobs'];
+			self::assertSame( $delivered, $approved['team'] );
+			self::assertArrayHasKey( 'receipt', $approved );
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $approved['receipt']['id'] );
+			self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+		}
+	}
+
+	/**
+	 * The Woo editor and its release action agree after a later business transition.
+	 *
+	 * @testWith ["quotation-issued", true]
+	 *           ["completed", true]
+	 *           ["cancelled", false]
+	 * @param string $status Current Woo order status.
+	 * @param bool   $eligible Whether staff may approve the customer receipt.
+	 */
+	public function test_customer_receipt_review_follows_the_inquiry_status( string $status, bool $eligible ): void {
+		$this->provider( 'unknown' );
+		$order = $this->submit();
+		$id    = $order->get_id();
+		do_action( Queue::PROCESS, $id );
+		$team = $this->permissions( $id )['jobs']['team']['id'];
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $team );
+		$order->update_status( $status );
+		wp_set_current_user( 1 );
+		$order = wc_get_order( $id );
+		self::assertInstanceOf( WC_Order::class, $order );
+		ob_start();
+		\Linker\Commerce\Inquiry\Assessment\NotificationHoldView::render( $order );
+		$view = (string) ob_get_clean();
+		self::assertSame( $eligible, str_contains( $view, 'Approve and send the customer receipt' ) );
+		$reference = \Linker\Commerce\Mail\NotificationHold::reference( $order );
+		$released  = \Linker\Commerce\Mail\NotificationHold::release( $id, $reference );
+		$state     = $this->permissions( $id );
+		self::assertSame( $team, $state['jobs']['team']['id'] );
+		if ( ! $eligible ) {
+			self::assertInstanceOf( \WP_Error::class, $released );
+			self::assertArrayNotHasKey( 'receipt', $state['jobs'] );
+			return;
+		}
+		self::assertIsArray( $released );
+		self::assertSame( $released, \Linker\Commerce\Mail\NotificationHold::release( $id, $reference ) );
+		self::assertArrayHasKey( 'receipt', $state['jobs'] );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $state['jobs']['receipt']['id'] );
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+		self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
+		self::assertSame( $state['jobs']['receipt']['id'], $this->permissions( $id )['jobs']['receipt']['id'] );
+	}
+
+	/**
+	 * Staff releases an unnotified historical hold without repeating a queued or delivered notice.
+	 *
+	 * @testWith ["unnotified"]
+	 *           ["queued"]
+	 *           ["delivered"]
+	 * @param string $previous Earlier internal notification state.
+	 */
+	public function test_staff_releases_an_unnotified_historical_assessment_once( string $previous ): void {
+		$order = $this->submit();
+		$id    = $order->get_id();
+		if ( 'unnotified' !== $previous ) {
+			$this->provider( 'unknown' );
+			do_action( Queue::PROCESS, $id );
+			if ( 'delivered' === $previous ) {
+				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $this->permissions( $id )['jobs']['team']['id'] );
+			}
+			$order->read_meta_data( true );
+			$order->delete_meta_data( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META );
+		}
+		$before  = $this->permissions( $id )['jobs'];
+		$unknown = \Linker\Commerce\Inquiry\Assessment\SendVerdict::unknown( 'deadline' );
+		\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
+			$id,
+			static function ( array &$state ) use ( $unknown ): void {
+				$state['status']  = 'manual';
+				$state['verdict'] = $unknown;
 			}
 		);
-		$budget = get_option( OptionBudgetLedger::OPTION );
-		$legacy = get_option( Throttle::OPTION );
-		$order  = $this->submit();
-		self::assertSame( 'Please quote a 10 kWh battery; full original content.', $order->get_customer_note() );
-		self::assertSame( 0, $attempts );
-		self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
-		self::assertSame( $legacy, get_option( Throttle::OPTION ) );
-		$authorization = $this->permissions( $order->get_id() );
-		self::assertSame( array( 'receipt' ), array_keys( $authorization['jobs'] ) );
-		$receipt = $authorization['jobs']['receipt']['id'];
-		$stored  = ( new \Linker\Commerce\Mail\JobStore() )->load( $receipt );
-		self::assertNotNull( $stored );
-		self::assertStringNotContainsString( 'Synthetic installer', $stored['message']->body );
-		self::assertStringNotContainsString( 'full original content', $stored['message']->body );
-		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $receipt );
-		$source = $this->permissions( $order->get_id() );
-		self::assertNotEmpty( $source['jobs']['receipt']['delivered_at'] );
-		self::assertSame( 'pending', $source['status'] );
-		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
-		self::assertSame( $source['jobs'], $this->permissions( $order->get_id() )['jobs'] );
+		$data                   = Queue::data( $order );
+		$data['result']         = $unknown + array( 'label' => 'uncertain' );
+		$data['initial_result'] = $data['result'];
+		\Linker\Commerce\Inquiry\Assessment\StructuredMeta::update( $order, Queue::META, $data );
+		$order->update_meta_data(
+			\Linker\Commerce\Mail\NotificationHold::META,
+			array(
+				'policy'  => $unknown['rubric'],
+				'reason'  => 'assessment_unresolved',
+				'purpose' => 'team',
+			)
+		);
+		$order->update_meta_data( Queue::PENDING, 'held' );
+		$order->save_meta_data();
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+		self::assertSame( $before, $this->permissions( $id )['jobs'] );
+		wp_set_current_user( 1 );
+		$reference = \Linker\Commerce\Mail\NotificationHold::reference( $order );
+		$released  = \Linker\Commerce\Mail\NotificationHold::release( $id, $reference );
+		if ( 'unnotified' !== $previous ) {
+			self::assertInstanceOf( \WP_Error::class, $released );
+			self::assertSame( $before, $this->permissions( $id )['jobs'] );
+			return;
+		}
+		self::assertIsArray( $released );
+		$jobs = $this->permissions( $id )['jobs'];
+		self::assertSame( array( 'team' ), array_keys( $jobs ) );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $jobs['team']['id'] );
+		self::assertSame( $released, \Linker\Commerce\Mail\NotificationHold::release( $id, $reference ) );
+		$after = $this->permissions( $id )['jobs'];
+		self::assertSame( $jobs['team']['id'], $after['team']['id'] );
+		self::assertNotEmpty( $after['team']['delivered_at'] );
+		self::assertArrayNotHasKey( 'receipt', $after );
+	}
+
+	/** A corrected destination between permission checking and charging retires the original receipt. */
+	public function test_revoked_receipt_leaves_no_job_or_transport_debit(): void {
+		$this->provider( 'normal' );
+		$order = $this->submit();
+		do_action( Queue::PROCESS, $order->get_id() );
+		$job     = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
+		$changed = false;
+		$change  = static function ( int $meta_id, int $post_id, string $key ) use ( $order, $job, &$changed ): void {
+			if ( $job === $post_id && \Linker\Commerce\Mail\NativeAttempt::META === $key ) {
+				$changed = true;
+				$order->set_billing_email( 'corrected-receipt@example.test' );
+				$order->save();
+			}
+		};
+		add_action( 'added_post_meta', $change, 10, 3 );
+		try {
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+		} finally {
+			remove_action( 'added_post_meta', $change, 10 );
+		}
+		self::assertTrue( $changed );
+		self::assertNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) );
+		self::assertSame( 0, ( new Throttle() )->used( time() ) );
+		self::assertArrayNotHasKey( 'delivered_at', $this->permissions( $order->get_id() )['jobs']['receipt'] );
+	}
+
+	/** A persistent recipient-store outage follows Outbox's usual retry schedule to a visible failure. */
+	public function test_receipt_store_outage_exhausts_the_original_job(): void {
+		$this->provider( 'normal' );
+		$order = $this->submit();
+		do_action( Queue::PROCESS, $order->get_id() );
+		$job = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
+		global $wpdb;
+		$previous = $wpdb->suppress_errors( true );
+		$refuse   = static function ( string $query ): string {
+			return str_starts_with( $query, 'SELECT option_value FROM' ) && str_contains( $query, 'linker_mail_target_v1.' ) ? 'SELECT missing_fixture_recipient_store' : $query;
+		};
+		$store    = new \Linker\Commerce\Mail\JobStore();
+		add_filter( 'query', $refuse );
+		try {
+			foreach ( \Linker\Commerce\Mail\Outbox::RETRY_DELAYS as $index => $delay ) {
+				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+				$loaded = $store->load( $job );
+				self::assertNotNull( $loaded );
+				self::assertSame( $index + 1, $loaded['attempts'] );
+				self::assertSame( 'private', get_post_status( $job ) );
+			}
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+			self::assertSame( \Linker\Commerce\Mail\JobStore::FAILED_STATUS, get_post_status( $job ) );
+			self::assertSame( 'Receipt authorization temporarily unavailable.', $store->error( $job ) );
+			self::assertArrayNotHasKey( 'delivered_at', $this->permissions( $order->get_id() )['jobs']['receipt'] );
+		} finally {
+			remove_filter( 'query', $refuse );
+			$wpdb->suppress_errors( $previous );
+		}
 	}
 
 	/** Accept the native submission while Outbox storage is unavailable.
@@ -176,7 +351,10 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		};
 		add_action( 'wp_insert_post', $unavailable, 10, 2 );
 		try {
-			return $this->submit( $email );
+			$this->provider( 'normal' );
+			$order = $this->submit( $email );
+			do_action( Queue::PROCESS, $order->get_id() );
+			return $order;
 		} finally {
 			remove_action( 'wp_insert_post', $unavailable );
 		}
@@ -196,7 +374,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$id    = $order->get_id();
 		$state = $this->permissions( $id );
 		self::assertSame( array(), $state['jobs'] );
-		self::assertSame( 'pending', $state['status'] );
+		self::assertSame( 'approved', $state['status'] );
 		if ( 'trash' === $disposition ) {
 			$order->delete();
 		} elseif ( 'incident' === $disposition ) {
@@ -241,7 +419,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$final = $this->permissions( $id );
 		self::assertSame( $job, $final['jobs']['receipt']['id'] );
 		self::assertNotEmpty( $final['jobs']['receipt']['delivered_at'] );
-		self::assertSame( 0, $final['attempts'] );
+		self::assertSame( 1, $final['attempts'] );
 	}
 
 	/** A granted receipt follows its accepted inquiry into quotation preparation, never cancellation.
@@ -253,7 +431,9 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 * @param bool   $deliver Whether this accepted receipt still belongs to the customer.
 	 */
 	public function test_pending_receipt_follows_a_valid_business_transition( string $next, bool $deliver ): void {
+		$this->provider( 'normal' );
 		$order = $this->submit();
+		do_action( Queue::PROCESS, $order->get_id() );
 		$grant = $this->permissions( $order->get_id() )['jobs']['receipt'];
 		$order->update_status( $next );
 		$moved = wc_get_order( $order->get_id() );
@@ -275,7 +455,9 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	public function test_guest_receipt_follows_only_its_own_account_claim( bool $claim ): void {
 		$customer = $this->customer();
 		$this->as_user( 0 );
-		$order   = $this->submit( $customer->get_email() );
+		$this->provider( 'normal' );
+		$order = $this->submit( $customer->get_email() );
+		do_action( Queue::PROCESS, $order->get_id() );
 		$receipt = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
 		if ( $claim ) {
 			$saved = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Preserve the WP request; the order key is checked by AccountLink.
@@ -336,10 +518,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		} else {
 			$order->update_status( $change );
 		}
-		if ( in_array( $change, array( 'claim', 'transfer', 'email' ), true ) ) {
-			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $id );
-			self::assertSame( 'invalidated', $this->permissions( $id )['status'] );
-		}
+
 		( new Queue() )->recover();
 		$jobs = $this->permissions( $id )['jobs'];
 		if ( ! $eligible ) {
@@ -392,6 +571,9 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$reply = static function ( $pre, $args, $url ) use ( $decision ) {
 			if ( ! str_ends_with( $url, '/inquiries/assess' ) ) {
 				return $pre; }
+			if ( 'timeout' === $decision ) {
+				return new \WP_Error( 'http_request_failed', 'Request timed out.' );
+			}
 			$request = json_decode( $args['body'], true );
 			$basis   = 'malicious' === $decision ? 'fraud_or_phishing' : ( 'normal' === $decision ? 'business_request' : 'insufficient_context' );
 			$raw     = array(
@@ -491,33 +673,6 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$order->read_meta_data( true );
 		self::assertSame( 'yes', $order->get_meta( Queue::PENDING ) );
 	}
-	/** Service result.
-	 *
-	 * @testWith ["malicious"]
-	 * ["unknown"]
-	 * @param string $decision Service result.
-	 */
-	public function test_non_normal_creates_no_team_job_and_existing_receipt_obeys_holds( string $decision ): void {
-		$this->provider( $decision );
-
-		$budget = get_option( OptionBudgetLedger::OPTION );
-		$legacy = get_option( Throttle::OPTION );
-		$order  = $this->submit();
-		$before = $this->permissions( $order->get_id() );
-		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
-		$after = $this->permissions( $order->get_id() );
-		self::assertSame( array( 'receipt' ), array_keys( $after['jobs'] ) );
-		self::assertSame( $before['jobs'], $after['jobs'] );
-		$job    = $after['jobs']['receipt']['id'];
-		$stored = ( new \Linker\Commerce\Mail\JobStore() )->load( $job );
-		self::assertNotNull( $stored );
-		self::assertSame( 'unknown' === $decision, \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $stored['message'], $job ) );
-		self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
-		self::assertSame( $legacy, get_option( Throttle::OPTION ) );
-		$order->read_meta_data( true );
-		self::assertSame( '', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
-		self::assertSame( 'Please quote a 10 kWh battery; full original content.', $order->get_customer_note() );
-	}
 	/** A changed source, purpose or queued body cannot borrow an old normal grant.
 	 *
 	 * @testWith ["source"]
@@ -580,11 +735,11 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			remove_filter( 'pre_http_request', $slow, 11 );}
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
-		self::assertSame( 'pending', $state['status'] );
+		self::assertSame( 'normal', $state['status'] );
 		self::assertSame( 'deadline', $state['verdict']['reason'] );
-		self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
+		self::assertSame( array( 'team' ), array_keys( $state['jobs'] ) );
 		$order->read_meta_data( true );
-		self::assertSame( '', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		self::assertSame( 'jev_review', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 	}
 	/** Old held job and native record are not rewritten or released. */
 	public function test_old_held_job_and_native_record_are_not_rewritten_or_released(): void {
@@ -619,114 +774,21 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertEquals( $order_before, $fresh->get_meta_data() );
 		self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
 	}
-	/** Unknown recovery is bounded and can later classify without resubmitting. */
-	public function test_unknown_recovery_is_bounded_and_can_later_classify_without_resubmitting(): void {
-		$this->provider( 'unknown' );
-		$order = $this->submit();
-		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
-		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
-		self::assertIsArray( $state );
-		self::assertSame( 1, $state['attempts'] );
-		self::assertGreaterThan( time(), $state['next_at'] );
-		\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
-			$order->get_id(),
-			static function ( array &$state ): void {
-				$state['next_at'] = time() - 1;
-			}
-		);
-		$this->provider( 'normal' );
-		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
-		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
-		self::assertIsArray( $state );
-		self::assertSame( 2, $state['attempts'] );
-		$order->read_meta_data( true );
-		$assessment = Queue::data( $order );
-		self::assertSame( 'unknown', $assessment['initial_result']['decision'] );
-		self::assertSame( 'unknown', $assessment['initial_result']['raw']['primary']['answers']['classification']['choice'] );
-		self::assertSame( 'normal', $assessment['result']['decision'] );
-		self::assertSame( 'normal', $state['status'] );
-		self::assertCount( 2, $state['jobs'] );
-	}
-	/** The existing minute recovery can still produce a receipt after content retries end.
-	 *
-	 * @testWith ["deliver"]
-	 *           ["disabled"]
-	 *           ["historic"]
-	 * @param string $outcome Original source's customer receipt outcome.
-	 */
-	public function test_team_assessment_exhaustion_recovers_only_the_current_missing_customer_receipt( string $outcome ): void {
-		$this->provider( 'unknown' );
-		$unavailable = static function ( int $id, \WP_Post $post ): void {
-			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
-				throw new \RuntimeException( 'fixture_outbox_unavailable' );
-			}
-		};
-		add_action( 'wp_insert_post', $unavailable, 10, 2 );
-		try {
-			$order = $this->submit();
-			$id    = $order->get_id();
-			\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
-				$id,
-				static function ( array &$state ): void {
-					$state['attempts'] = count( \Linker\Commerce\Mail\Outbox::RETRY_DELAYS );
-				}
-			);
-			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $id );
-		} finally {
-			remove_action( 'wp_insert_post', $unavailable );
-		}
-		$state = $this->permissions( $id );
-		self::assertSame( 'manual', $state['status'] );
-		self::assertSame( array(), $state['jobs'] );
-		$order->read_meta_data( true );
-		if ( 'historic' === $outcome ) {
-			$hold = $order->get_meta( \Linker\Commerce\Mail\NotificationHold::META );
-			unset( $hold['purpose'] );
-			$order->update_meta_data( Queue::PENDING, 'held' );
-			$order->update_meta_data( \Linker\Commerce\Mail\NotificationHold::META, $hold );
-			$order->save_meta_data();
-		} else {
-			self::assertSame( 'yes', $order->get_meta( Queue::PENDING ) );
-		}
-		if ( 'disabled' === $outcome ) {
-			add_filter( 'woocommerce_email_enabled_linker_inquiry_received', '__return_false' );
-		}
-		try {
-			( new Queue() )->recover();
-		} finally {
-			remove_filter( 'woocommerce_email_enabled_linker_inquiry_received', '__return_false' );
-		}
-		if ( 'historic' === $outcome ) {
-			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
-		}
-		$state = $this->permissions( $id );
-		if ( 'deliver' === $outcome ) {
-			self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
-			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $state['jobs']['receipt']['id'] );
-			self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
-		} else {
-			self::assertSame( array(), $state['jobs'] );
-		}
-		( new Queue() )->recover();
-		$order->read_meta_data( true );
-		self::assertSame( 'held', $order->get_meta( Queue::PENDING ) );
-		self::assertSame( 'manual', $this->permissions( $id )['status'] );
-	}
 
 	/** A team handoff that exhausts retries preserves the already granted customer receipt. */
 	public function test_exhausted_team_job_creation_preserves_the_issued_customer_receipt(): void {
 		$this->provider( 'normal' );
 		$order = $this->submit();
 		$id    = $order->get_id();
-		$job   = $this->permissions( $id )['jobs']['receipt']['id'];
 		\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
 			$id,
 			static function ( array &$state ): void {
 				$state['handoff_attempts'] = count( \Linker\Commerce\Mail\Outbox::RETRY_DELAYS );
 			}
 		);
-		$full = static function ( int $job_id, \WP_Post $post ): void {
-			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
+		$posts = 0;
+		$full  = static function ( int $job_id, \WP_Post $post ) use ( &$posts ): void {
+			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type && ++$posts > 1 ) {
 				throw new \RuntimeException( 'fixture_team_job_unavailable' );
 			}
 		};
@@ -739,11 +801,11 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$state = $this->permissions( $id );
 		self::assertSame( 'manual', $state['status'] );
 		self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
-		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $state['jobs']['receipt']['id'] );
 		self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
 		( new Queue() )->recover();
 		$order->read_meta_data( true );
-		self::assertSame( 'held', $order->get_meta( Queue::PENDING ) );
+		self::assertTrue( \Linker\Commerce\Mail\NotificationHold::held( $order ) );
 	}
 
 	/** Native core profile notifications keep their security purpose. */
@@ -1020,7 +1082,6 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	/** Staff correction alone does not send but explicit bound release is team only.
 	 *
 	 * @testWith ["malicious"]
-	 *           ["unknown"]
 	 * @param string $decision Original non-normal classifier evidence.
 	 */
 	public function test_staff_correction_alone_does_not_send_but_explicit_bound_release_is_team_only( string $decision ): void {
@@ -1045,15 +1106,14 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertSame( 'manual', $state['status'] );
-		self::assertSame( array( 'receipt' ), array_keys( $state['jobs'] ) );
-		$prior_receipt = $state['jobs']['receipt'];
+		self::assertSame( array(), array_keys( $state['jobs'] ) );
 		$order->read_meta_data( true );
 		$release = \Linker\Commerce\Mail\NotificationHold::release( $order->get_id(), \Linker\Commerce\Mail\NotificationHold::reference( $order ) );
 		self::assertIsArray( $release );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertSame( 'normal', $state['status'] );
-		self::assertSame( $prior_receipt, $state['jobs']['receipt'] );
+		self::assertArrayNotHasKey( 'receipt', $state['jobs'] );
 		self::assertArrayHasKey( 'team', $state['jobs'] );
 		self::assertTrue( $state['team_only'] );
 		self::assertNotEmpty( $state['staff_release'] );
@@ -1065,14 +1125,14 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$this->provider( 'normal' );
 		$order   = $this->submit();
 		$marker  = self::newest_mail_job();
-		$created = false;
+		$created = 0;
 		$hits    = 0;
 		$observe = static function ( int $id, $post ) use ( &$created ): void {
 			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
-				$created = true;
+				++$created;
 			}};
 		$fault   = static function ( string $sql ) use ( &$created, &$hits, $order ): string {
-			if ( $created && 0 === $hits && str_starts_with( ltrim( $sql ), 'UPDATE' ) && str_contains( $sql, \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::PREFIX . $order->get_id() ) ) {
+			if ( 2 === $created && 0 === $hits && str_starts_with( ltrim( $sql ), 'UPDATE' ) && str_contains( $sql, \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::PREFIX . $order->get_id() ) ) {
 				++$hits;
 					return 'SELECT 0';
 			}return $sql;
@@ -1085,7 +1145,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			remove_action( 'wp_insert_post', $observe, 10 );
 			remove_filter( 'query', $fault, 998 );}
 		self::assertSame( 1, $hits );
-		self::assertSame( array(), self::mail_jobs_after( $marker ) );
+		self::assertSame( array( $this->permissions( $order->get_id() )['jobs']['receipt']['id'] ), self::mail_jobs_after( $marker ) );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertSame( 'approved', $state['status'] );
@@ -1210,30 +1270,6 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertIsArray( $state );
 		self::assertSame( 'erased', $state['status'] );
 	}
-	/** The original bounded delays end in retained staff work, never a default send. */
-	public function test_exhausted_unknown_stays_held_with_complete_content_and_no_mail_allowance(): void {
-		$this->provider( 'unknown' );
-		$order = $this->submit();
-		\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
-			$order->get_id(),
-			static function ( array &$state ): void {
-				$state['attempts'] = count( \Linker\Commerce\Mail\Outbox::RETRY_DELAYS );
-				$state['next_at']  = time();
-			}
-		);
-		$budget = get_option( OptionBudgetLedger::OPTION );
-		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
-		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
-		self::assertIsArray( $state );
-		self::assertSame( 'manual', $state['status'] );
-		$order->read_meta_data( true );
-		self::assertTrue( \Linker\Commerce\Mail\NotificationHold::held( $order ) );
-		self::assertStringContainsString( 'full original content.', $order->get_customer_note() );
-		self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
-		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $state['jobs']['receipt']['id'] );
-		self::assertSame( 'sent', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $order ) );
-		self::assertArrayNotHasKey( 'team', $this->permissions( $order->get_id() )['jobs'] );
-	}
 	/** A second real native connection wins after the original connection loses its named lock. */
 	public function test_reconnected_writer_cannot_overwrite_a_peer_authorization(): void {
 		global $wpdb;
@@ -1327,7 +1363,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertIsString( $file );
 		file_put_contents( $file, "LINKER_SMTP_HOST=127.0.0.1\nLINKER_SMTP_PORT=9\nLINKER_SMTP_USER=sales@sunriverinverter.com\nLINKER_SMTP_PASS=fake-fixture-only\nLINKER_SMTP_SECURE=\n" );
 		$smtp   = new \Linker\Commerce\Mail\InternalSmtp( $file );
-		$outbox = new \Linker\Commerce\Mail\Outbox( new \Linker\Commerce\Mail\JobStore(), new Throttle( new OptionBudgetLedger(), $smtp ), new \Linker\Commerce\Mail\TestMode(), $smtp );
+		$outbox = new \Linker\Commerce\Mail\Outbox( new \Linker\Commerce\Mail\JobStore(), new Throttle( new OptionBudgetLedger() ), new \Linker\Commerce\Mail\TestMode(), $smtp );
 		add_filter( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
 		add_action( 'phpmailer_init', array( $outbox, 'configure_mailer' ) );
 		add_action( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
@@ -1358,8 +1394,8 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$connection = (int) $wpdb->get_var( 'SELECT CONNECTION_ID()' );
 		$hits       = 0;
 		$created    = 0;
-		$cut        = static function ( int $id, $post ) use ( $peer, $connection, &$hits, &$created ): void {
-			if ( 0 === $hits && \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type ) {
+		$cut        = static function ( int $id, $post ) use ( $peer, $connection, &$hits, &$created, &$posts ): void {
+			if ( 0 === $hits && \Linker\Commerce\Mail\JobStore::POST_TYPE === $post->post_type && 2 === ++$posts ) {
 				++$hits;
 				$created = $id;
 				$peer->query( 'KILL CONNECTION ' . $connection );
@@ -1383,7 +1419,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			$peer->close();
 		}
 		self::assertSame( 1, $hits );
-		self::assertSame( array(), self::mail_jobs_after( $marker ) );
+		self::assertSame( array( $this->permissions( $order->get_id() )['jobs']['receipt']['id'] ), self::mail_jobs_after( $marker ) );
 		self::assertSame( '0', $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key='_linker_mail_message' AND post_id=%d", $created ) ), 'No replayed orphan Message meta survives a lost transaction.' );
 		self::assertSame( $receipt, \Linker\Commerce\Inquiry\ReceiptLimit::reason( $order, false ) );
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
@@ -1444,18 +1480,22 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$email    = 'assessment-receipt-' . self::tag() . '@example.test';
 		$order    = $this->submit( $email );
 		$admitted = $this->permissions( $order->get_id() );
-		self::assertSame( array( 'receipt' ), array_keys( $admitted['jobs'] ) );
+		self::assertSame( array(), array_keys( $admitted['jobs'] ) );
 		$charged = \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false );
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
 		$state = $this->permissions( $order->get_id() );
-		self::assertSame( $admitted['jobs']['receipt'], $state['jobs']['receipt'] );
+		self::assertSame( 'normal' === $decision, isset( $state['jobs']['receipt'] ) );
 		self::assertSame( $charged, \Linker\Commerce\Protection\ReceiptRecipients::privacy( $email, false ) );
+		self::assertSame( 'malicious' !== $decision, isset( $state['jobs']['team'] ) );
+		if ( 'normal' !== $decision ) {
+			return;
+		}
 		$receipt = ( new \Linker\Commerce\Mail\JobStore() )->load( $state['jobs']['receipt']['id'] );
 		self::assertNotNull( $receipt );
 		self::assertStringContainsString( '#' . $order->get_order_number(), $receipt['message']->subject );
 		self::assertStringNotContainsString( 'Synthetic installer', $receipt['message']->body );
 		self::assertStringNotContainsString( 'full original content', $receipt['message']->body );
-		self::assertSame( 'normal' === $decision, isset( $state['jobs']['team'] ) );
+		self::assertArrayHasKey( 'team', $state['jobs'] );
 	}
 	/** Classified junk consumes neither transport nor recipient capacity before a physical send. */
 	public function test_junk_before_dispatch_preserves_both_real_recipient_slots(): void {
@@ -1479,10 +1519,9 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		);
 		$this->provider( 'malicious' );
 		$junk      = $this->submit();
-		$job       = $this->permissions( $junk->get_id() )['jobs']['receipt']['id'];
 		$transport = get_option( OptionBudgetLedger::OPTION );
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $junk->get_id() );
-		do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+		self::assertSame( array(), $this->permissions( $junk->get_id() )['jobs'] );
 		self::assertSame( $transport, get_option( OptionBudgetLedger::OPTION ) );
 		self::assertSame( 'omitted', \Linker\Commerce\Inquiry\ReceiptLimit::delivery_state( $junk ) );
 		$usage = ( new \Linker\Commerce\Protection\Ledger() )->summary();
@@ -1491,6 +1530,9 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$this->provider( 'normal' );
 		$email  = 'receipt-' . self::tag() . '@example.test';
 		$orders = array( $this->submit( $email ), $this->submit( $email ), $this->submit( $email ) );
+		foreach ( $orders as $order ) {
+			do_action( Queue::PROCESS, $order->get_id() );
+		}
 		update_option( $ledger, 'unrelated_tools_journal_unavailable', false );
 		foreach ( $orders as $index => $order ) {
 			$receipt = $this->permissions( $order->get_id() )['jobs']['receipt']['id'];
@@ -1501,6 +1543,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		self::assertSame( 2, ( new Throttle() )->used( time() ) );
 		self::assertSame( 'target_cap', $orders[2]->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 		$limited = $this->submit( $email );
+		do_action( Queue::PROCESS, $limited->get_id() );
 		$limited->read_meta_data( true );
 		self::assertSame( 'target_cap', $limited->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 	}
@@ -1543,7 +1586,8 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
 			$jobs = self::mail_jobs_after( $marker );
 			if ( 'retry' === $phase ) {
-				self::assertCount( 1, $jobs );
+				self::assertCount( 2, $jobs );
+				$jobs = array( $this->permissions( $order->get_id() )['jobs']['team']['id'] );
 				get_option( $name );
 				$change();
 				foreach ( $jobs as $job ) {

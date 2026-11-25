@@ -1,3 +1,4 @@
+import { genieFetch } from './restFetch';
 /**
  * "Let Linker contact me" (#243): the contact card's route
  * (includes/Genie/ContactRequest.php).
@@ -45,7 +46,7 @@ export type ContactResult =
 export async function readContact(
 	url: string,
 	nonce: string,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< ContactState | null > {
 	try {
 		const response = await fetcher( url, {
@@ -105,7 +106,7 @@ export async function sendContact(
 		locale: Locale;
 		page: PageContext;
 	},
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< ContactResult > {
 	try {
 		const response = await fetcher( url, {

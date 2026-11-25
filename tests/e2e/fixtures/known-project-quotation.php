@@ -9,7 +9,6 @@ use Linker\Commerce\Inquiry\Assessment\AuthorizationStore;
 use Linker\Commerce\Inquiry\OrderLocale;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Planning\Context;
-use Linker\Commerce\Protection\Intake;
 use Linker\Commerce\Protection\IntakeStore;
 use Linker\Commerce\Quotation\Emails\QuotationIssuedEmail;
 use Linker\Commerce\Quotation\Issuer;
@@ -29,7 +28,7 @@ $orders = wc_get_orders(
 );
 if ( 'cleanup' === $operation ) {
 	foreach ( $orders as $order ) {
-		if ( $order->get_meta( Intake::META ) ) {
+		if ( $order->get_meta( IntakeStore::META ) ) {
 			IntakeStore::forget( $order );
 		}
 		$order->delete( true );
@@ -91,6 +90,7 @@ if ( 'order' === $operation ) {
 }
 if ( 'deliver' === $operation ) {
 	if ( 'receipt' === $args[2] ) {
+		\Linker\Commerce\Tests\E2E\PublicInquiryAssessment::process( $order->get_id() );
 		$authorization = AuthorizationStore::read( $order->get_id() );
 		$job = (int) ( $authorization['jobs']['receipt']['id'] ?? 0 );
 	} else {

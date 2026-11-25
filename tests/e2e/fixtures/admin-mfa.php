@@ -210,7 +210,7 @@ use Linker\Commerce\Mail\TestMode;
 				'orders'          => array_map(
 					static fn( $order ) => array(
 						'customer_id'     => $order->get_customer_id(),
-						'held_for_review' => (bool) $order->get_meta( \Linker\Commerce\Protection\Intake::META ),
+						'held_for_review' => (bool) $order->get_meta( \Linker\Commerce\Protection\IntakeStore::META ),
 						'ledger'          => ( function () use ( $order ) {
 							$journal = json_decode( (string) get_option( \Linker\Commerce\Protection\Ledger::OPTION, '{}' ), true );
 							$id = $order->get_meta( \Linker\Commerce\Protection\BusinessRecord::REQUEST );

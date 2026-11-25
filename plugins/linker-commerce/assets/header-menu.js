@@ -3,6 +3,54 @@
 	'use strict';
 	const header = document.getElementById( 'tv-header-v2' );
 	if ( ! header ) return;
+	const cartLinks = Array.from( header.querySelectorAll( '[data-cart-count-url]' ) );
+	if ( cartLinks.length ) {
+		let read;
+		function showCount( count ) {
+			cartLinks.forEach( link => {
+				let badge = link.querySelector( '.tv-b2b-acct-count' );
+				const label = link.querySelector( '.tv-header-utility-label' )?.textContent;
+				if ( label ) link.setAttribute( 'aria-label', count ? label + ' (' + count + ')' : label );
+				if ( count === 0 ) {
+					badge?.remove();
+					return;
+				}
+				if ( ! badge ) {
+					badge = document.createElement( 'span' );
+					badge.className = 'tv-b2b-acct-count';
+					link.append( badge );
+				}
+				badge.textContent = String( count );
+			} );
+		}
+		async function syncCart( changed = false ) {
+			read?.abort();
+			if ( ! changed && ! /(?:^|;\s*)(?:woocommerce_items_in_cart|wp_woocommerce_session_[^=]+)=/.test( document.cookie ) ) {
+				showCount( 0 );
+				return;
+			}
+			const controller = new AbortController();
+			read = controller;
+			const url = new URL( cartLinks[ 0 ].dataset.cartCountUrl, document.baseURI );
+			url.searchParams.set( '_fields', 'items_count' );
+			try {
+				const response = await fetch( url, { credentials: 'same-origin', cache: 'no-store', signal: controller.signal } );
+				if ( ! response.ok ) throw new Error( String( response.status ) );
+				const { items_count: count } = await response.json();
+				if ( ! controller.signal.aborted && Number.isInteger( count ) ) showCount( count );
+			} catch ( error ) {
+				if ( ! controller.signal.aborted ) console.warn( 'Solution draft count unavailable', error );
+			}
+		}
+		syncCart();
+		window.addEventListener( 'pageshow', event => { if ( event.persisted ) syncCart(); } );
+		document.addEventListener( 'visibilitychange', () => { if ( ! document.hidden ) syncCart(); } );
+		const changed = () => syncCart( true );
+		document.addEventListener( 'wc-blocks_added_to_cart', changed );
+		document.addEventListener( 'wc-blocks_removed_from_cart', changed );
+		window.jQuery?.( document.body ).on( 'added_to_cart removed_from_cart updated_cart_totals', changed );
+	}
+
 	const items = [ ...header.querySelectorAll( '.tv-nav-item' ) ];
 	const account = header.querySelector( '.tv-b2b-acct' );
 	const toggle = header.querySelector( '#tv-mobile-toggle' );

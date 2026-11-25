@@ -75,6 +75,7 @@ from linker_genie.facts import (
 from linker_genie.failure import FailureClass
 from linker_genie.figures import chunk_of, is_code
 from linker_genie.hydrate import PLACEHOLDER, hydrate
+from linker_genie.manual_evidence import clearance_question as clearance_question
 from linker_genie.prefill import BACKUP_CHOICES
 from linker_genie.route import (
     SEARCH_LIMIT,
@@ -895,11 +896,12 @@ def _cabinet_clearance_answer(
     language: Locale,
     documents: list[str],
     page_product_id: int | None,
+    *,
+    include_pairing: bool = False,
 ) -> TurnOutput | None:
     """Render a cabinet's directional clearances from its current reviewed figure."""
     from linker_genie.figures import tag
-    from linker_genie.manual_diagram_records import DIAGRAMS
-    from linker_genie.manual_evidence import evidence_id
+    from linker_genie.manual_evidence import cabinet_clearance
     from linker_genie.source_models import codes
 
     if route.name != "documents" or not clearance_question(question):
@@ -918,16 +920,10 @@ def _cabinet_clearance_answer(
     model = models.pop()
     if any(note.code.upper() != model for note in route.named_models):
         return None
-    diagram = next(
-        row for row in DIAGRAMS if row["figure"] == "CB2 installation space requirement"
-    )
-    cid = evidence_id(
-        diagram["sha256"],
-        diagram["source_page"],
-        model,
-        diagram["source_id"],
-        diagram["excerpt"],
-    )
+    reviewed = cabinet_clearance(model)
+    if reviewed is None:
+        return None
+    cid, diagram = reviewed
     source = facts.documents.get(cid)
     text = facts.facts.get(f"{cid}.text")
     tagged = tag(cid, diagram["excerpt"])
@@ -963,6 +959,31 @@ def _cabinet_clearance_answer(
         )
     refs = dict.fromkeys([cid, *documents])
     blocks: list[Block] = [TextBlock(text=sentence, refs=[cid])]
+    if include_pairing and any(
+        call.arguments.get("with_pairings") for call in route.calls
+    ):
+        # Use the same published product's answer when the model cannot finish
+        # the second half of an installation and compatibility question.
+        pid = source.evidence.product_id
+        question_label = (
+            f"Welche Wechselrichter arbeiten mit dem {model}?"
+            if language == "de"
+            else f"Which inverters work with the {model}?"
+        )
+        for call in facts.tool_calls:
+            if call.get("name") != "linker/get-product" or not call.get("ok"):
+                continue
+            product = call.get("result") or {}
+            if product.get("product_id") != pid:
+                continue
+            for faq in product.get("faq", []):
+                if faq.get("question") == question_label and faq.get("answer"):
+                    label = "Produkt-FAQ" if language == "de" else "Product FAQ"
+                    blocks.append(
+                        TextBlock(text=f"{label}: {faq['answer']}", refs=[str(pid)])
+                    )
+                    break
+            break
     target_ref = next(
         (
             ref
@@ -1256,7 +1277,13 @@ def fallback(
         )
     if route is not None and route.name == "documents" and facts.documents:
         cabinet = _cabinet_clearance_answer(
-            facts, route, question, language, _document_refs(facts), page_product_id
+            facts,
+            route,
+            question,
+            language,
+            _document_refs(facts),
+            page_product_id,
+            include_pairing=True,
         )
         if cabinet is not None:
             return hydrate(cabinet, facts, language)
@@ -2449,13 +2476,6 @@ def _seal_attachment_figures(
     return output.model_copy(update={"blocks": blocks})
 
 
-def clearance_question(question: str) -> bool:
-    folded = question.casefold()
-    return any(
-        word in folded for word in ("clearance", "mindestabstand", "mindestabstände")
-    )
-
-
 def _usable_question(question: str) -> bool:
     folded = question.casefold()
     return "usable capacity" in folded or "nutzbare kapazität" in folded
@@ -2809,6 +2829,7 @@ def _clearance_answer(
             continue
         _, text = next(revised)
         pieces = re.split(r"(?<=[.!?;])(?=\s)|(?=\n)", text)
+        original_pieces = pieces.copy()
         for index, piece in enumerate(pieces):
             if marker not in piece:
                 continue
@@ -2816,6 +2837,21 @@ def _clearance_answer(
                 pieces[index] = re.sub(rf"{re.escape(marker)}(?:\s*mm\b)?", "—", piece)
             else:
                 pieces[index] = ""
+        for index, piece in enumerate(pieces):
+            if not piece.rstrip().endswith(":"):
+                continue
+            first = index + 1
+            while first < len(pieces) and not original_pieces[first].strip():
+                first += 1
+            end = first
+            while (
+                end < len(pieces)
+                and original_pieces[end].strip()
+                and not pieces[end].strip()
+            ):
+                end += 1
+            if end > first and (end == len(pieces) or not original_pieces[end].strip()):
+                pieces[index:first] = [""] * (first - index)
         field = "text" if isinstance(block, TextBlock) else "summary"
         sealed.append(block.model_copy(update={field: "".join(pieces).strip()}))
     return output.model_copy(update={"blocks": sealed}), retained

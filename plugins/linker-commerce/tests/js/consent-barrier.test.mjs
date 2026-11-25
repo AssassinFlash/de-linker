@@ -281,3 +281,54 @@ test('Genie yields to the first-visit banner and its prompts yield to the footer
 	visibilityChanged([{ isIntersecting: false }]);
 	assert.notEqual(window.getComputedStyle(prompts).display, 'none');
 });
+
+test('Clarity follows the analytics choice once across acceptance, return and withdrawal', async () => {
+	const window = page(held);
+	window.linkerClarityProject = 'test123';
+	const change = (accepted) => {
+		window.document.cookie = 'cookieyes-consent=analytics:' + (accepted ? 'yes' : 'no');
+		window.document.dispatchEvent(new window.CustomEvent('cookieyes_consent_update', {detail:{accepted:accepted ? ['analytics'] : []}}));
+	};
+	const tags = () => window.document.querySelectorAll('script[src*="clarity.ms"]');
+	change(false);
+	assert.equal(tags().length, 0);
+	change(true);
+	change(true);
+	assert.equal(tags().length, 1);
+	assert.equal(tags()[0].src, 'https://www.clarity.ms/tag/test123');
+	const calls = () => Array.from(window.clarity.q, args => JSON.parse(JSON.stringify(Array.from(args))));
+	assert.deepEqual(calls(), [['consentv2', {analytics_Storage:'granted', ad_Storage:'denied'}]]);
+	const beacons = [];
+	window.navigator.sendBeacon = (...args) => { beacons.push(args); return true; };
+	window.document.cookie = '_clck=record';
+	window.document.cookie = '_clsk=session';
+	change(false);
+	assert.deepEqual(calls().at(-1), ['consentv2', {analytics_Storage:'denied', ad_Storage:'denied'}]);
+	assert.doesNotMatch(window.document.cookie, /_clck|_clsk/);
+	window.navigator.sendBeacon('https://q.clarity.ms/collect', 'last batch');
+	window.navigator.sendBeacon('/wp-json/local-event', 'payload');
+	assert.deepEqual(beacons, [['/wp-json/local-event', 'payload']]);
+	const next = page(held);
+	next.linkerClarityProject = 'test123';
+	next.document.cookie = 'cookieyes-consent=analytics:yes';
+	await new Promise(done => next.document.addEventListener('DOMContentLoaded', done));
+	assert.equal(next.document.querySelectorAll('script[src*="clarity.ms"]').length, 1);
+});
+
+test('a withdrawal in another tab stops a running collector and disables Google', async () => {
+	const channels = [];
+	const window = page(held, {beforeParse(win) {
+		win.BroadcastChannel = class {
+			constructor(name) { this.name = name; channels.push(this); }
+			postMessage() { throw Error('Received withdrawal must not be rebroadcast'); }
+		};
+	}});
+	window.linkerClarityProject = 'test123';
+	window.document.cookie = 'cookieyes-consent=analytics:yes';
+	await new Promise(done => window.document.addEventListener('DOMContentLoaded', done));
+	window.document.cookie = 'cookieyes-consent=analytics:no';
+	channels[0].onmessage({data:'withdrawn'});
+	assert.equal(window['ga-disable-G-TEST201123'], true);
+	assert.equal(window.__reloads, 1);
+	assert.equal(window.clarity.q.at(-1)[1].analytics_Storage, 'denied');
+});

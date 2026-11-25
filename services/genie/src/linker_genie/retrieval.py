@@ -44,6 +44,7 @@ from linker_genie.compatibility_physical import (
 )
 from linker_genie.embedding import Embedder, query_encoder
 from linker_genie.hs3_evidence import DATA_MODELS, MANUAL_MODEL, SOURCES, hs3_anchors
+from linker_genie.manual_evidence import cabinet_clearance, clearance_question
 from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.publication_scope import (
     authorize_chunk,
@@ -569,6 +570,25 @@ class DocumentIndex:
                 if dense
                 else self.keyword_ranking(query, scope)
             )
+            if publication and permits and product_ids and clearance_question(query):
+                # A compound question can rank inverter documents above the cabinet
+                # drawing. Keep its exact, currently permitted figure with those hits.
+                figures = []
+                for pid in product_ids:
+                    canonical = publication.canonical(pid)
+                    if canonical is None:
+                        continue
+                    reviewed = cabinet_clearance(
+                        publication.products[canonical]["model"]
+                    )
+                    if reviewed is None:
+                        continue
+                    row = self._db.execute(
+                        "SELECT rowid FROM chunks WHERE id=?", (reviewed[0],)
+                    ).fetchone()
+                    if row and scope is not None and row[0] in scope:
+                        figures.append(row[0])
+                ranked = list(dict.fromkeys([*figures, *ranked]))
             hits = [
                 hit
                 for hit in self.hits(

@@ -33,6 +33,7 @@ from linker_genie.lexicon import (
     application_word,
     normalize,
 )
+from linker_genie.manual_evidence import clearance_question
 from linker_genie.nameplate import Identified
 from linker_genie.prefill import stated_size_hint
 from linker_genie.schema import PageContext
@@ -1075,7 +1076,8 @@ def _plan_turn(
             hint="The comparison is fetched; answer with a compare block.",
             reasons=tuple(reasons),
         )
-    if intent == "documents_specs":
+    asks_clearance = clearance_question(message)
+    if intent == "documents_specs" or (asks_clearance and subject.ids):
         # Known products are fetched with get-product; a code with no product
         # id is searched. Either call counts as searched. What does not fit
         # the four-call budget is searched=False — never reported absent.
@@ -1083,6 +1085,10 @@ def _plan_turn(
         doc_calls, notes = _documents_calls(
             calls, notes, message, matches, subject, lang
         )
+        if asks_clearance and pairing_question and (pairing := _pairing(subject, lang)):
+            doc_calls, notes = _limit_route_calls(
+                (doc_calls[0], pairing, *doc_calls[1:]), notes
+            )
         return Route(
             "documents",
             doc_calls,

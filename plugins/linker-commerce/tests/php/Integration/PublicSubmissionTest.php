@@ -88,7 +88,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		self::assertIsArray( $during );
 		self::assertSame( 'pending', $during['status'] );
 		self::assertSame( array(), $during['jobs'] );
-		self::fixed_receipt_job( $order );
+		self::assert_awaiting_assessment( $order );
 	}
 
 	/**
@@ -134,7 +134,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$this->assertSame( 'inquiry-received', $order->get_status() );
 		$this->assertSame( $post['message'], $order->get_customer_note() );
 		if ( 'contact' === $door ) {
-			$this->assertSame( 'sent_no_receipt', $result );
+			$this->assertSame( 'receipt_pending', $result );
 		} else {
 			$this->assertInstanceOf( WC_Order::class, $result );
 			$this->assertSame( $order->get_id(), $result->get_id() );

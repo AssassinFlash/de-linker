@@ -62,7 +62,6 @@ final class Module {
 		}
 
 		$back = add_query_arg( Form::ARTICLE_VIEW, '1', (string) get_permalink( $page ) );
-		$form = ( new Form() )->render_embedded( $back );
 		header( 'X-Robots-Tag: noindex' );
 		header( 'X-Frame-Options: SAMEORIGIN' );
 		?>
@@ -75,7 +74,7 @@ final class Module {
 		</head>
 		<body class="linker-article-contact-frame">
 			<main id="<?php echo esc_attr( Form::ANCHOR ); ?>" class="linker-article-contact-main">
-				<?php echo $form; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Form renders escaped markup. ?>
+				<?php echo ( new Form() )->render_embedded( $back ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Form renders escaped markup. ?>
 			</main>
 			<?php wp_print_footer_scripts(); ?>
 		</body>
@@ -90,6 +89,10 @@ final class Module {
 	 * Request identity does not depend on the content loop or render the form.
 	 */
 	public function enqueue_language(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Public view selector.
+		if ( '1' === ( $_GET[ Form::ARTICLE_VIEW ] ?? '' ) ) {
+			return;
+		}
 		$page = get_queried_object();
 		if ( $page instanceof \WP_Post && $this->is_contact_page( $page ) ) {
 			LanguageDraft::enqueue();

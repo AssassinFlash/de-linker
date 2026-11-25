@@ -16,7 +16,7 @@ let bareProject: { path: string; id: string } | undefined;
 test.beforeAll(() => {
 	expect(instance().url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
 	restoreProtection = applyTurnstileProfile(instanceName());
-	restoreBudgets = isolateMailBudgets();
+	restoreBudgets = isolateMailBudgets(true);
 });
 test.afterAll(() => {
 	restoreBudgets?.();
@@ -36,7 +36,7 @@ test.afterEach(async ({ page }) => {
 				throw new RuntimeException( 'A local WordPress mail sink is required.' );
 			}
 			foreach ( wc_get_orders( array( 'billing_email' => '${inquiryEmail}', 'limit' => -1 ) ) as $order ) {
-				if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+				if ( $order->get_meta( \Linker\Commerce\Protection\IntakeStore::META ) ) {
 					\Linker\Commerce\Protection\IntakeStore::forget( $order );
 				}
 				$order->delete( true );
@@ -90,6 +90,7 @@ function receiptDelivery(orderId: number): string {
 				}
 			}
 		};
+		\Linker\Commerce\Tests\E2E\PublicInquiryAssessment::process($order->get_id());
 		$state = $read();
 		$job = $state['jobs']['receipt'] ?? [];
 		if (!empty($job['id']) && empty($job['delivered_at'])) {

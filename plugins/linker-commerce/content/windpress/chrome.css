@@ -50,7 +50,7 @@ body.admin-bar header#lc-header{top:var(--lk-toolbar-offset)}
 #tv-header-v2 .tv-desktop-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto}
 @media (max-width:1279px){
 #tv-header-v2 .lnk-lang-toggle--desktop{display:none!important}
-#tv-header-v2 .tv-desktop-actions .tv-header-cart-link,
+#tv-header-v2 .tv-desktop-actions .tv-header-cart-link:not(:has(.tv-b2b-acct-count)),
 #tv-header-v2 .tv-desktop-actions .tv-b2b-acct{display:none!important}
 #tv-header-v2 .lnk-lang-toggle--mobile{box-sizing:border-box;flex:0 0 auto;width:96px;min-width:96px;padding:0 4px}
 #tv-header-v2 #tv-mobile-toggle{flex-shrink:0;position:relative;z-index:2}

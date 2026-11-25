@@ -64,10 +64,6 @@ final class Outcome {
 		'linker_contact_consent'              => array( self::REFUSED, 'invalid' ),
 		'linker_contact_selection'            => array( self::REFUSED, 'invalid' ),
 		// The bounded review store refused before it created its entry.
-		'linker_review_unavailable'           => array( self::REFUSED, 'reception_full' ),
-		'linker_intake_size'                  => array( self::REFUSED, 'review_size' ),
-		'linker_intake_full'                  => array( self::REFUSED, 'review_full' ),
-		'linker_intake_grouped'               => array( self::REFUSED, 'grouped' ),
 		// A receipt exists and its native result is reserved/dispatched/unverified,
 		// or the journal itself could not be read. Neither proves absence.
 		'linker_admission_already_reserved'   => array( self::UNCONFIRMED, 'pending' ),

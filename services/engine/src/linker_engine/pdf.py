@@ -14,8 +14,10 @@ import math
 import re
 from datetime import UTC, datetime
 from functools import cache
+from html import escape
 from pathlib import Path
 
+from PIL import Image as PillowImage
 from reportlab.graphics.shapes import Drawing, Line, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
@@ -44,6 +46,7 @@ from .models import (
     ReportSection,
     ReportSummaryCard,
 )
+from .report_logo import logo_dimensions
 from .texts import t
 
 # Print palette of the configurator's WindPress design system.
@@ -120,7 +123,7 @@ def _styles() -> dict[str, ParagraphStyle]:
 
 
 def _escape(text: str) -> str:
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return escape(text, quote=True)
 
 
 def _text(text: str) -> str:
@@ -129,7 +132,7 @@ def _text(text: str) -> str:
 
 def _linked(text: str) -> str:
     # Font spans belong only to visible text, never to a link's URI attribute.
-    parts = re.split(r"(https://de-linker\.com/\S+)", text)
+    parts = re.split(r"""(https://de-linker\.com/[^\s"'<>]+)""", text)
     return "".join(
         f'<link href="{_escape(part)}" color="{ACCENT_HEX}">{_text(part)}</link>'
         if index % 2
@@ -157,9 +160,14 @@ def logo_image(data_url: str) -> Image:
         raise LogoError("the logo must be a PNG or JPEG data URL")
     try:
         raw = base64.b64decode(match.group("data"), validate=False)
-        reader = ImageReader(io.BytesIO(raw))
-        width, height = reader.getSize()
-    except (binascii.Error, OSError, ValueError) as error:
+        with PillowImage.open(io.BytesIO(raw)) as image:
+            width, height = logo_dimensions(image)
+    except (
+        binascii.Error,
+        OSError,
+        ValueError,
+        PillowImage.DecompressionBombError,
+    ) as error:
         raise LogoError("the logo cannot be read as an image") from error
     scale = min(LOGO_MAX_HEIGHT / height, LOGO_MAX_WIDTH / width)
     return Image(io.BytesIO(raw), width=width * scale, height=height * scale)

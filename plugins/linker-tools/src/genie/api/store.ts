@@ -1,3 +1,4 @@
+import { genieFetch } from './restFetch';
 /**
  * Current product display and one server-verified, atomic solution-draft write.
  * The browser cannot turn a stale complete design into a subset of its lines.
@@ -37,7 +38,7 @@ function quantities( items: { id: number; quantity: number }[] ) {
 
 export function storeClient(
 	restUrl: string,
-	fetcher: Fetch = ( ...args ) => fetch( ...args ),
+	fetcher: Fetch = genieFetch,
 	restNonce = ''
 ): StoreClient {
 	const base = `${ restUrl }wc/store/v1`;
@@ -69,7 +70,12 @@ export function storeClient(
 				// card could not tell a pending read from a failed one (#901).
 				throw new Error( `products ${ response.status }` );
 			}
-			return response.json();
+			const products: StoreProduct[] = await response.json();
+			const text = document.createElement( 'textarea' );
+			return products.map( ( product ) => {
+				text.innerHTML = product.name.replace( /</g, '&lt;' );
+				return { ...product, name: text.value };
+			} );
 		},
 
 		async addAll( lines, onStatus, proof ) {
@@ -113,6 +119,11 @@ export function storeClient(
 				}
 				const body = await response.json();
 				const after = quantities( body.items ?? [] );
+				document.body.dispatchEvent(
+					new CustomEvent( 'wc-blocks_added_to_cart', {
+						bubbles: true,
+					} )
+				);
 				const complete = lines.every(
 					( line ) =>
 						( after.get( line.productId ) ?? 0 ) >= line.quantity

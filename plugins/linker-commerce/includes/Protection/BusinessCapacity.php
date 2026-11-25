@@ -183,7 +183,7 @@ final class BusinessCapacity {
 				$order = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $candidate->get_id() );
 				if ( ! $order instanceof WC_Order ) {
 					throw new \RuntimeException( 'business_capacity_source_unreadable' ); }
-				if ( in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'inquiry' ), true ) && ! $order->get_meta( Intake::META ) ) {
+				if ( in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'inquiry' ), true ) && ! $order->get_meta( IntakeStore::META ) ) {
 					$key                       = (string) $order->get_meta( self::KEY );
 					$key                       = '' !== $key ? $key : 'legacy-' . $order->get_id();
 					$state['business'][ $key ] = array(

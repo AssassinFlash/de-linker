@@ -1,3 +1,4 @@
+import { genieFetch } from '../api/restFetch';
 /** Native principal comparison shared by the independently built Hero and dock. */
 import type { GenieConfig } from '../config';
 
@@ -85,7 +86,7 @@ async function lookup(
 		CONTEXT_BUDGET_MS
 	);
 	try {
-		const response = await fetch(
+		const response = await genieFetch(
 			`${ config.restUrl }linker-ai/v1/genie/entry-context`,
 			{
 				method: 'POST',

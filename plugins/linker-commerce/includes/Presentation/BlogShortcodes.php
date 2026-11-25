@@ -155,14 +155,14 @@ final class BlogShortcodes {
 		$heading = esc_html__( 'What would you like to know?', 'linker-commerce' );
 		$view    = add_query_arg( Form::ARTICLE_VIEW, '1', $contact );
 		return '<dialog id="tv-blog-author-dialog" class="reader-author-dialog" aria-labelledby="tv-blog-author-dialog-title">'
-			. '<form method="dialog" class="reader-author-dialog-close"><button type="submit" aria-label="' . esc_attr__( 'Close', 'linker-commerce' ) . '" autofocus>×</button></form>'
+			. '<form method="dialog" class="reader-author-dialog-close"><button type="submit" aria-label="' . esc_attr__( 'Close', 'linker-commerce' ) . '">×</button></form>'
 			. '<div class="reader-author-dialog-profile">'
 			. '<img src="' . esc_url( $portrait ) . '" alt="" width="72" height="72" loading="lazy">'
 			. '<div><p class="reader-author-dialog-name">' . $name . '</p><p class="reader-author-dialog-role">' . esc_html( $role ) . '</p></div>'
 			. '<p class="reader-author-dialog-invite">' . esc_html__( 'Ask me a question or tell me what you’re working on.', 'linker-commerce' ) . '</p>'
 			. '</div>'
 			. '<div class="reader-author-dialog-content">'
-			. '<h2 id="tv-blog-author-dialog-title">' . $heading . '</h2>'
+			. '<h2 id="tv-blog-author-dialog-title" tabindex="-1" autofocus>' . $heading . '</h2>'
 			. '<p>' . esc_html__( 'We reply within one business day.', 'linker-commerce' ) . '</p>'
 			. '<div class="reader-author-dialog-loading" role="status">' . esc_html__( 'Loading the form…', 'linker-commerce' ) . '</div>'
 			. '<a class="reader-author-dialog-fallback" href="' . esc_url( $contact . '#' . Form::ANCHOR ) . '" hidden>' . esc_html__( 'Open the contact form', 'linker-commerce' ) . '</a>'

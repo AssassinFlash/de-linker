@@ -14,6 +14,7 @@ final class AuthorizationStore {
 	/** Native source identity.
 	 *
 	 * @param int|string $id Native source identity.
+	 * @phpstan-impure
 	 * @return array<string,mixed>|WP_Error
 	 */
 	public static function read( int|string $id ): array|WP_Error {

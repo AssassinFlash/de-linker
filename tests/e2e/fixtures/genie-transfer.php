@@ -51,8 +51,10 @@ if ( 'read' === $command ) {
 	return;
 }
 if ( 'tick' === $command ) {
+	require_once WP_PLUGIN_DIR . '/linker-commerce/tests/fixtures/LocalMailTransport.php';
+	\Linker\Commerce\Tests\Fixtures\LocalMailTransport::install();
 	foreach ( $orders as $order ) {
-		do_action( Queue::PROCESS, $order->get_id() );
+		\Linker\Commerce\Tests\E2E\PublicInquiryAssessment::process( $order->get_id() );
 		$authorization = AuthorizationStore::read( $order->get_id() );
 		foreach ( is_array( $authorization ) ? ( $authorization['jobs'] ?? array() ) : array() as $job ) {
 			if ( ! empty( $job['id'] ) ) {

@@ -22,6 +22,30 @@ namespace Linker\Commerce\Presentation;
 final class PageUrls {
 
 	/**
+	 * The "Ask about this product" contact URL, in the product page's own
+	 * language: a German page opens the German contact form, whose receipt
+	 * then speaks German (AUDIT.md H1).
+	 *
+	 * @param \WC_Product $product The product.
+	 */
+	public static function product_contact( \WC_Product $product ): string {
+		return esc_url_raw(
+			add_query_arg(
+				array(
+					'intent'     => 'product',
+					'kind'       => 'product',
+					'title'      => rawurlencode( html_entity_decode( $product->get_name(), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ),
+					'source_id'  => $product->get_id(),
+					'product_id' => $product->get_id(),
+					'source'     => $product->get_permalink(),
+				),
+				self::page( 'contact' )
+			)
+		);
+	}
+
+
+	/**
 	 * Resolve a language twin for a stored inquiry locale, or zero when absent.
 	 *
 	 * @param int    $id Canonical post id.

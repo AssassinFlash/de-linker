@@ -43,7 +43,6 @@ const contactFields = [
 	"message",
 	"consent",
 	"linker_include_project_notes",
-	"linker_individual_review",
 ];
 
 function customerFields(form: HTMLFormElement): CustomerField[] {

@@ -105,6 +105,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'woocommerce_email_order_meta', array( new AnyInstance( \Linker\Commerce\Contact\SelectionView::class ), 'email' ), 10, 4 ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)
 		WP_Mock::expectFilterAdded( 'woocommerce_privacy_remove_order_personal_data_meta', array( new AnyInstance( \Linker\Commerce\Contact\SelectionView::class ), 'erase' ) ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( $search_scope, 'scope' ) );
+		WP_Mock::expectFilterAdded( 'posts_search', array( $search_scope, 'include_models' ), 10, 2 );
 
 		// AnyInstance matches the object the registration constructs.
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( ProductFilters::class ), 'normalize_query' ), 0 ); // @phpstan-ignore argument.type
@@ -127,6 +128,7 @@ final class PluginTest extends TestCase {
 
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'read_conversion' ), 99 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'enqueue_withdrawal' ), 0 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_clarity_tracking_js', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'clarity_project' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_get_consent_type', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'opt_in' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'script_loader_tag', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'hold_google_tag' ), 30, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'googlesitekit_consent_defaults', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'deny_everywhere' ) ); // @phpstan-ignore argument.type

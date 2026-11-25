@@ -9,6 +9,17 @@
 	const loading = dialog.querySelector( '.reader-author-dialog-loading' );
 	const fallback = dialog.querySelector( '.reader-author-dialog-fallback' );
 	let frameSize;
+	let timeout;
+
+	function showFallback() {
+		clearTimeout( timeout );
+		frameSize?.disconnect();
+		loading.hidden = true;
+		frame.hidden = true;
+		fallback.hidden = false;
+	}
+
+	frame.addEventListener( 'error', showFallback );
 	trigger.setAttribute( 'aria-haspopup', 'dialog' );
 	trigger.setAttribute( 'aria-controls', dialog.id );
 
@@ -19,6 +30,7 @@
 		event.preventDefault();
 		dialog.showModal();
 		if ( ! frame.hasAttribute( 'src' ) ) {
+			timeout = setTimeout( showFallback, 10000 );
 			frame.src = frame.dataset.src;
 		}
 	} );
@@ -27,6 +39,7 @@
 		if ( ! frame.hasAttribute( 'src' ) ) {
 			return;
 		}
+		clearTimeout( timeout );
 		const content = frame.contentDocument;
 		const form = content?.querySelector( '.linker-article-contact-main' );
 		const feedback = form?.querySelector( '.linker-form-error, .linker-form-success' );

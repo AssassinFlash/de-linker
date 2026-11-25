@@ -408,9 +408,9 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
 		self::assertIsArray( $state );
 		self::assertSame( $decision, $state['verdict']['decision'] );
-		self::assertSame( 'malicious' === $decision ? 'quarantined' : 'pending', $state['status'] );
-		self::assertSame( $marker, self::fixed_receipt_job( $order ) );
-		self::assertSame( $marker, self::newest_mail_job() );
+		self::assertSame( 'malicious' === $decision ? 'quarantined' : 'normal', $state['status'] );
+		self::assertArrayNotHasKey( 'receipt', $state['jobs'] );
+		self::assertSame( 'malicious' === $decision ? array() : array( $state['jobs']['team']['id'] ), self::mail_jobs_after( $marker ) );
 		self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
 		self::assertSame( $receipts, get_option( Ledger::OPTION ) );
 		$fresh = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $order->get_id() );

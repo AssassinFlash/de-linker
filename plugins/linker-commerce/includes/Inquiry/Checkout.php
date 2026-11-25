@@ -196,7 +196,7 @@ final class Checkout {
 			return;
 		}
 		$guest       = 0 === $order->get_customer_id();
-		$individual  = 'individual' === $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) && \Linker\Commerce\Mail\NotificationHold::held( $order );
+		$individual  = 'individual' === $order->get_meta( \Linker\Commerce\Protection\IntakeStore::LANE_META ) && \Linker\Commerce\Mail\NotificationHold::held( $order );
 		$preliminary = '' !== $order->get_meta( \Linker\Commerce\Planning\Context::PROJECT_META );
 		$html        = strtr(
 			\Linker\Commerce\Presentation\Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/received.html' ),

@@ -78,7 +78,7 @@ final class ProductText {
 	 */
 	public static function title( int $product_id, string $lang, ?array $manifest = null ): string {
 		$id = self::translated_id( $product_id, $lang, $manifest );
-		return $id > 0 ? (string) get_the_title( $id ) : '';
+		return $id > 0 ? html_entity_decode( (string) get_the_title( $id ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) : '';
 	}
 
 	/**

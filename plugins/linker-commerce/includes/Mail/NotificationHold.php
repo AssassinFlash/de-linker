@@ -76,6 +76,9 @@ final class NotificationHold {
 	 * @param WC_Order $order Fresh native inquiry.
 	 */
 	public static function reference( WC_Order $order ): string {
+		if ( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::awaiting_staff_receipt( $order ) ) {
+			return \Linker\Commerce\Inquiry\Assessment\SendAuthorization::reference( $order );
+		}
 		$job = (int) ( Queue::data( $order )['notification_job'] ?? 0 );
 		return hash( 'sha256', (string) wp_json_encode( array( $order->get_id(), $job, $order->get_meta( self::META ), get_post_meta( $job, self::META, true ), $order->get_meta( Queue::PENDING ), \Linker\Commerce\Inquiry\Assessment\SendAuthorization::reference( $order ) ) ) );
 	}
@@ -111,7 +114,7 @@ final class NotificationHold {
 				if ( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::managed( $id ) ) {
 					$result = \Linker\Commerce\Inquiry\Assessment\SendAuthorization::release( $order, $reference );
 					return; }
-				if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) && 0 === (int) ( Queue::data( $order )['notification_job'] ?? 0 ) ) {
+				if ( $order->get_meta( \Linker\Commerce\Protection\IntakeStore::META ) && 0 === (int) ( Queue::data( $order )['notification_job'] ?? 0 ) ) {
 					$result = \Linker\Commerce\Protection\IntakeRelease::run( $order, $reference );
 					return;
 				}

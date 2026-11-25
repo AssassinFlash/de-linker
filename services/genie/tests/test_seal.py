@@ -28,7 +28,7 @@ from linker_genie.ground import (
     check as ground_check,
 )
 from linker_genie.language import language_failure
-from linker_genie.route import NamedModel, Route
+from linker_genie.route import Call, NamedModel, Route
 from linker_genie.schema import (
     ActionBlock,
     AskBlock,
@@ -1713,6 +1713,37 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
             assert (
                 "1500 mm on the right" if locale == "en" else "rechts 1500 mm"
             ) not in _text(product_answer)
+        lead = (
+            "Die folgenden Flächen für die Luftzirkulation:"
+            if locale == "de"
+            else "The following spaces for air circulation:"
+        )
+        model_output = TurnOutput(
+            language=locale,
+            blocks=[
+                TextBlock(
+                    text=f"### Installation\n\n{lead}\n\n- {first}\n- {side}\n\n{installation}",
+                    refs=[cid, "u4"],
+                )
+            ],
+        )
+        compound = (
+            f"Welche Mindestabstände gelten bei der Installation des SAJ {model} und mit welchen Wechselrichtern ist er kompatibel?"
+            if locale == "de"
+            else f"What installation clearances does the SAJ {model} need and which inverters are compatible?"
+        )
+        complete = seal(
+            hydrate(model_output, facts, locale),
+            facts,
+            route,
+            compound,
+            "other",
+            original=model_output,
+        )
+        compound_text = answer_text([b.model_dump() for b in complete.blocks])
+        assert all(pair in compound_text for pair in directions)
+        assert lead not in compound_text
+        assert installation in compound_text
         if locale == "de":
             plural = seal(
                 hydrated,
@@ -1752,6 +1783,29 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         assert prepared_answer(facts, route, locale, question=unknown_question) is None
         recovered = fallback(facts, locale, route, question=question)
         assert all(pair in _text(recovered) for pair in directions)
+        faq = (
+            {
+                "question": f"Welche Wechselrichter arbeiten mit dem {model}?",
+                "answer": "Das System arbeitet mit SAJ CH2.",
+            }
+            if locale == "de"
+            else {
+                "question": f"Which inverters work with the {model}?",
+                "answer": "The system works with SAJ CH2.",
+            }
+        )
+        facts.tool_calls[0]["result"]["faq"] = [faq]
+        mixed_route = Route(
+            "documents",
+            calls=(Call("linker/search-products", {"with_pairings": True}),),
+            named_models=route.named_models,
+        )
+        mixed = fallback(facts, locale, mixed_route, question=compound)
+        recovered_text = answer_text([block.model_dump() for block in mixed.blocks])
+        assert faq["answer"] in recovered_text
+        assert all(pair in recovered_text for pair in directions)
+        facts.tool_calls[0]["result"].pop("faq")
+
         assert {b.url for b in delivered.blocks if isinstance(b, DocumentBlock)} >= {
             "https://example.test/quick-guide.pdf#page=1",
             "https://example.test/user-manual.pdf#page=4",

@@ -1,3 +1,4 @@
+import { genieFetch } from './restFetch';
 /** Saving a current signed Genie product list without engineering input. */
 import type { Locale } from '../types';
 import { resourceFetch } from '../../protection/request';
@@ -26,7 +27,7 @@ export async function saveGenieSolution(
 	restNonce: string,
 	proof: string,
 	locale: Locale,
-	fetcher: typeof fetch = ( ...args ) => fetch( ...args )
+	fetcher: typeof fetch = genieFetch
 ): Promise< SavedSolution > {
 	if ( ! proof ) {
 		throw new SolutionWriteError( true );

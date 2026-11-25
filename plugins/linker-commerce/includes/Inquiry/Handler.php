@@ -263,7 +263,7 @@ final class Handler {
 		wc_load_cart();
 		$result = $this->process( $post );
 		$handle = is_string( $post[ CheckoutRetry::HANDLE ] ?? null ) ? $post[ CheckoutRetry::HANDLE ] : '';
-		if ( $result instanceof WC_Order && $result->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+		if ( $result instanceof WC_Order && $result->get_meta( \Linker\Commerce\Protection\IntakeStore::META ) ) {
 			\Linker\Commerce\Protection\IntakeAdmin::remember( $result );
 		}
 		if ( $result instanceof WC_Order ) {
@@ -272,7 +272,6 @@ final class Handler {
 			}
 			if ( ! $on_checkout ) {
 				WC()->session->set( 'linker_inquiry_fields', null );
-				WC()->session->set( 'linker_intake_grouped', null );
 				WC()->session->set( 'linker_inquiry_error', null );
 				WC()->session->set( 'linker_inquiry_error_locale', null );
 			}
@@ -283,7 +282,7 @@ final class Handler {
 				WC()->session->set_customer_session_cookie( true );
 			}
 			$fields = array();
-			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_inquiry_receipt_only', 'linker_individual_review', \Linker\Commerce\Planning\DraftRecovery::FIELD, \Linker\Commerce\Planning\Context::PRESENT_FIELD ) as $key ) {
+			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_inquiry_receipt_only', \Linker\Commerce\Planning\DraftRecovery::FIELD, \Linker\Commerce\Planning\Context::PRESENT_FIELD ) as $key ) {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
 			$fields['consent'] = '1' === ( $post['consent'] ?? '' ) ? '1' : '';
@@ -340,7 +339,6 @@ final class Handler {
 								'fields'       => $fields,
 								'error'        => $result->get_error_message(),
 								'error_locale' => $locale,
-								'grouped'      => 'linker_intake_grouped' === $result->get_error_code(),
 							),
 							$handle,
 							fresh: true
@@ -385,7 +383,6 @@ final class Handler {
 			WC()->session->set( 'linker_inquiry_fields', $blocked ? null : $fields );
 			WC()->session->set( 'linker_inquiry_error', $result->get_error_message() );
 			WC()->session->set( 'linker_inquiry_error_locale', OrderLocale::current( $language ) );
-			WC()->session->set( 'linker_intake_grouped', 'linker_intake_grouped' === $result->get_error_code() );
 			wp_safe_redirect( Checkout::request_url( OrderLocale::current( $language ) ) );
 		}
 		exit;

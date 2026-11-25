@@ -110,7 +110,7 @@ final class NotificationHoldTest extends IntegrationTestCase {
 		);
 		$this->assertCount( 1, $actions );
 		$action = reset( $actions );
-		$this->assertGreaterThanOrEqual( ( new Throttle() )->next_slot( time() ), $action->get_schedule()->get_date()->getTimestamp() );
+		$this->assertGreaterThanOrEqual( ( new Throttle() )->next_slot( time(), Throttle::SMTP, true ), $action->get_schedule()->get_date()->getTimestamp() );
 		$this->assertGreaterThan( 0, $released['event'] );
 	}
 

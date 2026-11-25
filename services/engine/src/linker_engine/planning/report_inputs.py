@@ -12,6 +12,7 @@ from typing import Annotated, Literal
 from PIL import Image
 from pydantic import Field, model_validator
 
+from ..report_logo import logo_dimensions
 from .canonical import Object, digest, encode
 from .energy_inputs import Document
 from .errors import InvalidInput
@@ -81,6 +82,7 @@ class ReportOptions(Document):
                     expected = "PNG" if match[1] == "png" else "JPEG"
                     if image.format != expected or min(image.size) <= 0:
                         raise ValueError("logo format differs from its media type")
+                    logo_dimensions(image)
                     image.verify()
         except (
             binascii.Error,

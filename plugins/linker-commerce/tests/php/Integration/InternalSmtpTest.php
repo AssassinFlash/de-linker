@@ -91,18 +91,19 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * An auth failure must deliver immediately and make the failure visible.
+	 * An authentication failure queues the original email and releases the SMTP slot.
 	 */
-	public function test_auth_failure_falls_back_and_reports_the_last_outcome(): void {
+	public function test_auth_failure_queues_an_authenticated_retry(): void {
 		$directory = $this->fixture();
 		$file      = $directory . '/smtp.env';
 		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
 		$marker = self::newest_mail_job();
 		$before = time();
-		$this->transaction_mail( 'tester@example.test', 'Auth fallback fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
-		$this->assertFileExists( $directory . '/mail.eml' );
+		$this->transaction_mail( 'tester@example.test', 'Deferred SMTP fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
-		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$jobs = self::mail_jobs_after( $marker );
+		$this->assertCount( 1, $jobs );
 		$outcome = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
 		$this->assertNotNull( $outcome );
 		$this->assertSame( 'failure', $outcome['status'] );
@@ -118,9 +119,11 @@ final class InternalSmtpTest extends IntegrationTestCase {
 			$locale_switch->back();
 		}
 		$this->assertStringNotContainsString( 'wrong-test-password', (string) wp_json_encode( $outcome ) );
-		// The terminated-job lifecycle releases the definite-failure reservation, so one
-		// fewer ledger entry survives the auth fallback than the pre-lifecycle count.
-		$this->assertCount( 1, json_decode( (string) get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'] );
+		$this->assertCount( 0, json_decode( (string) get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'] );
+		file_put_contents( $file, str_replace( 'wrong-test-password', 'fake-password', (string) file_get_contents( $file ) ) );
+		do_action( Outbox::HOOK, $jobs[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Replay the original queued attempt.
+		$this->assertStringContainsString( 'Deferred SMTP fixture', (string) file_get_contents( $directory . '/smtp.jsonl' ) );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 	}
 
 	/**
@@ -141,15 +144,15 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * A mismatched From falls back without changing the original sender.
+	 * A mismatched From stays queued for the authenticated sender.
 	 */
-	public function test_mismatched_sender_falls_back_with_a_fixed_reason(): void {
+	public function test_mismatched_sender_waits_for_smtp_with_a_fixed_reason(): void {
 		$directory = $this->fixture();
 		$marker    = self::newest_mail_job();
 		$this->transaction_mail( 'tester@example.test', 'Mismatched sender fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@de-linker.com>' ) );
-		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$this->assertCount( 1, self::mail_jobs_after( $marker ) );
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
-		$this->assertStringContainsString( 'From: Linker <sales@de-linker.com>', (string) file_get_contents( $directory . '/mail.eml' ) );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 		$last = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
 		$this->assertNotNull( $last );
 		$this->assertSame( 'identity_mismatch', $last['reason'] );
@@ -256,7 +259,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	/**
 	 * Missing configuration falls back to a file and is visible in EN and DE.
 	 */
-	public function test_missing_configuration_falls_back_and_reports_once_per_digest(): void {
+	public function test_missing_configuration_queues_and_reports_once_per_digest(): void {
 		$directory = $this->fixture();
 		unlink( $directory . '/smtp.env' );
 		foreach ( array(
@@ -266,6 +269,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 			$locale_switch = new LocaleSwitch();
 			$locale_switch->to( $locale );
 			try {
+				delete_option( \Linker\Commerce\Mail\SmtpOutcome::OPTION );
 				$block = new \Linker\Commerce\Health\InternalMail( new InternalSmtp( $directory . '/smtp.env' ) );
 				$this->assertCount( 1, $block->entries() );
 				$this->assertSame( $warning, $block->entries()[0]['label'] );
@@ -290,7 +294,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 				$locale_switch->back();
 			}
 		}
-		$this->assertFileExists( $directory . '/mail.eml' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
 		$blocks = ( new \Linker\Commerce\Digest\Blocks( new JobStore() ) )->all();
 		$this->assertCount( 1, array_filter( $blocks, static fn ( \Linker\Commerce\Digest\Block $block ): bool => 'internal_mail' === $block->id() ) );
@@ -299,7 +303,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	/**
 	 * The actual daily digest survives an SMTP authentication outage.
 	 */
-	public function test_digest_is_delivered_by_fallback_after_auth_failure(): void {
+	public function test_digest_records_authentication_failure_without_php_mail(): void {
 		$directory = $this->fixture();
 		$file      = $directory . '/smtp.env';
 		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
@@ -307,8 +311,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$email = new \Linker\Commerce\Digest\DigestEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new \Linker\Commerce\Settings\Options() );
 		$email->send_report( array( new \Linker\Commerce\Health\InternalMail( new InternalSmtp( $file ) ) ) );
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
-		$this->assertStringContainsString( 'Daily digest', (string) file_get_contents( $directory . '/mail.eml' ) );
-		$this->assertStringContainsString( 'To: tester@example.test', (string) file_get_contents( $directory . '/mail.eml' ) );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 		$last = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
 		$this->assertNotNull( $last );
 		$this->assertSame( 'failure', $last['status'] );
@@ -496,8 +499,10 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$this->assertCount( 1, $ids );
 		$job = ( new JobStore() )->load( $ids[0] );
 		$this->assertNotNull( $job );
-		$this->assertSame( 0, $job['attempts'], 'A capacity wait is not a failed transport attempt.' );
-		$this->assertNull( ( new \Linker\Commerce\Mail\SmtpOutcome() )->last() );
+		$this->assertSame( 1, $job['attempts'], 'Missing SMTP configuration counts as a failed delivery attempt.' );
+		$outcome = ( new \Linker\Commerce\Mail\SmtpOutcome() )->last();
+		$this->assertNotNull( $outcome );
+		$this->assertSame( 'failure', $outcome['status'] );
 		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
 	}
 
@@ -562,10 +567,8 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	/** Retired reminders cannot spend either transport; other critical recovery still works. */
 	public function test_existing_reminder_is_retained_without_spending_critical_capacity(): void {
 		$directory = $this->fixture();
-		$file      = $directory . '/smtp.env';
-		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
-		$now     = time();
-		$entries = array();
+		$now       = time();
+		$entries   = array();
 		foreach ( array(
 			Throttle::SMTP => 360,
 			Throttle::PHP  => 64,
@@ -600,8 +603,8 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$jobs->promote( $normal );
 		do_action( Outbox::HOOK, $normal ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Existing normal critical consumer.
 		$this->assertNull( $jobs->load( $normal ) );
-		$this->assertFileExists( $directory . '/mail.eml' );
-		$this->assertStringContainsString( 'Manual critical recovery', (string) file_get_contents( $directory . '/mail.eml' ) );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		$this->assertStringContainsString( 'Manual critical recovery', (string) file_get_contents( $directory . '/smtp.jsonl' ) );
 		as_unschedule_all_actions( Outbox::HOOK, array( $normal ), Outbox::GROUP );
 	}
 
@@ -667,7 +670,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 				return true;
 			}
 		};
-		$outbox               = new Outbox( new JobStore(), new Throttle( new \Linker\Commerce\Mail\OptionBudgetLedger(), $smtp ), new TestMode(), $smtp );
+		$outbox               = new Outbox( new JobStore(), new Throttle( new \Linker\Commerce\Mail\OptionBudgetLedger() ), new TestMode(), $smtp );
 		add_filter( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
 		add_action( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
 		add_action( 'phpmailer_init', array( $outbox, 'configure_mailer' ) );

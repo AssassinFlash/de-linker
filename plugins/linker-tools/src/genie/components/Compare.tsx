@@ -1,3 +1,4 @@
+import { genieFetch } from '../api/restFetch';
 /** The same published selection facts and product identities as the catalog comparison. */
 import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -133,7 +134,7 @@ function PublishedComparison( {
 		const controller = new AbortController();
 		async function load() {
 			try {
-				const response = await fetch( url, {
+				const response = await genieFetch( url, {
 					credentials: 'same-origin',
 					cache: 'no-store',
 					headers: { 'X-WP-Nonce': nonce },

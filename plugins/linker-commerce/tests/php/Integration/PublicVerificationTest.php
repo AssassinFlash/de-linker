@@ -66,7 +66,7 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		);
 		$this->assertSame( 0, $seen[0]['redirection'] );
 		// The provider timeout exceeds the measured 2.45–3.47 second round trip.
-		$this->assertSame( 8, $seen[0]['timeout'] );
+		$this->assertSame( 12, $seen[0]['timeout'] );
 		$this->assertStringNotContainsString( self::SECRET, (string) wp_json_encode( $this->configuration() ) );
 		$this->assertStringNotContainsString( 'synthetic-token', (string) wp_json_encode( $result ) );
 	}

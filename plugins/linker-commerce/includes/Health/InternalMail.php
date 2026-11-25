@@ -56,7 +56,7 @@ final class InternalMail implements Block {
 					'link_text' => '',
 					'detail'    => sprintf(
 						/* translators: 1: UTC timestamp, 2: fixed diagnostic category. */
-						__( 'Last attempt: %1$s UTC. Reason: %2$s. Internal notifications fall back to PHP mail().', 'linker-commerce' ),
+						__( 'Last attempt: %1$s UTC. Reason: %2$s. The outbox retries internal notifications through authenticated SMTP.', 'linker-commerce' ),
 						gmdate( 'Y-m-d H:i:s', $last['at'] ),
 						$last['reason']
 					),
@@ -71,7 +71,7 @@ final class InternalMail implements Block {
 				'label'     => __( 'Internal mail not authenticated.', 'linker-commerce' ),
 				'url'       => '',
 				'link_text' => '',
-				'detail'    => __( 'Internal notifications use PHP mail(). Check the SMTP configuration on the server.', 'linker-commerce' ),
+				'detail'    => __( 'Internal notifications are queued. Check the SMTP configuration on the server.', 'linker-commerce' ),
 			),
 		);
 	}

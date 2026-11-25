@@ -115,7 +115,6 @@ final class Form {
 			'fields'       => $fields,
 			'error'        => $error->get_error_message(),
 			'error_locale' => $locale,
-			'grouped'      => 'linker_intake_grouped' === $error->get_error_code(),
 			'unavailable'  => 'planning_preliminary_unavailable' === $error->get_error_code(),
 		);
 		if ( null !== $handle ) {

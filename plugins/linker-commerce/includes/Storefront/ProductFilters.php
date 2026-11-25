@@ -286,7 +286,7 @@ final class ProductFilters {
 			$product = wc_get_product( $product_id );
 			// The search box's rule, one implementation for the archive and
 			// the instant lookup (ProductSearch, ticket #68).
-			if ( ! $product instanceof \WC_Product || ! ProductSearch::matches( $product, ProductSearch::normalize( (string) $selected['q'] ) ) ) {
+			if ( ! $product instanceof \WC_Product || ! ProductSearch::matches( $product, (string) $selected['q'], $facts ) ) {
 				return false;
 			}
 		}

@@ -18,7 +18,6 @@ use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\NotificationHold;
 use Linker\Commerce\Protection\BusinessRecord;
-use Linker\Commerce\Protection\Intake;
 use Linker\Commerce\Protection\IntakeStore;
 use WC_Order;
 /** No model string, public flag or mail priority is a sending permission. */
@@ -115,7 +114,7 @@ final class SendAuthorization {
 				$id,
 				static function ( array &$current ) use ( $order ): void {
 					if ( 'processing' === ( $current['status'] ?? '' ) && (float) ( $current['deadline'] ?? PHP_INT_MAX ) <= microtime( true ) ) {
-						self::retry( $current, $order );
+						self::route( $current, $order, SendVerdict::unknown( 'deadline' ) );
 					}}
 			);
 			$state = AuthorizationStore::read( $id );
@@ -211,7 +210,7 @@ final class SendAuthorization {
 	 * @param WC_Order $order Native candidate.
 	 */
 	private static function settle_intake( WC_Order $order ): void {
-		if ( 'verification' !== $order->get_meta( Intake::LANE_META ) || NotificationHold::held( $order ) ) {
+		if ( 'verification' !== $order->get_meta( IntakeStore::LANE_META ) || NotificationHold::held( $order ) ) {
 			return;
 		}
 		$id = $order->get_id();
@@ -226,7 +225,7 @@ final class SendAuthorization {
 							return;
 						}
 						$order = CurrentSource::order( $id );
-						if ( ! $order instanceof WC_Order || 'verification' !== $order->get_meta( Intake::LANE_META ) || NotificationHold::held( $order ) || $order->get_meta( Reviews::ERASED ) ) {
+						if ( ! $order instanceof WC_Order || 'verification' !== $order->get_meta( IntakeStore::LANE_META ) || NotificationHold::held( $order ) || $order->get_meta( Reviews::ERASED ) ) {
 							return;
 						}
 						$queued = false;
@@ -262,117 +261,86 @@ final class SendAuthorization {
 	 * @param int $id Only one native background worker spends on a source at once.
 	 */
 	public static function process( int $id ): void {
-		$preflight = CurrentSource::order( $id );
-		if ( ! $preflight instanceof WC_Order ) {
-			return;
-		}
-		$preflight->read_meta_data( true );
-		if ( NotificationHold::held( $preflight ) && ! self::owns_hold( $preflight ) ) {
-			return;
-		}
 		if ( ! \Linker\Commerce\Mail\BudgetTransaction::begin() ) {
 			return;
 		}
 		global $wpdb;
 		$wpdb->query( 'ROLLBACK' );
-		Lock::run(
-			'send-process-' . $id,
-			static function () use ( $id ): void {
-				$input   = null;
-				$claimed = AuthorizationStore::edit(
-					$id,
-					static function ( array &$state ) use ( $id, &$input ): void {
-						$order = CurrentSource::order( $id );
-						if ( ! $order instanceof WC_Order ) {
-								return;
-						}
-						$order->read_meta_data( true );
-						if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) || 'pending' !== ( $state['status'] ?? '' ) || (int) ( $state['next_at'] ?? 0 ) > time() ) {
-							return;
-						}
-						if ( ! self::current( $order, $state ) ) {
-							$state['status'] = 'invalidated';
-							return;
-						}
-						$data     = Queue::data( $order );
-						$snapshot = $data['snapshot'] ?? null;
-						if ( ! is_array( $snapshot ) || self::hash( $snapshot ) !== ( $state['snapshot_sha256'] ?? '' ) ) {
-							$state['status'] = 'invalidated';
-							return;
-						}
-						$attempt            = (int) ( $state['attempts'] ?? 0 );
-						$deadline           = microtime( true ) + Queue::WAIT_SECONDS;
-						$state['attempts']  = $attempt + 1;
-						$state['status']    = 'processing';
-						$state['deadline']  = $deadline;
-						$state['operation'] = wp_generate_uuid4();
-						$input              = array(
-							'snapshot'  => $snapshot,
-							'deadline'  => $deadline,
-							'operation' => $state['operation'],
-							'binding'   => array(
-								'protocol'        => SendVerdict::POLICY,
-								'policy'          => SendVerdict::POLICY,
-								'record_id'       => $id,
-								'snapshot_sha256' => $state['snapshot_sha256'],
-								'purpose'         => 'inquiry_mail',
-							),
-						);
-					}
-				);
-				if ( ! $claimed || ! is_array( $input ) ) {
+		$input   = null;
+		$claimed = AuthorizationStore::edit(
+			$id,
+			static function ( array &$state ) use ( $id, &$input ): void {
+				$order = CurrentSource::order( $id );
+				if ( ! $order instanceof WC_Order ) {
+						return;
+				}
+				$order->read_meta_data( true );
+				if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) || 'pending' !== ( $state['status'] ?? '' ) || (int) ( $state['next_at'] ?? 0 ) > time() ) {
 					return;
 				}
-				// The durable attempt is claimed before I/O; a killed worker cannot reset its retry count.
-				as_schedule_single_action( (int) ceil( $input['deadline'] ), Queue::EXPIRE, array( $id ), Outbox::GROUP, true );
-				$result = ( new Client() )->assess( $input['snapshot'], $input['deadline'], $input['binding'] );
-				$saved  = AuthorizationStore::edit(
-					$id,
-					static function ( array &$state ) use ( $id, $input, $result ): void {
-						if ( 'processing' !== ( $state['status'] ?? '' ) || ( $state['operation'] ?? '' ) !== $input['operation'] ) {
-							return;
-						}
-						$order = CurrentSource::order( $id );
-						if ( ! $order instanceof WC_Order ) {
-							$state['status'] = 'invalidated';
-							return;
-						}
-						$order->read_meta_data( true );
-						if ( ! self::current( $order, $state ) || ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) ) {
-							$state['status'] = 'invalidated';
-							return;
-						}
-						$result           = microtime( true ) >= $input['deadline'] ? SendVerdict::unknown( 'deadline' ) : $result;
-						$decision         = $result['decision'] ?? 'unknown';
-						$state['verdict'] = $result;
-						self::observation( $order, $result );
-						if ( 'normal' === $decision ) {
-							if ( self::owns_hold( $order ) ) {
-								$order->delete_meta_data( NotificationHold::META );
-								$order->update_meta_data( Queue::PENDING, 'yes' );
-								$order->save_meta_data();
-							}
-							$state['status']   = 'approved';
-							$state['producer'] = 'classifier';
-							$state['next_at']  = time();
-						} elseif ( 'malicious' === $decision ) {
-							$state['status'] = 'quarantined';
-							self::hold( $order, 'content_quarantined' );
-							$order->save_meta_data();
-						} else {
-							self::retry( $state, $order );
-						}
-					},
-					true
-				);
-				if ( ! $saved ) {
-					wc_get_logger()->warning( 'Inquiry sending authorization is unavailable; native content remains pending.', array( 'source' => 'linker-inquiry-assessment' ) );
-				} else {
-					as_unschedule_all_actions( Queue::EXPIRE, array( $id ), Outbox::GROUP );
+				if ( ! self::current( $order, $state ) ) {
+					$state['status'] = 'invalidated';
+					return;
 				}
-				self::recover( $id );
+				$data     = Queue::data( $order );
+				$snapshot = $data['snapshot'] ?? null;
+				if ( ! is_array( $snapshot ) || self::hash( $snapshot ) !== ( $state['snapshot_sha256'] ?? '' ) ) {
+					$state['status'] = 'invalidated';
+					return;
+				}
+				$attempt            = (int) ( $state['attempts'] ?? 0 );
+				$deadline           = microtime( true ) + Queue::WAIT_SECONDS;
+				$state['attempts']  = $attempt + 1;
+				$state['status']    = 'processing';
+				$state['deadline']  = $deadline;
+				$state['operation'] = wp_generate_uuid4();
+				$input              = array(
+					'snapshot'  => $snapshot,
+					'deadline'  => $deadline,
+					'operation' => $state['operation'],
+					'binding'   => array(
+						'protocol'        => SendVerdict::POLICY,
+						'policy'          => SendVerdict::POLICY,
+						'record_id'       => $id,
+						'snapshot_sha256' => $state['snapshot_sha256'],
+						'purpose'         => 'inquiry_mail',
+					),
+				);
 			}
 		);
+		if ( ! $claimed || ! is_array( $input ) ) {
+			return;
+		}
+		// The durable attempt is claimed before I/O; a killed worker cannot reset its retry count.
+		as_schedule_single_action( (int) ceil( $input['deadline'] ), Queue::EXPIRE, array( $id ), Outbox::GROUP, true );
+		$result = ( new Client() )->assess( $input['snapshot'], $input['deadline'], $input['binding'] );
+		$saved  = AuthorizationStore::edit(
+			$id,
+			static function ( array &$state ) use ( $id, $input, $result ): void {
+				if ( 'processing' !== ( $state['status'] ?? '' ) || ( $state['operation'] ?? '' ) !== $input['operation'] ) {
+					return;
+				}
+				$order = CurrentSource::order( $id );
+				if ( ! $order instanceof WC_Order ) {
+					$state['status'] = 'invalidated';
+					return;
+				}
+				$order->read_meta_data( true );
+				if ( ! self::current( $order, $state ) || ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) ) {
+					$state['status'] = 'invalidated';
+					return;
+				}
+				$result = microtime( true ) >= $input['deadline'] ? SendVerdict::unknown( 'deadline' ) : $result;
+				self::route( $state, $order, $result );
+			},
+			true
+		);
+		if ( ! $saved ) {
+			wc_get_logger()->warning( 'Inquiry sending authorization is unavailable; native content remains pending.', array( 'source' => 'linker-inquiry-assessment' ) );
+		} else {
+			as_unschedule_all_actions( Queue::EXPIRE, array( $id ), Outbox::GROUP );
+		}
+		self::recover( $id );
 	}
 	/** Native job records and their permission become visible in the same owned transaction.
 	 *
@@ -426,27 +394,43 @@ final class SendAuthorization {
 			);
 		}
 	}
-	/** Durable attempt.
+	/**
+	 * Route the stored inquiry after a verdict or an expired assessment.
 	 *
-	 * @param array<string,mixed> $state Durable attempt.
-	 * @param WC_Order            $order Native record.
+	 * @param array<string,mixed> $state Locked delivery state.
+	 * @param WC_Order            $order Accepted inquiry.
+	 * @param array<string,mixed> $result Classifier response.
 	 */
-	private static function retry( array &$state, WC_Order $order ): void {
-		$delay            = Outbox::RETRY_DELAYS[ max( 0, (int) $state['attempts'] - 1 ) ] ?? null;
-		$state['status']  = null === $delay ? 'manual' : 'pending';
-		$state['next_at'] = null === $delay ? 0 : time() + $delay;
-		if ( null === $delay ) {
-			self::hold( $order, 'assessment_unresolved', 'team' );
-			$order->save_meta_data();
+	private static function route( array &$state, WC_Order $order, array $result ): void {
+		$decision         = $result['decision'];
+		$state['verdict'] = $result;
+		self::observation( $order, $result );
+		if ( 'malicious' === $decision ) {
+			$state['status'] = 'quarantined';
+			self::hold( $order, 'content_quarantined' );
+		} else {
+			if ( self::owns_hold( $order ) ) {
+				$order->delete_meta_data( NotificationHold::META );
+				$order->update_meta_data( Queue::PENDING, 'yes' );
+			}
+			if ( 'unknown' === $decision ) {
+				$state['team_only'] = true;
+				$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'jev_review' );
+			}
+			$state['status']   = 'approved';
+			$state['producer'] = 'classifier';
+			$state['next_at']  = time();
 		}
+		$order->save_meta_data();
 	}
+
 	/** Only newly prepared native verification holds belong to this pipeline.
 	 *
 	 * @param WC_Order $order Native inquiry, never an existing incident record.
 	 */
 	private static function owns_hold( WC_Order $order ): bool {
 		$hold = $order->get_meta( NotificationHold::META );
-		return SendVerdict::POLICY === $order->get_meta( self::MARKER ) && 'verification' === $order->get_meta( Intake::LANE_META ) && 'verification' === ( $order->get_meta( Intake::META )['lane'] ?? '' ) && is_array( $hold ) && 'verification_review' === ( $hold['reason'] ?? '' ) && empty( Queue::data( $order )['notification_job'] );
+		return SendVerdict::POLICY === $order->get_meta( self::MARKER ) && 'verification' === $order->get_meta( IntakeStore::LANE_META ) && 'verification' === ( $order->get_meta( IntakeStore::META )['lane'] ?? '' ) && is_array( $hold ) && 'verification_review' === ( $hold['reason'] ?? '' ) && empty( Queue::data( $order )['notification_job'] );
 	}
 	/** Source.
 	 *
@@ -537,30 +521,12 @@ final class SendAuthorization {
 		$order->save_meta_data();
 	}
 	/**
-	 * The native received transition owns the acknowledgement. Content decisions own the team notification.
+	 * Queue one customer acknowledgement after classification or staff approval.
 	 *
 	 * @param WC_Order            $order Current persisted inquiry.
 	 * @param array<string,mixed> $state Existing authorization.
 	 */
 	private static function recover_receipt( WC_Order $order, array $state ): void {
-		if ( 'manual' === ( $state['status'] ?? '' ) && 'yes' === $order->get_meta( Queue::PENDING ) && 'pending' !== ReceiptLimit::delivery_state( $order ) ) {
-			AuthorizationStore::edit(
-				$order->get_id(),
-				static function ( array &$current ) use ( $order ): void {
-					$fresh = CurrentSource::order( $order->get_id() );
-					if ( ! $fresh instanceof WC_Order ) {
-						return;
-					}
-					$hold = $fresh->get_meta( NotificationHold::META );
-					if ( 'manual' === ( $current['status'] ?? '' ) && is_array( $hold ) && 'team' === ( $hold['purpose'] ?? '' ) && 'yes' === $fresh->get_meta( Queue::PENDING ) && 'pending' !== ReceiptLimit::delivery_state( $fresh ) ) {
-						$fresh->update_meta_data( Queue::PENDING, 'held' );
-						$fresh->save_meta_data();
-					}
-				},
-				true
-			);
-			return;
-		}
 		$entry = $state['jobs']['receipt'] ?? array();
 		if ( ! empty( $entry['delivered_at'] ) || ! self::receipt_source( $order, $state ) ) {
 			return;
@@ -612,7 +578,7 @@ final class SendAuthorization {
 	}
 
 	/**
-	 * Check the accepted native destination and explicit holds independently of content scoring.
+	 * Check the accepted native destination and the receipt decision.
 	 *
 	 * @param WC_Order            $order Fresh native source.
 	 * @param array<string,mixed> $state Stored permissions.
@@ -636,15 +602,20 @@ final class SendAuthorization {
 		if ( $original_owner !== $order->get_customer_id() && ( 0 !== $original_owner || ! \Linker\Commerce\Inquiry\AccountLink::claimed_by_customer( $order ) ) ) {
 			return false;
 		}
-		$status = $state['status'] ?? '';
-		if ( 'invalidated' === $status && ( ! $receipt_due || self::hash( $snapshot ) !== ( $state['snapshot_sha256'] ?? '' ) ) ) {
-			return false;
-		}
-		if ( 'manual' === $status ) {
-			$hold = $order->get_meta( NotificationHold::META );
-			return is_array( $hold ) && ( 'team' === ( $hold['purpose'] ?? '' ) || ( ! empty( $state['jobs']['receipt']['fixed'] ) && 'assessment_unresolved' === ( $hold['reason'] ?? '' ) ) ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER );
-		}
-		return in_array( $status, array( 'pending', 'processing', 'approved', 'normal', 'invalidated' ), true ) && ( ! NotificationHold::held( $order ) || self::owns_hold( $order ) );
+		$hold     = $order->get_meta( NotificationHold::META );
+		$approved = 'normal' === ( $state['verdict']['decision'] ?? '' ) || 'receipt' === ( $state['staff_release']['purpose'] ?? '' );
+		return $approved && ( ! NotificationHold::held( $order ) || ( is_array( $hold ) && 'team' === ( $hold['purpose'] ?? '' ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) ) );
+	}
+
+	/** Is the customer acknowledgement waiting for staff on an active business record?
+	 *
+	 * @param WC_Order $order Current inquiry.
+	 */
+	public static function awaiting_staff_receipt( WC_Order $order ): bool {
+		return 'jev_review' === $order->get_meta( ReceiptLimit::SKIPPED_META )
+			&& $order->has_status( array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) )
+			&& ! $order->get_meta( Reviews::ERASED )
+			&& ! NotificationHold::held( $order );
 	}
 
 	/**
@@ -955,7 +926,7 @@ final class SendAuthorization {
 					return;
 				}
 				$state['review'] = self::review( $order );
-				if ( 'evidence' === $operation ) {
+				if ( 'evidence' === $operation || ( 'normal' === $label && 'jev_review' === $order->get_meta( ReceiptLimit::SKIPPED_META ) && ! NotificationHold::held( $order ) ) ) {
 					return;
 				}
 				if ( 'withdraw' === $operation ) {
@@ -1056,7 +1027,7 @@ final class SendAuthorization {
 		return self::owns_hold( $order ) || ( is_array( $hold ) && SendVerdict::POLICY === ( $hold['policy'] ?? '' ) && SendVerdict::POLICY === $order->get_meta( self::MARKER ) );
 	}
 
-	/** Explicit native staff release authorizes this source version and the team purpose alone.
+	/** Release the held team notification or the customer receipt selected in the Woo editor.
 	 *
 	 * @param WC_Order $order Native source selected by the capability/nonce checked controller.
 	 * @param string   $reference Version displayed in the release control.
@@ -1072,13 +1043,58 @@ final class SendAuthorization {
 			$id,
 			static function ( array &$state ) use ( $order, $reference, &$result ): void {
 				$order->read_meta_data( true );
+				if ( ! hash_equals( NotificationHold::reference( $order ), $reference ) || $order->get_meta( Reviews::ERASED ) ) {
+					return;
+				}
+				$hold          = $order->get_meta( NotificationHold::META );
+				$legacy_review = 'manual' === ( $state['status'] ?? '' ) && is_array( $hold ) && 'assessment_unresolved' === ( $hold['reason'] ?? '' );
+				if ( $legacy_review || 'jev_review' === $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
+					if ( 'unknown' !== ( $state['verdict']['decision'] ?? '' ) || SendVerdict::POLICY !== ( $state['policy'] ?? '' ) ) {
+						return;
+					}
+					if ( $legacy_review ) {
+						if ( ! $order->has_status( array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed' ) ) || ! empty( $state['jobs']['team'] ) || ! empty( Queue::data( $order )['notification_job'] ) || $order->get_meta( NotificationHold::RELEASED ) || $order->get_meta( Admin::OVERRIDE ) ) {
+							return;
+						}
+						// Staff releases the current Woo record to the current team mailbox.
+						$state['source_sha256'] = self::source( $order );
+						$state['routing']       = self::routing();
+						$state['review']        = self::review( $order );
+						$state['status']        = 'approved';
+						$state['producer']      = 'human_override';
+						$state['next_at']       = time();
+						$state['team_only']     = true;
+						$order->delete_meta_data( NotificationHold::META );
+						if ( empty( $state['jobs']['receipt']['delivered_at'] ) ) {
+							$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'jev_review' );
+						}
+					} else {
+						if ( ! self::awaiting_staff_receipt( $order ) || ! self::current( $order, $state ) || ! in_array( $state['status'] ?? '', array( 'approved', 'normal' ), true ) ) {
+							return;
+						}
+						unset( $state['team_only'] );
+						$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'assessment_pending' );
+					}
+					$result                 = array(
+						'at'        => time(),
+						'user'      => get_current_user_id(),
+						'reference' => $reference,
+						'purpose'   => $legacy_review ? 'team' : 'receipt',
+					);
+					$state['staff_release'] = $result;
+					StructuredMeta::update( $order, NotificationHold::RELEASED, $result );
+					$order->update_meta_data( Queue::PENDING, 'yes' );
+					$order->add_order_note( $legacy_review ? __( 'Notification released for delivery.', 'linker-commerce' ) : __( 'Customer receipt approved for delivery.', 'linker-commerce' ), 0, true );
+					$order->save_meta_data();
+					return;
+				}
 				$review     = Reviews::state( $order );
 				$override   = $order->get_meta( Admin::OVERRIDE );
 				$correction = (int) ( $review['event'] ?? 0 );
 				if ( ! is_array( $override ) || 'correct' !== ( $override['operation'] ?? '' ) || 'normal' !== ( $override['label'] ?? '' ) || (int) ( $override['user'] ?? 0 ) < 1 || $correction < 1 || get_comment_meta( $correction, Reviews::EVENT, true ) !== $override ) {
 					return;
 				}
-				if ( ! in_array( $state['status'] ?? '', array( 'manual', 'quarantined' ), true ) || ! self::current( $order, $state ) || $order->get_meta( Reviews::ERASED ) || ! NotificationHold::held( $order ) || ! hash_equals( NotificationHold::reference( $order ), $reference ) ) {
+				if ( ! in_array( $state['status'] ?? '', array( 'manual', 'quarantined' ), true ) || ! self::current( $order, $state ) || ! NotificationHold::held( $order ) ) {
 					return;
 				}
 				$event = array(
@@ -1106,7 +1122,7 @@ final class SendAuthorization {
 				if ( $order->get_meta( NotificationHold::META ) || $order->get_meta( NotificationHold::RELEASED ) !== $event ) {
 					throw new \RuntimeException( 'authorization_release_unconfirmed' );
 				}
-				if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+				if ( $order->get_meta( \Linker\Commerce\Protection\IntakeStore::META ) ) {
 					$released = \Linker\Commerce\Protection\IntakeStore::edit(
 						static function ( array &$registry ) use ( $order ): array {
 							$request = $order->get_meta( \Linker\Commerce\Protection\BusinessRecord::REQUEST );

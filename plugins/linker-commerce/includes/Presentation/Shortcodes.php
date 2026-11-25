@@ -87,23 +87,8 @@ final class Shortcodes {
 		$classes    = '' !== trim( (string) $attributes['class'] )
 			? trim( (string) $attributes['class'] )
 			: ( 'mobile' === $attributes['placement'] ? 'tv-header-cta tv-mobile-cta' : 'tv-header-cta' );
-		$url        = self::contact_page_url();
-		if ( function_exists( 'is_product' ) && is_product() ) {
-			$product = wc_get_product( (int) get_the_ID() );
-			if ( $product instanceof WC_Product ) {
-				$url = (string) add_query_arg(
-					array(
-						'intent'     => 'product',
-						'kind'       => 'product',
-						'title'      => rawurlencode( $product->get_name() ),
-						'source_id'  => $product->get_id(),
-						'product_id' => $product->get_id(),
-						'source'     => $product->get_permalink(),
-					),
-					$url
-				);
-			}
-		}
+		$product    = function_exists( 'is_product' ) && is_product() ? wc_get_product( (int) get_the_ID() ) : false;
+		$url        = $product instanceof WC_Product ? PageUrls::product_contact( $product ) : self::contact_page_url();
 		return '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( $url ) . '">' . esc_html( self::contact_link_label( (string) $attributes['label'], (string) $attributes['label_de'] ) ) . '</a>';
 	}
 

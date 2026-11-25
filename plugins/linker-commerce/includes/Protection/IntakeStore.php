@@ -15,6 +15,8 @@ use WP_Error;
 
 /** Native options store only bounded HMAC references; Woo owns all content. */
 final class IntakeStore {
+	public const META           = '_linker_review_intake';
+	public const LANE_META      = '_linker_review_lane';
 	public const OPTION         = 'linker_public_review_capacity';
 	private const MUTEX         = 'intake-capacity';
 	private const ROW_LOCK_BUSY = 3572;
@@ -273,11 +275,11 @@ final class IntakeStore {
 						$transaction = new \Linker\Commerce\Mail\NativeTransaction();
 						try {
 							$order->update_meta_data( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED, 'yes' );
-							$order->delete_meta_data( Intake::META );
-							$order->delete_meta_data( Intake::LANE_META );
+							$order->delete_meta_data( IntakeStore::META );
+							$order->delete_meta_data( IntakeStore::LANE_META );
 							$order->save_meta_data();
 							$order->read_meta_data( true );
-							if ( 'yes' !== $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $order->get_meta( Intake::META ) || $order->get_meta( Intake::LANE_META ) ) {
+							if ( 'yes' !== $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $order->get_meta( IntakeStore::META ) || $order->get_meta( IntakeStore::LANE_META ) ) {
 								throw new \RuntimeException( 'intake_erasure_readback_failed' );
 							}
 							foreach ( $state['entries'] as $id => $entry ) {
@@ -346,5 +348,55 @@ final class IntakeStore {
 			}
 		);
 		return $result instanceof WP_Error || is_array( $result ) ? $result : new WP_Error( 'intake_privacy_unavailable' );
+	}
+
+	/**
+	 * No PII or model labels: only actual native inquiries awaiting staff review.
+	 * Confirmed campaign samples and unsaved reservations do not create alerts.
+	 *
+	 * @phpstan-impure
+	 *
+	 * @return array{count:int,oldest:int,url:string}|WP_Error
+	 */
+	public static function pending_summary(): array|WP_Error {
+		$result = self::edit(
+			static function ( array &$state ): array {
+				$orders = array();
+				$oldest = 0;
+				foreach ( $state['entries'] as $id => $entry ) {
+					if ( ! in_array( $entry['lane'], array( 'verification', 'individual' ), true ) || ! empty( $entry['erased'] ) ) {
+						continue;
+					}
+					$order_id = (int) $entry['order'];
+					$order    = $order_id > 0 ? wc_get_order( $order_id ) : ( ! empty( $entry['fingerprint'] ) && ! empty( $entry['binding'] ) ? BusinessRecord::recover( $id, $entry['fingerprint'], $entry['binding'], array( 'outcome' => 0 ) ) : null );
+					if ( ! $order instanceof WC_Order || isset( $orders[ $order->get_id() ] ) ) {
+						continue;
+					}
+					$order->read_meta_data( true );
+					if ( ! $order->get_meta( self::META ) || ! \Linker\Commerce\Mail\NotificationHold::held( $order ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
+						continue;
+					}
+					$orders[ $order->get_id() ] = true;
+					$at                         = (int) $entry['at'];
+					$oldest                     = 0 === $oldest ? $at : min( $oldest, $at );
+				}
+				return array(
+					'count'  => count( $orders ),
+					'oldest' => $oldest,
+					'url'    => admin_url( \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ? 'admin.php?page=wc-orders&linker_intake_review=1' : 'edit.php?post_type=shop_order&linker_intake_review=1' ),
+				);
+			}
+		);
+		if ( $result instanceof WP_Error ) {
+			return $result;
+		}
+		if ( ! is_array( $result ) || ! is_int( $result['count'] ?? null ) || ! is_int( $result['oldest'] ?? null ) || ! is_string( $result['url'] ?? null ) ) {
+			return new WP_Error( 'intake_summary_unavailable' );
+		}
+		return array(
+			'count'  => $result['count'],
+			'oldest' => $result['oldest'],
+			'url'    => $result['url'],
+		);
 	}
 }

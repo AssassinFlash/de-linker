@@ -21,6 +21,15 @@ use WP_Mock;
  */
 final class BasicModeTest extends TestCase {
 
+	/** The vendor hook prints only the enabled project identifier into the cacheable page. */
+	public function test_clarity_tag_is_deferred_to_the_consent_choice(): void {
+		WP_Mock::userFunction( 'get_option' )->with( 'seopress_google_analytics_option_name', array() )->andReturn(
+			array( 'seopress_google_analytics_clarity_project_id' => 'test123' )
+		);
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( mixed $value, int $flags ): string => (string) json_encode( $value, $flags ) );
+		$this->assertSame( 'window.linkerClarityProject = "test123";', ( new BasicMode() )->clarity_project() );
+	}
+
 	/** A refused or unanswered submission never creates a measurement session. */
 	public function test_no_conversion_is_remembered_without_statistics(): void {
 		$_COOKIE['cookieyes-consent'] = 'analytics:no,advertisement:yes';

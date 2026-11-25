@@ -30,12 +30,15 @@ LOG = logging.getLogger(__name__)
 class Control:
     """Long numerical loops use checkpoints to stop after cancellation/loss."""
 
-    def __init__(self) -> None:
+    def __init__(self, progress: Callable[[], None] | None = None) -> None:
         self._lost = Event()
+        self._progress = progress
 
     def checkpoint(self) -> None:
         if self._lost.is_set():
             raise LeaseLost("execution no longer owns its publication lease")
+        if self._progress is not None:
+            self._progress()
 
     def revoke(self) -> None:
         self._lost.set()
@@ -79,6 +82,7 @@ class Worker:
         retry_seconds: float,
         routing: EvaluationRouting | None = None,
         active: Event | None = None,
+        progress: Callable[[], None] | None = None,
     ) -> None:
         if not name.strip() or not handlers:
             raise InvalidInput("worker identity and registered handlers required")
@@ -98,6 +102,7 @@ class Worker:
         self.retry_seconds = retry_seconds
         self.routing = routing
         self.active = active
+        self.progress = progress
 
     def _renew(self, lease: Lease, stop: Event, control: Control) -> None:
         while not stop.wait(self.heartbeat_seconds):
@@ -140,7 +145,7 @@ class Worker:
 
     def _execute(self, lease: Lease) -> bool:
         stop = Event()
-        control = Control()
+        control = Control(self.progress)
         heartbeat = Thread(
             target=self._renew,
             args=(lease, stop, control),

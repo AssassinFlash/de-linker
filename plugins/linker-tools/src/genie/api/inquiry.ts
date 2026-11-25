@@ -1,3 +1,4 @@
+import { genieFetch } from './restFetch';
 /**
  * The inquiry confirmation card (#250): its route
  * (includes/Genie/InquiryRequest.php).
@@ -115,7 +116,7 @@ export async function readInquiry(
 	url: string,
 	nonce: string,
 	locale: Locale,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< InquiryState | null > {
 	try {
 		const response = await fetcher(
@@ -212,7 +213,7 @@ export async function sendInquiry(
 		locale: Locale;
 		page?: PageContext;
 	},
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = genieFetch
 ): Promise< InquiryResult > {
 	try {
 		const response = await fetcher( url, {

@@ -33,9 +33,8 @@ final class Throttle {
 	 * Create the atomic budget boundary.
 	 *
 	 * @param BudgetLedger $ledger Atomic storage.
-	 * @param InternalSmtp $smtp   Transport configuration only, no connection.
 	 */
-	public function __construct( private readonly BudgetLedger $ledger = new OptionBudgetLedger(), private readonly InternalSmtp $smtp = new InternalSmtp() ) {
+	public function __construct( private readonly BudgetLedger $ledger = new OptionBudgetLedger() ) {
 	}
 
 	/**
@@ -67,7 +66,7 @@ final class Throttle {
 	 * @param Message $message Original queued message.
 	 */
 	public function transport( Message $message ): string {
-		return $message->is_internal() && $this->smtp->available() ? self::SMTP : self::PHP;
+		return $message->is_internal() ? self::SMTP : self::PHP;
 	}
 
 	/**

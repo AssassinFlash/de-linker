@@ -50,7 +50,7 @@ export const test = base.extend<{ customer: Customer }, { officialKeys: void }>(
 			{ scope: 'worker', auto: true },
 		],
 		customer: async ({ page }, use) => {
-			const restoreMailBudget = isolateMailBudgets();
+			const restoreMailBudget = isolateMailBudgets(true);
 			const email = `e2e-transfer-${randomUUID()}@example.test`;
 			const fixture = (command: string, ...args: string[]) =>
 				wp([

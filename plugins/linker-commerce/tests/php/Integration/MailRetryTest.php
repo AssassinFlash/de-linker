@@ -55,7 +55,7 @@ final class MailRetryTest extends IntegrationTestCase {
 				$order->delete( true );
 			}
 		);
-		$this->assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $marker ) );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$state = $authorization->process( $order );
 		$this->assertSame( 'normal', $state['verdict']['decision'] );
 		$job_id = $state['jobs']['team']['id'];

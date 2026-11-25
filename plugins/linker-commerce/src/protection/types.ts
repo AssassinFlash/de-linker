@@ -11,9 +11,11 @@ export interface TurnstileOptions {
 	action: FormAction;
 	language: 'en' | 'de';
 	size: 'flexible' | 'compact';
-	'refresh-expired': 'manual';
+	theme: 'light';
+	retry: 'auto';
+	'refresh-expired': 'auto';
 	callback: ( token: string ) => void;
-	'error-callback': () => boolean;
+	'error-callback': ( code: string ) => boolean;
 	'expired-callback': () => void;
 }
 

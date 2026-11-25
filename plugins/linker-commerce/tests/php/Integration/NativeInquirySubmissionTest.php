@@ -66,7 +66,7 @@ final class NativeInquirySubmissionTest extends IntegrationTestCase {
 		$fingerprint = \Linker\Commerce\Protection\Fingerprint::make( $owner, 'contact', $payload );
 		$this->assertIsString( $fingerprint );
 		$order->update_meta_data( \Linker\Commerce\Protection\BusinessRecord::INPUT, $fingerprint );
-		$order->update_meta_data( \Linker\Commerce\Protection\Intake::META, array( 'lane' => 'verification' ) );
+		$order->update_meta_data( \Linker\Commerce\Protection\IntakeStore::META, array( 'lane' => 'verification' ) );
 		$order->update_meta_data( \Linker\Commerce\Mail\NotificationHold::META, array( 'reason' => 'verification_review' ) );
 		$order->save();
 		$this->later(

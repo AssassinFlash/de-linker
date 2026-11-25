@@ -31,3 +31,6 @@ if ( realpath( dirname( __DIR__, 2 ) ) !== $linker_commerce_installed || ! in_ar
 	fwrite( STDERR, "The instance's linker-commerce must be this checkout and active; it is {$linker_commerce_installed}.\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite, WordPress.Security.EscapeOutput.OutputNotEscaped
 	exit( 1 );
 }
+
+require_once dirname( __DIR__ ) . '/fixtures/LocalMailTransport.php';
+\Linker\Commerce\Tests\Fixtures\LocalMailTransport::install();

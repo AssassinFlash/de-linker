@@ -199,31 +199,7 @@ final class SummaryEnvelopeTest extends IntegrationTestCase {
 		self::assertSame( self::project_summary(), $retry->get_meta( Sender::SUMMARY_META ) );
 		self::assertSame( 1, $calls );
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
-		self::assertSame( array( self::fixed_receipt_job( $order ) ), self::mail_jobs_after( $before ) );
-	}
-
-	/** A pre-save unknown summary outcome stays occupied, without free paid redispatch. */
-	public function test_interrupted_review_before_first_save_does_not_retry_unknown_provider_work(): void {
-		$id       = wp_generate_uuid4();
-		$fp       = hash( 'sha256', $id );
-		$identity = new \Linker\Commerce\Protection\Identity( str_repeat( 'b', 64 ), '' );
-		$calls    = 0;
-		$this->summary_filter(
-			static function () use ( &$calls ): array {
-				++$calls;
-				self::assert_capacity_mutex_free();
-				throw new \Error( 'synthetic_unknown_paid_outcome' );
-			}
-		);
-		$work = fn () => ( new Sender() )->request( $this->details() );
-		for ( $i = 0; $i < 2; ++$i ) {
-			$result = \Linker\Commerce\Protection\Intake::run( 'verification', 'inquiry', $id, $fp, $identity, array(), array( new \Linker\Commerce\Protection\Allowance( 'synthetic_review', $id, 2, HOUR_IN_SECONDS ) ), array(), array(), $work );
-			self::assertInstanceOf( \WP_Error::class, $result );
-			self::assertSame( 'linker_intake_pending', $result->get_error_code() );
-		}
-		self::assertSame( 1, $calls );
-		self::assertCount( 1, get_option( IntakeStore::OPTION )['entries'] );
-		self::assertSame( 0, get_option( IntakeStore::OPTION )['entries'][ $id ]['order'] );
+		self::assertSame( array(), self::mail_jobs_after( $before ) );
 	}
 
 	/** A separate DB observer sees no site mutex owner during upstream/transport work. */

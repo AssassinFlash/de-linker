@@ -26,6 +26,33 @@ final class SearchScope {
 	 */
 	public function register(): void {
 		add_action( 'pre_get_posts', array( $this, 'scope' ) );
+		add_filter( 'posts_search', array( $this, 'include_models' ), 10, 2 );
+	}
+
+	/**
+	 * Include catalogue SKU/model and rated-power matches in the native results.
+	 * The native language, status and publication clauses apply to both sets.
+	 *
+	 * @param string    $search Native keyword predicate starting with AND.
+	 * @param \WP_Query $query  Active query.
+	 */
+	public function include_models( string $search, \WP_Query $query ): string {
+		if ( '' === $search || is_admin() || ! $query->is_main_query() || ! $query->is_search() || ! in_array( 'product', (array) $query->get( 'post_type' ), true ) ) {
+			return $search;
+		}
+		$term = (string) $query->get( 's' );
+		if ( ! preg_match( '/[0-9]/', $term ) ) {
+			return $search;
+		}
+		global $wpdb;
+		// A power mentioned in the body (for example, a compatible device) is not the product's own rating.
+		$native = preg_match( ProductSearch::POWER_QUERY, $term ) ? $search . " AND {$wpdb->posts}.post_type <> 'product'" : $search;
+		$ids    = ( new ProductSearch() )->matching_ids( $term, null );
+		if ( array() === $ids ) {
+			return $native;
+		}
+		$matches = implode( ',', array_map( 'absint', $ids ) );
+		return " AND ((1=1 {$native}) OR ({$wpdb->posts}.ID IN ({$matches}) AND {$wpdb->posts}.post_password = '')) ";
 	}
 
 	/**

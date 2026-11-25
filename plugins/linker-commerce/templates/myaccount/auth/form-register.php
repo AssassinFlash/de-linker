@@ -141,12 +141,14 @@ $active_step     = Fields::active_step();
 						</div>
 
 						<p class="linker-auth-links linker-auth-legal">
-							<?php if ( wc_get_page_id( 'terms' ) > 0 ) : ?>
-								<a href="<?php echo esc_url( wc_get_page_permalink( 'terms' ) ); ?>"><?php esc_html_e( 'Terms of Sale', 'linker-commerce' ); ?></a>
-							<?php endif; ?>
-							<?php if ( get_privacy_policy_url() ) : ?>
-								<a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy', 'linker-commerce' ); ?></a>
-							<?php endif; ?>
+							<?php
+							printf(
+								/* translators: 1: linked sales terms, 2: linked privacy policy. */
+								esc_html__( 'By creating an account, you agree to our %1$s and acknowledge our %2$s.', 'linker-commerce' ),
+								'<a href="' . esc_url( \Linker\Commerce\Presentation\PageUrls::translated( 'terms-of-sale' ) ) . '">' . esc_html__( 'Terms of Sale', 'linker-commerce' ) . '</a>',
+								'<a href="' . esc_url( \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy' ) ) . '">' . esc_html__( 'Privacy Policy', 'linker-commerce' ) . '</a>'
+							);
+							?>
 						</p>
 						<?php
 						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-login.php.

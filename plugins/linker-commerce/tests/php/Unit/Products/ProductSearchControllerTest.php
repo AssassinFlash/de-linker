@@ -88,7 +88,8 @@ final class ProductSearchControllerTest extends TestCase {
 			array(
 				'return' => static function ( int $id ): \WC_Product {
 					$product = \Mockery::mock( \WC_Product::class );
-					$product->allows( 'get_name' )->andReturn( 'GoodWe ' . $id );
+					$product->allows( 'get_id' )->andReturn( $id );
+					$product->allows( 'get_name' )->andReturn( 'GoodWe C&amp;I ' . $id );
 					$product->allows( 'get_sku' )->andReturn( 'SKU-' . $id );
 					return $product;
 				},
@@ -109,6 +110,7 @@ final class ProductSearchControllerTest extends TestCase {
 
 		$this->assertSame( 'GoodWe', $answer['query'] );
 		$this->assertCount( 2, $answer['items'] );
+		$this->assertSame( 'GoodWe C&I 12', $answer['items'][0]['title'] );
 		$this->assertSame( 12, $answer['items'][0]['id'] );
 		$this->assertSame( 'SKU-12', $answer['items'][0]['sku'] );
 		$this->assertArrayHasKey( 'facts', $answer['items'][0] );

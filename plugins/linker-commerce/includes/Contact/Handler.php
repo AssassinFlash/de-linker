@@ -119,7 +119,7 @@ final class Handler {
 			return Outcome::contact_state( (string) $order->get_error_code() );
 		}
 		$this->last_order = $order;
-		if ( 'individual' === $order->get_meta( \Linker\Commerce\Protection\Intake::LANE_META ) ) {
+		if ( 'individual' === $order->get_meta( \Linker\Commerce\Protection\IntakeStore::LANE_META ) ) {
 			\Linker\Commerce\Protection\IntakeAdmin::remember( $order );
 			return 'saved_review';
 		}
