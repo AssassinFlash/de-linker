@@ -8,12 +8,12 @@ import os
 import sqlite3
 import time
 from collections.abc import Callable, Iterator
-from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import contextmanager
-from threading import Event
+from dataclasses import dataclass
+from threading import Condition, Thread
 from typing import Any, Literal
 
-from .work import SITE_SLOTS, Slots, WorkError, configured_slots
+from .work import Slots, WorkError, configured_slots
 
 RETENTION_SECONDS = 180
 
@@ -210,14 +210,23 @@ class Jobs:
                 )
 
 
+@dataclass
+class _Turn:
+    jobs: Jobs
+    job: str
+    subject: str
+    stage: str
+    execute: Callable[[], None]
+
+
 class TurnWorkers:
-    """A bounded set of threads services accepted requests from this API process."""
+    """One dispatcher per API process starts work only after SQLite grants a slot."""
 
     def __init__(self) -> None:
-        self.stopped = Event()
-        self.pool = ThreadPoolExecutor(
-            max_workers=SITE_SLOTS, thread_name_prefix="genie-turn"
-        )
+        self._wake = Condition()
+        self._incoming: list[_Turn] = []
+        self._dispatcher: Thread | None = None
+        self._stopped = False
 
     def submit(
         self,
@@ -227,33 +236,67 @@ class TurnWorkers:
         first_stage: str,
         execute: Callable[[], None],
     ) -> None:
-        def run() -> None:
-            try:
-                while not self.stopped.is_set():
-                    claim = jobs.claim(job, subject, first_stage)
-                    if claim == "gone":
-                        return
-                    if claim == "claimed":
-                        execute()
-                        return
-                    # Another API process or the synchronous route owns the slot.
-                    self.stopped.wait(0.6)
-                jobs.fail(job, 503, "genie_worker_stopped", "genie_worker_stopped")
-            except (OSError, sqlite3.Error):
-                logging.getLogger(__name__).exception(
-                    "could not claim queued Genie turn"
+        with self._wake:
+            if self._stopped:
+                raise RuntimeError("Genie worker stopped")
+            if self._dispatcher is None:
+                dispatcher = Thread(
+                    target=self._dispatch, name="genie-dispatch", daemon=True
                 )
-                jobs.fail(job, 503, "genie_resource_storage", "genie_resource_storage")
+                dispatcher.start()
+                self._dispatcher = dispatcher
+            self._incoming.append(_Turn(jobs, job, subject, first_stage, execute))
+            self._wake.notify()
 
-        def cancel_unstarted(future: Future[None]) -> None:
-            if future.cancelled():
-                jobs.fail(job, 503, "genie_worker_stopped", "genie_worker_stopped")
+    def _dispatch(self) -> None:
+        waiting: list[_Turn] = []
+        while True:
+            with self._wake:
+                if not self._incoming and not self._stopped:
+                    # A slot held by another process (or the synchronous API) can
+                    # become free without notifying this process.
+                    self._wake.wait(0.6 if waiting else None)
+                waiting.extend(self._incoming)
+                self._incoming.clear()
+                stopped = self._stopped
+            if stopped:
+                for turn in waiting:
+                    turn.jobs.fail(
+                        turn.job, 503, "genie_worker_stopped", "genie_worker_stopped"
+                    )
+                return
+            waiting = [turn for turn in waiting if self._still_waiting(turn)]
 
-        self.pool.submit(run).add_done_callback(cancel_unstarted)
+    def _still_waiting(self, turn: _Turn) -> bool:
+        try:
+            claim = turn.jobs.claim(turn.job, turn.subject, turn.stage)
+            if claim == "claimed":
+                Thread(
+                    target=self._run, args=(turn,), name="genie-turn", daemon=True
+                ).start()
+            return claim == "waiting"
+        except RuntimeError:
+            turn.jobs.fail(turn.job, 503, "genie_turn_failed", "genie_turn_failed")
+        except (OSError, sqlite3.Error):
+            logging.getLogger(__name__).exception("could not claim queued Genie turn")
+            turn.jobs.fail(
+                turn.job, 503, "genie_resource_storage", "genie_resource_storage"
+            )
+        return False
+
+    def _run(self, turn: _Turn) -> None:
+        try:
+            turn.execute()
+        finally:
+            with self._wake:
+                self._wake.notify()
 
     def close(self) -> None:
-        self.stopped.set()
-        self.pool.shutdown(wait=False, cancel_futures=True)
+        with self._wake:
+            self._stopped = True
+            self._wake.notify()
+        if self._dispatcher is not None:
+            self._dispatcher.join()
 
 
 async def expire_results(stop: asyncio.Event) -> None:
