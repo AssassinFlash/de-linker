@@ -275,4 +275,38 @@
 		document.fonts.ready.then( schedule );
 		fit();
 	}
+
+	// Keep page actions reachable wherever the closed assistant shares their corner.
+	function positionGenieLauncher() {
+		const launcher = document.querySelector( '.linker-genie-open' );
+		if ( ! launcher ) return;
+		const hero = document.querySelector( '#home-a .hero-cinematic' );
+		if ( hero ) {
+			new IntersectionObserver( ( [ entry ] ) => {
+				document.body.toggleAttribute( 'data-genie-hero-away', ! entry.isIntersecting );
+			} ).observe( hero );
+		}
+		const areas = document.querySelectorAll( '#linker-faq-page .linker-library-main, #tv-storefront-pdp .pdp-spec-deck, #tv-storefront-pdp .pdp-spec-list, #tv-blog-single-v1 .reader-all, #service-redesign section' );
+		if ( ! areas.length ) return;
+		let observer;
+		function observeLauncherArea() {
+			const bounds = launcher.getBoundingClientRect();
+			if ( ! bounds.width || ! bounds.height ) return;
+			observer?.disconnect();
+			const intersecting = new Set();
+			const margins = [ -bounds.top, bounds.right - document.documentElement.clientWidth, bounds.bottom - document.documentElement.clientHeight, -bounds.left ];
+			observer = new IntersectionObserver( entries => {
+				for ( const entry of entries ) {
+					if ( entry.isIntersecting ) intersecting.add( entry.target );
+					else intersecting.delete( entry.target );
+				}
+				document.body.toggleAttribute( 'data-genie-over-content', intersecting.size > 0 );
+			}, { rootMargin: margins.map( value => value + 'px' ).join( ' ' ) } );
+			areas.forEach( area => observer.observe( area ) );
+		}
+		new ResizeObserver( observeLauncherArea ).observe( launcher );
+		window.addEventListener( 'resize', observeLauncherArea, { passive: true } );
+	}
+	if ( document.readyState === 'loading' ) document.addEventListener( 'DOMContentLoaded', positionGenieLauncher, { once: true } );
+	else positionGenieLauncher();
 } )();

@@ -207,8 +207,14 @@ html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(0px,round(down,
    Hide the whole collapsed dock: hiding only its button leaves the fixed
    parent intercepting clicks. Keep its separate, possibly delayed preview
    clear too. The menu link and an already open conversation stay usable. */
-body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie:has(>.linker-genie-open[aria-expanded="false"]),
-body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie-peek{visibility:hidden;pointer-events:none}
+body:is(.product-filter-open, .cky-modal-open, [data-genie-over-content], :has(dialog[open], #tv-header-v2 .tv-mobile-navigation[open]), :has(#home-a .hero-cinematic):not([data-genie-hero-away]))
+  :is(.linker-genie:has(> .linker-genie-open[aria-expanded="false"]), .linker-genie-peek) {
+  visibility: hidden;
+  pointer-events: none;
+}
+body:has(#linker-faq-page, #tv-storefront-pdp, #tv-blog-single-v1, #service-redesign) .linker-genie-peek {
+  display: none;
+}
 @media (min-width:1280px){#tv-header-v2 .tv-mobile-navigation{display:none}}
 #tv-header-v2[data-tv-nav-folded="true"] .tv-mobile-navigation{display:block}
 @media (min-width:1280px){#tv-header-v2 #tv-mobile-toggle{display:none!important}}
