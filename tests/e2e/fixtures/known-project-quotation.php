@@ -9,7 +9,6 @@ use Linker\Commerce\Inquiry\Assessment\AuthorizationStore;
 use Linker\Commerce\Inquiry\OrderLocale;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Planning\Context;
-use Linker\Commerce\Protection\Intake;
 use Linker\Commerce\Protection\IntakeStore;
 use Linker\Commerce\Quotation\Emails\QuotationIssuedEmail;
 use Linker\Commerce\Quotation\Issuer;
@@ -29,7 +28,7 @@ $orders = wc_get_orders(
 );
 if ( 'cleanup' === $operation ) {
 	foreach ( $orders as $order ) {
-		if ( $order->get_meta( Intake::META ) ) {
+		if ( $order->get_meta( IntakeStore::META ) ) {
 			IntakeStore::forget( $order );
 		}
 		$order->delete( true );

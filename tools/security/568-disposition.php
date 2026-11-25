@@ -16,7 +16,7 @@ use Linker\Commerce\Protection\BusinessDisposition;
 use Linker\Commerce\Protection\Campaign;
 use Linker\Commerce\Inquiry\Assessment\CurrentSource;
 use Linker\Commerce\Inquiry\Assessment\Reviews;
-use Linker\Commerce\Protection\Intake;
+use Linker\Commerce\Protection\IntakeStore;
 
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI || ! current_user_can( 'manage_woocommerce' ) ) {
 	throw new RuntimeException( 'Staff WP-CLI context required.' );
@@ -40,7 +40,7 @@ $linker_commerce_disposition_seen = array();
 foreach ( $linker_commerce_disposition_manifest['entries'] as $linker_commerce_disposition_entry ) {
 	$linker_commerce_disposition_id    = is_array( $linker_commerce_disposition_entry ) ? ( $linker_commerce_disposition_entry['order'] ?? 0 ) : 0;
 	$linker_commerce_disposition_order = is_int( $linker_commerce_disposition_id ) ? CurrentSource::order( $linker_commerce_disposition_id ) : null;
-	if ( ! $linker_commerce_disposition_order instanceof WC_Order || BusinessDisposition::EXCLUDED_CONTROL === $linker_commerce_disposition_id || isset( $linker_commerce_disposition_seen[ $linker_commerce_disposition_id ] ) || ! is_string( $linker_commerce_disposition_entry['message_sha256'] ?? null ) || ! hash_equals( $linker_commerce_disposition_entry['message_sha256'], hash( 'sha256', BusinessDisposition::body( $linker_commerce_disposition_order ) ) ) || ! hash_equals( $linker_commerce_disposition_entry['customer_note_sha256'], hash( 'sha256', $linker_commerce_disposition_order->get_customer_note() ) ) || $linker_commerce_disposition_entry['source'] !== $linker_commerce_disposition_order->get_meta( '_linker_inquiry_source' ) || ! $linker_commerce_disposition_order->has_status( $linker_commerce_disposition_entry['status'] ) || $linker_commerce_disposition_order->get_meta( Intake::META ) || $linker_commerce_disposition_order->get_meta( Reviews::ERASED ) || ! Campaign::matches( BusinessDisposition::body( $linker_commerce_disposition_order ) ) ) {
+	if ( ! $linker_commerce_disposition_order instanceof WC_Order || BusinessDisposition::EXCLUDED_CONTROL === $linker_commerce_disposition_id || isset( $linker_commerce_disposition_seen[ $linker_commerce_disposition_id ] ) || ! is_string( $linker_commerce_disposition_entry['message_sha256'] ?? null ) || ! hash_equals( $linker_commerce_disposition_entry['message_sha256'], hash( 'sha256', BusinessDisposition::body( $linker_commerce_disposition_order ) ) ) || ! hash_equals( $linker_commerce_disposition_entry['customer_note_sha256'], hash( 'sha256', $linker_commerce_disposition_order->get_customer_note() ) ) || $linker_commerce_disposition_entry['source'] !== $linker_commerce_disposition_order->get_meta( '_linker_inquiry_source' ) || ! $linker_commerce_disposition_order->has_status( $linker_commerce_disposition_entry['status'] ) || $linker_commerce_disposition_order->get_meta( IntakeStore::META ) || $linker_commerce_disposition_order->get_meta( Reviews::ERASED ) || ! Campaign::matches( BusinessDisposition::body( $linker_commerce_disposition_order ) ) ) {
 		WP_CLI::error( 'Preflight source changed; no batch writes were attempted.' );
 	}
 	$linker_commerce_disposition_seen[ $linker_commerce_disposition_id ] = true;
