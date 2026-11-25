@@ -8544,3 +8544,11 @@ def test_old_comparison_reads_its_frozen_rating_without_replacing_the_selected_p
         owned_run_view(workspace, owner, replace(run, result=report))["result"]
         == report
     )
+    retained: Object = {
+        "kind": "search_woo_equipment_v1",
+        "retained_inverter": {"existing_system": {}},
+    }
+    assert (
+        owned_run_view(workspace, owner, replace(run, result=retained))["result"]
+        == retained
+    )

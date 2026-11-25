@@ -44,8 +44,11 @@ def owned_run_view(workspace: Workspace, actor: Actor, run: Run) -> Object:
     panels = project_panels(project.inputs)
     view = display_document(run_view(run), panels)
     result = view.get("result")
-    if isinstance(result, dict) and result.get("kind") == "search_woo_equipment_v1":
-        search = cast(Object, result["search"])
+    if (
+        isinstance(result, dict)
+        and result.get("kind") == "search_woo_equipment_v1"
+        and isinstance(search := result.get("search"), dict)
+    ):
         candidates = cast(list[Object], search["candidates"])
         if any("nominal_ac_kw" not in row for row in candidates):
             expanded: list[Json] = []
