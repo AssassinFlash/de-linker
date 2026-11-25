@@ -50,6 +50,8 @@ export function createWidgets( config: WidgetConfig ): Widgets {
 	): () => void {
 		let id: string | undefined;
 		let disposed = false;
+		let retrying = false;
+		let sizeObserver: ResizeObserver | undefined;
 		const slot = document.createElement( 'div' );
 		const status = document.createElement( 'p' );
 		status.setAttribute( 'role', 'status' );
@@ -72,6 +74,7 @@ export function createWidgets( config: WidgetConfig ): Widgets {
 			return true;
 		}
 		function reset() {
+			retrying = false;
 			onToken?.( '' );
 			feedback( '' );
 			retry.hidden = true;
@@ -81,10 +84,30 @@ export function createWidgets( config: WidgetConfig ): Widgets {
 				void render();
 			}
 		}
+		function registrationHidden(): boolean {
+			return (
+				action === 'registration' &&
+				( container.clientWidth === 0 ||
+					container.closest( 'form' )?.dataset.activeStep === '1' )
+			);
+		}
+		function whenVisible() {
+			sizeObserver = new ResizeObserver( () => {
+				if ( ! registrationHidden() ) {
+					sizeObserver?.disconnect();
+					void render();
+				}
+			} );
+			sizeObserver.observe( container );
+		}
 		async function render() {
 			try {
 				const api = await load();
 				if ( disposed ) {
+					return;
+				}
+				if ( registrationHidden() ) {
+					whenVisible();
 					return;
 				}
 				id = api.render( slot, {
@@ -93,14 +116,30 @@ export function createWidgets( config: WidgetConfig ): Widgets {
 					language: config.language,
 					// Flexible widgets require 300 CSS pixels; narrow mobile forms use compact.
 					size: container.clientWidth >= 300 ? 'flexible' : 'compact',
-					'refresh-expired': 'manual',
+					theme: 'light',
+					retry: 'auto',
+					'refresh-expired': 'auto',
 					callback: ( token ) => {
+						retrying = false;
+						delete container.dataset.turnstileError;
 						feedback( '' );
 						retry.hidden = true;
 						onToken?.( token );
 					},
-					'expired-callback': reset,
-					'error-callback': failed,
+					'expired-callback': () => onToken?.( '' ),
+					'error-callback': ( code ) => {
+						container.dataset.turnstileError = code;
+						// Cloudflare retries network errors, timeouts and challenge failures.
+						const temporary =
+							/^(?:300|600)/.test( code ) ||
+							[ '200500', '110600', '110620' ].includes( code );
+						if ( temporary && ! retrying ) {
+							retrying = true;
+							onToken?.( '' );
+							return true;
+						}
+						return failed();
+					},
 				} );
 			} catch {
 				if ( ! disposed ) {
@@ -110,9 +149,14 @@ export function createWidgets( config: WidgetConfig ): Widgets {
 		}
 		retry.onclick = reset;
 		retries.set( container, reset );
-		void render();
+		if ( registrationHidden() ) {
+			whenVisible();
+		} else {
+			void render();
+		}
 		return () => {
 			disposed = true;
+			sizeObserver?.disconnect();
 			retries.delete( container );
 			if ( id !== undefined ) {
 				window.turnstile?.remove( id );
@@ -179,21 +223,7 @@ export function connectForms( root: ParentNode, widgets: Widgets ): void {
 					} );
 				}
 			} );
-		if (
-			marker.getClientRects().length === 0 &&
-			'IntersectionObserver' in window
-		) {
-			// The registration widget lives in the final pane of the native form.
-			const observer = new IntersectionObserver( ( entries ) => {
-				if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
-					observer.disconnect();
-					start();
-				}
-			} );
-			observer.observe( marker );
-		} else {
-			start();
-		}
+		start();
 		form.addEventListener(
 			'submit',
 			( event ) => {
@@ -215,7 +245,7 @@ export function connectForms( root: ParentNode, widgets: Widgets ): void {
 				if ( status && status.hidden ) {
 					status.hidden = false;
 					status.textContent = __(
-						'No request has been sent in this attempt. Please complete the verification.',
+						'Verifying, please wait…',
 						'linker-commerce'
 					);
 				}

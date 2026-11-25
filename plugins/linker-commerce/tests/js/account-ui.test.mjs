@@ -453,9 +453,14 @@ test('a complete company step opens the sign-in step and enables its controls',(
 
 test('back returns to the company step and disables the sign-in controls again',()=>{
  const {form,field}=registerForm();
+ const widget=form.ownerDocument.createElement('div');
+ widget.dataset.linkerTurnstile='registration';
+ widget.innerHTML='<button type="button">Try again</button>';
+ form.querySelector('[data-pane="2"]').append(widget);
  completeCompany(form);
  form.querySelector('[data-next]').click();
  form.querySelector('[data-back]').click();
+ assert.equal(widget.querySelector('button').disabled,false);
  assert.equal(form.dataset.activeStep,'1');
  assert.equal(field('email').disabled,true);
  assert.equal(form.querySelector('[data-back]').hidden,true);

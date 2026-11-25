@@ -41,6 +41,7 @@ final class BasicMode {
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'read_conversion' ), 99 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_withdrawal' ), 0 );
+		add_filter( 'seopress_clarity_tracking_js', array( $this, 'clarity_project' ) );
 		add_filter( 'wp_get_consent_type', array( $this, 'opt_in' ) );
 		add_filter( 'script_loader_tag', array( $this, 'hold_google_tag' ), 30, 2 );
 		add_filter( 'googlesitekit_consent_defaults', array( $this, 'deny_everywhere' ) );
@@ -110,6 +111,13 @@ final class BasicMode {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Comparing an exact CMP category; no request text is stored or printed.
 		$choice = isset( $_COOKIE['cookieyes-consent'] ) && is_string( $_COOKIE['cookieyes-consent'] ) ? wp_unslash( $_COOKIE['cookieyes-consent'] ) : '';
 		return in_array( 'analytics:yes', explode( ',', $choice ), true );
+	}
+
+	/** Supply SEOPress's enabled project to the consent bridge without starting its tracker. */
+	public function clarity_project(): string {
+		$options = get_option( 'seopress_google_analytics_option_name', array() );
+		$id      = $options['seopress_google_analytics_clarity_project_id'] ?? '';
+		return 'window.linkerClarityProject = ' . wp_json_encode( $id, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ) . ';';
 	}
 
 	/** Enqueues before Site Kit's consent-update listener. */

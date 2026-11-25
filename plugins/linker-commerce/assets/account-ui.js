@@ -521,7 +521,9 @@
 					segment.classList.toggle( 'is-on', number <= step );
 				}
 				for ( const control of controls( panes[ number ] ) ) {
-					control.disabled = 2 === number && 1 === step;
+					if ( ! control.closest( '[data-linker-turnstile]' ) ) {
+						control.disabled = 2 === number && 1 === step;
+					}
 				}
 			}
 			if ( next ) {

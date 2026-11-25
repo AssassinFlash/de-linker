@@ -17,7 +17,7 @@ final class Turnstile {
 	private const ENDPOINT    = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 	private const TOKEN_LIMIT = 2048;
 	// The measured provider round trip from this deployment is 2.45–3.47 seconds.
-	private const TIMEOUT = 8;
+	private const TIMEOUT = 12;
 
 	/**
 	 * The WordPress HTTP API remains the single production transport.

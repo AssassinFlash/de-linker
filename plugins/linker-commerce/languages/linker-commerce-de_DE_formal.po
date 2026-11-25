@@ -7832,3 +7832,15 @@ msgstr "Menge für %s erhöhen"
 #: includes/Inquiry/Form.php
 msgid "Work email"
 msgstr "Geschäftliche E-Mail-Adresse"
+
+#: build/protection.js:1
+msgid "Verifying, please wait…"
+msgstr "Prüfung läuft, bitte warten …"
+
+#. translators: 1: linked sales terms, 2: linked privacy policy.
+#, php-format
+msgid "By creating an account, you agree to our %1$s and acknowledge our %2$s."
+msgstr "Mit der Erstellung eines Kontos stimmen Sie unseren %1$s zu und nehmen unsere %2$s zur Kenntnis."
+
+msgid "Privacy Policy"
+msgstr "Datenschutzerklärung"

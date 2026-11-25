@@ -779,7 +779,7 @@
 .linker-auth .linker-auth-links a { color: var(--proto-teal-700); font-weight: 600; }
 .linker-auth .linker-auth-links a:hover { color: var(--proto-teal-800); }
 
-.linker-auth-links.linker-auth-legal { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 4px 20px; margin: 4px 0 16px; font-size: 13.5px; color: var(--acct-muted); }
+.linker-auth-links.linker-auth-legal { display: block; margin: 4px 0 16px; font-size: 13.5px; color: var(--acct-muted); }
 
 .linker-auth .linker-auth-submit { margin: 0; }
 
