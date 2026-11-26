@@ -352,11 +352,15 @@ final class Shortcodes {
 	 * @param array<string,string>|string $attributes Shortcode attributes.
 	 */
 	public static function form_assistant( $attributes = array() ): string {
-		return sprintf(
+		$genie = sprintf(
 			'<a class="linker-form-assistant" href="%s" data-linker-genie-open aria-controls="linker-genie-mount" aria-expanded="false">%s</a>',
 			esc_url( PageUrls::page( 'genie' ) ),
 			esc_html__( 'Ask Genie', 'linker-commerce' )
-		) . ( '1' === ( $attributes['whatsapp'] ?? '' ) ? ' · ' . ContactChannels::link() : '' );
+		);
+		if ( '1' !== ( $attributes['whatsapp'] ?? '' ) ) {
+			return $genie;
+		}
+		return '<span class="linker-form-helpers">' . $genie . '<span aria-hidden="true">·</span>' . ContactChannels::link() . '</span>';
 	}
 
 	/**

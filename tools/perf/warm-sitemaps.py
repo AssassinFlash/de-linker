@@ -74,16 +74,14 @@ def main() -> None:
     failed: list[str] = []
     for url, result in zip(urls, second, strict=True):
         route = urlsplit(url).path
-        if route in DYNAMIC:
+        if route in DYNAMIC or route == RETIRED:
             ok = (
                 result["status"] == 200
-                and result["url"] == url
+                and result["url"] == (site + "/cart/" if route == RETIRED else url)
                 and result["cache"] != "hit"
                 and "no-cache" in str(result["server_policy"])
                 and "no-cache" in str(result["browser_policy"])
             )
-        elif route == RETIRED:
-            ok = result["status"] == 404 and "no-store" in str(result["browser_policy"])
         else:
             ok = (
                 result["status"] == 200

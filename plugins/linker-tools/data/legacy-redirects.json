@@ -331,6 +331,7 @@
 		"target": "/proforma-request/"
 	},
 	"retired_tools": {
+		"/solution-draft/": "/cart/",
 		"/loesungskonfigurator/": "/de/loesungskonfigurator/",
 		"/design-canvas/": "/solution-configurator/?step=roof",
 		"/de/design-canvas/": "/de/loesungskonfigurator/?step=roof",
