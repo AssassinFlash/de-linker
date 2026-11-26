@@ -51,6 +51,48 @@ final class RevisionTest extends TestCase {
 		$this->assertTrue( Publication::allows_document( $file ) );
 	}
 
+	/** Legacy downloads from multiple published products share one attachment batch per fresh access check. */
+	public function test_legacy_attachment_posts_and_meta_are_primed_before_url_resolution(): void {
+		$url  = 'https://de-linker.com/wp-content/uploads/2026/manual.pdf';
+		$file = DocumentFiles::resolve( $url );
+		$this->assertIsArray( $file );
+		$this->current_faq_meta['_linker_documents_managed']           = '';
+		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ] = array();
+		$this->current_faq_meta['_tv_legacy_acf_json']                 = array( 'downloads' => array( array( 'download_file' => 301 ) ) );
+		$this->current_faq_meta['_linker_de_acf_json']                 = '{"downloads":[{"download_file":"301"}]}';
+
+		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 12, 13 ) );
+		WP_Mock::userFunction( 'get_post_type' )->with( 13 )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturn( 'publish' );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 13, \Mockery::type( 'string' ), true )->andReturnUsing(
+			static fn( int $id, string $key ) => '_linker_de_acf_json' === $key ? array( 'downloads' => array( array( 'download_file' => 302 ) ) ) : ''
+		);
+		$primed  = false;
+		$visible = '1';
+		WP_Mock::userFunction( '_prime_post_caches' )->twice()->with( array( 301, 302 ), false, true )->andReturnUsing(
+			static function () use ( &$primed ): void {
+				$primed = true;
+			}
+		);
+		WP_Mock::userFunction( 'wp_get_attachment_url' )->andReturnUsing(
+			static function ( int $id ) use ( &$primed, $url ): string {
+				self::assertTrue( $primed, 'All attachment posts and meta must be ready before the first native URL lookup.' );
+				return 301 === $id ? $url : 'https://de-linker.com/wp-content/uploads/2026/second.pdf';
+			}
+		);
+		WP_Mock::userFunction( 'attachment_url_to_postid' )->with( $url )->andReturn( 301 );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 301, '_linker_document_public', true )->andReturnUsing(
+			static function () use ( &$visible ): string {
+				return $visible;
+			}
+		);
+		$access = new DocumentAccess();
+		$this->assertSame( 200, $access->response( $file, 'HEAD' )['status'] );
+		$primed  = false;
+		$visible = '0';
+		$this->assertSame( 410, $access->response( $file, 'HEAD' )['status'] );
+	}
+
 	/** Remove only this unit fixture's generated file. */
 	public function tearDown(): void {
 		$this->remove_managed_documents();
