@@ -32,6 +32,7 @@ final class ModuleTest extends TestCase {
 	 * Statuses, stock, gateway, request page, admin labels and emails are hooked; stock is never reduced.
 	 */
 	public function test_register_adds_the_hooks(): void {
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( \Linker\Commerce\Inquiry\OrderAttribution::class, 'hydrate_planner' ), 30 );
 		// @phpstan-ignore argument.type (WP_Mock callback matcher)
 		WP_Mock::expectFilterAdded( 'linker_commerce_planning_inquiry_form', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Planning\Module::class ), 'inquiry_form' ), 10, 4 );
 		// @phpstan-ignore argument.type (WP_Mock callback matcher)

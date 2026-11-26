@@ -44,6 +44,7 @@ final class Module {
 	public function register(): void {
 		( new \Linker\Commerce\Planning\Module() )->register();
 		( new Assessment\Queue() )->register();
+		OrderAttribution::register();
 		$form = new Form();
 		$form->register();
 		( new AccountLink() )->register();

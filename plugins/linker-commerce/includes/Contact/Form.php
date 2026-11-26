@@ -147,6 +147,7 @@ final class Form {
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $embedded ? $back : $this->current_url() ) . '" />';
 		// Selection transport is submitted only by the inclusion checkbox.
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
+		$html .= '<wc-order-attribution-inputs></wc-order-attribution-inputs>';
 		$html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_url( $this->posted_referer() ) . '" />';
 		$html .= \Linker\Commerce\Inquiry\PublicGuard::fields();
 
