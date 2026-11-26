@@ -23,6 +23,7 @@ use Linker\Commerce\Presentation\WindPress;
 use Linker\Commerce\Presentation\WindPressPageStyles;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
+use Linker\Commerce\Storefront\SocialCards;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 use WP_Mock\Matcher\AnyInstance;
@@ -181,6 +182,15 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.after', WindPressPageStyles::class, 'after_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.before', WindPressPageStyles::class, 'before_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.after', WindPressPageStyles::class, 'after_cache' );
+		$cards = new AnyInstance( SocialCards::class );
+		foreach ( array(
+			'seopress_social_twitter_card_summary' => 'summary',
+			'seopress_social_og_thumb'             => 'open_graph',
+			'seopress_social_twitter_card_thumb'   => 'twitter_image',
+		) as $hook => $method ) {
+			// @phpstan-ignore argument.type (WP_Mock matches array callbacks with AnyInstance.)
+			WP_Mock::expectFilterAdded( $hook, array( $cards, $method ), 10, 'summary' === $method ? 0 : 1 );
+		}
 		$module->register();
 		self::assertSame( array_fill_keys( array_column( $family_hooks, 1 ), 1 ), $registered );
 

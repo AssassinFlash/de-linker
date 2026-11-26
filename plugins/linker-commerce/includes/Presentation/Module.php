@@ -12,6 +12,7 @@ namespace Linker\Commerce\Presentation;
 use Linker\Commerce\Account\AuthTemplates;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
+use Linker\Commerce\Storefront\SocialCards;
 
 /**
  * Shortcodes, the catalogue shortcodes, the empty Proforma-request gate, the
@@ -51,6 +52,7 @@ final class Module {
 		( new AccountLinks() )->register();
 		LegalNavigation::register();
 		( new SupplyBrands() )->register();
+		( new SocialCards() )->register();
 			( $this->products ?? new ProductShortcodes( new ProductFilters(), new ProductView() ) )->register();
 		$this->gate->register();
 		$this->windpress->register();

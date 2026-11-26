@@ -71,6 +71,7 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'seopress_social_og_desc', GermanTitles::class, 'shop_social_description', 40, 1 ),
 		array( 'filter', 'seopress_social_twitter_card_desc', GermanTitles::class, 'shop_social_description', 40, 1 ),
 		array( 'filter', 'seopress_titles_canonical', GermanTitles::class, 'canonical', 40, 1 ),
+		array( 'filter', 'seopress_social_og_thumb', GermanTitles::class, 'social_image_alt', 30, 1 ),
 		array( 'filter', 'seopress_social_og_url', GermanTitles::class, 'canonical', 40, 1 ),
 		array( 'filter', 'seopress_titles_canonical_on_noindex', GermanTitles::class, 'category_canonical', 10, 1 ),
 		array( 'action', 'wp', GermanRoutes::class, 'pagination', 10, 1 ),
