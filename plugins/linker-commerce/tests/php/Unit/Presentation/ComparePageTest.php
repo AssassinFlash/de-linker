@@ -365,7 +365,8 @@ final class ComparePageTest extends TestCase {
 					),
 				),
 			);
-			$html                    = ( new ComparePage( $this->comparison() ) )->table();
+			\Linker\Commerce\Products\Materials::reset_cache();
+			$html = ( new ComparePage( $this->comparison() ) )->table();
 			foreach ( $case['rows'] as $label => $value ) {
 				self::assertSame( 1, preg_match( '/<tr[^>]*><th[^>]*>' . preg_quote( $label, '/' ) . '<\/th>(.*?)<\/tr>/s', $html, $row ) );
 				preg_match_all( '/<td[^>]*>(.*?)<\/td>/s', $row[1] ?? '', $cells );

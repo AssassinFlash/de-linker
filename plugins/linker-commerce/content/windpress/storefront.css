@@ -587,6 +587,7 @@
 #linker-products .sf-card-variant,
 #linker-products .card-product-picker__list button,
 #linker-products .card-product-picker__list a {
+	text-decoration: none;
 	display: block;
 	width: 100%;
 	text-align: left;

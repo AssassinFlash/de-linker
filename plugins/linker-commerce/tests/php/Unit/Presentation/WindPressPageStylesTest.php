@@ -95,7 +95,8 @@ final class WindPressPageStylesTest extends TestCase {
 
 			'product category'         => array( 'is_product_taxonomy', '', '', array( 'products-mounts.css', 'products.css', 'storefront.css' ), array() ),
 			'translated FAQ'           => array( '', '', '<div id="linker-faq-page">', array( 'faq.css' ), array() ),
-			'product detail'           => array( 'product', '', '', array( 'pdp.css', 'storefront.css' ), array() ),
+			'product detail'           => array( 'product', '', '', array( 'pdp.css', 'model-links.css', 'storefront.css' ), array() ),
+			'solution product links'   => array( '', '[linker_solution_products scope="utility"]', '', array( 'model-links.css' ), array() ),
 			'native search'            => array( 'is_search', '', '', array( 'blog-search.css' ), array( 'journal.css' ) ),
 			'account endpoint'         => array( 'is_account_page', '', '', array( 'account.css', 'auth.css', 'storefront.css' ), array() ),
 			'planner inside post'      => array( 'post', '[linker_planner]', '', array( 'blog.css', 'contact-invitation.css' ), array( 'planner-maplibre.css', 'planner.css', 'planner-equipment.css', 'planner-report.css', 'planner-site-energy.css', 'roof-studio.css' ) ),

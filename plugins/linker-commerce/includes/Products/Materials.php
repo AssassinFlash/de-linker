@@ -24,6 +24,71 @@ use WC_Product;
 final class Materials {
 
 	/**
+	 * Source IDs of translated models.
+	 *
+	 * @var array<int,int>
+	 */
+	private static array $sources = array();
+
+	/**
+	 * Localized legacy fields by model.
+	 *
+	 * @var array<string,array<string,mixed>>
+	 */
+	private static array $acf = array();
+
+	/**
+	 * Localized product identities.
+	 *
+	 * @var array<string,array{brand:string,model:string,kind:string,material_id:string}>
+	 */
+	private static array $identities = array();
+
+	/**
+	 * Localized specifications by model.
+	 *
+	 * @var array<string,array<string,array{label:string,value:string,card:string,localised:bool}>>
+	 */
+	private static array $specifications = array();
+
+	/**
+	 * Displayed card rows by model, language and limit.
+	 *
+	 * @var array<string,list<array{key:string,label:string,value:string}>>
+	 */
+	private static array $card_rows = array();
+
+	/**
+	 * German values by model.
+	 *
+	 * @var array<int,array<string,string>>
+	 */
+	private static array $value_maps = array();
+
+	/**
+	 * Version of the product data read during this request.
+	 *
+	 * @var int
+	 */
+	private static int $revision = 0;
+
+	/** Product writes invalidate both source and translated display fields. */
+	public static function reset_cache(): void {
+		self::$sources        = array();
+		self::$acf            = array();
+		self::$identities     = array();
+		self::$specifications = array();
+		self::$value_maps     = array();
+		self::$card_rows      = array();
+		++self::$revision;
+	}
+
+	/** Identifies the current read for assembled cards and archives. */
+	public static function cache_revision(): int {
+		return self::$revision;
+	}
+
+	/**
 	 * The registry, decoded once per request.
 	 *
 	 * @var array<string, mixed>|null
@@ -210,7 +275,11 @@ final class Materials {
 	 * @return array{brand: string, model: string, kind: string, material_id: string}
 	 */
 	public static function identity( WC_Product $product ): array {
-		$id       = (int) $product->get_id();
+		$id  = (int) $product->get_id();
+		$key = self::locale() . ':' . $id;
+		if ( isset( self::$identities[ $key ] ) ) {
+			return self::$identities[ $key ];
+		}
 		$material = self::material_for_product( $id );
 		$identity = \is_array( $material ) && \is_array( $material['identity'] ?? null ) ? $material['identity'] : array();
 		$brand    = (string) ( $identity['manufacturer'] ?? '' );
@@ -245,12 +314,13 @@ final class Materials {
 				$brand = (string) $term->name;
 			}
 		}
-		return array(
+		self::$identities[ $key ] = array(
 			'brand'       => $brand,
 			'model'       => $model,
 			'kind'        => $kind,
 			'material_id' => \is_array( $material ) ? (string) ( $material['material_id'] ?? '' ) : '',
 		);
+		return self::$identities[ $key ];
 	}
 
 	/**
@@ -406,6 +476,10 @@ final class Materials {
 	 * @return array<string, array{label: string, value: string, card: string, localised: bool}>
 	 */
 	public static function specs( WC_Product $product ): array {
+		$cache_key = self::locale() . ':' . $product->get_id();
+		if ( isset( self::$specifications[ $cache_key ] ) ) {
+			return self::$specifications[ $cache_key ];
+		}
 		$facts = self::facts( $product );
 		$keys  = self::fact_keys();
 		$de    = self::is_de();
@@ -456,7 +530,8 @@ final class Materials {
 				'localised' => $text['german'],
 			);
 		}
-		return $out;
+		self::$specifications[ $cache_key ] = $out;
+		return self::$specifications[ $cache_key ];
 	}
 
 	/**
@@ -540,21 +615,20 @@ final class Materials {
 		if ( '' === $value ) {
 			return $value;
 		}
-		static $maps = array();
-		$id          = (int) $product->get_id();
-		if ( ! isset( $maps[ $id ] ) ) {
-			$maps[ $id ] = array();
+		$id = (int) $product->get_id();
+		if ( ! isset( self::$value_maps[ $id ] ) ) {
+			self::$value_maps[ $id ] = array();
 			foreach ( self::facts( $product ) as $fact ) {
 				$english = \trim( (string) ( $fact['value'] ?? '' ) );
 				$german  = \trim( (string) ( $fact['value_de'] ?? '' ) );
 				if ( '' !== $english && '' !== $german && \preg_match( '/\p{L}/u', $english ) ) {
-					$maps[ $id ][ $english ] = $german;
+					self::$value_maps[ $id ][ $english ] = $german;
 				}
 			}
 		}
 		$key = \trim( $value );
-		if ( isset( $maps[ $id ][ $key ] ) ) {
-			return $maps[ $id ][ $key ];
+		if ( isset( self::$value_maps[ $id ][ $key ] ) ) {
+			return self::$value_maps[ $id ][ $key ];
 		}
 		return $value;
 	}
@@ -829,8 +903,8 @@ final class Materials {
 	 * @param string $unit The unit.
 	 */
 	public static function key_label( string $key, string $unit = '' ): string {
-		$base_unit = self::unit_split( $unit )[0];
-		$labels    = array(
+		unset( $unit );
+		$label = match ( $key ) {
 			'ac_power'                        => __( 'Rated AC power', 'linker-commerce' ),
 			'ac_apparent_power'               => __( 'Nominal apparent power', 'linker-commerce' ),
 			'ac_apparent_power_max'           => __( 'Max. apparent power', 'linker-commerce' ),
@@ -899,9 +973,10 @@ final class Materials {
 			'backup_nominal_apparent_power'   => __( 'Backup apparent power', 'linker-commerce' ),
 			'backup_nominal_output_frequency' => __( 'Backup output frequency', 'linker-commerce' ),
 			'nominal_apparent_power_output_to_utility_grid' => __( 'Nominal apparent power to grid', 'linker-commerce' ),
-		);
-		if ( isset( $labels[ $key ] ) ) {
-			return $labels[ $key ];
+			default => null,
+		};
+		if ( null !== $label ) {
+			return $label;
 		}
 		$pretty = \str_replace( '_', ' ', $key );
 		return \mb_strtoupper( \mb_substr( $pretty, 0, 1 ) ) . \mb_substr( $pretty, 1 );
@@ -915,16 +990,21 @@ final class Materials {
 	 * @param int $product_id The product ID.
 	 */
 	public static function source_product_id( int $product_id ): int {
+		if ( isset( self::$sources[ $product_id ] ) ) {
+			return self::$sources[ $product_id ];
+		}
 		if ( \function_exists( 'pll_get_post' ) && \function_exists( 'pll_get_post_language' ) ) {
 			$language = pll_get_post_language( $product_id );
 			if ( 'en' !== $language ) {
 				$source = pll_get_post( $product_id, 'en' );
 				if ( $source > 0 ) {
-					return $source;
+					self::$sources[ $product_id ] = $source;
+					return self::$sources[ $product_id ];
 				}
 			}
 		}
-		return $product_id;
+		self::$sources[ $product_id ] = $product_id;
+		return self::$sources[ $product_id ];
 	}
 
 	/**
@@ -936,16 +1016,32 @@ final class Materials {
 	 * @return array<string, mixed>
 	 */
 	public static function acf( int $product_id ): array {
-		if ( self::is_de() ) {
-			$decoded = self::decode( \get_post_meta( $product_id, '_linker_de_acf_json', true ) );
-			if ( array() !== $decoded ) {
-				return self::terms_in( $decoded );
-			}
-			$source  = self::source_product_id( $product_id );
-			$decoded = self::decode( \get_post_meta( $source, '_linker_de_acf_json', true ) );
-			return self::terms_in( $decoded );
+		if ( ! self::is_de() ) {
+			return self::english_acf( $product_id );
 		}
-		return self::decode( \get_post_meta( $product_id, '_tv_legacy_acf_json', true ) );
+		$key = 'de:' . $product_id;
+		if ( ! isset( self::$acf[ $key ] ) ) {
+			$data = self::decode( \get_post_meta( $product_id, '_linker_de_acf_json', true ) );
+			if ( array() === $data ) {
+				$source = self::source_product_id( $product_id );
+				if ( $source !== $product_id ) {
+					self::$acf[ $key ] = self::acf( $source );
+					return self::$acf[ $key ];
+				}
+			}
+			self::$acf[ $key ] = self::terms_in( $data );
+		}
+		return self::$acf[ $key ];
+	}
+
+	/**
+	 * Source model lists stay English in every storefront language.
+	 *
+	 * @param int $id Product that holds the English legacy fields.
+	 * @return array<string,mixed>
+	 */
+	public static function english_acf( int $id ): array {
+		return self::$acf[ 'en:' . $id ] ??= self::decode( \get_post_meta( $id, '_tv_legacy_acf_json', true ) );
 	}
 
 	/**
@@ -1558,6 +1654,10 @@ final class Materials {
 	 * @return list<array{key: string, label: string, value: string}>
 	 */
 	public static function card_facts( WC_Product $product, int $limit = 4 ): array {
+		$cache_key = self::locale() . ':' . $product->get_id() . ':' . $limit;
+		if ( isset( self::$card_rows[ $cache_key ] ) ) {
+			return self::$card_rows[ $cache_key ];
+		}
 		// The figures live on the English record (#9): a German product's card
 		// states the same values as its English twin because it reads them
 		// through the same swap the selection facts use (i18n's
@@ -1613,7 +1713,8 @@ final class Materials {
 				break;
 			}
 		}
-		return $out;
+		self::$card_rows[ $cache_key ] = $out;
+		return self::$card_rows[ $cache_key ];
 	}
 
 	/**

@@ -41,6 +41,8 @@ final class PreparationJobs {
 
 	/** Hooks register a durable reconciliation, never heavy parsing during save. */
 	public function changed(): void {
+		\Linker\Commerce\Products\Materials::reset_cache();
+		\Linker\Commerce\Products\SelectionFacts::reset_cache();
 		update_option( 'linker_publication_pending', true, false );
 		if ( function_exists( 'as_enqueue_async_action' ) && ! as_has_scheduled_action( 'linker_publication_reconcile', array(), 'linker-publication' ) ) {
 			as_enqueue_async_action( 'linker_publication_reconcile', array(), 'linker-publication', true );

@@ -30,6 +30,13 @@ use Linker\Commerce\Storefront\ProductView;
 final class Plugin {
 
 	/**
+	 * Shared by the main query and the archive shortcodes.
+	 *
+	 * @var ProductFilters
+	 */
+	private readonly ProductFilters $filters;
+
+	/**
 	 * Sets up the plugin.
 	 *
 	 * @param string                      $file            Absolute path of the main plugin file.
@@ -56,7 +63,9 @@ final class Plugin {
 		private readonly FaqsMetaBox $faqs,
 		private readonly DocumentsMetaBox $documents,
 		private readonly ?Account\SavedSolutions $solutions = null
-	) {}
+	) {
+		$this->filters = new ProductFilters();
+	}
 
 	/**
 	 * Adds the plugin's hooks.
@@ -83,8 +92,7 @@ final class Plugin {
 
 		add_action( 'plugins_loaded', array( $this, 'stand_down_legacy_template_preemption' ) );
 
-		$filters = new ProductFilters();
-		$filters->register();
+		$this->filters->register();
 		$this->search_scope->register();
 		$this->contact->register();
 		( new Storefront\PageIndexing() )->register();
@@ -187,7 +195,7 @@ final class Plugin {
 			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), $checkout, new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
 			new Quotation\Module( $this->file, new Quotation\AdminBox( $issuer ), $issuer ),
 			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $quotations, $solutions ), new Planning\LegacyRoutes() ),
-			new Presentation\Module( new Presentation\Shortcodes(), $gate, new Presentation\WindPress(), account: new Presentation\AccountTemplates( $documents ) ),
+			new Presentation\Module( new Presentation\Shortcodes(), $gate, new Presentation\WindPress(), new Presentation\ProductShortcodes( $this->filters, new ProductView( $state ) ), account: new Presentation\AccountTemplates( $documents ) ),
 			new Stock\Module( new Stock\StockController(), new Stock\BatchLog(), new Stock\Retention( $this->file ) ),
 			new Genie\Module( $this->file, $options ),
 		);

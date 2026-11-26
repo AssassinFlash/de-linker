@@ -116,6 +116,7 @@ final class InitialBindingsTest extends TestCase {
 
 	/** A normal final Woo save captures unchanged source fields before its final queue signal. */
 	public function test_final_woo_save_initializes_canonical_evidence_then_queues_preparation(): void {
+		WP_Mock::expectAction( 'litespeed_purge', 'PT.product' );
 		$raw    = $this->source_fields();
 		$file   = DocumentFiles::resolve( $raw['documents'][0]['url'] );
 		$queued = false;

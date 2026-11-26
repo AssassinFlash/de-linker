@@ -307,9 +307,9 @@ final class RedirectsTest extends TestCase {
 	public function test_the_maps_load_with_the_ticket_counts(): void {
 		$maps = Redirects::maps();
 		$this->assertNotNull( $maps );
-		$this->assertCount( 261, $maps['products'] );
+		$this->assertCount( 305, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 19, $maps['retired_tools'] );
+		$this->assertCount( 20, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
 	}
@@ -324,6 +324,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		foreach ( array( 'products', 'categories' ) as $table ) {
 			foreach ( $maps[ $table ] as $from => $to ) {
+				$this->assertStringNotContainsString( '?application=', $to );
 				$this->assertSame( $from, strtolower( $from ) );
 				$this->assertStringNotContainsString( '/', $from );
 				$this->assertStringStartsWith( '/', $to );
@@ -331,6 +332,7 @@ final class RedirectsTest extends TestCase {
 		}
 		foreach ( array( 'pages', 'retired_tools' ) as $table ) {
 			foreach ( $maps[ $table ] as $from => $to ) {
+				$this->assertStringNotContainsString( '?application=', $to );
 				$this->assertStringStartsWith( '/', $from );
 				$this->assertStringStartsWith( '/', $to );
 			}
@@ -430,6 +432,45 @@ final class RedirectsTest extends TestCase {
 		$this->assertSame(
 			self::HOME . '/product-category/home-storage/',
 			( new Redirects() )->target( '/product/pylontech-force-h2-system-7-1/' )
+		);
+	}
+
+	/**
+	 * Product bookmarks land on the same category as its translated alias.
+	 *
+	 * @dataProvider retired_models
+	 * @param string $slug Retired product slug.
+	 * @param string $category Source category slug.
+	 * @param string $german German category slug.
+	 */
+	public function test_retired_models_reach_the_localized_category( string $slug, string $category, string $german ): void {
+		$this->wordpress();
+		$this->shelf( 11, $category );
+		$this->product              = $slug;
+		$this->default_language     = 'en';
+		$this->languages            = array( 'en', 'de' );
+		$this->term_twins[11]['de'] = 12;
+		$this->links[12]            = self::HOME . '/de/produkt-kategorie/' . $german . '/';
+		$routes                     = new Redirects();
+		$this->assertSame( $this->links[11], $routes->target( '/product/' . $slug . '/' ) );
+		$this->current_language = 'de';
+		$this->assertSame( $this->links[12], $routes->target( '/de/produkt/' . $slug . '/' ) );
+	}
+
+	/**
+	 * Known battery, inverter and accessory bookmarks in each spelling.
+	 *
+	 * @return array<int,array{string,string,string}>
+	 */
+	public static function retired_models(): array {
+		return array(
+			array( 'ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2', 'home-storage', 'heimspeicher' ),
+			array( 'ecoflow-ocean-2-batterie-8-0-kwh-ef-bd-8-s2', 'home-storage', 'heimspeicher' ),
+			array( 'ecoflow-ef-bd-5-1-s1', 'home-storage', 'heimspeicher' ),
+			array( 'ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship', 'inverters', 'wechselrichter' ),
+			array( 'ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell', 'inverters', 'wechselrichter' ),
+			array( 'ecoflow-ef-bd-jc-s1', 'accessories', 'zubehoer' ),
+			array( 'saj-ch3-125k-t8', 'inverters', 'wechselrichter' ),
 		);
 	}
 
@@ -902,6 +943,7 @@ final class RedirectsTest extends TestCase {
 	public function test_solution_draft_redirects_to_cart(): void {
 		$this->wordpress();
 		$this->assertSame( self::HOME . '/cart/', ( new Redirects() )->target( '/solution-draft/' ) );
+		$this->assertSame( self::HOME . '/de/loesungsentwurf/', ( new Redirects() )->target( '/de/solution-draft/' ) );
 	}
 
 	/** Document, support and account shortcuts point directly to their public language routes. */

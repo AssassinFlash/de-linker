@@ -24,6 +24,11 @@ abstract class TestCase extends WP_Mock\Tools\TestCase {
 	/** The optional language companion is unconfigured unless a fixture opts in. */
 	public function setUp(): void {
 		parent::setUp();
+		\Linker\Commerce\Products\SelectionFacts::reset_cache();
+		\Linker\Commerce\Products\Materials::reset_cache();
+		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( false )->byDefault();
+		WP_Mock::userFunction( '_prime_post_caches' )->byDefault();
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn( mixed $value ): string => (string) json_encode( $value ) )->byDefault();
 		WP_Mock::userFunction( 'get_option' )->with( \Linker\Commerce\Settings\Options::TEAM_TO, '' )->andReturn( '' )->byDefault();
 		WP_Mock::userFunction( 'sanitize_email' )->with( '' )->andReturn( '' )->byDefault();
 		WP_Mock::userFunction( 'pll_languages_list' )->andReturn( array() )->byDefault();

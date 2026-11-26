@@ -1,0 +1,31 @@
+.pdp-family-links .lk-model-links,
+.lk-solution-products .lk-model-links {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+	gap: .65rem;
+	margin: 1.25rem 0;
+	padding: 0;
+	list-style: none;
+}
+.lk-model-links li { margin: 0; }
+.lk-model-links a {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .75rem;
+	min-height: 48px;
+	height: 100%;
+	padding: .65rem .9rem;
+	border: 1px solid #ccd5df;
+	border-radius: 6px;
+	color: #183248;
+	background: #fff;
+	font-weight: 600;
+	text-decoration: none;
+}
+.lk-model-links a:hover, .lk-model-links a[aria-current="page"] { border-color: #1b5569; background: #edf4f5; }
+.lk-model-links small { color: #465c69; white-space: nowrap; font-weight: 400; }
+.lk-solution-products { max-width: 1200px; margin: clamp(2.5rem, 6vw, 5rem) auto; padding-inline: clamp(1.25rem, 4vw, 3rem); }
+.lk-solution-products h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.25rem); line-height: 1.2; }
+.lk-solution-categories { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; }
+.lk-solution-categories a { color: #174d63; text-decoration: underline; text-underline-offset: .2em; }

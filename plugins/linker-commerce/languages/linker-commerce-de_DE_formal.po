@@ -7953,3 +7953,35 @@ msgstr "Lesen Sie, wie Sie PV- und Speichersysteme überwachen, Zählerdaten nut
 #, php-format
 msgid "Explore %s in the Linker journal. Read practical guidance on solar and storage projects for installers."
 msgstr "Lesen Sie im Linker-Blog Beiträge zum Thema %s. Hier finden Sie Hinweise für die Planung und den Betrieb von PV- und Speichersystemen."
+
+#: includes/Presentation/ProductShortcodes.php:760
+msgid "Other models in this series"
+msgstr "Weitere Modelle dieser Serie"
+
+#: includes/Presentation/ProductShortcodes.php:780
+msgid "Inverters and battery systems"
+msgstr "Wechselrichter und Batteriesysteme"
+
+#: includes/Presentation/ProductShortcodes.php:788
+msgid "Solution Configurator"
+msgstr "Lösungskonfigurator"
+
+#: includes/Storefront/PageSchema.php:182
+msgid "Solutions"
+msgstr "Lösungen"
+
+#: includes/Storefront/PageSchema.php:166
+msgid "Solar and battery storage solutions"
+msgstr "Solar- und Batteriespeicherlösungen"
+
+#: includes/Storefront/PageSchema.php:167
+msgid "Residential Solar Battery Storage"
+msgstr "Heimspeicher"
+
+#: includes/Storefront/PageSchema.php:168
+msgid "Commercial & Industrial Battery Storage"
+msgstr "Gewerbespeicher (C&I)"
+
+#: includes/Storefront/PageSchema.php:169
+msgid "Utility-Scale Battery Energy Storage Systems"
+msgstr "Batteriegroßspeicher"

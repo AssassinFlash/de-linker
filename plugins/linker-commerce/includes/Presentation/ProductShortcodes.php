@@ -16,7 +16,9 @@ use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Storefront\ProductFamilies;
 use Linker\Commerce\Storefront\ProductFilters;
+use Linker\Commerce\Storefront\SolutionProducts;
 use Linker\Commerce\Storefront\ProductView;
 use WC_Product;
 use WP_Term;
@@ -106,6 +108,8 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_products_contact', array( $this, 'products_contact' ) );
 		add_shortcode( 'linker_pdp_brand_class', array( $this, 'pdp_brand_class' ) );
 		add_shortcode( 'linker_pdp_brand', array( $this, 'pdp_brand' ) );
+		add_shortcode( 'linker_pdp_family', array( $this, 'pdp_family' ) );
+		add_shortcode( 'linker_solution_products', array( $this, 'solution_products' ) );
 		add_shortcode( 'linker_pdp_model', array( $this, 'pdp_model' ) );
 		add_shortcode( 'linker_pdp_brand_logo', array( $this, 'pdp_brand_logo' ) );
 		add_shortcode( 'linker_pdp_designation', array( $this, 'pdp_designation' ) );
@@ -610,10 +614,19 @@ final class ProductShortcodes {
 	 * @param array<string, mixed>|string $atts Shortcode attributes (`family`).
 	 */
 	public function products_card( $atts = array() ): string {
-		$parsed     = \is_array( $atts ) ? $atts : shortcode_parse_atts( (string) $atts );
-		$family     = isset( $parsed['family'] ) && \is_array( $parsed['family'] ) ? $parsed['family'] : null;
-		$product_id = (int) get_the_ID();
-		$card       = $this->views->card_fields( $product_id );
+		$parsed = \is_array( $atts ) ? $atts : shortcode_parse_atts( (string) $atts );
+		$family = isset( $parsed['family'] ) && \is_array( $parsed['family'] ) ? $parsed['family'] : null;
+		return $this->render_card( (int) get_the_ID(), $family );
+	}
+
+	/**
+	 * Render the supplied model without setting up a second WordPress loop.
+	 *
+	 * @param int                      $product_id The visible model.
+	 * @param array<string,mixed>|null $family Family members in archive order.
+	 */
+	private function render_card( int $product_id, ?array $family ): string {
+		$card = $this->views->card_fields( $product_id );
 		if ( array() === $card ) {
 			return '';
 		}
@@ -637,9 +650,10 @@ final class ProductShortcodes {
 		);
 		$url   = (string) get_permalink( $product_id );
 
-		$html = '<article class="sf-card product-card" data-linker-family-card ' . implode( ' ', $data ) . '>';
-		if ( null !== $family && \count( (array) $family['ids'] ) > 1 ) {
-			$html .= '<script type="application/json" data-linker-products>' . wp_json_encode( $this->family_payload( (array) $family['ids'] ) ) . '</script>';
+		$html    = '<article class="sf-card product-card" data-linker-family-card ' . implode( ' ', $data ) . '>';
+		$payload = $multi ? $this->family_payload( (array) $family['ids'] ) : array();
+		if ( $multi ) {
+			$html .= '<script type="application/json" data-linker-products>' . wp_json_encode( $payload ) . '</script>';
 		}
 		$html .= '<div class="sf-card-media card-media">';
 		$html .= '<a data-card-media-link href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $title ) . '">';
@@ -662,13 +676,12 @@ final class ProductShortcodes {
 		if ( '' !== $card['sku'] ) {
 			$html .= '<p class="sf-card-sku">' . esc_html__( 'Item no.', 'linker-commerce' ) . ' <span data-card-sku>' . esc_html( $card['sku'] ) . '</span></p>';
 		}
-		$html     .= '</div>';
-		$stats     = \is_array( $card['stats'] ) ? $card['stats'] : array();
-		$selection = $this->selection_line( $product, $card );
+		$html .= '</div>';
+		$facts = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 		if ( $multi ) {
 			// The live page's family card: the model picker replaces the
 			// single-article model row.
-			$html .= $this->family_picker( (array) $family['ids'], $product_id, $card, $stats, $selection );
+			$html .= $this->family_picker( $payload, $product_id, $this->selection_line( $facts, $card ) );
 		} else {
 			$model_terms = get_the_terms( $product_id, 'pa_model' );
 			$model       = \is_array( $model_terms ) && array() !== $model_terms ? (string) reset( $model_terms )->name : '';
@@ -676,7 +689,6 @@ final class ProductShortcodes {
 				$html .= '<span class="card-product" data-linker-exact-product><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( $model ) . '</strong></span>';
 			}
 		}
-		$facts = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 		if ( array() !== $facts ) {
 			$html .= '<dl class="card-facts" data-card-facts aria-label="' . esc_attr__( 'Key product data', 'linker-commerce' ) . '">';
 			foreach ( $facts as $fact ) {
@@ -744,6 +756,61 @@ final class ProductShortcodes {
 		unset( $atts );
 		$view = $this->current_view();
 		return null === $view ? '' : esc_html( (string) $view['model'] );
+	}
+
+	/** Published sibling links on the current product page. */
+	public function pdp_family(): string {
+		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- A published sibling or its translation can change this page.
+		$id   = get_queried_object_id();
+		$rows = SolutionProducts::links( ProductFamilies::published_members( $id ) );
+		if ( count( $rows ) < 2 ) {
+			return '';
+		}
+		return '<section class="pdp-block sf-container pdp-family-links"><h2 class="pdp-section-title">' . esc_html__( 'Other models in this series', 'linker-commerce' ) . '</h2>' . self::model_links( $rows, $id ) . '</section>';
+	}
+
+	/**
+	 * Model links and the next catalogue or planning destinations for a solution.
+	 *
+	 * @param array<string,string>|string $atts Shortcode attributes.
+	 */
+	public function solution_products( $atts = array() ): string {
+		$scope = (string) ( ( (array) $atts )['scope'] ?? 'hub' );
+		$rows  = SolutionProducts::featured( $scope );
+		if ( ! $rows ) {
+			return '';
+		}
+		$categories = match ( $scope ) {
+			'residential' => array( 'home-storage', 'inverters' ),
+			'commercial'  => array( 'all-in-one-systems', 'battery-systems' ),
+			'utility'     => array( 'battery-systems' ),
+			default       => array( 'home-storage', 'commercial-storage' ),
+		};
+		$html = '<section class="lk-solution-products"><h2>' . esc_html__( 'Inverters and battery systems', 'linker-commerce' ) . '</h2>' . self::model_links( $rows ) . '<div class="lk-solution-categories">';
+		foreach ( $categories as $slug ) {
+			$category = $this->localized_category( $slug );
+			if ( $category ) {
+				$html .= '<a href="' . esc_url( $this->term_link( $category ) ) . '">' . esc_html( $this->category_crumb_name( $category ) ) . '</a>';
+			}
+		}
+		if ( 'utility' === $scope ) {
+			$html .= '<a href="' . esc_url( PageUrls::page( 'solution-configurator' ) ) . '">' . esc_html__( 'Solution Configurator', 'linker-commerce' ) . '</a>';
+		}
+		return $html . '</div></section>';
+	}
+
+	/**
+	 * Print a list of models with their current ratings.
+	 *
+	 * @param list<array{id:int,name:string,url:string,rating:string}> $rows Model links.
+	 * @param int                                                      $current Current PDP, if any.
+	 */
+	private static function model_links( array $rows, int $current = 0 ): string {
+		$html = '<ul class="lk-model-links">';
+		foreach ( $rows as $row ) {
+			$html .= '<li><a href="' . esc_url( $row['url'] ) . '"' . ( $current === $row['id'] ? ' aria-current="page"' : '' ) . '>' . esc_html( $row['name'] ) . ( '' !== $row['rating'] ? ' <small>' . esc_html( $row['rating'] ) . '</small>' : '' ) . '</a></li>';
+		}
+		return $html . '</ul>';
 	}
 
 	/**
@@ -1747,16 +1814,7 @@ final class ProductShortcodes {
 		$page = $this->family_page();
 		$html = '';
 		foreach ( $page->rows as $row ) {
-			$lead = get_post( (int) $row['lead'] );
-			if ( ! $lead instanceof \WP_Post ) {
-				continue;
-			}
-			// The card fragment reads the loop's post; set it to this family's
-			// lead article for the call.
-			$GLOBALS['post'] = $lead; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- the loop contract the card fragment reads.
-			setup_postdata( $lead );
-			$html .= $this->products_card( array( 'family' => $row ) );
-			wp_reset_postdata();
+			$html .= $this->render_card( $row['lead'], $row );
 		}
 		return $html;
 	}
@@ -2017,7 +2075,7 @@ final class ProductShortcodes {
 	 * @return array<int, array{lead: int, ids: array<int>}>
 	 */
 	private function family_rows( array $ids ): array {
-		$rows = ( new \Linker\Commerce\Storefront\ProductFamilies( $ids ) )->rows( $ids );
+		$rows = $this->filters->families( $this->filters->archive_product_ids() )->rows( $ids );
 		if ( 'name' === $this->filters->requested_sort() ) {
 			// Sort complete families before pagination by the title the card prints.
 			$titles = array();
@@ -2039,11 +2097,10 @@ final class ProductShortcodes {
 	 * — live's `.card-product` ("RS485 · GW60K-STS-G10",
 	 * "Class B / 1.0 · DTSU666").
 	 *
-	 * @param \WC_Product|false|null $product The product.
-	 * @param array<string, mixed>   $card    The card fields.
+	 * @param array<int,array{key:string,label:string,value:string}> $facts The card facts.
+	 * @param array<string, mixed>                                   $card    The card fields.
 	 */
-	private function selection_line( $product, array $card ): string {
-		$facts = $product instanceof \WC_Product ? Materials::card_facts( $product, 1 ) : array();
+	private function selection_line( array $facts, array $card ): string {
 		$first = (string) ( $facts[0]['value'] ?? '' );
 		if ( '' === $first ) {
 			$first = (string) ( \is_array( $card['stats'] ) ? ( $card['stats'][0]['value'] ?? '' ) : '' );
@@ -2066,7 +2123,6 @@ final class ProductShortcodes {
 				continue;
 			}
 			$product   = wc_get_product( (int) $id );
-			$stats     = \is_array( $card['stats'] ) ? $card['stats'] : array();
 			$gated     = '' !== (string) ( $card['price']['url'] ?? '' );
 			$facts     = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 			$factshtml = '';
@@ -2095,7 +2151,7 @@ final class ProductShortcodes {
 				'canPurchase'  => ! $gated,
 				'addToCartUrl' => (string) $card['cta_url'],
 				'accountUrl'   => (string) $card['price']['url'],
-				'selection'    => $this->selection_line( $product, $card ),
+				'selection'    => $this->selection_line( $facts, $card ),
 				'factsHtml'    => $factshtml,
 			);
 		}
@@ -2103,24 +2159,19 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * The family card's model picker: the live page's
-	 * `details.sf-card-variants.card-product-picker` with one button per
-	 * member article (the current one marked).
+	 * Render the model links from the same rows used for in-card selection.
 	 *
-	 * @param array<int>                                      $ids        The family's article ids.
-	 * @param int                                             $current_id The article the card shows.
-	 * @param array<string, mixed>                            $card       The current card fields.
-	 * @param array<int, array{label: string, value: string}> $stats      The current key figures.
-	 * @param string                                          $selection  The card's model line.
+	 * @param array<int,array<string,mixed>> $payload    Family articles.
+	 * @param int                            $current_id Selected article.
+	 * @param string                         $selection  Selected model line.
 	 */
-	private function family_picker( array $ids, int $current_id, array $card, array $stats, string $selection ): string {
+	private function family_picker( array $payload, int $current_id, string $selection ): string {
 		$heading = __( 'All models', 'linker-commerce' );
 		$html    = '<details class="sf-card-variants card-product-picker" data-picker-heading="' . esc_attr( $heading ) . '">';
 		$html   .= '<summary><span class="card-selection-copy"><small>' . esc_html__( 'Selected model', 'linker-commerce' ) . '</small> <strong data-card-selection>' . esc_html( $selection ) . '</strong></span> <span class="card-selection-action">' . esc_html( $heading ) . '</span></summary>';
 		$html   .= '<div class="card-product-picker__list" data-picker-heading="' . esc_attr( $heading ) . '">';
-		foreach ( $ids as $id ) {
-			$row   = $this->views->card_fields( (int) $id );
-			$html .= '<button type="button" class="sf-card-variant" data-linker-select-product="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $current_id ? ' aria-current="true"' : '' ) . '><span>' . esc_html( (string) ( $row['model'] ?? '' ) ) . '</span> <small>' . esc_html__( 'Item no.', 'linker-commerce' ) . ' ' . esc_html( (string) ( $row['sku'] ?? '' ) ) . '</small></button>';
+		foreach ( $payload as $row ) {
+			$html .= '<a class="sf-card-variant" href="' . esc_url( $row['url'] ) . '" data-linker-select-product="' . esc_attr( (string) $row['id'] ) . '"' . ( $row['id'] === $current_id ? ' aria-current="true"' : '' ) . '><span>' . esc_html( $row['model'] ) . '</span> <small>' . esc_html__( 'Item no.', 'linker-commerce' ) . ' ' . esc_html( $row['sku'] ) . '</small></a>';
 		}
 		return $html . '</div></details>';
 	}

@@ -6349,3 +6349,35 @@ msgstr ""
 #, php-format
 msgid "Explore %s in the Linker journal. Read practical guidance on solar and storage projects for installers."
 msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php:760
+msgid "Other models in this series"
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php:780
+msgid "Inverters and battery systems"
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php:788
+msgid "Solution Configurator"
+msgstr ""
+
+#: includes/Storefront/PageSchema.php:182
+msgid "Solutions"
+msgstr ""
+
+#: includes/Storefront/PageSchema.php:166
+msgid "Solar and battery storage solutions"
+msgstr ""
+
+#: includes/Storefront/PageSchema.php:167
+msgid "Residential Solar Battery Storage"
+msgstr ""
+
+#: includes/Storefront/PageSchema.php:168
+msgid "Commercial & Industrial Battery Storage"
+msgstr ""
+
+#: includes/Storefront/PageSchema.php:169
+msgid "Utility-Scale Battery Energy Storage Systems"
+msgstr ""

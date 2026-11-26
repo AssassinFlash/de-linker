@@ -5,7 +5,7 @@
  *
  * Everything is read from the markup the family grid printed: the card's
  * `data-linker-products` payload holds each member article's values, the
- * picker's buttons carry the member ids, and the card's own data attributes
+ * picker's links carry the member ids, and the card's own data attributes
  * and elements ([data-card-title], [data-card-sku], [data-card-selection],
  * the media link and image, price, availability) are the fields a switch
  * updates — the same contract the live page's catalogue script reads.
@@ -109,14 +109,16 @@
 	}
 
 	document.addEventListener( 'click', function ( event ) {
-		var button = event.target.closest?.( '[data-linker-select-product]' );
-		var card = button?.closest( '[data-linker-family-card]' );
+		if ( event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) return;
+		var link = event.target.closest?.( '[data-linker-select-product]' );
+		var card = link?.closest( '[data-linker-family-card]' );
 		if ( ! card ) return;
-		var member = memberById( memberRows( card ), button.getAttribute( 'data-linker-select-product' ) );
+		var member = memberById( memberRows( card ), link.getAttribute( 'data-linker-select-product' ) );
 		if ( ! member ) return;
+		event.preventDefault();
 		select( card, member );
 		card.querySelectorAll( '[data-linker-select-product]' ).forEach( function ( other ) {
-			if ( other === button ) {
+			if ( other === link ) {
 				other.setAttribute( 'aria-current', 'true' );
 			} else {
 				other.removeAttribute( 'aria-current' );

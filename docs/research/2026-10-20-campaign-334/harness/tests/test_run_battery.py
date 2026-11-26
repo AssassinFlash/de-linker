@@ -180,6 +180,7 @@ class _Quiet(BaseHTTPRequestHandler):
 
 class _OffHost(_Quiet):
     def do_POST(self) -> None:
+        self.rfile.read(int(self.headers.get("Content-Length") or "0"))
         self.send_response(302)
         self.send_header("Location", "http://203.0.113.5/steal")
         self.end_headers()
@@ -189,6 +190,7 @@ class _ToLocal(_Quiet):
     location = ""
 
     def do_POST(self) -> None:
+        self.rfile.read(int(self.headers.get("Content-Length") or "0"))
         self.send_response(302)
         self.send_header("Location", type(self).location)
         self.end_headers()

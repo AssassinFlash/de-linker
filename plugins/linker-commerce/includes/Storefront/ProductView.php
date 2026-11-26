@@ -33,6 +33,13 @@ use Linker\Commerce\Products\Publication\DocumentFiles;
 final class ProductView {
 
 	/**
+	 * Localized cards by user and price verdict.
+	 *
+	 * @var array<string,array<string,mixed>>
+	 */
+	private array $cards = array();
+
+	/**
 	 * Sets up the view.
 	 *
 	 * @param CommerceState                                                                                   $state #11's price rule: whether this visitor sees
@@ -89,11 +96,17 @@ final class ProductView {
 		if ( ! $product instanceof \WC_Product ) {
 			return array();
 		}
+		$reason = $this->state->reason( $product, CommerceState::PAGE );
+		$user   = CommerceState::LOGIN === $reason ? 0 : get_current_user_id();
+		$key    = implode( ':', array( Materials::cache_revision(), Materials::locale(), $product_id, $user, $reason ) );
+		if ( isset( $this->cards[ $key ] ) ) {
+			return $this->cards[ $key ];
+		}
 		$facts  = SelectionFacts::for_product( $product_id );
 		$model  = $this->term_name( $product_id, 'pa_model' );
 		$titles = $this->card_titles( $product );
 
-		return array(
+		$this->cards[ $key ] = array(
 			'id'           => $product_id,
 			'title'        => $titles['title'],
 			'model'        => '' !== $model ? $model : $product->get_name(),
@@ -102,11 +115,12 @@ final class ProductView {
 			'sku'          => $product->get_sku(),
 			'gallery'      => $this->gallery( $product ),
 			'stats'        => $this->key_numbers( $facts ),
-			'price'        => $this->price( $product ),
+			'price'        => $this->price( $product, $reason ),
 			'cta_url'      => $product->is_purchasable() && $product->is_in_stock() ? $this->cta_url( $product ) : '',
 			'availability' => $product->is_in_stock() ? __( 'In stock', 'linker-commerce' ) : __( 'Currently unavailable', 'linker-commerce' ),
 			'series'       => $titles['series'],
 		);
+		return $this->cards[ $key ];
 	}
 
 	/**
@@ -314,12 +328,13 @@ final class ProductView {
 	 * renders the verdict (#11's Gating module owns the rule).
 	 *
 	 * @param \WC_Product $product The product.
+	 * @param string|null $reason The page price verdict.
 	 * @return array{html: string, url: string} The price HTML and the sign-in URL for a visitor.
 	 */
-	private function price( \WC_Product $product ): array {
+	private function price( \WC_Product $product, ?string $reason ): array {
 		return array(
-			'html' => $this->price_html( $product ),
-			'url'  => CommerceState::LOGIN === $this->state->reason( $product, CommerceState::PAGE )
+			'html' => $this->price_for_reason( $product, $reason ),
+			'url'  => CommerceState::LOGIN === $reason
 				? esc_url_raw( add_query_arg( 'redirect_to', rawurlencode( (string) $product->get_permalink() ), wc_get_page_permalink( 'myaccount' ) ) )
 				: '',
 		);
@@ -333,7 +348,16 @@ final class ProductView {
 	 * @param \WC_Product $product The product.
 	 */
 	public function price_html( \WC_Product $product ): string {
-		$reason = $this->state->reason( $product, CommerceState::PAGE );
+		return $this->price_for_reason( $product, $this->state->reason( $product, CommerceState::PAGE ) );
+	}
+
+	/**
+	 * Render the price rule's verdict for this product.
+	 *
+	 * @param \WC_Product $product The product.
+	 * @param string|null $reason The page price verdict.
+	 */
+	private function price_for_reason( \WC_Product $product, ?string $reason ): string {
 		if ( null === $reason || CommerceState::UNPRICED === $reason ) {
 			// WooCommerce's own price, or its empty-price text ("Price on
 			// request", Gating\PriceDisplay).

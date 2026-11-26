@@ -134,12 +134,13 @@ final class Publication {
 	 * queries and options belong to the same fresh read as product permission.
 	 *
 	 * @param int[]|callable():int[] $ids Locale IDs or their native candidate reader.
+	 * @param bool                   $sales_only Only models available for supply.
 	 * @return list<int>
 	 */
-	public static function published_ids( array|callable $ids ): array {
+	public static function published_ids( array|callable $ids, bool $sales_only = false ): array {
 		self::refresh_runtime();
 		$ids = is_callable( $ids ) ? $ids() : $ids;
-		return array_values( array_filter( $ids, array( self::class, 'published_in_current_read' ) ) );
+		return array_values( array_filter( $ids, static fn( int $id ): bool => self::published_in_current_read( $id, $sales_only ) ) );
 	}
 
 	/**
@@ -148,15 +149,16 @@ final class Publication {
 	 * The outer manifest already refreshed runtime copies; repeating that flush
 	 * per locale would discard every post/term read made by this same assembly.
 	 *
-	 * @param int $id Locale product ID.
+	 * @param int  $id Locale product ID.
+	 * @param bool $sales_only Exclude engineering-only references.
 	 */
-	private static function published_in_current_read( int $id ): bool {
+	private static function published_in_current_read( int $id, bool $sales_only = false ): bool {
 		$canonical = self::canonical_id( $id );
 		if ( $id <= 0 || 'product' !== get_post_type( $id ) || 'publish' !== get_post_status( $id ) || 'product' !== get_post_type( $canonical ) || 'publish' !== get_post_status( $canonical ) ) {
 			return false;
 		}
 		$role = get_post_meta( $canonical, EngineeringReference::ROLE_META_KEY, true );
-		return '' === $role || EngineeringReference::CABLE === $role;
+		return '' === $role || ( ! $sales_only && EngineeringReference::CABLE === $role );
 	}
 
 	/**

@@ -14,7 +14,7 @@ use Linker\Commerce\Products\SelectionFactsController;
 use Linker\Commerce\Tests\Support\MocksProducts;
 use Mockery;
 use WP_Mock;
-use WP_Mock\Tools\TestCase;
+use Linker\Commerce\Tests\TestCase;
 use WP_REST_Request;
 
 /**

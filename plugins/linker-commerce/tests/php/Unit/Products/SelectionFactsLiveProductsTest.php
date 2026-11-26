@@ -14,7 +14,7 @@ use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Tests\Support\LiveProducts;
 use Linker\Commerce\Tests\Support\MocksProducts;
 use WP_Mock;
-use WP_Mock\Tools\TestCase;
+use Linker\Commerce\Tests\TestCase;
 
 /**
  * SelectionFacts on the 89 published inverters and batteries of de-linker.com

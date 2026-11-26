@@ -1032,40 +1032,18 @@ final class ProductShortcodesTest extends TestCase {
 				},
 			)
 		);
-		WP_Mock::userFunction(
-			'get_post',
-			array(
-				'return' => static fn ( int $id ): WP_Post => new WP_Post( (object) array( 'ID' => $id ) ),
-			)
-		);
-		WP_Mock::userFunction( 'get_the_ID', array( 'return' => 0 ) );
-		// Each row hands its lead to the card fragment; the order of those
-		// calls is the order of the grid's cards.
-		$leads = array();
-		WP_Mock::userFunction(
-			'setup_postdata',
-			array(
-				'return' => static function ( $post ) use ( &$leads ): bool {
-					$leads[] = (int) $post->ID;
-					return true;
-				},
-			)
-		);
-		WP_Mock::userFunction( 'wp_reset_postdata' );
+		$page = new \ReflectionMethod( ProductShortcodes::class, 'family_page' );
 		$_GET = array(
 			'brand' => 'goodwe',
 			'sort'  => 'name',
 		);
 
-		( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_families();
+		$sorted = $page->invoke( new ProductShortcodes( new ProductFilters(), new ProductView() ) );
+		$this->assertSame( array( 5, 3 ), array_column( $sorted->rows, 'lead' ) );
 
-		// Product-title order leads with 3, but the visible Alpha family (5)
-		// precedes Zeta (3). Sorting rows must not replace either family lead.
-		$this->assertSame( array( 5, 3 ), $leads );
-		$leads        = array();
 		$_GET['sort'] = 'recommended';
-		( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_families();
-		$this->assertSame( array( 4, 7 ), $leads );
+		$recommended  = $page->invoke( new ProductShortcodes( new ProductFilters(), new ProductView() ) );
+		$this->assertSame( array( 4, 7 ), array_column( $recommended->rows, 'lead' ) );
 	}
 
 	/**
@@ -1531,6 +1509,7 @@ final class ProductShortcodesTest extends TestCase {
 	 * @param array<string, mixed> $acf      The product's legacy ACF JSON branches.
 	 */
 	private function pdp( bool $in_stock, array $acf = array() ): ProductShortcodes {
+		\Linker\Commerce\Products\Materials::reset_cache();
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
@@ -1669,7 +1648,8 @@ final class ProductShortcodesTest extends TestCase {
 
 		$card = ( new ProductView() )->card_fields( self::PDP );
 		$line = new \ReflectionMethod( ProductShortcodes::class, 'selection_line' );
-		$this->assertSame( 'RS485 · GW60K-STS-G10', $line->invoke( $shortcodes, $this->pdp_product, $card ) );
+		self::assertInstanceOf( WC_Product::class, $this->pdp_product );
+		$this->assertSame( 'RS485 · GW60K-STS-G10', $line->invoke( $shortcodes, \Linker\Commerce\Products\Materials::card_facts( $this->pdp_product ), $card ) );
 
 		$this->pdp_model = '';
 
