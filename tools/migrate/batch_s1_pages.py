@@ -9,7 +9,16 @@ from pathlib import Path
 from typing import Any
 
 import reviewed_page_pair as pairs
-from batch_r3_pages import PAGES, publish_pair, save
+from batch_r3_pages import PAGES as R3_PAGES
+from batch_r3_pages import publish_pair, save
+
+PAGES = {
+    **R3_PAGES,
+    "capability": (874, 6919),
+    "privacy-policy": (1673, 6827),
+    "refund-returns": (1038, 6698),
+    "imprint": (1672, 6829),
+}
 
 SCOPES = {
     "solution": "hub",
@@ -32,6 +41,26 @@ SEO = {
         "_seopress_titles_desc",
         "Technische Unterstützung für Ihre Solar- und Speicherprojekte. Linker hilft bei der Auslegung, der Inbetriebnahme und bei Fragen zu Produkten und Garantiefällen.",
         "Technischer Support für Solar- und Speicherprojekte. Linker hilft bei der Auslegung, der Inbetriebnahme und bei Fragen zu Produkten und Garantiefällen.",
+    ),
+    "capability": (
+        "_seopress_titles_desc",
+        "Speicherhardware, Kompatibilitätslisten, Datenblätter und Handbücher an einem Ort, damit Installateure und Projektteams ein System prüfen können, bevor es auf die Baustelle kommt.",
+        "Mit Kompatibilitätslisten, Datenblättern und Handbüchern prüfen Installateure und Projektteams die Speicherhardware, bevor sie auf die Baustelle kommt.",
+    ),
+    "privacy-policy": (
+        "_seopress_titles_desc",
+        "So geht de-linker.com mit personenbezogenen Daten um: welche Daten für Partnerkonten und Bestellungen erhoben werden, warum sie verarbeitet werden, wie lange sie aufbewahrt werden und welche Rechte Sie in Bezug auf Ihre Daten haben.",
+        "Die Datenschutzerklärung erläutert die Verarbeitung Ihrer Daten für Partnerkonten und Bestellungen sowie die Zwecke, die Speicherdauer und Ihre Rechte.",
+    ),
+    "refund-returns": (
+        "_seopress_titles_desc",
+        "So werden Geschäftsbestellungen korrigiert: eine falsche oder beschädigte Lieferung, die Hinweise bei Erhalt, Garantieansprüche sowie der Weg für Rücksendungen und RMAs.",
+        "Hier erfahren Geschäftskunden, wie sie falsche oder beschädigte Lieferungen bei Erhalt melden, Garantieansprüche geltend machen und Geräte zurückgeben.",
+    ),
+    "imprint": (
+        "_seopress_titles_desc",
+        "Rechtlicher Hinweis für de-linker.com: der Seitenbetreiber, der verantwortliche Ansprechpartner und die für eine gewerbliche Website erforderlichen Unternehmensangaben. Zuletzt aktualisiert am 29.09.2026.",
+        "Im Impressum finden Sie den Betreiber von de-linker.com, den verantwortlichen Ansprechpartner und die Pflichtangaben zum Unternehmen. Stand vom 29.09.2026.",
     ),
 }
 H2_BEFORE = "Containerspeicher für die Anforderungen Ihres Projekts."
@@ -138,7 +167,7 @@ def main() -> None:
     args = parser.parse_args()
     folder, wp, action = args.backup_dir, args.wp, args.action
     names = list(dict.fromkeys([*SCOPES, *SEO]))
-    # Preserve all five pairs and the SEO fields before the first write.
+    # Preserve the page pairs and their SEO fields before the first write.
     if action in ("dry-run", "backup", "apply"):
         for name in names:
             save(folder / f"{name}-before.json", pairs.read(wp, *PAGES[name]))
