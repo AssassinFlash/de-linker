@@ -812,3 +812,52 @@ html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
 	outline: var(--proto-focus-ring);
 	outline-offset: var(--proto-focus-offset);
 }
+
+#home-a .hero-cinematic .home-direct-desk {
+	margin: 8px auto 16px;
+	color: #edf3f2;
+	font-size: 13px;
+	line-height: 1.5;
+}
+#home-a .home-direct-desk a { text-decoration: underline; text-underline-offset: 3px; }
+@media (min-width: 1280px) {
+	#home-a .hero-ops-desktop { min-height: 54px; flex-wrap: nowrap; }
+	#home-a .hero-ops-lead { flex-wrap: nowrap; }
+	#home-a .hero-ops-links { white-space: nowrap; }
+}
+#about-journal .lk-about-registration {
+	margin: 0;
+	padding: 12px max(24px, calc((100% - 1240px) / 2));
+	color: var(--lk-muted, #586964);
+	font-size: 13px;
+	line-height: 1.6;
+}
+#about-journal .closing-c .narrative .linker-whatsapp { margin-top: 12px; }
+@media (max-width: 760px) {
+	html[lang^="de"] #about-journal .about-reference-scene :is(.scene-title, .scene-description) {
+		-webkit-hyphens: none;
+		hyphens: none;
+		overflow-wrap: break-word;
+	}
+	html[lang^="de"] #tv-cs-page-v1 .lk-hero-stage .lk-query-capsules {
+		display: grid;
+		justify-items: center;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 10px;
+	}
+	html[lang^="de"] #tv-cs-page-v1 .lk-hero-stage .lk-capsule {
+		min-width: 0;
+		white-space: normal;
+		text-align: center;
+	}
+}
+@media (max-width: 480px) {
+	#home-a .hero-cinematic .home-direct-desk {
+		width: calc(100% + 28px);
+		margin-inline: -14px;
+		font-size: 12px;
+		letter-spacing: -0.015em;
+	}
+	#home-a .hero-cinematic .home-direct-desk .linker-whatsapp { gap: 2px; }
+	#home-a .hero-cinematic .home-direct-desk svg { width: 13px; }
+}

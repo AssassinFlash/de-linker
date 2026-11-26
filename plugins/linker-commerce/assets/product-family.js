@@ -58,6 +58,11 @@
 		if ( image && member.image ) {
 			image.setAttribute( 'width', String( member.imageWidth ) );
 			image.setAttribute( 'height', String( member.imageHeight ) );
+			if ( member.imageSrcset ) {
+				image.setAttribute( 'srcset', member.imageSrcset );
+			} else {
+				image.removeAttribute( 'srcset' );
+			}
 			image.setAttribute( 'src', String( member.image ) );
 			if ( member.name ) {
 				image.setAttribute( 'alt', String( member.name ) );

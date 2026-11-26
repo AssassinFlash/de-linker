@@ -336,6 +336,18 @@
 		"/de/design-canvas/": "/de/loesungskonfigurator/?step=roof",
 		"/de/entwurfsflache/": "/de/loesungskonfigurator/?step=roof",
 		"/quote-configurator/": "/solution-configurator/",
-		"/de/angebots-konfigurator/": "/de/loesungskonfigurator/"
+		"/de/angebots-konfigurator/": "/de/loesungskonfigurator/",
+		"/faq-documents/": "/faq-download/",
+		"/de/faq-documents/": "/de/faq-dokumente/",
+		"/documents/": "/faq-download/",
+		"/de/documents/": "/de/faq-dokumente/",
+		"/dokumente/": "/de/faq-dokumente/",
+		"/de/dokumente/": "/de/faq-dokumente/",
+		"/services/": "/services-support/",
+		"/de/services/": "/de/kundendienst/",
+		"/register/": "/my-account/register/",
+		"/de/register/": "/de/mein-konto/registrieren/",
+		"/registrieren/": "/de/mein-konto/registrieren/",
+		"/de/registrieren/": "/de/mein-konto/registrieren/"
 	}
 }

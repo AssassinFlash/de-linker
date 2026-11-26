@@ -61,8 +61,10 @@ final class GermanTitles {
 			/* translators: %s: German product category name. */
 			$label = sprintf( __( 'Products: %s', 'linker-i18n' ), single_term_title( '', false ) );
 		} elseif ( is_category() ) {
-			/* translators: %s: German post category name. */
-			$label = sprintf( __( 'Posts: %s', 'linker-i18n' ), single_term_title( '', false ) );
+			if ( '' !== (string) get_term_meta( get_queried_object_id(), '_seopress_titles_title', true ) ) {
+				return $title;
+			}
+			$label = (string) single_term_title( '', false );
 		} elseif ( is_search() ) {
 			/* translators: %s: search query. */
 			$label = sprintf( __( 'Search results for “%s”', 'linker-i18n' ), get_search_query( false ) );

@@ -65,6 +65,7 @@ export interface GenieConfig {
 	contactUrl: string;
 	/** The inquiry confirmation card's route (#250). */
 	inquiryUrl: string;
+	whatsappUrl?: string;
 	requestPageUrl?: string;
 }
 
@@ -126,6 +127,7 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		// mount without them names none, and the note stays away.
 		retentionDays: Number( data.retentionDays ) || 0,
 		contactUrl: data.contactUrl ?? '/wp-json/linker-ai/v1/genie/contact',
+		whatsappUrl: data.whatsappUrl,
 		requestPageUrl: data.requestPageUrl,
 		inquiryUrl: data.inquiryUrl ?? '/wp-json/linker-ai/v1/genie/inquiry',
 	};

@@ -19,6 +19,7 @@ final class ProductSchema {
 	 */
 	public function register(): void {
 		add_action( 'wp_head', array( $this, 'print_block' ) );
+		add_filter( 'seopress_titles_title', array( $this, 'title' ), 45 );
 		add_filter( 'seopress_titles_desc', array( $this, 'description' ), 45 );
 	}
 
@@ -113,6 +114,55 @@ final class ProductSchema {
 	}
 
 	/**
+	 * Give published model-only names a useful localized search title.
+	 *
+	 * @param string $existing Title after SEOPress expands its template.
+	 */
+	public function title( string $existing ): string {
+		$product = $this->product();
+		if ( ! $product || '' !== trim( (string) get_post_meta( $product->get_id(), '_seopress_titles_title', true ) ) ) {
+			return $existing;
+		}
+		$name    = $this->text( $product->get_name() );
+		$details = $this->model_details( $product, $name, $this->term_name( $product->get_id(), 'pa_brand' ), $this->term_name( $product->get_id(), 'pa_model' ) );
+		while ( $details ) {
+			$title = $name . ' – ' . implode( ', ', $details ) . ' | Linker';
+			if ( mb_strlen( $title ) <= 65 ) {
+				return $title;
+			}
+			array_pop( $details );
+		}
+		return $existing;
+	}
+
+	/**
+	 * Ratings and translated category of a model whose name has no description.
+	 *
+	 * @param \WC_Product $product Localized product.
+	 * @param string      $name Published product name.
+	 * @param string      $brand Brand term.
+	 * @param string      $model Model term.
+	 * @return list<string>
+	 */
+	private function model_details( \WC_Product $product, string $name, string $brand, string $model ): array {
+		if ( '' === $model || ( trim( $brand . ' ' . $model ) !== $name && $name !== $model ) ) {
+			return array();
+		}
+		$facts    = SelectionFacts::for_product( $product->get_id() );
+		$category = $this->term_name( $product->get_id(), 'product_cat' );
+		$details  = '' !== $category ? array( $category ) : array();
+		if ( is_float( $facts->ac_power_kw ) ) {
+			$details[] = wc_format_localized_decimal( (string) $facts->ac_power_kw ) . ' kW';
+		} elseif ( is_float( $facts->nominal_kwh ) ) {
+			$details[] = wc_format_localized_decimal( (string) $facts->nominal_kwh ) . ' kWh';
+		}
+		if ( is_int( $facts->phase ) ) {
+			$details[] = 1 === $facts->phase ? __( 'single-phase', 'linker-commerce' ) : __( 'three-phase', 'linker-commerce' );
+		}
+		return $details;
+	}
+
+	/**
 	 * Add the category and published rating when the Woo title is only a model.
 	 *
 	 * @param \WC_Product $product Localized product.
@@ -120,22 +170,10 @@ final class ProductSchema {
 	 * @param string      $model   Model designation.
 	 */
 	private function summary( \WC_Product $product, string $brand, string $model ): string {
-		$name = $this->text( $product->get_name() );
-		if ( '' !== $model && ( trim( $brand . ' ' . $model ) === $name || $name === $model ) ) {
-			$facts    = SelectionFacts::for_product( $product->get_id() );
-			$category = $this->term_name( $product->get_id(), 'product_cat' );
-			$details  = array_filter( array( $category ) );
-			if ( is_float( $facts->ac_power_kw ) ) {
-				$details[] = wc_format_localized_decimal( (string) $facts->ac_power_kw ) . ' kW';
-			} elseif ( is_float( $facts->nominal_kwh ) ) {
-				$details[] = wc_format_localized_decimal( (string) $facts->nominal_kwh ) . ' kWh';
-			}
-			if ( is_int( $facts->phase ) ) {
-				$details[] = 1 === $facts->phase ? __( 'single-phase', 'linker-commerce' ) : __( 'three-phase', 'linker-commerce' );
-			}
-			if ( $details ) {
-				$name .= ' – ' . implode( ', ', $details );
-			}
+		$name    = $this->text( $product->get_name() );
+		$details = $this->model_details( $product, $name, $brand, $model );
+		if ( $details ) {
+			$name .= ' – ' . implode( ', ', $details );
 		}
 		$endings = array(
 			__( 'Use the manufacturer’s documents to check the technical details, then request a quotation from Linker for your installation.', 'linker-commerce' ),

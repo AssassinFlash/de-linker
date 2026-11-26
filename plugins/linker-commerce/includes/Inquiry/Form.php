@@ -177,20 +177,24 @@ final class Form {
 			. '<label class="linker-form-consent"><input type="checkbox" required name="' . esc_attr( DraftRecovery::FIELD ) . '" value="' . esc_attr( $nonce ) . '"' . checked( $this->flash['fields'][ DraftRecovery::FIELD ] ?? '', $nonce, false ) . ' /><span>' . esc_html__( 'Remove unavailable report links', 'linker-commerce' ) . '</span></label></fieldset>';
 	}
 
-	/** One set of native reply, consent and submit fields. */
-	private static function fields_template(): string {
-		return Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/fields.html' );
+	/** Native reply, consent and submit fields.
+	 *
+	 * @param string $chat Optional project-specific contact link.
+	 */
+	private static function fields_template( string $chat = '' ): string {
+		return str_replace( '{{planner-chat}}', '' !== $chat ? ' · ' . $chat : '', Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/fields.html' ) );
 	}
 
 	/** Render the review form with a nonce for the immutable project revision.
 	 *
 	 * @param string                   $language Requested planner language.
 	 * @param array<string,mixed>      $project Owner-verified project revision.
+	 * @param string                   $chat    Contextual WhatsApp link.
 	 * @param InquiryTransfer|null     $transfer Reviewed draft intent.
 	 * @param array<string,mixed>|null $handoff Frozen projected report.
 	 * @param array<string,mixed>|null $retry Native retry from this Woo session.
 	 */
-	public function planning( string $language, array $project, ?InquiryTransfer $transfer = null, ?array $handoff = null, ?array $retry = null ): string {
+	public function planning( string $language, array $project, string $chat, ?InquiryTransfer $transfer = null, ?array $handoff = null, ?array $retry = null ): string {
 		$this->flash = $retry ?? array();
 		$locale      = new \Linker\Commerce\Mail\LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
@@ -203,7 +207,7 @@ final class Form {
 						'language' => $language,
 					)
 				),
-				do_shortcode( self::fields_template() )
+				do_shortcode( self::fields_template( $chat ) )
 			) ?? '';
 			$replay   = \Linker\Commerce\Protection\Ledger::RECEIPT_SECONDS;
 			$previous = $this->flash['fields'] ?? array();

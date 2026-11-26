@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Planning;
 
+use Linker\Commerce\Presentation\ContactChannels;
+use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Products\Publication;
 use WC_Order;
 use WC_Order_Item_Product;
@@ -1088,6 +1090,47 @@ final class Context {
 			);
 		}
 		return $rows;
+	}
+
+	/**
+	 * Editable chat message with the reviewed country, PV size and selected models.
+	 *
+	 * @param array<string,mixed>                    $project  Owned planner project.
+	 * @param list<array{label:string,value:string}> $facts    Localized review details.
+	 * @param string                                 $language Planner language.
+	 */
+	public static function review_chat( array $project, array $facts, string $language ): string {
+		$inputs  = $project['inputs'] ?? array();
+		$country = $inputs['brief']['site']['country_code'] ?? '';
+		$summary = array();
+		if ( '' !== $country ) {
+			$summary[] = WC()->countries->get_countries()[ $country ] ?? $country;
+		}
+		// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Match the native planner's reviewed PV figure.
+		$pv = array_column( $facts, 'value', 'label' )[ __( 'PV array size', 'linker-tools' ) ] ?? '';
+		if ( '' !== $pv ) {
+			$summary[] = $pv;
+		}
+		$units = $inputs['equipment_plant_setup']['units'] ?? $inputs['equipment_plant']['units'] ?? array( array( 'inputs' => $inputs ) );
+		$ids   = array();
+		foreach ( $units as $unit ) {
+			$selection = $unit['inputs']['equipment_setup'] ?? $unit['inputs']['equipment_selection'] ?? $unit['selection'] ?? array();
+			foreach ( array( 'inverter_product_id', 'battery_product_id' ) as $role ) {
+				if ( ! empty( $selection[ $role ] ) ) {
+					$ids[] = (int) $selection[ $role ];
+				}
+			}
+		}
+		foreach ( array_unique( $ids ) as $id ) {
+			$translated = PageUrls::twin( $id, $language );
+			$product    = wc_get_product( $translated > 0 ? $translated : $id );
+			if ( $product && 'publish' === $product->get_status() ) {
+				$summary[] = $product->get_name();
+			}
+		}
+		/* translators: %s: selected country, PV capacity and equipment models. */
+		$message = $summary ? sprintf( __( 'Hello Linker team, I would like to discuss this storage project: %s.', 'linker-commerce' ), implode( ', ', $summary ) ) : '';
+		return ContactChannels::link( message: $message );
 	}
 
 	/**

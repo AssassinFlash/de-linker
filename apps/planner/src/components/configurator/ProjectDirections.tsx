@@ -10,7 +10,10 @@ import { __ } from "../../i18n.ts";
 import { Icon } from "../Icon.tsx";
 import { NumberField } from "../NumberField.tsx";
 import { AnnualElectricityUse } from "./HomepageDemand.tsx";
-import { changeDemandEquipment } from "../../domain/equipmentPlant.ts";
+import {
+	changeDemandEquipment,
+	changeSiteArrayPower,
+} from "../../domain/equipmentPlant.ts";
 import {
 	changeEnergyGoal,
 	energyGoal,
@@ -181,6 +184,7 @@ export function ProjectDirections({
 					/>
 					<NumberField
 						name="site_pv_kw"
+						notation="point-or-comma"
 						label={__("PV array", "linker-tools")}
 						unit="kWp"
 						locale={config.locale}
@@ -190,7 +194,7 @@ export function ProjectDirections({
 						onChange={(value) =>
 							edit((current) =>
 								changeHomepagePvPower(
-									changeDemandEquipment(current, { pv_dc_kw: value }),
+									changeSiteArrayPower(current, value),
 									value,
 								),
 							)

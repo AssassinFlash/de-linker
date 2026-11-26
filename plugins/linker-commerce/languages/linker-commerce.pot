@@ -6301,3 +6301,51 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php:210
 msgid "Press Search to reload the results."
 msgstr ""
+
+#: includes/Presentation/ContactChannels.php:37
+msgid "Hello Linker team, I would like to discuss a solar storage inquiry."
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php:966
+#, php-format
+msgid "Hello Linker team, I have a question about %1$s (Item %2$s)."
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:316
+#, php-format
+msgid "Hello Linker team, could you help me compare these models: %s?"
+msgstr ""
+
+#: includes/Presentation/ComparePage.php:317 includes/Presentation/ProductShortcodes.php:380
+msgid "Ask via WhatsApp →"
+msgstr ""
+
+#: includes/Contact/Form.php:259
+msgid "Germany"
+msgstr ""
+
+#: includes/Contact/Form.php:260
+msgid "Direct contact"
+msgstr ""
+
+#: includes/Contact/Form.php:263
+msgid "Chat on WhatsApp ↗"
+msgstr ""
+
+#: includes/Planning/Context.php:1131
+#, php-format
+msgid "Hello Linker team, I would like to discuss this storage project: %s."
+msgstr ""
+
+#: includes/Storefront/PageIndexing.php
+msgid "Compare hybrid inverters, battery storage systems and accessories side by side by AC power, usable capacity, phase and manufacturer datasheets."
+msgstr ""
+
+#: includes/Storefront/PageIndexing.php
+msgid "Read about monitoring solar and storage systems, using meter data and managing energy flows. Find practical guidance for installers working on site."
+msgstr ""
+
+#: includes/Storefront/PageIndexing.php
+#, php-format
+msgid "Explore %s in the Linker journal. Read practical guidance on solar and storage projects for installers."
+msgstr ""

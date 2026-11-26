@@ -23,6 +23,20 @@ use WP_Mock;
  */
 final class ProductSchemaTest extends TestCase {
 
+	/** Search preserves an authored title and a product's descriptive Woo name. */
+	public function test_product_titles_respect_authored_descriptions(): void {
+		$product = $this->product();
+		WP_Mock::userFunction( 'is_singular', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_the_ID', array( 'return' => self::PRODUCT ) );
+		WP_Mock::userFunction( 'wc_get_product', array( 'return' => $product ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return_in_order' => array( 'Authored title', '' ) ) );
+		$schema = new ProductSchema();
+		$this->assertSame( 'Authored title', $schema->title( 'Authored title' ) );
+		$title = $product->get_name() . ' | Linker';
+		$this->assertSame( $title, $schema->title( $title ) );
+	}
+
+
 	private const PRODUCT = 6521;
 
 	/**
@@ -47,6 +61,7 @@ final class ProductSchemaTest extends TestCase {
 	public function test_register_adds_the_block_to_the_head(): void {
 		$schema = new ProductSchema();
 		WP_Mock::expectActionAdded( 'wp_head', array( $schema, 'print_block' ) );
+		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $schema, 'title' ), 45 );
 		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( $schema, 'description' ), 45 );
 
 		$schema->register();

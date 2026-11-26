@@ -257,6 +257,18 @@ test("continuing with edited panel settings preserves roof ownership and group q
 	assert.deepEqual(app.inputs.geometry.arrays, geometry.arrays);
 	assert.deepEqual(app.inputs.geometry.roofs, geometry.roofs);
 });
+test("an unscoped project with existing PV capacity edits both the array and equipment", async (t) => {
+	const app = await mount(t, {
+		brief: emptyBrief(),
+		equipment_setup: { ...equipmentDraft({}), pv_dc_kw: 11.09 },
+	});
+	assert.equal(input("Solar capacity").value, "11.09");
+	await enter(input("Solar capacity"), "");
+	await enter(input("Solar capacity"), "13.7");
+	assert.equal(app.inputs.pvgis_reference_setup.arrays[0].peak_power_kwp, 13.7);
+	assert.equal(app.inputs.equipment_setup.pv_dc_kw, 13.7);
+});
+
 for (const [label, system_scope, extra] of [
 	["storage retrofit", "storage_addition", {}],
 	[

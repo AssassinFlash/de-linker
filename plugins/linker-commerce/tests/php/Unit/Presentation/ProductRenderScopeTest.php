@@ -135,6 +135,7 @@ final class ProductRenderScopeTest extends TestCase {
 		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( static fn ( string $value ): string => strip_tags( $value ) );
 		WP_Mock::userFunction( 'get_the_title' )->andReturn( 'Fixture' );
 		WP_Mock::userFunction( 'get_term_link' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_get_attachment_image_srcset' )->andReturn( false );
 		WP_Mock::userFunction( 'wp_get_attachment_image_url' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_get_attachment_image_src' )->andReturnUsing(
 			static fn ( int $attachment_id, string $size ): array|false => 'medium' === $size

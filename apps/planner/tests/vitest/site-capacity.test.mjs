@@ -1,4 +1,5 @@
 import { authoredDiscoveryInputs } from "../../src/domain/currentCalculation.ts";
+import fixture from "../fixtures/dc-energy-run.json";
 import { expect, test, vi } from "vitest";
 import { act, createElement } from "react";
 import { IDBFactory } from "fake-indexeddb";
@@ -58,6 +59,7 @@ test.each(["result shown", "result in flight"])(
 		let inFlight = false;
 		const initialReply = Promise.withResolvers();
 		let comparedCapacity;
+		const { selection, assessment } = fixture.run.result.equipment_binding;
 		const client = {
 			origin: location.origin,
 			isCurrentScope: (value) => value === scope,
@@ -83,6 +85,21 @@ test.each(["result shown", "result in flight"])(
 					};
 				if (operation === "places/lookup")
 					return { imagery: null, viewing_imagery: null };
+				if (operation === "products/cards") return { cards: [] };
+				if (operation === "equipment/candidates/read")
+					return {
+						run_id: run.id,
+						candidate_id: sha,
+						assessment_sha256: sha,
+						assessment: {
+							...assessment,
+							checks: assessment.checks.map((check) =>
+								check.id === "pv_dc_input"
+									? { ...check, required: comparedCapacity }
+									: check,
+							),
+						},
+					};
 				if (operation === "runs/read") return run;
 				if (operation === "runs/inputs")
 					return {
@@ -157,7 +174,16 @@ test.each(["result shown", "result in flight"])(
 								completion: "exhausted_supported_domain",
 								work_used: 0,
 								work_budget: 1000,
-								candidates: [],
+								candidates: [
+									{
+										id: sha,
+										status: assessment.overall_status,
+										assessment_sha256: sha,
+										violated_checks: 0,
+										unresolved_checks: 1,
+										selection: { ...selection, pv_dc_kw: comparedCapacity },
+									},
+								],
 								qualified_count: 0,
 								products: [],
 								ranking: "not_performed_before_qualification",
@@ -210,7 +236,7 @@ test.each(["result shown", "result in flight"])(
 				),
 			);
 			await until("intake", () => button("Enter project details"));
-			await select("project_start", "known");
+			if (timing === "result in flight") await select("project_start", "known");
 			await select("project_country", "IT");
 			await enter(
 				page.element.querySelector('[name="annual_load_kwh"]'),
@@ -233,9 +259,7 @@ test.each(["result shown", "result in flight"])(
 				await until("first comparison in flight", () => inFlight);
 			else {
 				await until("initial results shown", () =>
-					page.element.textContent.includes(
-						"No configurations were found using the available product data.",
-					),
+					page.element.querySelector(".sc-system-overview"),
 				);
 				expect(comparedCapacity).toBe(11.09);
 			}
@@ -259,6 +283,7 @@ test.each(["result shown", "result in flight"])(
 				);
 			}
 			expect(location.hash).toBe("#sc-solar");
+			expect(project.inputs.brief.system_scope).toBe("new_pv_storage");
 			expect(project.inputs.brief.site.country_code).toBe("IT");
 			expect(project.inputs.brief.annual_load.kwh).toBe(7200);
 			const capacity = page.element.querySelector(".sc-solar-inputs input");
@@ -273,10 +298,17 @@ test.each(["result shown", "result in flight"])(
 			await click("Continue with energy use");
 			await click("Compare systems");
 			await until("accepted equipment comparison", () =>
-				page.element.textContent.includes(
-					"No configurations were found using the available product data.",
-				),
+				page.element
+					.querySelector(".sc-system-overview")
+					?.textContent.includes("13.7 kWp"),
 			);
+			const preview = page.element.querySelector(".sc-system-overview");
+			expect(preview.textContent).toContain("Equipment preview");
+			const inputPower = [...preview.querySelectorAll("li")].find(
+				(li) => li.querySelector("strong")?.textContent === "PV input power",
+			);
+			expect(inputPower?.textContent).toContain("13.7 kWp");
+			expect(preview.textContent).not.toContain("11.09 kWp");
 			expect(run.state).toBe("succeeded");
 			expect(run.revision).toBe(project.revision);
 			expect(comparedCapacity).toBe(13.7);

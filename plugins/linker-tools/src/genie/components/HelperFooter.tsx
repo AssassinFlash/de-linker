@@ -3,14 +3,18 @@ import type { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { useEffect, useRef } from '@wordpress/element';
 
+import { WhatsAppLink } from './WhatsAppLink';
+
 export function HelperFooter( {
 	german,
 	disclosure,
 	guestLinks,
+	whatsappUrl,
 }: {
 	german: boolean;
 	disclosure: string;
 	guestLinks?: ReactNode;
+	whatsappUrl?: string;
 } ) {
 	const details = useRef< HTMLDetailsElement >( null );
 	useEffect( () => {
@@ -33,6 +37,7 @@ export function HelperFooter( {
 					{ __( 'Genie is an AI assistant.', 'linker-tools' ) }
 				</span>
 			) }
+			<WhatsAppLink url={ whatsappUrl } />
 			<details className="linker-genie-help" ref={ details }>
 				<summary>
 					{ __( 'Help & privacy', 'linker-tools' ) }
@@ -64,6 +69,7 @@ export function HelperFooter( {
 						>
 							{ __( 'FAQ & Downloads', 'linker-tools' ) }
 						</a>
+						<WhatsAppLink url={ whatsappUrl } />
 						<a href={ german ? '/de/kontakt/' : '/contact/' }>
 							{ __( 'Contact Linker', 'linker-tools' ) }
 						</a>

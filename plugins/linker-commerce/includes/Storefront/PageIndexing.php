@@ -9,16 +9,42 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Presentation\ComparePage;
+
 /** Woo page assignments and their translations own the public URLs. */
 final class PageIndexing {
 	/** Register the SEOPress and core robots policies. */
 	public function register(): void {
+		add_filter( 'seopress_titles_desc', array( $this, 'description' ), 45 );
 		add_filter( 'seopress_titles_noindex_bypass', array( $this, 'noindex' ) );
 		add_filter( 'seopress_titles_robots_attrs', array( $this, 'robots' ) );
 		add_filter( 'wp_robots', array( $this, 'native_robots' ) );
 		add_filter( 'pll_rel_hreflang_attributes', array( $this, 'alternates' ), 50 );
 		add_filter( 'seopress_titles_canonical_on_noindex', array( $this, 'canonical' ), 50 );
 		add_filter( 'seopress_sitemaps_single_url', array( $this, 'sitemap' ), 20, 2 );
+	}
+
+	/**
+	 * Supply missing discovery descriptions. SEOPress also uses these for Open Graph.
+	 *
+	 * @param string $existing Existing expanded description.
+	 */
+	public function description( string $existing ): string {
+		if ( '' !== trim( $existing ) ) {
+			return $existing;
+		}
+		if ( ComparePage::is_comparison_page() ) {
+			return __( 'Compare hybrid inverters, battery storage systems and accessories side by side by AC power, usable capacity, phase and manufacturer datasheets.', 'linker-commerce' );
+		}
+		$term = get_queried_object();
+		if ( ! $term instanceof \WP_Term || 'category' !== $term->taxonomy ) {
+			return $existing;
+		}
+		if ( in_array( $term->slug, array( 'monitoring-energy-management', 'ueberwachung-energiemanagement' ), true ) ) {
+			return __( 'Read about monitoring solar and storage systems, using meter data and managing energy flows. Find practical guidance for installers working on site.', 'linker-commerce' );
+		}
+		/* translators: %s: translated blog category name. */
+		return sprintf( __( 'Explore %s in the Linker journal. Read practical guidance on solar and storage projects for installers.', 'linker-commerce' ), wp_strip_all_tags( $term->name ) );
 	}
 
 	/**

@@ -585,6 +585,10 @@ export function SystemOptions({
 							? __("Whole-site backup", "linker-tools")
 							: equipmentCheckLabel(String(check.semantic_id ?? check.id))}
 					</strong>
+					{(check.semantic_id ?? check.id) === "pv_dc_input" &&
+						typeof check.required === "number" && (
+							<span>{measure(check.required, "kWp")}</span>
+						)}
 					<span className="sc-check-status" data-status={String(check.status)}>
 						{equipmentStatus(String(check.status))}
 					</span>
@@ -1023,7 +1027,15 @@ export function SystemOptions({
 							)}
 							{!solarOnly && (
 								<div className="sc-package-capacity">
-									<strong>{capacity(item)}</strong>
+									<strong
+										className={
+											typeof item.usable_energy_kwh === "number"
+												? undefined
+												: "sc-capacity-pending"
+										}
+									>
+										{capacity(item)}
+									</strong>
 									<span>
 										{isPlantCandidate(item)
 											? __("Combined usable battery capacity", "linker-tools")

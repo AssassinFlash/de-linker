@@ -2679,3 +2679,5 @@ body.woocommerce-checkout #payment li.wc_payment_method {
 }
 #linker-products [data-catalog-search-status]:empty { display: none; }
 #linker-products [data-catalog-search-status]:not(:empty) { grid-column: 1 / -1; color: var(--proto-neutral-700); }
+
+.rail-help .linker-whatsapp { margin-top: .6rem; }

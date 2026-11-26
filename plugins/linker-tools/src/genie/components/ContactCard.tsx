@@ -19,6 +19,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { WhatsAppLink } from './WhatsAppLink';
 import { useTransferWidget } from '../shared/useTransferWidget';
 import type { Locale } from '../types';
 import {
@@ -34,6 +35,7 @@ type Phase = 'loading' | 'ready' | 'sending' | 'sent';
 export interface ContactCardProps {
 	block: ContactBlock;
 	contactUrl: string;
+	whatsappUrl?: string;
 	nonce: string;
 	locale: Locale;
 	page: PageContext;
@@ -138,6 +140,7 @@ function replyText( email: string ): string {
 export function ContactCard( {
 	block,
 	contactUrl,
+	whatsappUrl,
 	nonce,
 	locale,
 	page,
@@ -378,6 +381,10 @@ export function ContactCard( {
 					</button>
 				</form>
 			) }
+			<WhatsAppLink
+				url={ whatsappUrl }
+				label={ __( 'Or chat on WhatsApp ↗', 'linker-tools' ) }
+			/>
 			{ failure ? (
 				<p role="alert" className="linker-genie-contact__error">
 					{ failureText( failure, state?.mailbox ?? '' ) }

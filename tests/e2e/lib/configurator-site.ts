@@ -49,9 +49,10 @@ export async function startSolarProject(
 export async function removeSiteProject(
 	page: Page,
 	lang: SiteLanguage,
-	title: string
+	title: string,
+	origin: string = instance().url
 ) {
-	await page.goto(instance().url + entry[lang].configurator + '?projects=1', {
+	await page.goto(origin + entry[lang].configurator + '?projects=1', {
 		waitUntil: 'domcontentloaded',
 	});
 	const row = page.getByRole('listitem').filter({

@@ -441,8 +441,8 @@
 /* Product tools */
 #tv-storefront-pdp .pdp-product-tools {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 16px;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 4px;
 	margin-top: 20px;
 	padding-top: 12px;
 	border-top: 1px solid var(--pdp-line);
@@ -1400,6 +1400,7 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 }
 
 #tv-storefront-pdp .pdp-related li.product img {
+	margin-bottom: 1em;
 	width: 100%;
 	aspect-ratio: 1;
 	object-fit: contain;
@@ -1409,6 +1410,7 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 }
 
 #tv-storefront-pdp .pdp-related .woocommerce-loop-product__title {
+	padding: 0.5em 0;
 	margin: 0;
 	color: var(--pdp-ink);
 	font-size: 14px;
@@ -1811,7 +1813,7 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 	}
 
 	#tv-storefront-pdp .pdp-product-tools {
-		order: 5;
+		order: 1;
 	}
 
 	#tv-storefront-pdp .pdp-tool {

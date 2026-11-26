@@ -18,6 +18,22 @@ use WP_Post;
  * @covers \Linker\Commerce\Storefront\PageSchema
  */
 final class PageSchemaTest extends TestCase {
+
+	/** The public publisher keeps SEOPress's identity and both ways to reach the team. */
+	public function test_organization_retains_the_graph_id_and_public_contacts(): void {
+		WP_Mock::userFunction( 'is_front_page', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'sales@de-linker.com' ) );
+		WP_Mock::userFunction( 'sanitize_email', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction( 'pll_home_url', array( 'return' => 'https://example.org/' ) );
+		WP_Mock::userFunction( 'trailingslashit', array( 'return_arg' => 0 ) );
+		$node = ( new PageSchema() )->organization( array( '@id' => 'https://example.org/#organization' ) );
+		$this->assertSame( 'https://example.org/#organization', $node['@id'] );
+		$this->assertSame( 'DE367367711', $node['vatID'] );
+		$this->assertSame( 'Amtsgericht Stendal HRB 33824', $node['identifier']['value'] );
+		$this->assertSame( array( 'sales@de-linker.com', 'chester@de-linker.com' ), array_column( $node['contactPoint'], 'email' ) );
+	}
+
 	/** A breadcrumb names what the browser displays, including decoded ampersands. */
 	public function test_article_breadcrumb_follows_the_localized_journal(): void {
 		$post = new WP_Post(

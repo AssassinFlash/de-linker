@@ -17,9 +17,10 @@ import { instance } from './instance';
  * still intercepts pointer events over the dock.
  */
 export async function seedConsentCookies(
-	context: BrowserContext
+	context: BrowserContext,
+	origin: string = instance().url
 ): Promise<void> {
-	const url = new URL(instance().url);
+	const url = new URL(origin);
 	await context.addCookies(
 		[
 			{

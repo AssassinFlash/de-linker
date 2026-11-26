@@ -988,7 +988,24 @@ def _cabinet_clearance_answer(
             for faq in product.get("faq", []):
                 if faq.get("question") == question_label and faq.get("answer"):
                     label = "Produkt-FAQ" if language == "de" else "Product FAQ"
-                    answer = f"{label}: {faq['answer']}"
+                    statements = dict.fromkeys(
+                        re.split(r"(?<=[.!?])\s+", faq["answer"].strip())
+                    )
+                    # The published CB2 FAQ also describes its C&I application.
+                    # The exclusive pairing sentence answers the inverter question.
+                    exclusive = next(
+                        (
+                            statement
+                            for statement in statements
+                            if "CH2" in statement
+                            and (
+                                "can only be used as a set with" in statement
+                                or "kann nur als Set mit" in statement
+                            )
+                        ),
+                        None,
+                    )
+                    answer = f"{label}: {exclusive or ' '.join(statements)}"
                     if _no_released_inverter(facts, pid):
                         answer += (
                             " Für diesen Speicher ist bei uns kein einzelnes "

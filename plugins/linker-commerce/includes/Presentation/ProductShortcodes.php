@@ -377,6 +377,7 @@ final class ProductShortcodes {
 				. '<b>' . esc_html__( 'Plan with the Solution Configurator', 'linker-commerce' ) . '</b>'
 				. '<p>' . esc_html__( 'Configure a storage system from your site data; the result is a solution draft you can send as an inquiry.', 'linker-commerce' ) . '</p>'
 				. '<a class="rail-help-btn" href="' . esc_url( $configurator ) . '">' . esc_html__( 'Open the Solution Configurator', 'linker-commerce' ) . '</a>'
+				. ContactChannels::link( __( 'Ask via WhatsApp →', 'linker-commerce' ) )
 				. '</div>';
 		}
 		$html .= '<div class="product-filter-actions">';
@@ -645,7 +646,9 @@ final class ProductShortcodes {
 		foreach ( \array_slice( (array) $card['gallery'], 0, 1 ) as $image_id ) {
 			$image = wp_get_attachment_image_src( (int) $image_id, 'medium' );
 			if ( $image ) {
-				$html .= '<img data-card-image src="' . esc_url( $image[0] ) . '" width="' . (int) $image[1] . '" height="' . (int) $image[2] . '" alt="' . esc_attr( (string) $card['title'] ) . '" loading="lazy">';
+				$srcset = wp_get_attachment_image_srcset( (int) $image_id, 'medium' );
+				$html  .= '<img data-card-image src="' . esc_url( $image[0] ) . '" width="' . (int) $image[1] . '" height="' . (int) $image[2] . '" alt="' . esc_attr( (string) $card['title'] ) . '" loading="lazy" sizes="auto, (max-width: 760px) 70vw, 240px"'
+					. ( $srcset ? ' srcset="' . esc_attr( $srcset ) . '"' : '' ) . '>';
 			}
 		}
 		$html .= '</a></div>';
@@ -961,6 +964,9 @@ final class ProductShortcodes {
 			. esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>';
 		$html .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
 			. esc_html__( 'Documents', 'linker-commerce' ) . '</a>';
+		/* translators: 1: product title, 2: item number. */
+		$message = sprintf( __( 'Hello Linker team, I have a question about %1$s (Item %2$s).', 'linker-commerce' ), $view['title'], $view['sku'] );
+		$html   .= ContactChannels::link( 'WhatsApp', $message, 'pdp-tool' );
 		// The floating comparison chip is not copied here: ComparePage prints
 		// it from the footer on every surface that carries a selection
 		// control (spec 19 §5, one implementation).
@@ -2067,7 +2073,8 @@ final class ProductShortcodes {
 			foreach ( $facts as $fact ) {
 				$factshtml .= '<div><dt>' . esc_html( $fact['label'] ) . '</dt><dd>' . esc_html( $fact['value'] ) . '</dd></div>';
 			}
-			$image     = wp_get_attachment_image_src( (int) ( $card['gallery'][0] ?? 0 ), 'medium' );
+			$image_id  = (int) ( $card['gallery'][0] ?? 0 );
+			$image     = wp_get_attachment_image_src( $image_id, 'medium' );
 			$payload[] = array(
 				'id'           => (int) $id,
 				'compareId'    => Publication::canonical_id( (int) $id ),
@@ -2078,6 +2085,7 @@ final class ProductShortcodes {
 				'model'        => (string) $card['model'],
 				'url'          => (string) get_permalink( (int) $id ),
 				'image'        => $image[0] ?? '',
+				'imageSrcset'  => $image ? (string) wp_get_attachment_image_srcset( $image_id, 'medium' ) : '',
 				'imageWidth'   => $image[1] ?? 0,
 				'imageHeight'  => $image[2] ?? 0,
 				'priceHtml'    => $gated

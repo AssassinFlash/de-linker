@@ -2123,9 +2123,9 @@ final class ProductShortcodesTest extends TestCase {
 
 
 	/**
-	 * The tool row stays three cells. The configurator action lives in the project check.
+	 * The tool row includes a contextual WhatsApp contact. The configurator action lives in the project check.
 	 */
-	public function test_product_tools_stay_three_and_the_project_check_carries_the_product(): void {
+	public function test_product_tools_include_whatsapp_and_the_project_check_carries_the_product(): void {
 		unset( $GLOBALS['product'] );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ): string => (string) json_encode( $value ) ) );
 		WP_Mock::userFunction( 'has_filter' )->andReturn( true );
@@ -2144,7 +2144,8 @@ final class ProductShortcodesTest extends TestCase {
 		$xpath      = new \DOMXPath( $dom );
 		$tool_nodes = $xpath->query( '//*[@id="tools"]//*[contains(concat(" ", normalize-space(@class), " "), " pdp-tool ")]' );
 		$planner    = $xpath->query( '//*[@id="tools"]//a[contains(@href, "solution-configurator")]' );
-		$this->assertSame( 3, $tool_nodes instanceof \DOMNodeList ? $tool_nodes->length : -1 );
+		$this->assertStringContainsString( 'https://wa.me/8613312892178?text=', $tools );
+		$this->assertSame( 4, $tool_nodes instanceof \DOMNodeList ? $tool_nodes->length : -1 );
 		$this->assertSame( 0, $planner instanceof \DOMNodeList ? $planner->length : -1 );
 		$this->assertStringContainsString( 'Compare', $tools );
 		$this->assertStringContainsString( 'Ask Genie', $tools );

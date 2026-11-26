@@ -109,6 +109,7 @@ final class Module {
 		$locale->to( \Linker\Commerce\Inquiry\OrderLocale::current( $language ) );
 		try {
 			$facts = Context::review_facts( $project );
+			$chat  = Context::review_chat( $project, $facts, $language );
 		} finally {
 			$locale->back();
 		}
@@ -116,7 +117,7 @@ final class Module {
 		$with_details = static fn ( array $line ): array => $line + ( $display[ $line['product_id'] ] ?? array() );
 		return array(
 			'schema_version'          => 1,
-			'inquiry_form_html'       => ( new \Linker\Commerce\Inquiry\Form() )->planning( $language, $project, $bound, $handoff, $retry ),
+			'inquiry_form_html'       => ( new \Linker\Commerce\Inquiry\Form() )->planning( $language, $project, $chat, $bound, $handoff, $retry ),
 			'inquiry_draft_edit'      => array_filter( array_column( $lines, 'cart_key' ) ) ? array(
 				'url'        => rest_url( 'wc/store/v1/cart/update-item' ),
 				'nonce'      => wp_create_nonce( 'wc_store_api' ),

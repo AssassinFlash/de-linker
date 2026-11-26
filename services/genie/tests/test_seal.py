@@ -1794,6 +1794,8 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
                 "answer": "The system works with SAJ CH2.",
             }
         )
+        series_statement = faq["answer"]
+        faq["answer"] = f"{series_statement}\n\n{series_statement}"
         facts.tool_calls[0]["result"]["faq"] = [faq]
         mixed_route = Route(
             "documents",
@@ -1802,7 +1804,7 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         )
         mixed = fallback(facts, locale, mixed_route, question=compound)
         recovered_text = answer_text([block.model_dump() for block in mixed.blocks])
-        assert faq["answer"] in recovered_text
+        assert recovered_text.count(series_statement) == 1
         assert all(pair in recovered_text for pair in directions)
         model_note = (
             "kein einzelnes Wechselrichtermodell"
@@ -1819,7 +1821,24 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         facts.tool_calls.append(search)
         mixed = fallback(facts, locale, mixed_route, question=compound)
         recovered_text = answer_text([block.model_dump() for block in mixed.blocks])
-        assert faq["answer"] in recovered_text and model_note in recovered_text
+        assert (
+            recovered_text.count(series_statement) == 1 and model_note in recovered_text
+        )
+        published = (
+            "Das CB2-Batteriesystem kann nur als Set mit dem SAJ CH2 Hochvolt-Speicherwechselrichter verwendet werden."
+            if locale == "de"
+            else "The CB2 battery system can only be used as a set with SAJ's CH2 high voltage series storage inverter."
+        )
+        faq["answer"] = f"{published}\n\n{series_statement}"
+        published_answer = fallback(facts, locale, mixed_route, question=compound)
+        published_text = answer_text(
+            [block.model_dump() for block in published_answer.blocks]
+        )
+        assert published in published_text and published_text.count("CH2") == 1
+        assert model_note in published_text and all(
+            pair in published_text for pair in directions
+        )
+        faq["answer"] = series_statement
         blanket_claim = (
             "Für den CB2-100.3-HV5 ist keine Kombination dokumentiert."
             if locale == "de"
@@ -1840,7 +1859,7 @@ def test_cb2_clearance_answer_keeps_each_diagram_direction_and_manual_page() -> 
         )
         text = answer_text([block.model_dump() for block in sealed.blocks])
         assert blanket_claim not in text
-        assert text.count(faq["answer"]) == 1 and model_note in text
+        assert text.count(series_statement) == 1 and model_note in text
         assert all(pair in text for pair in directions)
         native = prepared_answer(facts, mixed_route, locale, question=compound)
         assert native is not None

@@ -234,7 +234,7 @@
 	document.addEventListener('click', function (event) {
 		const link = event.target.closest?.('a[data-doc-kind]');
 		if (link) window.linkerTrack('datasheet_download', { brand: link.dataset.docBrand, doc_kind: link.dataset.docKind });
-		const handoff = event.target.closest?.('[data-genie-handoff], .linker-genie-app a[href^="mailto:"], .linker-genie-hero__surface a[href^="mailto:"]');
+		const handoff = event.target.closest?.('[data-genie-handoff], .linker-genie-app a[href^="mailto:"], .linker-genie-hero__surface a[href^="mailto:"], .linker-genie-app a[href^="https://wa.me/"], .linker-genie-hero__surface a[href^="https://wa.me/"]');
 		if (handoff) window.linkerTrack('genie_handoff');
 	});
 	function releaseTag() {

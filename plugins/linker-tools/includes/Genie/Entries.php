@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Genie;
 
 use Linker\Commerce\Account\AuthTemplates;
+use Linker\Commerce\Presentation\ContactChannels;
 use Linker\Commerce\Presentation\PageUrls;
 
 /**
@@ -741,7 +742,7 @@ JS,
 		$locale = $this->locale();
 		$page   = $this->page_context();
 		return sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-contact-url="%18$s" data-inquiry-url="%19$s" data-request-page-url="%20$s" data-configurator-en-url="%21$s" data-configurator-de-url="%22$s" data-register-url="%23$s" data-genie-nonce-url="%24$s"></div>',
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-contact-url="%18$s" data-inquiry-url="%19$s" data-request-page-url="%20$s" data-configurator-en-url="%21$s" data-configurator-de-url="%22$s" data-register-url="%23$s" data-genie-nonce-url="%24$s" data-whatsapp-url="%25$s"></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -768,7 +769,8 @@ JS,
 			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'en' ) : '' ) ),
 			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'de' ) : '' ) ),
 			esc_attr( esc_url_raw( ! is_user_logged_in() && class_exists( AuthTemplates::class ) && 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ? AuthTemplates::register_url() : '' ) ),
-			esc_attr( esc_url_raw( admin_url( 'admin-ajax.php?action=rest-nonce' ) ) )
+			esc_attr( esc_url_raw( admin_url( 'admin-ajax.php?action=rest-nonce' ) ) ),
+			esc_attr( esc_url_raw( class_exists( ContactChannels::class ) ? ContactChannels::url() : '' ) )
 		);
 	}
 

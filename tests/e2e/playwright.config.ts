@@ -38,11 +38,13 @@ export default defineConfig({
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] },
 		},
-		// #229's font/fit boundary is an engine contract. Keep the extra engines
-		// scoped to the header fixture; model/account suites remain Chromium.
+		// Header positioning and the PV entry journey run across browser engines.
 		{
 			name: 'webkit',
-			testMatch: 'header-parity.spec.ts',
+			testMatch: [
+				'header-parity.spec.ts',
+				'planner-direct-capacity.spec.ts',
+			],
 			use: { ...devices['Desktop Safari'] },
 		},
 		{

@@ -170,16 +170,14 @@ final class TemplatesTest extends TestCase {
 			$this->assertStringContainsString( 'class="pdp-rail-fade pdp-rail-fade-top"', $html );
 			$this->assertStringContainsString( 'class="pdp-rail-fade pdp-rail-fade-bottom"', $html );
 
-			// The rail's own order: identity, price, key figures, availability,
-			// the primary action, the contact action, the tool row, the project
-			// entry — unchanged by the redesign, design only.
+			// Keep the product tools beside the model and item number.
 			$sequence = array(
+				'[linker_pdp_tools]',
 				'[linker_pdp_price]',
 				'[linker_pdp_key_stats]',
 				'[linker_pdp_availability]',
 				'[linker_pdp_cta]',
 				'[linker_pdp_ask]',
-				'[linker_pdp_tools]',
 				'class="pdp-project-check"',
 			);
 			$position = strpos( $html, (string) $sequence[0] );

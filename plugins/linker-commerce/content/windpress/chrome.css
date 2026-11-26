@@ -383,3 +383,41 @@ html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop
 .tv-search-matches a:is(:focus-visible,:hover), .tv-search-heading button:hover { background: var(--proto-neutral-100); }
 .tv-search-status { margin: .75rem 0 0; font-size: .875rem; }
 .tv-search-status:empty { display: none; }
+
+.linker-whatsapp {
+	display: inline-flex;
+	align-items: center;
+	gap: .35em;
+	vertical-align: middle;
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: .2em;
+}
+.linker-whatsapp svg { flex: none; }
+.linker-whatsapp-outline {
+	width: fit-content;
+	padding: .45em .85em;
+	border: 1px solid currentColor;
+	border-radius: 999px;
+	background: transparent;
+	font-weight: 600;
+	text-decoration: none;
+}
+#tv-header-v2 .tv-direct-contacts {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: .3rem .85rem;
+	border-top: 1px solid var(--proto-neutral-200);
+	padding: .65rem .85rem;
+	color: var(--proto-ink-deep);
+	font-size: .75rem;
+}
+#tv-header-v2 .tv-direct-contacts a { color: inherit; white-space: nowrap; text-decoration: none; }
+#tv-header-v2 #tv-mobile-panel > .tv-direct-contacts {
+	order: 31;
+	margin-top: .6rem;
+	font-size: .8125rem;
+}
+#tv-header-v2 #tv-mobile-panel > .tv-direct-contacts a { padding-block: .4rem; }
+#tv-header-v2 .tv-direct-contacts a:hover { text-decoration: underline; }
