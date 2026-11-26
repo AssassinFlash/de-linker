@@ -18,6 +18,16 @@ use WP_Post;
  * @covers \Linker\Commerce\Storefront\PageIndexing
  */
 final class PageIndexingTest extends TestCase {
+
+	/** Authored descriptions take precedence over the translated comparison summary. */
+	public function test_comparison_fills_only_an_empty_description(): void {
+		WP_Mock::userFunction( 'is_page', array( 'return' => true ) );
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
+		$indexing = new PageIndexing();
+		$this->assertSame( 'Manual introduction', $indexing->description( 'Manual introduction' ) );
+		$this->assertStringStartsWith( 'Compare hybrid inverters', $indexing->description( '' ) );
+	}
+
 	/**
 	 * Both languages use the source page assignment.
 	 *

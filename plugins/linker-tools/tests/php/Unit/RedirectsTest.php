@@ -309,7 +309,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 261, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 6, $maps['retired_tools'] );
+		$this->assertCount( 18, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
 	}
@@ -896,6 +896,27 @@ final class RedirectsTest extends TestCase {
 		$this->assertSame( self::HOME . '/solution-configurator/?step=roof', ( new Redirects() )->target( '/design-canvas/' ) );
 		$this->assertSame( self::HOME . '/de/loesungskonfigurator/?step=roof', ( new Redirects() )->target( '/de/design-canvas/' ) );
 		$this->assertSame( self::HOME . '/de/loesungskonfigurator/?step=roof', ( new Redirects() )->target( '/de/entwurfsflache/' ) );
+	}
+
+	/** Document, support and account shortcuts point directly to their public language routes. */
+	public function test_discovery_shortcuts_use_the_final_language_url(): void {
+		$this->wordpress();
+		foreach ( array(
+			'/faq-documents/'    => '/faq-download/',
+			'/de/faq-documents/' => '/de/faq-dokumente/',
+			'/documents/'        => '/faq-download/',
+			'/de/documents/'     => '/de/faq-dokumente/',
+			'/dokumente/'        => '/de/faq-dokumente/',
+			'/de/dokumente/'     => '/de/faq-dokumente/',
+			'/services/'         => '/services-support/',
+			'/de/services/'      => '/de/kundendienst/',
+			'/register/'         => '/my-account/register/',
+			'/de/register/'      => '/de/mein-konto/registrieren/',
+			'/registrieren/'     => '/de/mein-konto/registrieren/',
+			'/de/registrieren/'  => '/de/mein-konto/registrieren/',
+		) as $source => $target ) {
+			$this->assertSame( self::HOME . $target, ( new Redirects() )->target( $source ), $source );
+		}
 	}
 
 	/** The unprefixed German entry retains the visitor's selected task. */

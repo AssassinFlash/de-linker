@@ -9,7 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Presentation\ContactChannels;
 use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Settings\Options;
 use WP_Post;
 
 /** Extend the active SEOPress nodes and supply the missing public page types. */
@@ -17,8 +19,9 @@ final class PageSchema {
 	/** Register the public metadata hooks. */
 	public function register(): void {
 		add_filter( 'seopress_schemas_website', array( $this, 'localized_home' ) );
-		add_filter( 'seopress_get_json_data_organization', array( $this, 'localized_home' ) );
+		add_filter( 'seopress_get_json_data_organization', array( $this, 'organization' ) );
 		add_action( 'wp_head', array( $this, 'print_blocks' ) );
+		add_action( 'wp_head', array( $this, 'print_organization' ) );
 	}
 
 	/**
@@ -33,6 +36,75 @@ final class PageSchema {
 			$node['description'] = (string) get_post_meta( get_queried_object_id(), '_seopress_titles_desc', true );
 		}
 		return $node;
+	}
+
+	/**
+	 * Enrich the site's publisher without changing product manufacturers.
+	 *
+	 * @param array<string,mixed> $node Existing SEOPress graph node.
+	 * @return array<string,mixed>
+	 */
+	public function organization( array $node ): array {
+		$node    = $this->localized_home( $node );
+		$sales   = ( new Options() )->team_mailbox();
+		$germany = str_replace( ' ', '-', ContactChannels::GERMANY_PHONE );
+		$direct  = str_replace( ' ', '-', ContactChannels::DIRECT_PHONE );
+		return array_merge(
+			$node,
+			array(
+				'name'         => 'Linker',
+				'legalName'    => 'Linker Technology GmbH',
+				'url'          => PageUrls::home(),
+				'vatID'        => 'DE367367711',
+				'taxID'        => 'DE367367711',
+				'identifier'   => array(
+					'@type' => 'PropertyValue',
+					'name'  => 'Handelsregister',
+					'value' => 'Amtsgericht Stendal HRB 33824',
+				),
+				'address'      => array(
+					'@type'           => 'PostalAddress',
+					'streetAddress'   => 'Steinfeldstraße 3',
+					'postalCode'      => '39179',
+					'addressLocality' => 'Barleben',
+					'addressCountry'  => 'DE',
+				),
+				'email'        => $sales,
+				'telephone'    => $germany,
+				'contactPoint' => array(
+					array(
+						'@type'             => 'ContactPoint',
+						'contactType'       => 'sales',
+						'telephone'         => $germany,
+						'email'             => $sales,
+						'areaServed'        => 'EU',
+						'availableLanguage' => array( 'en', 'de' ),
+					),
+					array(
+						'@type'             => 'ContactPoint',
+						'contactType'       => 'customer support',
+						'telephone'         => $direct,
+						'email'             => ContactChannels::DIRECT_EMAIL,
+						'url'               => ContactChannels::WHATSAPP_BASE,
+						'availableLanguage' => array( 'en', 'de', 'zh' ),
+					),
+				),
+			)
+		);
+	}
+
+	/** SEOPress prints its Knowledge Graph organization only on the front page. */
+	public function print_organization(): void {
+		if ( ! is_front_page() ) {
+			$this->print_node(
+				$this->organization(
+					array(
+						'@type' => 'Organization',
+						'@id'   => PageUrls::home() . '#organization',
+					)
+				)
+			);
+		}
 	}
 
 	/** Print breadcrumbs and page identities for the visible public page. */
@@ -98,7 +170,7 @@ final class PageSchema {
 				'isPartOf'    => $site,
 			);
 			if ( $contact ) {
-				$node['mainEntity'] = array_merge( $site, array( '@type' => 'Organization' ) );
+				$node['mainEntity'] = array( '@id' => $home . '#organization' );
 			}
 			$this->print_node( $node );
 		}

@@ -125,8 +125,8 @@ final class Module {
 
 	/** Marketing and editorial pages have no Woo cart UI. Registered dependencies remain available to widgets. */
 	public function trim_woo_assets(): void {
-		if ( function_exists( 'is_shop' ) && is_shop() && ! did_action( 'woocommerce_add_to_cart' ) ) {
-			// The custom product grid and filters use the site's WindPress styles.
+		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() || is_product() || ComparePage::is_comparison_page() ) && ! did_action( 'woocommerce_add_to_cart' ) ) {
+			// WindPress supplies the catalog, comparison and product detail styles.
 			wp_dequeue_style( 'woocommerce-general' );
 			return;
 		}

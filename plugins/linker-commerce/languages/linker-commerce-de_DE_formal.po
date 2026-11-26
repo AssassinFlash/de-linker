@@ -7940,3 +7940,16 @@ msgstr "Nur Unterschiede anzeigen"
 #: includes/Presentation/ProductShortcodes.php:210
 msgid "Press Search to reload the results."
 msgstr "Wählen Sie „Suchen“, um die Ergebnisse erneut zu laden."
+
+#: includes/Storefront/PageIndexing.php
+msgid "Compare hybrid inverters, battery storage systems and accessories side by side by AC power, usable capacity, phase and manufacturer datasheets."
+msgstr "Vergleichen Sie Hybrid-Wechselrichter, Batteriespeicher und Zubehör direkt nach AC-Leistung, nutzbarer Kapazität, Phasenanzahl und Datenblatt."
+
+#: includes/Storefront/PageIndexing.php
+msgid "Read about monitoring solar and storage systems, using meter data and managing energy flows. Find practical guidance for installers working on site."
+msgstr "Lesen Sie, wie Sie PV- und Speichersysteme überwachen, Zählerdaten nutzen und Energieflüsse im Betrieb auswerten. Mit Beiträgen für die Praxis."
+
+#: includes/Storefront/PageIndexing.php
+#, php-format
+msgid "Articles on %s from the Linker journal. Read practical guidance on solar and storage projects for installers."
+msgstr "Lesen Sie im Linker-Blog Beiträge zum Thema %s. Hier finden Sie Hinweise für die Planung und den Betrieb von PV- und Speichersystemen."
