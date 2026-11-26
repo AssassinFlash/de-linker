@@ -31,6 +31,7 @@ lk-dropzone-description
 lk-dropzone-icon
 lk-dropzone-title
 md:grid-cols-2
+number
 sc-actions
 sc-array-settings
 sc-assistant-link
@@ -41,6 +42,7 @@ sc-button
 sc-button-danger
 sc-canvas-caption
 sc-canvas-tools
+sc-capacity-pending
 sc-card
 sc-card-state
 sc-check

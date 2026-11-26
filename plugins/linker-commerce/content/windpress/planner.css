@@ -514,6 +514,7 @@
   .sc-configurator .sc-package p { color: var(--proto-neutral-500); font-size: 13px; }
   .sc-configurator .sc-package-capacity { display: grid; gap: 2px; }
   .sc-configurator .sc-package-capacity strong { white-space: nowrap; font-size: 22px; line-height: 1.25; color: var(--proto-ink-deep); }
+  .sc-configurator .sc-package-capacity .sc-capacity-pending { white-space: normal; overflow-wrap: break-word; font-size: 16px; }
   .sc-configurator .sc-package-capacity span { font-size: 13px; color: var(--proto-neutral-500); }
   .sc-configurator .sc-package .sc-package-status { padding-top: 12px; border-top: 1px solid var(--proto-color-line); font-weight: 600; color: var(--proto-ink-deep); }
   .sc-configurator .sc-package .sc-button { width: 100%; margin-top: auto; }

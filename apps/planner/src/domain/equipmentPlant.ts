@@ -2,6 +2,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/equipment-plant.schema.json" with { type: "json" };
 import { ApiError } from "../data/protocol.ts";
 import type { Json, JsonObject } from "../data/protocol.ts";
+import { readBrief } from "./brief.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { readPvPlantStringPlan } from "./pvPlantStrings.ts";
 import { readPvStringPlan } from "./pvStrings.ts";
@@ -98,7 +99,12 @@ export function demandEquipment(inputs: JsonObject): JsonObject {
 /** Only an independent new PV system uses the site's array size as inverter DC demand. */
 export function usesSiteArrayForEquipment(inputs: JsonObject): boolean {
 	const scope = readObject(inputs.brief ?? {}).system_scope;
-	if (scope !== "new_pv_storage" && scope !== "pv_only") return false;
+	if (
+		scope !== "new_pv_storage" &&
+		scope !== "pv_only" &&
+		!(scope == null && typeof demandEquipment(inputs).pv_dc_kw === "number")
+	)
+		return false;
 	if (hasPlant(inputs)) {
 		return (
 			readObject(inputs.energy_plant_setup ?? inputs.energy_plant ?? {})
@@ -121,6 +127,21 @@ export function changeDemandEquipment(
 		...plant,
 		requirements: { ...plant.requirements, ...patch },
 	});
+}
+
+export function changeSiteArrayPower(
+	inputs: JsonObject,
+	power: number | null,
+): JsonObject {
+	const brief = readBrief(inputs.brief);
+	const next = changeDemandEquipment(inputs, { pv_dc_kw: power });
+	if (
+		brief.system_scope === null &&
+		((power !== null && power > 0) || usesSiteArrayForEquipment(inputs))
+	) {
+		return { ...next, brief: { ...brief, system_scope: "new_pv_storage" } };
+	}
+	return next;
 }
 
 const equipmentFields = [

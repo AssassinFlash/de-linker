@@ -65,7 +65,7 @@ import {
 } from "../../domain/pvgisReference.ts";
 import { invalidateEnergyReplay } from "../../domain/energyScenario.ts";
 import {
-	changeDemandEquipment,
+	changeSiteArrayPower,
 	demandEquipment,
 	usesSiteArrayForEquipment,
 } from "../../domain/equipmentPlant.ts";
@@ -740,9 +740,7 @@ export function SolarInstallation({
 				(power !== null || arrays.length === 1) &&
 				power !== demandEquipment(current).pv_dc_kw;
 			return {
-				...(updateDemand
-					? changeDemandEquipment(next, { pv_dc_kw: power })
-					: next),
+				...(updateDemand ? changeSiteArrayPower(next, power) : next),
 				known_panel_details: panels,
 			};
 		});
