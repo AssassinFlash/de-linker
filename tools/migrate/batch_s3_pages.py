@@ -6,6 +6,7 @@ import argparse
 import json
 import shlex
 import subprocess
+from html import unescape
 from pathlib import Path
 from typing import Any
 
@@ -108,18 +109,17 @@ def tagline(wp: str, folder: Path, action: str) -> None:
             },
         )
     saved = json.loads(path.read_text())
-    if saved["site"] != command("option", "get", "home") or original not in (
-        saved["before"],
-        TAGLINE,
+    if saved["site"] != command("option", "get", "home") or (
+        original != saved["before"] and unescape(original) != TAGLINE
     ):
         raise ValueError("The site or tagline differs from the reviewed snapshot")
     wanted = saved["before"] if action == "restore" else TAGLINE
-    if action == "backup" or wanted == original:
+    if action == "backup" or unescape(wanted) == unescape(original):
         return
     if action == "read":
         raise ValueError("Reviewed site tagline is not live")
     command("option", "update", "blogdescription", wanted)
-    if command("option", "get", "blogdescription") != wanted:
+    if unescape(command("option", "get", "blogdescription")) != unescape(wanted):
         raise RuntimeError("Site tagline readback failed")
 
 

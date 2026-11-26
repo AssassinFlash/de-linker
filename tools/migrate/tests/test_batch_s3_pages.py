@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
 from typing import Any
+
+from pytest import MonkeyPatch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from batch_s3_pages import DESCRIPTIONS, FIELDS, desired_values
 
@@ -40,3 +46,28 @@ def test_installer_page_and_german_copy_source_agree() -> None:
         for pair in DESCRIPTIONS.values()
         for description in pair
     )
+
+
+def test_wp_escaped_tagline_round_trip(
+    tmp_path: Path, monkeypatch: MonkeyPatch
+) -> None:
+    import html
+
+    import batch_s3_pages as migration
+
+    value = "Original tagline"
+
+    def wp(command: list[str], *, text: bool) -> str:
+        nonlocal value
+        if command[-1] == "home":
+            return "https://example.org"
+        if command[2] == "update":
+            value = html.escape(html.unescape(command[-1]))
+        return value
+
+    monkeypatch.setattr(migration.subprocess, "check_output", wp)
+    for action in ("backup", "apply", "apply", "read"):
+        migration.tagline("wp", tmp_path, action)
+    assert value == migration.TAGLINE.replace("&", "&amp;")
+    migration.tagline("wp", tmp_path, "restore")
+    assert value == "Original tagline"
