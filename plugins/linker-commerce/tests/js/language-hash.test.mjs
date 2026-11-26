@@ -80,3 +80,15 @@ test('a link that opens its own window keeps its destination', () => {
 		'http://linker.test/de/mein-konto/registrieren/'
 	);
 });
+
+test('a bubbling click from a text node leaves language links available', () => {
+	const window = page('http://linker.test/my-account/register/#step-2', LINKS);
+	const errors = [];
+	window.addEventListener('error', event => errors.push(event.message));
+	window.document.querySelector('a').firstChild.dispatchEvent(
+		new window.MouseEvent('click', { bubbles: true })
+	);
+	assert.deepEqual(errors, []);
+	assert.equal(switchTo(window).hash, '#step-2');
+	window.close();
+});
