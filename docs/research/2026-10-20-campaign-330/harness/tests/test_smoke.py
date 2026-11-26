@@ -55,6 +55,8 @@ def test_probe_records_final_url_headers_and_deletes() -> None:
             return
 
         def do_POST(self) -> None:  # noqa: N802 - http.server's method name
+            length = int(self.headers.get("Content-Length") or "0")
+            self.rfile.read(length)
             if self.path.endswith("/genie/turn"):
                 host = self.headers.get("Host")
                 location = f"http://{host}/wp-json/linker-ai/v1/genie/landed"
@@ -63,8 +65,6 @@ def test_probe_records_final_url_headers_and_deletes() -> None:
                 self.send_header("Date", "Mon, 19 Oct 2026 09:44:00 GMT")
                 self.end_headers()
                 return
-            length = int(self.headers.get("Content-Length") or "0")
-            self.rfile.read(length)
             stream = 'data: {"turn_id": 7, "language": "en", "route": "products"}\n\n'
             body = json.dumps({"conversation_id": 42, "stream": stream}).encode()
             self.send_response(200)

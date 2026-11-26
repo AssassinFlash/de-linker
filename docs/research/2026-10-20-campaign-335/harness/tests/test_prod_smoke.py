@@ -66,6 +66,8 @@ def test_probe_records_final_url_headers_and_deletes() -> None:
             return
 
         def do_POST(self) -> None:  # noqa: N802 - http.server's method name
+            length = int(self.headers.get("Content-Length") or "0")
+            self.rfile.read(length)
             if self.path.endswith("/genie/turn"):
                 host = self.headers.get("Host")
                 location = f"http://{host}/wp-json/linker-ai/v1/genie/landed"
@@ -74,8 +76,6 @@ def test_probe_records_final_url_headers_and_deletes() -> None:
                 self.send_header("X-LiteSpeed-Cache", "hit")
                 self.end_headers()
                 return
-            length = int(self.headers.get("Content-Length") or "0")
-            self.rfile.read(length)
             stream = (
                 'data: {"turn_id": 7, "language": "en", "route": "products"}\n\n'
                 'data: {"type": "text", "text": "The SAJ H2-10K-T3 pairs with '
