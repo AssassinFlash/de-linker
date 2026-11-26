@@ -851,3 +851,13 @@ html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
 		text-align: center;
 	}
 }
+@media (max-width: 480px) {
+	#home-a .hero-cinematic .home-direct-desk {
+		width: calc(100% + 28px);
+		margin-inline: -14px;
+		font-size: 12px;
+		letter-spacing: -0.015em;
+	}
+	#home-a .hero-cinematic .home-direct-desk .linker-whatsapp { gap: 2px; }
+	#home-a .hero-cinematic .home-direct-desk svg { width: 13px; }
+}
