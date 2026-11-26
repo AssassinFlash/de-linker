@@ -215,7 +215,7 @@ final class LlmsTxt {
 			if ( is_float( $facts->nominal_kwh ) ) {
 				$rating .= ' · ' . $facts->nominal_kwh . ' kWh';
 			}
-			$rows[] = ( '' !== $label ? $label . ': ' : '' ) . self::post_pair( $id, $de ) . $rating;
+			$rows[] = ( '' !== $label ? $label . ': ' : '' ) . self::post_pair( $id, $de, $rating );
 		}
 		return $rows;
 	}
@@ -223,11 +223,12 @@ final class LlmsTxt {
 	/**
 	 * Pair the native titles and permalinks.
 	 *
-	 * @param int $en English post ID.
-	 * @param int $de German post ID.
+	 * @param int    $en English post ID.
+	 * @param int    $de German post ID.
+	 * @param string $rating Published rating, using English decimal notation.
 	 */
-	private static function post_pair( int $en, int $de ): string {
-		return self::link( get_the_title( $en ), (string) get_permalink( $en ) ) . ' · ' . self::link( get_the_title( $de ), (string) get_permalink( $de ) );
+	private static function post_pair( int $en, int $de, string $rating = '' ): string {
+		return self::link( get_the_title( $en ), (string) get_permalink( $en ) ) . $rating . ' · ' . self::link( get_the_title( $de ), (string) get_permalink( $de ) ) . str_replace( '.', ',', $rating );
 	}
 
 	/**

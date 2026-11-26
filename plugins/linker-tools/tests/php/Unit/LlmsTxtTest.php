@@ -73,7 +73,18 @@ final class LlmsTxtTest extends TestCase {
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
 		WP_Mock::userFunction( 'get_post_status' )->andReturnUsing( static fn( int $id ) => 1105 === $id ? 'draft' : 'publish' );
 		WP_Mock::userFunction( 'has_filter' )->andReturn( false );
-		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( static fn( int $id, string $field ) => '_tv_legacy_acf_json' === $field ? '{"product_series":"ESA Series"}' : '' );
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
+			static fn( int $id, string $field ) => match ( $field ) {
+				'_tv_legacy_acf_json' => '{"product_series":"ESA Series"}',
+				'_tv_b2b_figures' => array(
+					'rated_energy_kwh' => array(
+						'value' => 112.6,
+						'unit'  => 'kWh',
+					),
+				),
+				default => '',
+			}
+		);
 		WP_Mock::userFunction( 'get_the_terms' )->andReturnUsing( static fn( int $id, string $taxonomy ) => 'pa_brand' === $taxonomy ? array( (object) array( 'name' => 'GoodWe' ) ) : array() );
 		WP_Mock::userFunction( 'get_the_title' )->andReturnUsing( static fn( int $id ) => $names[ $id ] );
 		WP_Mock::userFunction( 'get_permalink' )->andReturnUsing( static fn( int $id ) => $home . $routes[ $id ] );
@@ -84,7 +95,8 @@ final class LlmsTxtTest extends TestCase {
 
 		$text = LlmsTxt::document( $home );
 		$this->assertSame( 1, substr_count( $text, 'GoodWe · ESA Series' ) );
-		$this->assertStringContainsString( '[ESA Eins](https://linker.test/de/produkt/esa-eins/)', $text );
+		$this->assertStringContainsString( '[ESA One](https://linker.test/product/esa-one/) · 112.6 kWh', $text );
+		$this->assertStringContainsString( '[ESA Eins](https://linker.test/de/produkt/esa-eins/) · 112,6 kWh', $text );
 		$this->assertStringContainsString( '[Lösungen](https://linker.test/de/loesung/)', $text );
 		$this->assertStringContainsString( '[Wechselrichter](https://linker.test/de/produkt-kategorie/wechselrichter/)', $text );
 		$this->assertStringContainsString( 'Last updated: 2026-11-19', $text );
