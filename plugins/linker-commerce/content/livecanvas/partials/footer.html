@@ -30,44 +30,49 @@
   const root = document.getElementById('tv-footer-v2');
   if (!root) return;
   const dock = root.querySelector('.footer-dock');
-  const tabs = [...dock.querySelectorAll('[data-footer-tab]')];
-  const panels = tabs.map(tab => root.querySelector('#' + tab.getAttribute('aria-controls')));
-  const select = (index, focus = false) => {
-    tabs.forEach((tab, position) => {
-      const selected = position === index;
-      tab.setAttribute('aria-selected', String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-      panels[position].hidden = !selected;
+  function setupTabs() {
+    if (!dock) return;
+    const tabs = [...dock.querySelectorAll('[data-footer-tab]')];
+    const panels = tabs.map(tab => root.querySelector('#' + tab.getAttribute('aria-controls')));
+    if (!tabs.length || panels.some(panel => !panel)) return;
+    const select = (index, focus = false) => {
+      tabs.forEach((tab, position) => {
+        const selected = position === index;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        panels[position].hidden = !selected;
+      });
+      if (focus) tabs[index].focus();
+    };
+    dock.setAttribute('role', 'tablist');
+    tabs.forEach((tab, index) => {
+      tab.setAttribute('role', 'tab');
+      panels[index].setAttribute('role', 'tabpanel');
+      tab.addEventListener('click', () => select(index));
+      tab.addEventListener('keydown', event => {
+        const steps = {ArrowRight:1, ArrowLeft:-1};
+        if (!(event.key in steps) && event.key !== 'Home' && event.key !== 'End') return;
+        event.preventDefault();
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + steps[event.key] + tabs.length) % tabs.length;
+        select(next, true);
+      });
     });
-    if (focus) tabs[index].focus();
-  };
-  dock.setAttribute('role', 'tablist');
-  tabs.forEach((tab, index) => {
-    tab.setAttribute('role', 'tab');
-    panels[index].setAttribute('role', 'tabpanel');
-    tab.addEventListener('click', () => select(index));
-    tab.addEventListener('keydown', event => {
-      const steps = {ArrowRight:1, ArrowLeft:-1};
-      if (!(event.key in steps) && event.key !== 'Home' && event.key !== 'End') return;
-      event.preventDefault();
-      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + steps[event.key] + tabs.length) % tabs.length;
-      select(next, true);
-    });
-  });
-  root.classList.add('footer-ready');
+    root.classList.add('footer-ready');
+    select(0);
+  }
+  setupTabs();
   const arrow = root.querySelector('[data-footer-contact-arrow]');
   if (arrow && arrow.previousElementSibling) arrow.previousElementSibling.append(' ', arrow);
-  select(0);
   const german = (document.documentElement.lang || '').toLowerCase().indexOf('de') === 0;
   root.querySelectorAll('[data-footer-copy]').forEach(copy => copy.addEventListener('click', async () => {
     const status = root.querySelector('.footer-copy-status');
     try {
       await navigator.clipboard.writeText(copy.dataset.footerCopy);
       copy.dataset.copied = 'true';
-      status.textContent = german ? 'E-Mail-Adresse kopiert.' : 'Email address copied.';
+      if (status) status.textContent = german ? 'E-Mail-Adresse kopiert.' : 'Email address copied.';
       copy.setAttribute('aria-label', german ? 'E-Mail-Adresse kopiert' : 'Email address copied');
     } catch {
-      status.textContent = german ? 'Markieren Sie die E-Mail-Adresse, um sie zu kopieren.' : 'Select the email address to copy it.';
+      if (status) status.textContent = german ? 'Markieren Sie die E-Mail-Adresse, um sie zu kopieren.' : 'Select the email address to copy it.';
     }
   }));
 })();

@@ -11,7 +11,7 @@
 (() => {
 	const links = 'a[data-linker-language-choice]';
 	document.addEventListener('click', (event) => {
-		const link = event.target.closest(links);
+		const link = event.target.closest?.(links);
 		if (!link || link.target || link.hasAttribute('download')) {
 			return;
 		}

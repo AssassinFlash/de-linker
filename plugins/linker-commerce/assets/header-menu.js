@@ -78,11 +78,12 @@
 	const german = document.documentElement.lang.startsWith( 'de' );
 	const searchLink = header.querySelector( '[data-tv-header-search]' );
 	const dialog = header.querySelector( '#tv-site-search' );
-	if ( searchLink && typeof dialog?.showModal === 'function' ) {
-		const form = dialog.querySelector( 'form' );
-		const input = form.elements.s;
-		const matches = dialog.querySelector( '.tv-search-matches' );
-		const status = dialog.querySelector( '[role="status"]' );
+	const form = dialog?.querySelector( 'form' );
+	const input = form?.elements.s;
+	const matches = dialog?.querySelector( '.tv-search-matches' );
+	const status = dialog?.querySelector( '[role="status"]' );
+	const closeSearch = dialog?.querySelector( '[data-tv-search-close]' );
+	if ( searchLink && typeof dialog?.showModal === 'function' && input && matches && status && closeSearch ) {
 		let request;
 		let timer;
 		function resetMatches() {
@@ -92,7 +93,8 @@
 			matches.hidden = true;
 			status.textContent = '';
 		}
-		searchLink.setAttribute( 'aria-label', dialog.querySelector( 'h2' ).textContent );
+		const heading = dialog.querySelector( 'h2' );
+		if ( heading ) searchLink.setAttribute( 'aria-label', heading.textContent );
 		searchLink.setAttribute( 'aria-haspopup', 'dialog' );
 		searchLink.setAttribute( 'aria-controls', dialog.id );
 		searchLink.addEventListener( 'click', event => {
@@ -101,7 +103,7 @@
 			dialog.showModal();
 			input.focus();
 		} );
-		dialog.querySelector( '[data-tv-search-close]' ).addEventListener( 'click', () => dialog.close() );
+		closeSearch.addEventListener( 'click', () => dialog.close() );
 		dialog.addEventListener( 'keydown', event => {
 			if ( event.key === 'Escape' ) {
 				event.preventDefault();
@@ -149,7 +151,9 @@
 		} );
 	}
 
-	const disclosures = items.concat( account ? [ account ] : [] );
+	const disclosures = items.concat( account ? [ account ] : [] ).filter( item =>
+		buttonFor( item ) && item.querySelector( '.tv-mega-menu, .tv-b2b-acct-menu' )
+	);
 	function buttonFor( item ) {
 		return item.querySelector( '.tv-nav-link, .tv-b2b-acct-btn' );
 	}
@@ -208,6 +212,7 @@
 			} );
 	} );
 	function setPanel( open ) {
+		if ( ! toggle || ! panel ) return;
 		if ( mobile ) mobile.open = open;
 		panel.dataset.open = String( open );
 		// A native summary exposes the details element's actual expanded state.
@@ -230,14 +235,14 @@
 	}
 	document.addEventListener( 'click', event => {
 		disclosures.forEach( item => { if ( ! item.contains( event.target ) ) setOpen( item, false ); } );
-		if ( panel && panel.dataset.open === 'true' && ! panel.contains( event.target ) && ! toggle.contains( event.target ) ) {
+		if ( panel && panel.dataset.open === 'true' && ! panel.contains( event.target ) && ! toggle?.contains( event.target ) ) {
 			setPanel( false );
 		}
 	} );
 	document.addEventListener( 'focusout', event => {
 		if ( ! panel || panel.dataset.open !== 'true' ) return;
 		const next = event.relatedTarget;
-		if ( next && ( panel.contains( next ) || toggle.contains( next ) ) ) return;
+		if ( next && ( panel.contains( next ) || toggle?.contains( next ) ) ) return;
 		setPanel( false );
 	} );
 	document.addEventListener( 'keydown', event => {
@@ -248,7 +253,7 @@
 			buttonFor( open ).focus();
 		} else if ( panel && panel.dataset.open === 'true' && ! document.querySelector( 'dialog[open]' ) ) {
 			setPanel( false );
-			toggle.focus();
+			toggle?.focus();
 		}
 	} );
 	if ( frame && nav ) {

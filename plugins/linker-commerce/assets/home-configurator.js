@@ -4,17 +4,20 @@
 	if (!section) return;
 
 	const tablist = section.querySelector('[role="tablist"]');
+	if (!tablist) return;
 	const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+	const panels = tabs.map(tab => document.getElementById(tab.getAttribute('aria-controls')));
+	if (!tabs.length || panels.some(panel => !panel)) return;
 	const address = section.querySelector('[data-showcase-address]');
 
 	function select(tab) {
-		for (const item of tabs) {
+		for (const [index, item] of tabs.entries()) {
 			const active = item === tab;
 			item.setAttribute('aria-selected', String(active));
 			item.tabIndex = active ? 0 : -1;
-			document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
+			panels[index].hidden = !active;
 		}
-		address.textContent = 'de-linker.com' + tab.pathname + tab.search;
+		if (address) address.textContent = 'de-linker.com' + tab.pathname + tab.search;
 		const listBounds = tablist.getBoundingClientRect();
 		const tabBounds = tab.getBoundingClientRect();
 		if (tabBounds.left < listBounds.left || tabBounds.right > listBounds.right) {

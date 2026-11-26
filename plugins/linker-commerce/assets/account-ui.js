@@ -86,10 +86,14 @@
 				return true;
 			}
 		}
-		continuation = { form, resume };
-		if ( notice ) notice.hidden = true;
 		// Woo records the clicked update button before routing a verified submit to AJAX.
 		const update = form.querySelector( 'button[name="update_cart"], input[type="submit"][name="update_cart"]' );
+		if ( ! update ) {
+			if ( notice ) notice.hidden = false;
+			return true;
+		}
+		continuation = { form, resume };
+		if ( notice ) notice.hidden = true;
 		update.disabled = false;
 		update.click();
 		syncDraftState();
@@ -115,9 +119,10 @@
 			}
 		} );
 		draftSurface.addEventListener( 'click', ( event ) => {
-			const step = event.target.closest( 'button[data-quantity-step]' );
+			const step = event.target.closest?.( 'button[data-quantity-step]' );
 			if ( step ) {
-				const input = step.closest( '.linker-inquiry-stepper' ).querySelector( 'input.qty' );
+				const input = step.closest( '.linker-inquiry-stepper' )?.querySelector( 'input.qty' );
+				if ( ! input ) return;
 				if ( step.dataset.quantityStep === '1' ) input.stepUp();
 				else input.stepDown();
 				input.dispatchEvent( new Event( 'input', { bubbles: true } ) );
@@ -190,7 +195,7 @@
 
 
 		document.addEventListener( 'click', ( event ) => {
-			const link = event.target.closest( '[data-inquiry-edit], a[lang], a[hreflang]' );
+			const link = event.target.closest?.( '[data-inquiry-edit], a[lang], a[hreflang]' );
 			if ( ! link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) {
 				return;
 			}
@@ -226,7 +231,7 @@
 		const retry = new URLSearchParams( window.location.search ).get( retryField );
 		if ( retry ) {
 			document.addEventListener( 'click', ( event ) => {
-				const link = event.target.closest( 'a[lang], a[hreflang]' );
+				const link = event.target.closest?.( 'a[lang], a[hreflang]' );
 				if ( link && ! event.defaultPrevented ) {
 					carryRetry( link, retry );
 				}
@@ -254,7 +259,9 @@
 			for ( let index = window.sessionStorage.length - 1; index >= 0; index-- ) {
 				const key = window.sessionStorage.key( index );
 				if ( key?.startsWith( 'linker-preliminary-inquiry-pending:' ) ) {
-					const pending = JSON.parse( window.sessionStorage.getItem( key ) || 'null' );
+					let pending;
+					try { pending = JSON.parse( window.sessionStorage.getItem( key ) || 'null' ); }
+					catch { continue; }
 					if ( pending?.requestId === received ) {
 						window.sessionStorage.removeItem( key );
 					}
@@ -608,7 +615,7 @@
 		}
 
 		const clearEditedFeedback = ( event ) => {
-			const row = event.target.closest( '.form-row' );
+			const row = event.target.closest?.( '.form-row' );
 			if ( row ) {
 				mark( row, false );
 			}

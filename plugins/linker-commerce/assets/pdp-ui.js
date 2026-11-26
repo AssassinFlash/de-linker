@@ -174,7 +174,7 @@
 	   aria-selected, roving tabindex and panel visibility in sync on click.
 	   Decks marked .pdp-all-panels keep every panel visible in the grid. */
 	root.addEventListener("click", function (event) {
-		var button = event.target.closest(".pdp-info-tabs [role=\"tab\"]");
+		var button = event.target.closest?.(".pdp-info-tabs [role=\"tab\"]");
 		if (!button || !root.contains(button)) {
 			return;
 		}

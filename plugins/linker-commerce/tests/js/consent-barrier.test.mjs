@@ -332,3 +332,18 @@ test('a withdrawal in another tab stops a running collector and disables Google'
 	assert.equal(window.__reloads, 1);
 	assert.equal(window.clarity.q.at(-1)[1].analytics_Storage, 'denied');
 });
+
+test('withdrawal with a blocked Clarity callback clears state and leaves unrelated transports usable', () => {
+	const window = page(held);
+	window.linkerClarityProject = 'test123';
+	const beacons = [];
+	window.navigator.sendBeacon = (url) => { beacons.push(url); return true; };
+	consent(window, {statistics: 'allow'});
+	window.clarity = null;
+	consent(window, {statistics: 'deny'});
+	assert.equal(window.__reloads, 1);
+	assert.equal(window.navigator.sendBeacon('https://q.clarity.ms/collect'), true);
+	assert.equal(window.navigator.sendBeacon('http://['), true);
+	assert.deepEqual(beacons, ['http://[']);
+	window.close();
+});

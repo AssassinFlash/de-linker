@@ -13,7 +13,7 @@
 		}
 	}
 	document.addEventListener('click', (event) => {
-		const link = event.target.closest('a[data-linker-language-choice]');
+		const link = event.target.closest?.('a[data-linker-language-choice]');
 		if (
 			!link ||
 			!/^#section-\d+$/.test(location.hash) ||

@@ -251,6 +251,7 @@
 	let clarityTag;
 	function releaseClarity() {
 		if (!window.linkerClarityProject || clarityTag) return;
+		if (window.clarity != null && typeof window.clarity !== 'function') return;
 		window.clarity = window.clarity || function () {
 			(window.clarity.q = window.clarity.q || []).push(arguments);
 		};
@@ -264,7 +265,8 @@
 		// ConsentV2 and pagehide both flush Clarity's collector before unloading.
 		// Gate its two transports for the remainder of this withdrawn document.
 		function isCollector(url) {
-			const target = new URL(url, document.baseURI);
+			let target;
+			try { target = new URL(url, document.baseURI); } catch { return false; }
 			return target.protocol === 'https:' && target.hostname.endsWith('.clarity.ms') && target.pathname === '/collect';
 		}
 		const beacon = navigator.sendBeacon?.bind(navigator);
@@ -276,7 +278,9 @@
 			if (isCollector(url)) this.send = () => this.abort();
 			return open.call(this, method, url, ...args);
 		};
-		window.clarity('consentv2', {analytics_Storage: 'denied', ad_Storage: 'denied'});
+		if (typeof window.clarity === 'function') {
+			window.clarity('consentv2', {analytics_Storage: 'denied', ad_Storage: 'denied'});
+		}
 	}
 	// CookieYes changes the shared cookie but emits its event only in the active tab.
 	const consentChannel = window.BroadcastChannel ? new BroadcastChannel('linker-analytics-consent') : null;
