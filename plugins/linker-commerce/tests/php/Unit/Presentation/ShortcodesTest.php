@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
+use Linker\Commerce\Presentation\ContactChannels;
 use Linker\Commerce\Presentation\Shortcodes;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
@@ -85,6 +86,22 @@ final class ShortcodesTest extends TestCase {
 		$codes->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/** The inquiry groups both links, while other forms use only the Genie trigger. */
+	public function test_form_assistant_groups_only_the_requested_contact_links(): void {
+		WP_Mock::userFunction( 'get_page_by_path' )->with( 'genie' )->andReturn( new \WP_Post( (object) array( 'ID' => 17 ) ) );
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( 'en' );
+		WP_Mock::userFunction( 'get_permalink' )->with( 17 )->andReturn( 'https://example.test/genie/' );
+
+		$genie = Shortcodes::form_assistant();
+		$this->assertStringStartsWith( '<a class="linker-form-assistant"', $genie );
+		$this->assertStringContainsString( 'href="https://example.test/genie/" data-linker-genie-open', $genie );
+		$this->assertStringEndsWith( '>Ask Genie</a>', $genie );
+		$this->assertSame(
+			'<span class="linker-form-helpers">' . $genie . '<span aria-hidden="true">·</span>' . ContactChannels::link() . '</span>',
+			Shortcodes::form_assistant( array( 'whatsapp' => '1' ) )
+		);
 	}
 
 	/**
