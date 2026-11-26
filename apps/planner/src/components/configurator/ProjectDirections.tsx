@@ -184,6 +184,7 @@ export function ProjectDirections({
 					/>
 					<NumberField
 						name="site_pv_kw"
+						notation="point-or-comma"
 						label={__("PV array", "linker-tools")}
 						unit="kWp"
 						locale={config.locale}

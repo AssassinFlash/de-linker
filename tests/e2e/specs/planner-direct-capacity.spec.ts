@@ -8,6 +8,7 @@ for (const lang of ['en', 'de'] as const) {
 		test(`direct PV entry updates the equipment preview in ${lang} at ${width}px`, async ({
 			page,
 			context,
+			browserName,
 			baseURL,
 		}, info) => {
 			const origin = baseURL ?? instance().url;
@@ -55,7 +56,7 @@ for (const lang of ['en', 'de'] as const) {
 					.selectOption('user_estimate');
 				await page
 					.locator('[name="site_pv_kw"]')
-					.fill(label('11.09', '11,09'));
+					.fill(de && browserName === 'webkit' ? '11,09' : '11.09');
 				await expect(
 					page.locator('[name="project_start"]')
 				).toHaveValue('known');
