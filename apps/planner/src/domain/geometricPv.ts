@@ -1,5 +1,5 @@
 /** A separately named AC scenario; existing unshaded profiles keep their identity. */
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/geometric-pv.schema.json" with { type: "json" };
 import type { JsonObject, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -84,9 +84,7 @@ export interface GeometricPvLimits {
 export type GeometricPvClearFlatRoofLimits = NonNullable<
 	Session["runtime"]["limits"]["geometric_pv_clear_flat_roof"]
 >;
-const check = new Ajv2020({ strict: true, strictNumbers: true }).compile(
-	schema,
-);
+const check = validate2020(schema);
 export function emptyGeometricPv(
 	parameters: PvDraft = emptyPv(),
 ): GeometricPvDraft {

@@ -1,4 +1,4 @@
-import Ajv from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import { add, cross, dot, pointOnRoof, scale } from "./coordinates.ts";
 import { inspectJson } from "../data/inspectJson.ts";
 import type { GeometryDocument, Vec3 } from "./geometry.ts";
@@ -7,11 +7,7 @@ import { panelCorners, panelPoses } from "./panelPoses.ts";
 
 // Strict number checking rejects parsed 1e400/Infinity; defaults/coercion/removal
 // are disabled so source values cannot silently turn into usable inputs.
-const check = new Ajv({
-	strict: true,
-	strictNumbers: true,
-	allErrors: false,
-}).compile<GeometryDocument>(geometrySchema);
+const check = validate2020<GeometryDocument>(geometrySchema);
 
 export interface GeometryLimits {
 	max_panels: number;

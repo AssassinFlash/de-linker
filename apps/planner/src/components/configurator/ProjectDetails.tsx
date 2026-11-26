@@ -21,7 +21,7 @@ import {
 	changeEnergyGoal,
 	energyGoal,
 	type EnergyGoal,
-} from "./EnergyDemand.tsx";
+} from "../../domain/energyGoal.ts";
 import { changeEquipment, equipmentDraft } from "../../domain/equipment.ts";
 import type { EquipmentUse } from "../../domain/equipment.ts";
 import {
@@ -38,38 +38,7 @@ const solarDemand = {
 	operating_mode: "grid_connected",
 } as const;
 
-function hasStorageDemand(setup: JsonObject): boolean {
-	return (
-		setup.operating_mode === "backup" ||
-		[setup.required_usable_kwh, setup.required_discharge_ac_kw].some(
-			(value) => typeof value === "number" && value > 0,
-		)
-	);
-}
-
-function hasBattery(setup: JsonObject): boolean {
-	const use = setup.equipment_use as EquipmentUse | null | undefined;
-	return (
-		setup.battery_product_id !== null || (use != null && use.battery !== "new")
-	);
-}
-
-export function hasStorageToExclude(inputs: JsonObject): boolean {
-	if (energyGoal(inputs) === "backup" || inputs.equipment_demand !== undefined)
-		return true;
-	if (!hasPlant(inputs)) {
-		const setup = equipmentDraft(inputs);
-		return hasBattery(setup) || hasStorageDemand(setup);
-	}
-	const plant = readPlantDraft(inputs);
-	return (
-		hasStorageDemand(plant.requirements) ||
-		plant.units.some(({ inputs }) => {
-			const setup = equipmentDraft(inputs);
-			return hasBattery(setup) || hasStorageDemand(setup);
-		})
-	);
-}
+import { hasStorageToExclude } from "../../domain/storageScope.ts";
 
 function withoutBattery(inputs: JsonObject): JsonObject {
 	const use = equipmentDraft(inputs).equipment_use as
@@ -555,3 +524,7 @@ export function ProjectDetails({
 		</>
 	);
 }
+
+export default ProjectDetails;
+
+export { hasStorageToExclude } from "../../domain/storageScope.ts";

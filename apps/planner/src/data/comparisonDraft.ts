@@ -15,6 +15,19 @@ export interface ComparisonDraft {
 	carriedProduct?: boolean;
 }
 
+export function hasComparisonDraft(): boolean {
+	try {
+		const saved = JSON.parse(window.sessionStorage.getItem(key) ?? "null");
+		return Boolean(
+			saved?.id &&
+			(saved.id === window.history.state?.[key] ||
+				saved.languageUrl === window.location.href),
+		);
+	} catch {
+		return false;
+	}
+}
+
 export function readComparisonDraft(
 	scope: string,
 	source: string,

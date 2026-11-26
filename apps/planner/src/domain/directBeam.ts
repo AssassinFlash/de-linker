@@ -1,5 +1,5 @@
 /** Project selections for the geometric witness; no PV or electrical-loss scaling. */
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/direct-beam.schema.json" with { type: "json" };
 import type { JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -24,9 +24,7 @@ export interface DirectBeamLimits {
 	readonly max_bounds_checks: number;
 	readonly index_leaf_size: number;
 }
-const check = new Ajv2020({ strict: true, strictNumbers: true }).compile(
-	schema,
-);
+const check = validate2020(schema);
 export function readDirectBeam(value: unknown): DirectBeamDraft {
 	const row = readObject(value);
 	if (

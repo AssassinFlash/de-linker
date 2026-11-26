@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/plant-search-plan.schema.json" with { type: "json" };
 import { ApiError } from "../data/protocol.ts";
 import type { JsonObject } from "../data/protocol.ts";
@@ -34,10 +34,7 @@ export interface PlantSearchPlan extends JsonObject {
 	})[];
 	parallel_groups: PlantGroupDraft[];
 }
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<PlantSearchPlan>(schema);
+const validate = validate2020<PlantSearchPlan>(schema);
 
 export function readPlantSearch(value: unknown): PlantSearchPlan {
 	if (!validate(value))

@@ -3,7 +3,7 @@ import {
 	type ProtectionAssessment,
 	type ProtectionReview,
 } from "./installationProtection.ts";
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/installation.schema.json" with { type: "json" };
 import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
 import { readElectricalReview } from "./installationElectrical.ts";
@@ -254,10 +254,7 @@ const reviewReasons = new Set([
 	"extra_length_unconfirmed",
 	"route_length_not_positive",
 ]);
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<InstallationInputs>(schema);
+const validate = validate2020<InstallationInputs>(schema);
 /** Absent and null must not both exist: only absence keeps historical bytes. */
 function canonicalConductor(value: InstallationInputs): InstallationInputs {
 	if (

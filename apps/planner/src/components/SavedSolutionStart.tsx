@@ -16,6 +16,7 @@ export function SavedSolutionStart({
 	dismiss,
 	...props
 }: ComponentProps<typeof NewProject> & {
+	session: NonNullable<ComponentProps<typeof NewProject>["session"]>;
 	solutionId: number;
 	dismiss: () => void;
 }) {
@@ -110,3 +111,5 @@ export function SavedSolutionStart({
 		</div>
 	);
 }
+
+export default SavedSolutionStart;

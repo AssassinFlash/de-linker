@@ -2,12 +2,12 @@ import { useEffect, useRef, type ReactNode } from "react";
 import type { JsonObject } from "../../data/protocol.ts";
 import { readBrief, type Brief } from "../../domain/brief.ts";
 import { __ } from "../../i18n.ts";
-import { energyGoal } from "./EnergyDemand.tsx";
+import { energyGoal } from "../../domain/energyGoal.ts";
 import { equipmentDraft } from "../../domain/equipment.ts";
 import { hasPlant } from "../../domain/equipmentPlant.ts";
 import { Icon } from "../Icon.tsx";
 import { ProjectSummary, projectFacts } from "./ProjectFacts.tsx";
-import { hasStorageToExclude } from "./ProjectDetails.tsx";
+import { hasStorageToExclude } from "../../domain/storageScope.ts";
 
 export function systemNames() {
 	return {

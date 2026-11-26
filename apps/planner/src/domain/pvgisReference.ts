@@ -5,15 +5,14 @@ import { invalidateEnergyReplay } from "./energyScenario.ts";
 import { readSelections } from "./profiles.ts";
 import { activePvGeometry } from "./solarSetup.ts";
 import { isCurrentRoofModule } from "./productModules.ts";
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/pvgis-roof-reference.schema.json" with { type: "json" };
 import knownSchema from "../contracts/pvgis-known-reference.schema.json" with { type: "json" };
 import { sameJson } from "./draft.ts";
 import { readBrief } from "./brief.ts";
 
-const ajv = new Ajv2020({ strict: true, strictNumbers: true });
-const checkComplete = ajv.compile<JsonObject>(schema);
-const checkDraft = ajv.compile<JsonObject>({
+const checkComplete = validate2020<JsonObject>(schema);
+const checkDraft = validate2020<JsonObject>({
 	...schema,
 	properties: Object.fromEntries(
 		Object.entries(schema.properties).map(([key, value]) => [
@@ -25,9 +24,9 @@ const checkDraft = ajv.compile<JsonObject>({
 	),
 });
 
-const checkKnown = ajv.compile<JsonObject>(knownSchema);
+const checkKnown = validate2020<JsonObject>(knownSchema);
 const nullable = (value: object) => ({ anyOf: [value, { type: "null" }] });
-const checkKnownDraft = ajv.compile<JsonObject>({
+const checkKnownDraft = validate2020<JsonObject>({
 	...knownSchema,
 	$defs: {
 		...knownSchema.$defs,

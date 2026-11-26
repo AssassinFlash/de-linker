@@ -100,7 +100,8 @@ import {
 } from "../../data/plannerLocation.ts";
 import { needsPreliminaryComparison } from "./HomepageDemand.tsx";
 import { ProjectEquipment } from "./ProjectEquipment.tsx";
-import { hasStorageToExclude, ProjectDetails } from "./ProjectDetails.tsx";
+import { hasStorageToExclude } from "../../domain/storageScope.ts";
+import { ProjectDetails } from "./ProjectDetails.tsx";
 import { EnergyDemand } from "./EnergyDemand.tsx";
 import { SharedDcEnergy, type SharedDcTask } from "./SharedDcEnergy.tsx";
 import {

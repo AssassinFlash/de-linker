@@ -1,4 +1,4 @@
-import Ajv from "ajv";
+import { validateSchema } from "./schemaValidator.ts";
 import { ApiError } from "./protocol.ts";
 import { inspectJson } from "./inspectJson.ts";
 import type { JsonObject, Project, Session } from "./protocol.ts";
@@ -29,13 +29,12 @@ const jsonDefinition = {
 	],
 };
 const definitions = { json: jsonDefinition };
-const ajv = new Ajv({ strict: true, strictNumbers: true, allErrors: false });
-const checkObject = ajv.compile<JsonObject>({
+const checkObject = validateSchema<JsonObject>({
 	definitions,
 	type: "object",
 	additionalProperties: { $ref: "#/definitions/json" },
 });
-const checkProject = ajv.compile<Project>({
+const checkProject = validateSchema<Project>({
 	definitions,
 	...object({
 		id: hex(32),
@@ -48,7 +47,7 @@ const checkProject = ajv.compile<Project>({
 		},
 	}),
 });
-const checkSession = ajv.compile<Session>(
+const checkSession = validateSchema<Session>(
 	object({
 		schema_version: { type: "integer", const: 1 },
 		kind: { enum: ["guest", "user"] },

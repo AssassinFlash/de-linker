@@ -35,14 +35,16 @@ import { Icon } from "./Icon.tsx";
 import { projectEquipmentScope } from "../domain/currentCalculation.ts";
 import { needsPreliminaryComparison } from "./configurator/HomepageDemand.tsx";
 import { NewProject } from "./NewProject.tsx";
-import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
-import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
+const ProjectBriefStart = lazy(() => import("./ProjectBriefStart.tsx"));
+const SavedSolutionStart = lazy(() => import("./SavedSolutionStart.tsx"));
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
 const ProjectWorkbench = lazy(
 	() => import("./configurator/ProjectWorkbench.tsx"),
 );
-import { PreliminaryProject } from "./configurator/PreliminaryProject.tsx";
+const PreliminaryProject = lazy(
+	() => import("./configurator/PreliminaryProject.tsx"),
+);
 import {
 	InquiryStages,
 	ProjectHeading,
@@ -107,13 +109,16 @@ export function Workspace({
 	config,
 	session,
 	recheck,
+	ensureSession,
 }: {
 	client: PlannerClient;
 	store: DraftStore;
 	config: Configuration;
-	session: Session;
+	session: Session | null;
+	ensureSession?: (() => Promise<Session>) | undefined;
 	recheck: () => void;
 }) {
+	const scope = session?.query_scope ?? "";
 	const [selected, setSelected] = useState<string | null>(currentProject);
 	const projectIndex =
 		new URL(location.href).searchParams.get("projects") === "1";
@@ -124,6 +129,7 @@ export function Workspace({
 				)
 			: "",
 	);
+	const [opening, setOpening] = useState(false);
 	const [newProjectOpen, setNewProjectOpen] = useState(false);
 	const [route, setRoute] = useState(() => entryRoute(new URL(location.href)));
 	const publicView = publicProjectView(new URL(location.href).searchParams);
@@ -151,11 +157,12 @@ export function Workspace({
 	);
 	const cache = useQueryClient();
 	const recovery = useQuery({
-		queryKey: [session.query_scope, "recovery-scopes", session.claim_pending],
+		queryKey: [scope, "recovery-scopes", session?.claim_pending],
+		enabled: session !== null,
 		queryFn: ({ signal }) =>
-			session.kind === "guest"
-				? Promise.resolve([session.query_scope])
-				: recoveryScopes(client, session.query_scope, signal),
+			session?.kind === "guest"
+				? Promise.resolve([scope])
+				: recoveryScopes(client, scope, signal),
 	});
 	const recoveryAuthError =
 		recovery.error instanceof ApiError &&
@@ -170,8 +177,7 @@ export function Workspace({
 		}
 	}, [recheck, recovery.isSuccess, recoveryAuthError]);
 	function retryRecovery() {
-		if (recoveryAuthError || !client.isCurrentScope(session.query_scope))
-			recheck();
+		if (recoveryAuthError || !client.isCurrentScope(scope)) recheck();
 		else void recovery.refetch();
 	}
 	const previousSession = useRef(session);
@@ -183,7 +189,7 @@ export function Workspace({
 			// snapshots stay pinned, so revalidation cannot reset an open draft.
 			void cache.invalidateQueries({
 				predicate: (query) =>
-					query.queryKey[0] === session.query_scope &&
+					query.queryKey[0] === scope &&
 					(query.queryKey[1] === "recovery-scopes" ||
 						query.queryKey[1] === "projects" ||
 						query.state.status === "error"),
@@ -199,10 +205,10 @@ export function Workspace({
 				id &&
 				!preliminaryRoute(route) &&
 				preliminaryRoute(destination) &&
-				pendingInquiryRevision(session.query_scope, id) === null
+				pendingInquiryRevision(scope, id) === null
 			)
 				void cache.resetQueries({
-					queryKey: [session.query_scope, "project", id, session.claim_pending],
+					queryKey: [scope, "project", id, session?.claim_pending],
 					exact: true,
 				});
 			setRoute(destination);
@@ -211,10 +217,15 @@ export function Workspace({
 		};
 		window.addEventListener("popstate", restore);
 		return () => window.removeEventListener("popstate", restore);
-	}, [cache, route, session.claim_pending, session.query_scope]);
+	}, [cache, route, session?.claim_pending, scope]);
 	const select = useCallback(
-		(id: string | null, destination = "", guided = false) => {
-			if (!client.isCurrentScope(session.query_scope)) return;
+		(
+			id: string | null,
+			destination = "",
+			guided = false,
+			expectedScope = scope,
+		) => {
+			if (!client.isCurrentScope(expectedScope)) return;
 			const url = new URL(location.href);
 			const from = entryRoute(url);
 			if (guided) url.searchParams.set("guided", "inquiry");
@@ -281,17 +292,27 @@ export function Workspace({
 			setBriefSource(null);
 			setSelected(id);
 		},
-		[client, session.query_scope],
+		[client, scope],
 	);
-	const pageSize = Math.min(30, session.runtime.limits.max_page_size); // UI page policy, not total project capacity.
-	const indexKey = [
-		session.query_scope,
-		"projects",
-		session.claim_pending,
-		titleQuery,
-	];
+	const canCompareDirections =
+		!projectIndex &&
+		savedSource === null &&
+		briefSource === null &&
+		!entryHints?.roof &&
+		!entryHints?.equipment;
+
+	const bareComparison = canCompareDirections && !route;
+	const firstVisitComparison =
+		canCompareDirections &&
+		(route === "sc-preliminary-options" ||
+			(bareComparison && (!entryHints || entryHints.commercial === true)));
+	const pageSize = session
+		? Math.min(30, session.runtime.limits.max_page_size)
+		: 0; // UI page policy, not total project capacity.
+	const indexKey = [scope, "projects", session?.claim_pending, titleQuery];
 	const index = useInfiniteQuery({
 		queryKey: indexKey,
+		staleTime: projectIndex ? 0 : Infinity,
 		initialPageParam: null as JsonObject | null,
 		queryFn: async ({ pageParam, signal }) =>
 			readProjectPage(
@@ -303,13 +324,16 @@ export function Workspace({
 						after: pageParam,
 						...(titleQuery && { title_query: titleQuery }),
 					},
-					session.query_scope,
+					scope,
 					signal,
 				),
 				pageSize,
 			),
 		getNextPageParam: (page) => page.next ?? undefined,
-		enabled: selected === null,
+		enabled:
+			session !== null &&
+			selected === null &&
+			(projectIndex || session.kind === "user" || !firstVisitComparison),
 	});
 	const inquiryRevision =
 		guidedRetryRevision ??
@@ -317,14 +341,14 @@ export function Workspace({
 		(preliminaryRoute(route) ||
 			(route === "sc-review" &&
 				new URL(location.href).searchParams.get("guided") === "inquiry"))
-			? pendingInquiryRevision(session.query_scope, selected)
+			? pendingInquiryRevision(scope, selected)
 			: null);
 	const project = useQuery({
 		queryKey: [
-			session.query_scope,
+			scope,
 			"project",
 			selected,
-			session.claim_pending,
+			session?.claim_pending,
 			...(inquiryRevision === null ? [] : [inquiryRevision]),
 		],
 		queryFn: async ({ signal }) => {
@@ -336,7 +360,7 @@ export function Workspace({
 						project_id: selected,
 						revision: inquiryRevision,
 					},
-					session.query_scope,
+					scope,
 					signal,
 				),
 			);
@@ -347,7 +371,7 @@ export function Workspace({
 				throw new Error("inquiry_revision_unavailable");
 			return authorized;
 		},
-		enabled: selected !== null && !session.claim_pending,
+		enabled: session !== null && selected !== null && !session.claim_pending,
 		staleTime: Infinity,
 	});
 	const selectedInputs = project.data?.inputs;
@@ -397,13 +421,13 @@ export function Workspace({
 		destination?: CreationDestination | "energy",
 		openResult = true,
 	) {
-		if (!client.isCurrentScope(session.query_scope)) return false;
+		if (!client.isCurrentScope(scope)) return false;
 		cache.setQueryData(
-			[session.query_scope, "project", project.id, session.claim_pending],
+			[scope, "project", project.id, session?.claim_pending],
 			project,
 		);
 		void cache.invalidateQueries({
-			queryKey: [session.query_scope, "projects"],
+			queryKey: [scope, "projects"],
 		});
 		if (openResult)
 			select(
@@ -439,7 +463,7 @@ export function Workspace({
 	} | null>(null);
 	const remove = useCallback(
 		async (item: { id: string; title: string; revision: number }) => {
-			if (deleteBusy || !client.isCurrentScope(session.query_scope)) return;
+			if (!session || deleteBusy || !client.isCurrentScope(scope)) return;
 			// A command key is bound to one canonical command. Repeated transport
 			// failures repeat the captured bytes so the engine can replay its
 			// receipt; a conflict starts a new command for the current revision.
@@ -456,7 +480,7 @@ export function Workspace({
 			setDeleteBusy(true);
 			try {
 				const reply = readObject(
-					await client.send("projects/delete", body, session.query_scope),
+					await client.send("projects/delete", body, scope),
 				);
 				if (
 					reply.project_id !== item.id ||
@@ -468,18 +492,18 @@ export function Workspace({
 				setDeleteRetry(null);
 				setDeleteFailure(null);
 				cache.removeQueries({
-					queryKey: [session.query_scope, "project", item.id],
+					queryKey: [scope, "project", item.id],
 				});
 				void clearCreationsForTitle(
 					store,
-					recovery.data ?? [session.query_scope],
+					recovery.data ?? [scope],
 					item.title,
 					projects
 						.filter((candidate) => candidate.id !== item.id)
 						.map((candidate) => candidate.title),
 				).catch(() => undefined);
 				void cache.invalidateQueries({
-					queryKey: [session.query_scope, "projects"],
+					queryKey: [scope, "projects"],
 				});
 			} catch (error) {
 				if (!(error instanceof ApiError)) {
@@ -500,7 +524,7 @@ export function Workspace({
 					setDeleteRetry(null);
 					setDeleteFailure(null);
 					void cache.invalidateQueries({
-						queryKey: [session.query_scope, "projects"],
+						queryKey: [scope, "projects"],
 					});
 					return;
 				}
@@ -519,7 +543,7 @@ export function Workspace({
 									project_id: item.id,
 									revision: null,
 								},
-								session.query_scope,
+								scope,
 							),
 						);
 						setDeleteFailure({
@@ -530,7 +554,7 @@ export function Workspace({
 						setDeleteFailure({ id: item.id, kind: "failed" });
 					}
 					void cache.invalidateQueries({
-						queryKey: [session.query_scope, "projects"],
+						queryKey: [scope, "projects"],
 					});
 					return;
 				}
@@ -553,6 +577,7 @@ export function Workspace({
 	);
 	if (
 		selected &&
+		session &&
 		!session.claim_pending &&
 		project.data &&
 		!reviewEquipment &&
@@ -560,7 +585,7 @@ export function Workspace({
 	)
 		return (
 			<PreliminaryProject
-				key={session.query_scope + ":" + selected}
+				key={scope + ":" + selected}
 				project={project.data}
 				session={session}
 				client={client}
@@ -572,7 +597,7 @@ export function Workspace({
 				navigate={(destination, confirmed) => {
 					if (confirmed)
 						cache.setQueryData<Project>(
-							[session.query_scope, "project", selected, session.claim_pending],
+							[scope, "project", selected, session?.claim_pending],
 							(current) =>
 								current && current.revision >= confirmed.revision
 									? current
@@ -585,8 +610,8 @@ export function Workspace({
 		);
 	if (reviewEquipment)
 		return <p role="status">{__("Opening the project…", "linker-tools")}</p>;
-	if (selected)
-		return !session.claim_pending && project.data ? (
+	if (selected && session)
+		return !session?.claim_pending && project.data ? (
 			<Suspense
 				fallback={
 					<p className="sc-session-state" role="status">
@@ -595,7 +620,7 @@ export function Workspace({
 				}
 			>
 				<ProjectWorkbench
-					key={session.query_scope + ":" + selected}
+					key={scope + ":" + selected}
 					project={project.data}
 					client={client}
 					store={store}
@@ -607,18 +632,18 @@ export function Workspace({
 					recoveryFailed={recovery.isError}
 					comparePreliminary={(saved) => {
 						cache.setQueryData(
-							[session.query_scope, "project", selected, session.claim_pending],
+							[scope, "project", selected, session?.claim_pending],
 							saved,
 						);
 						select(saved.id, "sc-preliminary-options");
 					}}
 					close={() => {
-						if (!client.isCurrentScope(session.query_scope)) return false;
+						if (!client.isCurrentScope(scope)) return false;
 						void cache.invalidateQueries({
-							queryKey: [session.query_scope, "projects"],
+							queryKey: [scope, "projects"],
 						});
 						cache.removeQueries({
-							queryKey: [session.query_scope, "project", selected],
+							queryKey: [scope, "project", selected],
 						});
 						select(null);
 						return true;
@@ -630,7 +655,7 @@ export function Workspace({
 				<button className="sc-button" onClick={() => select(null)}>
 					{__("Back to projects", "linker-tools")}
 				</button>
-				{session.claim_pending ? (
+				{session?.claim_pending ? (
 					<Notice>
 						<p role="status">
 							{__(
@@ -673,18 +698,6 @@ export function Workspace({
 			</button>
 		</Notice>
 	);
-	const canCompareDirections =
-		!projectIndex &&
-		savedSource === null &&
-		briefSource === null &&
-		!entryHints?.roof &&
-		!entryHints?.equipment;
-
-	const bareComparison = canCompareDirections && !route;
-	const firstVisitComparison =
-		canCompareDirections &&
-		(route === "sc-preliminary-options" ||
-			(bareComparison && (!entryHints || entryHints.commercial === true)));
 	const directEntry =
 		!projectIndex &&
 		savedSource === null &&
@@ -700,6 +713,20 @@ export function Workspace({
 		canCompareDirections && (firstVisitComparison || route === "sc-project")
 			? JSON.stringify(entryHints)
 			: "workspace";
+
+	async function openProjects() {
+		if (session) return select(null);
+		if (!ensureSession) return;
+		setOpening(true);
+		try {
+			const ready = await ensureSession();
+			select(null, "", false, ready.query_scope);
+		} catch {
+			/* SessionBoundary offers the retry. */
+		} finally {
+			setOpening(false);
+		}
+	}
 	function showCreationPage(anchor: "sc-project" | "sc-preliminary-options") {
 		const url = new URL(location.href);
 		url.searchParams.delete("view");
@@ -726,13 +753,18 @@ export function Workspace({
 							<button
 								className="sc-button"
 								type="button"
-								onClick={() => select(null)}
+								onClick={() => void openProjects()}
 							>
 								{__("Projects", "linker-tools")}
 							</button>
 						}
 					/>
 					<InquiryStages />
+					{opening && (
+						<p role="status">
+							{__("Preparing your workspace…", "linker-tools")}
+						</p>
+					)}
 				</>
 			) : (
 				<header
@@ -772,7 +804,8 @@ export function Workspace({
 				)}
 			<div className={firstVisitComparison ? undefined : "sc-main"}>
 				<div hidden={projectIndex}>
-					{projectIndex && !creationPending ? null : savedSource !== null ? (
+					{projectIndex && !creationPending ? null : savedSource !== null &&
+					  session ? (
 						<SavedSolutionStart
 							directComparison
 							solutionId={savedSource}
@@ -793,7 +826,7 @@ export function Workspace({
 							recoveryChecking={recovery.isFetching}
 							recoveryDiscoveryFailed={recovery.isError}
 						/>
-					) : briefSource !== null ? (
+					) : briefSource !== null && session ? (
 						<ProjectBriefStart
 							directComparison
 							briefId={briefSource}
@@ -819,6 +852,7 @@ export function Workspace({
 						<NewProject
 							key={creatingProject.current ?? entryKey}
 							compareOnLoad={firstVisitComparison}
+							ensureSession={ensureSession}
 							directComparison={
 								firstVisitComparison ||
 								bareComparison ||
@@ -858,7 +892,7 @@ export function Workspace({
 					)}
 				</div>
 				{recoveryNotice}
-				{session.claim_pending && (
+				{session?.claim_pending && (
 					<Notice>
 						{__(
 							"Projects from the guest session are still being linked to your account.",
@@ -1087,7 +1121,7 @@ export function Workspace({
 				</section>
 				<footer hidden={firstVisitComparison}>
 					<p className="sc-muted">
-						{session.kind === "guest"
+						{session?.kind === "guest"
 							? __(
 									"Guest projects are available in this browser session. Signing in links them to the account.",
 									"linker-tools",

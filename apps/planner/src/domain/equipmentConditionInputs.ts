@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/equipment-condition-inputs.schema.json" with { type: "json" };
 import { ApiError } from "../data/protocol.ts";
 import type { JsonObject } from "../data/protocol.ts";
@@ -36,10 +36,7 @@ export interface ConditionTarget {
 	group_index: number | null;
 	model: string | null;
 }
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<EquipmentConditionInputs>(schema);
+const validate = validate2020<EquipmentConditionInputs>(schema);
 export function conditionDeviceKey(device: {
 	selection_ref: EquipmentSelectionRef;
 	product_id: number;

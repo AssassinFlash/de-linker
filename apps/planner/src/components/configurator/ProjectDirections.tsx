@@ -18,7 +18,7 @@ import {
 	changeEnergyGoal,
 	energyGoal,
 	type EnergyGoal,
-} from "./EnergyDemand.tsx";
+} from "../../domain/energyGoal.ts";
 import { changeHomepagePvPower } from "./HomepagePvReference.tsx";
 
 const scenes = ["new", "known", "retrofit", "commercial"] as const;

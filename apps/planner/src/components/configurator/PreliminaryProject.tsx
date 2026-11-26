@@ -9,8 +9,8 @@ import { emptyBrief, readBrief, type Brief } from "../../domain/brief.ts";
 import { editDraft, isDirty } from "../../domain/draft.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
-import { changeExistingSystem } from "./ProjectEquipment.tsx";
-import { energyGoal } from "./EnergyDemand.tsx";
+import { changeExistingSystem } from "../../domain/existingSystem.ts";
+import { energyGoal } from "../../domain/energyGoal.ts";
 import { PreliminaryOptions } from "./PreliminaryOptions.tsx";
 import { InquiryStages, ProjectHeading } from "./ProjectHeading.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
@@ -261,3 +261,5 @@ export function PreliminaryProject({
 		</div>
 	);
 }
+
+export default PreliminaryProject;

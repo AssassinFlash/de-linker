@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/brief.schema.json" with { type: "json" };
 import type { JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -25,11 +25,7 @@ export interface Brief extends JsonObject {
 	readonly project_note: string;
 }
 
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-	allErrors: false,
-}).compile<Brief>(schema);
+const validate = validate2020<Brief>(schema);
 export function readBrief(value: unknown): Brief {
 	if (!validate(value)) throw new ApiError(422, "invalid_project_brief");
 	return value;

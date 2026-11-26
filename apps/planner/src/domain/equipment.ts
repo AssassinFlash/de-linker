@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/equipment-selection.schema.json" with { type: "json" };
 import type { Json, JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -44,10 +44,7 @@ export interface EquipmentSelection extends JsonObject {
 	product_revisions: Record<string, string>;
 	equipment_use?: EquipmentUse | null;
 }
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<EquipmentSelection>(schema);
+const validate = validate2020<EquipmentSelection>(schema);
 export function readEquipmentSelection(value: unknown): EquipmentSelection {
 	if (!validate(value))
 		throw new ApiError(422, "equipment_selection_incomplete");

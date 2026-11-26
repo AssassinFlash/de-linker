@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "./schemaValidator.ts";
 import reportSchema from "../contracts/planning-report.schema.json" with { type: "json" };
 import optionsSchema from "../contracts/planning-report-options.schema.json" with { type: "json" };
 import type { JsonObject } from "./protocol.ts";
@@ -62,9 +62,8 @@ export function reportLanguageDiffers(
 		reportLocale !== (siteLocale.toLowerCase().startsWith("de") ? "de" : "en")
 	);
 }
-const ajv = new Ajv2020({ strict: true, strictNumbers: true });
-const validateReport = ajv.compile<PlanningReport>(reportSchema);
-const validateOptions = ajv.compile<ReportOptions>(optionsSchema);
+const validateReport = validate2020<PlanningReport>(reportSchema);
+const validateOptions = validate2020<ReportOptions>(optionsSchema);
 const hash = (value: unknown): value is string =>
 	typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
 const protectionMethods = new Set([

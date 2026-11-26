@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/pv-string-plan.schema.json" with { type: "json" };
 import type { JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
@@ -16,10 +16,7 @@ export interface PvStringPlan extends JsonObject {
 	temperature_source: string | null;
 	strings: PvString[];
 }
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<PvStringPlan>(schema);
+const validate = validate2020<PvStringPlan>(schema);
 export function readPvStringPlan(value: unknown): PvStringPlan {
 	if (!validate(value)) throw new ApiError(422, "pv_string_plan_incomplete");
 	const ids = value.strings.map((s) => s.id),

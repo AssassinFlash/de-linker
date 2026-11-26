@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/equipment-plant.schema.json" with { type: "json" };
 import { ApiError } from "../data/protocol.ts";
 import type { Json, JsonObject } from "../data/protocol.ts";
@@ -74,10 +74,7 @@ export interface EquipmentPlant extends JsonObject {
 	})[];
 	parallel_groups: (PlantGroupDraft & { controller_revision: string | null })[];
 }
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<EquipmentPlant>(schema);
+const validate = validate2020<EquipmentPlant>(schema);
 const identity = /^[A-Za-z][A-Za-z0-9_-]{0,63}$/;
 const incomplete = () => new ApiError(422, "equipment_plant_incomplete");
 /** Create once per editing intent, outside a React state updater. */

@@ -61,7 +61,13 @@ test("a lazy built chunk never executes the versioned WordPress entry again", as
 		manifest["src/components/configurator/ProjectWorkbench.tsx"]
 			?.isDynamicEntry,
 	);
-	assert.ok(manifest["src/components/design/MapViewport.tsx"]?.isDynamicEntry);
+	for (const path of [
+		"src/components/design/MapViewport.tsx",
+		"src/components/configurator/PreliminaryProject.tsx",
+		"src/components/SavedSolutionStart.tsx",
+		"src/components/ProjectBriefStart.tsx",
+	])
+		assert.ok(manifest[path]?.isDynamicEntry, path);
 	await import(
 		new URL(manifest["src/main.tsx"].file + "?ver=wordpress-version", directory)
 	);

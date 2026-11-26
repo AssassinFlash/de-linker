@@ -25,7 +25,7 @@ import {
 import type { Brief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { ProjectFacts } from "./ProjectFacts.tsx";
-import { existingSystem } from "./ProjectEquipment.tsx";
+import { existingSystem } from "../../domain/existingSystem.ts";
 import { retrofitOptions, systemNames } from "./PreliminaryOptions.tsx";
 
 export const InquiryProductSkus = createContext<ReadonlySet<string> | null>(

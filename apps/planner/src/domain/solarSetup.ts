@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import weatherSchema from "../contracts/weather-acquisition.schema.json" with { type: "json" };
 import pvSchema from "../contracts/pv-generation.schema.json" with { type: "json" };
 import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
@@ -122,9 +122,8 @@ export interface SolarSetup extends JsonObject {
 	readonly pv: PvDraft;
 }
 
-const ajv = new Ajv2020({ strict: true, strictNumbers: true });
-const checkWeather = ajv.compile<JsonObject>(weatherSchema),
-	checkPv = ajv.compile<JsonObject>(pvSchema);
+const checkWeather = validate2020<JsonObject>(weatherSchema),
+	checkPv = validate2020<JsonObject>(pvSchema);
 /** Drafts retain incomplete numeric/choice leaves; constants and structure stay versioned.
  * Every prepared document still passes the untouched exported service schema. */
 function draftSchema(value: unknown, field = ""): object {
@@ -179,8 +178,10 @@ function draftSchema(value: unknown, field = ""): object {
 		};
 	return node;
 }
-const checkWeatherDraft = ajv.compile<WeatherDraft>(draftSchema(weatherSchema));
-const checkPvDraft = ajv.compile<PvDraft>(draftSchema(pvSchema));
+const checkWeatherDraft = validate2020<WeatherDraft>(
+	draftSchema(weatherSchema),
+);
+const checkPvDraft = validate2020<PvDraft>(draftSchema(pvSchema));
 export function emptyWeather(): WeatherDraft {
 	return {
 		schema_version: 1,

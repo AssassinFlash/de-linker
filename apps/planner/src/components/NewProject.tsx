@@ -5,6 +5,8 @@ import {
 	type ComparisonDraft,
 } from "../data/comparisonDraft.ts";
 import {
+	lazy,
+	Suspense,
 	useCallback,
 	useEffect,
 	useEffectEvent,
@@ -56,11 +58,11 @@ import { locateProjectSite } from "../data/googleMaps.ts";
 import { MAX_PROJECT_TITLE_LENGTH } from "../data/projectIndex.ts";
 import { ProjectHeading } from "./configurator/ProjectHeading.tsx";
 import { ProjectSummary, projectFacts } from "./configurator/ProjectFacts.tsx";
-import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
-import {
-	changeExistingSystem,
-	ProjectEquipment,
-} from "./configurator/ProjectEquipment.tsx";
+const ProjectDetails = lazy(() => import("./configurator/ProjectDetails.tsx"));
+import { changeExistingSystem } from "../domain/existingSystem.ts";
+const ProjectEquipment = lazy(
+	() => import("./configurator/ProjectEquipment.tsx"),
+);
 import {
 	AnnualElectricityUse,
 	HomepageDemand,
@@ -69,7 +71,7 @@ import {
 	isHomepagePvReferenceReady,
 	prepareHomepagePvReference,
 } from "./configurator/HomepagePvReference.tsx";
-import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
+import { changeEnergyGoal, energyGoal } from "../domain/energyGoal.ts";
 
 import {
 	PreliminaryOptions,
@@ -82,6 +84,7 @@ import { ProjectDirections } from "./configurator/ProjectDirections.tsx";
 
 export function NewProject({
 	session,
+	ensureSession,
 	client,
 	store,
 	created,
@@ -105,7 +108,8 @@ export function NewProject({
 	creationPending = false,
 	beginCreation,
 }: {
-	session: Session;
+	session: Session | null;
+	ensureSession?: (() => Promise<Session>) | undefined;
 	client: PlannerClient;
 	store: DraftStore;
 	created: (
@@ -133,6 +137,7 @@ export function NewProject({
 	creationPending?: boolean;
 	beginCreation?: () => (() => void) | null;
 }) {
+	const scope = session?.query_scope ?? "";
 	const roofPermission = useRef<PlaceImagery | null>(null);
 	const roofEntry = Boolean(
 		config &&
@@ -156,7 +161,7 @@ export function NewProject({
 		directComparison || compareOnLoad || Boolean(returnToComparison);
 	const source = JSON.stringify(entryHints);
 	const [restored] = useState(() =>
-		draftEntry ? readComparisonDraft(session.query_scope, source) : null,
+		draftEntry && scope ? readComparisonDraft(scope, source) : null,
 	);
 	const draftId = useRef(restored?.id);
 	const [scene, setScene] = useState<NonNullable<
@@ -210,8 +215,8 @@ export function NewProject({
 	}, []);
 	const catalog = useEquipmentProducts(
 		client,
-		session.query_scope,
-		Boolean(entryHints?.productId),
+		scope,
+		Boolean(scope && entryHints?.productId),
 	);
 	const [draft, setDraft] = useState<JsonObject | null>(
 		restored?.inputs ?? null,
@@ -285,7 +290,7 @@ export function NewProject({
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
 	function edit(operation: (inputs: JsonObject) => JsonObject) {
-		if (busy || intent.current || !client.isCurrentScope(session.query_scope))
+		if (busy || intent.current || (session && !client.isCurrentScope(scope)))
 			return false;
 		const changed = operation(inputs);
 		if (
@@ -301,10 +306,14 @@ export function NewProject({
 		setReferenceError(null);
 		return true;
 	}
+	const [waitingAction, setWaitingAction] = useState<
+		"details" | "submit" | null
+	>(null);
+	const pendingSubmit = useRef<Parameters<typeof submit>>([]);
 	const [checking, setChecking] = useState(true);
 	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
 	const intent = useRef<string | null>(null);
-	const intentScope = useRef(session.query_scope);
+	const intentScope = useRef(scope);
 	const destination = useRef<CreationDestination | null>(null);
 	const lifetime = useRef(0);
 	const sending = useRef(false);
@@ -312,7 +321,7 @@ export function NewProject({
 	openWork.current = Boolean(
 		intent.current || draft || (title && title !== initialProject?.title),
 	);
-	const admitted = client.isCurrentScope(session.query_scope);
+	const admitted = Boolean(scope && client.isCurrentScope(scope));
 	const currentInputs = useEffectEvent(() => inputs);
 	useEffect(() => {
 		if (
@@ -332,7 +341,7 @@ export function NewProject({
 			? null
 			: {
 					id: (draftId.current ??= crypto.randomUUID()),
-					scope: session.query_scope,
+					scope: scope,
 					source,
 					scene,
 					title,
@@ -404,7 +413,7 @@ export function NewProject({
 		draft,
 		title,
 		useHints,
-		session.query_scope,
+		scope,
 		source,
 	]);
 	useEffect(() => {
@@ -436,14 +445,14 @@ export function NewProject({
 		return () => {
 			lifetime.current++;
 		};
-	}, [session.query_scope]);
+	}, [scope]);
 	useEffect(() => {
 		if (recoveryChecking || !admitted) return;
 		let active = true;
 		setChecking(true);
-		void creationIntents(store, recoveryScopes ?? [session.query_scope])
+		void creationIntents(store, recoveryScopes ?? [scope])
 			.then((records) => {
-				if (!active || !client.isCurrentScope(session.query_scope)) return;
+				if (!active || !client.isCurrentScope(scope)) return;
 				const matching = records.filter((record) => {
 					if (record.destination === "roof-comparison") return roofEntry;
 					if (
@@ -490,13 +499,50 @@ export function NewProject({
 	}, [
 		admitted,
 		client,
-		session.query_scope,
+		scope,
 		store,
 		recoveryScopes,
 		recoveryChecking,
 		compareOnLoad,
 		directComparison,
 		roofEntry,
+	]);
+
+	function admittedAction(
+		action: "details" | "submit",
+		...args: Parameters<typeof submit>
+	) {
+		if (admitted && !checking && !recoveryChecking) {
+			if (action === "details") enterDetails?.();
+			else void submit(...args);
+			return;
+		}
+		if (!ensureSession) return;
+		pendingSubmit.current = args;
+		setWaitingAction(action);
+		void ensureSession().catch(() => setWaitingAction(null));
+	}
+	const continueAction = useEffectEvent(() => {
+		if (waitingAction === "details") enterDetails?.();
+		if (waitingAction === "submit") void submit(...pendingSubmit.current);
+	});
+	useEffect(() => {
+		if (
+			waitingAction &&
+			admitted &&
+			!checking &&
+			!recoveryChecking &&
+			!recoveryDiscoveryFailed
+		) {
+			setWaitingAction(null);
+			continueAction();
+		}
+	}, [
+		waitingAction,
+		admitted,
+		checking,
+		recoveryChecking,
+		recoveryDiscoveryFailed,
 	]);
 	function restoreCreation(record: ScopedCreation) {
 		intent.current = record.body;
@@ -542,13 +588,14 @@ export function NewProject({
 			!compareRoofSite &&
 			(roofEntry || openRoof || destination.current === "roof");
 		if (
+			!session ||
 			sending.current ||
 			creationPending ||
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
 			waitingForProduct ||
-			!client.isCurrentScope(session.query_scope) ||
+			!client.isCurrentScope(scope) ||
 			(!intent.current &&
 				!direction &&
 				!compareRoofSite &&
@@ -625,7 +672,7 @@ export function NewProject({
 		if (releaseCreation === null) return;
 		const instance = lifetime.current;
 		const submittedFrom = location.href;
-		if (!intent.current) intentScope.current = session.query_scope;
+		if (!intent.current) intentScope.current = scope;
 		const originScope = intentScope.current;
 
 		sending.current = true;
@@ -754,16 +801,12 @@ export function NewProject({
 			if (lifetime.current !== instance) return;
 			profile.current = nextProfile;
 			setProfileCorrection(false);
-			if (!client.isCurrentScope(session.query_scope)) {
+			if (!client.isCurrentScope(scope)) {
 				setFailed(true);
 				return;
 			}
 			let project = readProject(
-				await client.send(
-					"projects/create",
-					intent.current,
-					session.query_scope,
-				),
+				await client.send("projects/create", intent.current, scope),
 			);
 			if (lifetime.current !== instance) return;
 			creationConfirmed = true;
@@ -807,7 +850,7 @@ export function NewProject({
 			if (
 				destination.current === "roof" &&
 				location.href === submittedFrom &&
-				client.isCurrentScope(session.query_scope)
+				client.isCurrentScope(scope)
 			) {
 				if (roofPermission.current)
 					allowRoofImagery(project.id, roofPermission.current);
@@ -1015,11 +1058,9 @@ export function NewProject({
 			const disabled =
 				busy ||
 				creationPending ||
-				checking ||
-				recoveryChecking ||
 				recoveryDiscoveryFailed ||
 				waitingForProduct ||
-				!admitted;
+				(session !== null && !admitted);
 			const retry = Boolean(intent.current);
 			return (
 				<section className="sc-main sc-direction-entry">
@@ -1036,26 +1077,33 @@ export function NewProject({
 						config={config ?? { locale, countries: {} }}
 						validity={reportDemand}
 						disabled={disabled || retry}
-						roof={() => void submit(undefined, { useRoofPlan: true })}
+						roof={() =>
+							admittedAction("submit", undefined, { useRoofPlan: true })
+						}
 						compare={
 							brief.system_scope &&
 							equipmentDraft(inputs).grid_phase != null &&
 							!invalidDemand.size
-								? () => void submit()
+								? () => admittedAction("submit")
 								: undefined
 						}
-						details={enterDetails}
+						details={() => admittedAction("details")}
 					/>
 					<PreliminaryOptions
 						locale={locale}
 						inputs={inputs}
 						disabled={disabled || retry || invalidDemand.size > 0}
-						choose={(direction) => void submit(direction)}
+						choose={(direction) => admittedAction("submit", direction)}
 						chooseRetrofit={(keepInverter) =>
-							void submit("storage_addition", { keepInverter })
+							admittedAction("submit", "storage_addition", { keepInverter })
 						}
 					/>
 					{pendingRequests}
+					{waitingAction && (
+						<p role="status">
+							{__("Preparing your workspace…", "linker-tools")}
+						</p>
+					)}
 					{(busy || creationPending) && (
 						<p role="status">{__("Creating…", "linker-tools")}</p>
 					)}
@@ -1066,7 +1114,7 @@ export function NewProject({
 								className="sc-button"
 								type="button"
 								disabled={disabled || inputContractRequired}
-								onClick={() => void submit()}
+								onClick={() => admittedAction("submit")}
 							>
 								{__("Retry project creation", "linker-tools")}
 							</button>
@@ -1123,7 +1171,7 @@ export function NewProject({
 					config={config}
 					site={brief.site}
 					client={client}
-					scope={session.query_scope}
+					scope={scope}
 					disabled={editingDisabled || inputContractRequired}
 					locked={Boolean(intent.current)}
 					busy={busy}
@@ -1427,7 +1475,7 @@ export function NewProject({
 								<ProjectEquipment
 									inputs={inputs}
 									client={client}
-									scope={session.query_scope}
+									scope={scope}
 									disabled={busy || Boolean(intent.current)}
 									edit={edit}
 									initiallyOpen={equipmentFirst}
@@ -1458,14 +1506,23 @@ export function NewProject({
 				)}
 			</form>
 		);
-		if (!showSummary) return form;
+		const detailsForm = (
+			<Suspense
+				fallback={
+					<p role="status">{__("Opening the project…", "linker-tools")}</p>
+				}
+			>
+				{form}
+			</Suspense>
+		);
+		if (!showSummary) return detailsForm;
 		return (
 			<>
 				{workspaceHeading && (
 					<ProjectHeading title={projectName} location={site} />
 				)}
 				<div className="sc-layout sc-intake-layout">
-					{form}
+					{detailsForm}
 					<ProjectSummary
 						title={projectName}
 						facts={[

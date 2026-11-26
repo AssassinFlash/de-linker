@@ -17,6 +17,7 @@ export function ProjectBriefStart({
 	dismiss,
 	...props
 }: ComponentProps<typeof NewProject> & {
+	session: NonNullable<ComponentProps<typeof NewProject>["session"]>;
 	briefId: string;
 	dismiss: () => void;
 }) {
@@ -298,3 +299,5 @@ export function ProjectBriefStart({
 		</div>
 	);
 }
+
+export default ProjectBriefStart;

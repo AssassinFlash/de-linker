@@ -1,4 +1,4 @@
-import Ajv from "ajv";
+import { validateSchema } from "./schemaValidator.ts";
 import type { PlanningRun } from "./planningProtocol.ts";
 import { ApiError } from "./protocol.ts";
 import { runTask } from "./planningProtocol.ts";
@@ -132,10 +132,7 @@ const traceShape = object({
 traceShape.required = traceShape.required.filter(
 	(key) => key !== "measurement_boundaries",
 );
-const check = new Ajv({
-	strict: true,
-	strictNumbers: true,
-}).compile<TraceWindow>(traceShape);
+const check = validateSchema<TraceWindow>(traceShape);
 export function readTraceWindow(
 	value: unknown,
 	run: PlanningRun,
