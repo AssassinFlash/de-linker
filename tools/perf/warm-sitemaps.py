@@ -20,7 +20,7 @@ DYNAMIC = (
     "/cart/",
     "/de/loesungsentwurf/",
 )
-RETIRED = "/solution-draft/"
+RETIRED = {"/solution-draft/": "/cart/", "/de/solution-draft/": "/de/loesungsentwurf/"}
 
 
 def get(url: str, *, xml: bool = False) -> tuple[dict[str, str | int], bytes]:
@@ -62,7 +62,7 @@ def main() -> None:
         if not maps[name]:
             raise ValueError(f"{url} contains no page URLs")
     public = list(dict.fromkeys(url for urls in maps.values() for url in urls))
-    urls = list(dict.fromkeys(public + [site + path for path in (*DYNAMIC, RETIRED)]))
+    urls = list(dict.fromkeys(public + [site + path for path in (*DYNAMIC, *RETIRED)]))
 
     def request(url: str) -> dict[str, str | int]:
         return get(url)[0]
@@ -74,10 +74,10 @@ def main() -> None:
     failed: list[str] = []
     for url, result in zip(urls, second, strict=True):
         route = urlsplit(url).path
-        if route in DYNAMIC or route == RETIRED:
+        if route in DYNAMIC or route in RETIRED:
             ok = (
                 result["status"] == 200
-                and result["url"] == (site + "/cart/" if route == RETIRED else url)
+                and result["url"] == site + RETIRED.get(route, route)
                 and result["cache"] != "hit"
                 and "no-cache" in str(result["server_policy"])
                 and "no-cache" in str(result["browser_policy"])
@@ -102,14 +102,18 @@ def main() -> None:
             for i, url in enumerate(urls)
             if urlsplit(url).path in DYNAMIC
         },
-        "retired": {"first": first[-1], "second": second[-1]},
+        "retired": {
+            url: {"first": first[i], "second": second[i]}
+            for i, url in enumerate(urls)
+            if urlsplit(url).path in RETIRED
+        },
         "failed": failed,
     }
     args.output.write_text(json.dumps(report, indent=2))
     for name, entries in maps.items():
         print(f"{name}: {len(entries)} URLs")
     print(
-        f"{len(report['public'])} public cache reads; {len(report['dynamic'])} dynamic routes; retired draft {second[-1]['status']}; {len(failed)} failures"
+        f"{len(report['public'])} public cache reads; {len(report['dynamic'])} dynamic routes; {len(report['retired'])} retired drafts; {len(failed)} failures"
     )
     if failed:
         raise SystemExit(1)
