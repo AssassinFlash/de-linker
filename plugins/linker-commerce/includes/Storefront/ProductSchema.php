@@ -145,7 +145,7 @@ final class ProductSchema {
 	 * @return list<string>
 	 */
 	private function model_details( \WC_Product $product, string $name, string $brand, string $model ): array {
-		if ( '' === $model || ( $name !== trim( $brand . ' ' . $model ) && $name !== $model ) ) {
+		if ( '' === $model || ( trim( $brand . ' ' . $model ) !== $name && $name !== $model ) ) {
 			return array();
 		}
 		$facts    = SelectionFacts::for_product( $product->get_id() );
