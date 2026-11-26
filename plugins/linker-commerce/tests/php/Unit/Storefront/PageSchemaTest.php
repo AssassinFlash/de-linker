@@ -34,6 +34,65 @@ final class PageSchemaTest extends TestCase {
 		$this->assertSame( array( 'sales@de-linker.com', 'chester@de-linker.com' ), array_column( $node['contactPoint'], 'email' ) );
 	}
 
+	/**
+	 * The public comparison landing is discoverable; shared selections keep their noindex contract.
+	 *
+	 * @dataProvider comparison_queries
+	 * @param array<string,string> $query Selection query.
+	 */
+	public function test_comparison_schema_only_for_clean_landing( array $query ): void {
+		$post = new WP_Post(
+			(object) array(
+				'ID'        => 25,
+				'post_name' => 'produkte-vergleichen',
+				'post_type' => 'page',
+			)
+		);
+		$url  = 'https://example.org/de/produkte-vergleichen/';
+		WP_Mock::userFunction( 'get_queried_object' )->andReturn( $post );
+		WP_Mock::userFunction( 'get_permalink' )->andReturn( $url );
+		WP_Mock::userFunction( 'get_the_title' )->andReturn( 'Produkte vergleichen' );
+		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( 'de' );
+		WP_Mock::userFunction( 'pll_home_url' )->andReturn( 'https://example.org/de/' );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'is_singular' )->andReturn( false );
+		WP_Mock::userFunction( 'is_page' )->andReturnUsing( static fn( $names ): bool => in_array( $post->post_name, (array) $names, true ) );
+		WP_Mock::userFunction( 'get_post_meta' )->andReturn( 'Modelle vergleichen' );
+		WP_Mock::userFunction( '_x' )->andReturn( 'Startseite' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( 'json_encode' );
+		$previous = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Restore the test’s query fixture.
+		try {
+			$_GET = $query;
+			ob_start();
+			( new PageSchema() )->print_blocks();
+			$html = (string) ob_get_clean();
+		} finally {
+			$_GET = $previous;
+		}
+		if ( $query ) {
+			$this->assertSame( '', $html );
+			return;
+		}
+		$this->assertStringContainsString( '"@type":"WebPage"', $html );
+		$this->assertStringContainsString( '"@type":"BreadcrumbList"', $html );
+		$this->assertStringContainsString( '"name":"Startseite"', $html );
+		$this->assertStringContainsString( '"name":"Produkte vergleichen"', $html );
+	}
+
+	/**
+	 * Clean and shared comparison URLs.
+	 *
+	 * @return array<string,array{array<string,string>}>
+	 */
+	public static function comparison_queries(): array {
+		return array(
+			'landing'   => array( array() ),
+			'selection' => array( array( 'ids' => '12,19' ) ),
+			'empty cap' => array( array( 'capped' => '' ) ),
+		);
+	}
+
 	/** A breadcrumb names what the browser displays, including decoded ampersands. */
 	public function test_article_breadcrumb_follows_the_localized_journal(): void {
 		$post = new WP_Post(

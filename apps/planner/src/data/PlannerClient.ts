@@ -67,7 +67,10 @@ export class PlannerClient {
 				signal,
 			);
 			this.checkGeneration(generation);
-			const session = readSession(value);
+			const response = readObject(value);
+			if (response.schema_version === 1 && response.cookie_confirmed === false)
+				continue;
+			const session = readSession(response);
 			if (session.cookie_confirmed) {
 				this.session = session;
 				return session;

@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/plant-energy-inputs.schema.json" with { type: "json" };
 import dcSchema from "../contracts/dc-plant-energy-inputs.schema.json" with { type: "json" };
 import { ApiError, type JsonObject } from "../data/protocol.ts";
@@ -84,14 +84,8 @@ export interface PlantEnergyInputs extends JsonObject {
 		battery_parameters_asset_id: string;
 	})[];
 }
-const check = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<PlantEnergyInputs>(schema);
-const checkDC = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<PlantEnergyInputs>(dcSchema);
+const check = validate2020<PlantEnergyInputs>(schema);
+const checkDC = validate2020<PlantEnergyInputs>(dcSchema);
 export function readPlantEnergyInputs(value: unknown): PlantEnergyInputs {
 	const candidate = readObject(value);
 	if (

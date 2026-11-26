@@ -9,13 +9,13 @@ import {
 } from "../../domain/equipmentPlant.ts";
 import { readScenarioDraft } from "../../domain/energyScenario.ts";
 import { __ } from "../../i18n.ts";
-import { retainsUnverifiedInverter } from "./ProjectEquipment.tsx";
+import { retainsUnverifiedInverter } from "../../domain/existingSystem.ts";
 import { NumberField } from "../NumberField.tsx";
 import {
 	changeBackupDemand,
 	changePeakDemand,
 	energyGoal,
-} from "./EnergyDemand.tsx";
+} from "../../domain/energyGoal.ts";
 import {
 	HomepagePvReference,
 	changeHomepagePvPower,

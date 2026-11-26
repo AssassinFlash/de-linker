@@ -1,6 +1,6 @@
 import { readObject } from "../data/readProtocol.ts";
 import { documentReference } from "../data/readEquipmentResult.ts";
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import lossSchema from "../contracts/dc-loss-scenario.schema.json" with { type: "json" };
 import parameterSchema from "../contracts/dc-prepared-parameters.schema.json" with { type: "json" };
 import { ApiError, type JsonObject } from "../data/protocol.ts";
@@ -63,9 +63,8 @@ export function emptyDcScenario(): DcScenarioDraft {
 	};
 }
 
-const ajv = new Ajv2020({ strict: true, strictNumbers: true });
-const checkLoss = ajv.compile<DcLossScenario>(lossSchema);
-const checkParameters = ajv.compile<JsonObject>(parameterSchema);
+const checkLoss = validate2020<DcLossScenario>(lossSchema);
+const checkParameters = validate2020<JsonObject>(parameterSchema);
 
 export function readDcLossScenario(value: unknown): DcLossScenario {
 	if (!checkLoss(value)) throw new ApiError(422, "invalid_dc_loss_scenario");

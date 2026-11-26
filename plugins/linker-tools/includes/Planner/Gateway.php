@@ -15,6 +15,8 @@ use WP_REST_Response;
 
 /** All commands use POST; no browser-controlled private identity is forwarded. */
 final class Gateway {
+	private const VERSION_TRANSIENT = 'linker_planner_public_version_v1';
+
 
 	public const NAMESPACE = 'linker/v1';
 	public const ROUTE     = '/planner';
@@ -75,6 +77,7 @@ final class Gateway {
 
 	/** Registered before any REST dispatch, so unknown routes/errors are private. */
 	public function lifecycle(): void {
+		add_action( 'update_option_linker_planner_url', array( $this, 'clear_version' ) );
 		add_filter( 'linker_tools_planning_inquiry_note', array( $this, 'inquiry_note' ), 10, 3 );
 		add_filter( 'linker_tools_planning_inquiry_handoff', array( $this, 'inquiry_handoff' ), 10, 2 );
 		add_filter( 'determine_current_user', array( $this->identity, 'rest_nonce_user' ), 25 );
@@ -175,6 +178,9 @@ final class Gateway {
 		if ( is_wp_error( $context ) ) {
 			return $context;
 		}
+		if ( ! $context['confirmed'] ) {
+			return $this->confirm_cookie();
+		}
 		if ( $existing_only ) {
 			$recovered = array() === ( new TransitionTicket() )->read_all();
 		} else {
@@ -182,28 +188,77 @@ final class Gateway {
 			$this->claims->settle( get_current_user_id() );
 		}
 		$principal = $context['principal'];
-		if ( $context['confirmed'] ) {
-			$status = $this->transport->object( $principal, 'identity/status', array( 'schema_version' => 1 ) );
-			if ( is_wp_error( $status ) ) {
-				return $status;
+		$status    = $this->transport->object( $principal, 'identity/status', array( 'schema_version' => 1 ) );
+		if ( is_wp_error( $status ) ) {
+			return $status;
+		}
+		if ( 1 !== ( $status['schema_version'] ?? null ) || ! in_array( $status['status'] ?? null, array( 'active', 'retired' ), true ) ) {
+			return Failure::make( 'invalid_reply', 502 );
+		}
+		if ( 'retired' === $status['status'] ) {
+			if ( $existing_only || 'guest' !== $principal->kind ) {
+				return Failure::make( 'identity', 403 );
 			}
-			if ( 1 !== ( $status['schema_version'] ?? null ) || ! in_array( $status['status'] ?? null, array( 'active', 'retired' ), true ) ) {
-				return Failure::make( 'invalid_reply', 502 );
+			$session = $this->identity->session();
+			if ( is_wp_error( $session ) ) {
+				return $session;
 			}
-			if ( 'retired' === $status['status'] ) {
-				if ( $existing_only || 'guest' !== $principal->kind ) {
-					return Failure::make( 'identity', 403 );
-				}
-				$session = $this->identity->session();
-				if ( is_wp_error( $session ) ) {
-					return $session;
-				}
-				$session->destroy_session();
-				$context = $this->identity->bootstrap( $request );
-				if ( is_wp_error( $context ) ) {
-					return $context;
-				}
-				$principal = $context['principal'];
+			$session->destroy_session();
+			$context = $this->identity->bootstrap( $request );
+			if ( is_wp_error( $context ) ) {
+				return $context;
+			}
+			if ( ! $context['confirmed'] ) {
+				return $this->confirm_cookie();
+			}
+			$principal = $context['principal'];
+		}
+		$version = $this->runtime( $principal, ! $existing_only );
+		if ( is_wp_error( $version ) ) {
+			return $version;
+		}
+		return new WP_REST_Response(
+			array(
+				'schema_version'   => 1,
+				'kind'             => $principal->kind,
+				'cookie_confirmed' => true,
+				'expires_at'       => $context['expires'],
+				'query_scope'      => $context['query_scope'],
+				'nonce'            => $context['nonce'],
+				'claim_pending'    => ! $recovered || $this->claims->pending( get_current_user_id() ),
+				'runtime'          => $version,
+			)
+		);
+	}
+
+	/** A newly issued cookie must return before a principal or nonce is released. */
+	private function confirm_cookie(): WP_REST_Response {
+		return new WP_REST_Response(
+			array(
+				'schema_version'   => 1,
+				'cookie_confirmed' => false,
+			)
+		);
+	}
+
+	/** The service URL changed; the next interactive bootstrap reads the new deployment. */
+	public function clear_version(): void {
+		delete_transient( self::VERSION_TRANSIENT );
+	}
+
+	/**
+	 * Share only the filtered public version. Existing-owner probes are strictly read-only.
+	 *
+	 * @param Principal $principal Confirmed native owner.
+	 * @param bool      $cache Interactive bootstrap can populate the version cache.
+	 * @return array<string,mixed>|WP_Error Public deployment capabilities.
+	 */
+	private function runtime( Principal $principal, bool $cache ): array|WP_Error {
+		if ( $cache ) {
+			$service_url = get_option( 'linker_planner_url', '' );
+			$cached      = get_transient( self::VERSION_TRANSIENT );
+			if ( is_array( $cached ) && $service_url === $cached['url'] ) {
+				return $cached['runtime'];
 			}
 		}
 		$version = $this->transport->object( $principal, 'version', array( 'schema_version' => 1 ) );
@@ -289,18 +344,17 @@ final class Gateway {
 		// browser uses its stable, strict runtime view during normal bootstrap.
 		$version           = array_intersect_key( $version, array_flip( array( 'schema_version', 'runtime_sha256', 'models', 'limits' ) ) );
 		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth', 'direct_beam_visibility', 'geometric_pv_generation', 'geometric_pv_clear_flat_roof', 'geometric_pv_clear_pitched_roof' ) ) );
-		return new WP_REST_Response(
-			array(
-				'schema_version'   => 1,
-				'kind'             => $principal->kind,
-				'cookie_confirmed' => $context['confirmed'],
-				'expires_at'       => $context['expires'],
-				'query_scope'      => $context['query_scope'],
-				'nonce'            => $context['nonce'],
-				'claim_pending'    => ! $recovered || $this->claims->pending( get_current_user_id() ),
-				'runtime'          => $version,
-			)
-		);
+		if ( $cache ) {
+			set_transient(
+				self::VERSION_TRANSIENT,
+				array(
+					'url'     => $service_url,
+					'runtime' => $version,
+				),
+				300
+			);
+		}
+		return $version;
 	}
 
 	/**

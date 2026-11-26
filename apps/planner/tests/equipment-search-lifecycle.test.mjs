@@ -1007,8 +1007,12 @@ test("a saved roof goes from Project through PVGIS generation, System and Review
 		app.button("Use this configuration")?.matches(":enabled"),
 	);
 	await act(async () => app.button("Use this configuration").click());
-	await untilRun(() => app.button("Review the proposal")?.matches(":enabled"));
-	await act(async () => app.button("Review the proposal").click());
+	const selectedReview = () =>
+		[...document.querySelectorAll(".sc-system-overview header button")].find(
+			(button) => button.textContent === "Review the proposal",
+		);
+	await untilRun(() => selectedReview()?.matches(":enabled"));
+	await act(async () => selectedReview().click());
 	assert.equal(location.hash, "#sc-review");
 	assert.ok(document.querySelector(".sc-review"));
 	await untilRun(() => app.requests.some(({ path }) => path === "runs/report"));

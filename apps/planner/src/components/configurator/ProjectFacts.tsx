@@ -3,7 +3,7 @@ import { readBrief } from "../../domain/brief.ts";
 import { equipmentDraft } from "../../domain/equipment.ts";
 import { hasPlant, readPlantDraft } from "../../domain/equipmentPlant.ts";
 import { readScenarioDraft } from "../../domain/energyScenario.ts";
-import { energyGoal } from "./EnergyDemand.tsx";
+import { energyGoal } from "../../domain/energyGoal.ts";
 import { formatDecimal } from "../../domain/decimal.ts";
 import { __ } from "../../i18n.ts";
 

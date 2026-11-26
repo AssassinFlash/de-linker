@@ -1,4 +1,4 @@
-import Ajv from "ajv";
+import { validateSchema } from "./schemaValidator.ts";
 import { ApiError } from "./protocol.ts";
 import { inspectJson } from "./inspectJson.ts";
 import type { JsonObject, Project, Session } from "./protocol.ts";
@@ -29,13 +29,7 @@ const jsonDefinition = {
 	],
 };
 const definitions = { json: jsonDefinition };
-const ajv = new Ajv({ strict: true, strictNumbers: true, allErrors: false });
-const checkObject = ajv.compile<JsonObject>({
-	definitions,
-	type: "object",
-	additionalProperties: { $ref: "#/definitions/json" },
-});
-const checkProject = ajv.compile<Project>({
+const checkProject = validateSchema<Project>({
 	definitions,
 	...object({
 		id: hex(32),
@@ -48,7 +42,7 @@ const checkProject = ajv.compile<Project>({
 		},
 	}),
 });
-const checkSession = ajv.compile<Session>(
+const checkSession = validateSchema<Session>(
 	object({
 		schema_version: { type: "integer", const: 1 },
 		kind: { enum: ["guest", "user"] },
@@ -140,9 +134,13 @@ export function readSession(value: unknown): Session {
 		throw new ApiError(502, "invalid_session_reply");
 	return value;
 }
+function isJsonArray(value: unknown): value is readonly unknown[] {
+	return Array.isArray(value);
+}
 export function readObject(value: unknown, maxDepth = 32): JsonObject {
 	inspectJson(value, maxDepth);
-	if (!checkObject(value)) throw new ApiError(422, "invalid_json_object");
+	if (typeof value !== "object" || value === null || isJsonArray(value))
+		throw new ApiError(422, "invalid_json_object");
 	return value;
 }
 

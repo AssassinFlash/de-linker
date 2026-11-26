@@ -5,6 +5,7 @@ import {
 	type ComparisonDraft,
 } from "../data/comparisonDraft.ts";
 import {
+	lazy,
 	useCallback,
 	useEffect,
 	useEffectEvent,
@@ -20,7 +21,7 @@ import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
 import { readObject, readProject, wire } from "../data/readProtocol.ts";
 import type { Brief } from "../domain/brief.ts";
-import { emptyBrief, readBrief } from "../domain/brief.ts";
+import { blankBrief, emptyBrief, readBrief } from "../domain/brief.ts";
 import { changeEquipment, equipmentDraft } from "../domain/equipment.ts";
 import { readScenarioDraft } from "../domain/energyScenario.ts";
 import { issueLabel } from "./ProfileLabels.ts";
@@ -56,11 +57,11 @@ import { locateProjectSite } from "../data/googleMaps.ts";
 import { MAX_PROJECT_TITLE_LENGTH } from "../data/projectIndex.ts";
 import { ProjectHeading } from "./configurator/ProjectHeading.tsx";
 import { ProjectSummary, projectFacts } from "./configurator/ProjectFacts.tsx";
-import { ProjectDetails } from "./configurator/ProjectDetails.tsx";
-import {
-	changeExistingSystem,
-	ProjectEquipment,
-} from "./configurator/ProjectEquipment.tsx";
+const ProjectDetails = lazy(() => import("./configurator/ProjectDetails.tsx"));
+import { changeExistingSystem } from "../domain/existingSystem.ts";
+const ProjectEquipment = lazy(
+	() => import("./configurator/ProjectEquipment.tsx"),
+);
 import {
 	AnnualElectricityUse,
 	HomepageDemand,
@@ -69,7 +70,7 @@ import {
 	isHomepagePvReferenceReady,
 	prepareHomepagePvReference,
 } from "./configurator/HomepagePvReference.tsx";
-import { changeEnergyGoal, energyGoal } from "./configurator/EnergyDemand.tsx";
+import { changeEnergyGoal, energyGoal } from "../domain/energyGoal.ts";
 
 import {
 	PreliminaryOptions,
@@ -82,6 +83,7 @@ import { ProjectDirections } from "./configurator/ProjectDirections.tsx";
 
 export function NewProject({
 	session,
+	ensureSession,
 	client,
 	store,
 	created,
@@ -105,7 +107,8 @@ export function NewProject({
 	creationPending = false,
 	beginCreation,
 }: {
-	session: Session;
+	session: Session | null;
+	ensureSession?: (() => Promise<Session>) | undefined;
 	client: PlannerClient;
 	store: DraftStore;
 	created: (
@@ -133,6 +136,8 @@ export function NewProject({
 	creationPending?: boolean;
 	beginCreation?: () => (() => void) | null;
 }) {
+	const scope = session?.query_scope ?? "";
+	const startedWithoutSession = useRef(session === null);
 	const roofPermission = useRef<PlaceImagery | null>(null);
 	const roofEntry = Boolean(
 		config &&
@@ -156,7 +161,7 @@ export function NewProject({
 		directComparison || compareOnLoad || Boolean(returnToComparison);
 	const source = JSON.stringify(entryHints);
 	const [restored] = useState(() =>
-		draftEntry ? readComparisonDraft(session.query_scope, source) : null,
+		draftEntry && scope ? readComparisonDraft(scope, source) : null,
 	);
 	const draftId = useRef(restored?.id);
 	const [scene, setScene] = useState<NonNullable<
@@ -168,6 +173,7 @@ export function NewProject({
 		null,
 	);
 	const languageNotice = useRef<HTMLDivElement>(null);
+	const preliminaryHeading = useRef<HTMLHeadingElement>(null);
 	const projectForm = useRef<HTMLFormElement>(null);
 	const [useHints, setUseHints] = useState(restored?.useHints ?? true);
 	const [title, setTitle] = useState(
@@ -210,8 +216,8 @@ export function NewProject({
 	}, []);
 	const catalog = useEquipmentProducts(
 		client,
-		session.query_scope,
-		Boolean(entryHints?.productId),
+		scope,
+		Boolean(scope && entryHints?.productId),
 	);
 	const [draft, setDraft] = useState<JsonObject | null>(
 		restored?.inputs ?? null,
@@ -240,18 +246,20 @@ export function NewProject({
 						"linker-tools",
 					),
 				)
-			: { brief: emptyBrief() });
+			: { brief: blankBrief });
 	const seedBrief =
-		seed.brief === undefined ? emptyBrief() : readBrief(seed.brief);
+		seed.brief === undefined ? blankBrief : readBrief(seed.brief);
+	const needsDefaultScope =
+		!compareOnLoad &&
+		!returnToComparison &&
+		!directComparison &&
+		!roofEntry &&
+		seedBrief.system_scope === null;
 	const initialInputs = {
 		...seed,
-		brief: {
-			...seedBrief,
-			system_scope:
-				compareOnLoad || returnToComparison || directComparison || roofEntry
-					? seedBrief.system_scope
-					: (seedBrief.system_scope ?? "new_pv_storage"),
-		},
+		brief: needsDefaultScope
+			? { ...seedBrief, system_scope: "new_pv_storage" }
+			: seedBrief,
 	};
 	const goal = useHints ? entryHints?.commercialGoal : undefined;
 	const commercialInputs =
@@ -285,7 +293,7 @@ export function NewProject({
 	const brief =
 		inputs.brief === undefined ? emptyBrief() : readBrief(inputs.brief);
 	function edit(operation: (inputs: JsonObject) => JsonObject) {
-		if (busy || intent.current || !client.isCurrentScope(session.query_scope))
+		if (busy || intent.current || (session && !client.isCurrentScope(scope)))
 			return false;
 		const changed = operation(inputs);
 		if (
@@ -301,10 +309,14 @@ export function NewProject({
 		setReferenceError(null);
 		return true;
 	}
+	const [waitingAction, setWaitingAction] = useState<
+		"details" | "submit" | null
+	>(null);
+	const pendingSubmit = useRef<Parameters<typeof submit>>([]);
 	const [checking, setChecking] = useState(true);
 	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
 	const intent = useRef<string | null>(null);
-	const intentScope = useRef(session.query_scope);
+	const intentScope = useRef(scope);
 	const destination = useRef<CreationDestination | null>(null);
 	const lifetime = useRef(0);
 	const sending = useRef(false);
@@ -312,13 +324,39 @@ export function NewProject({
 	openWork.current = Boolean(
 		intent.current || draft || (title && title !== initialProject?.title),
 	);
-	const admitted = client.isCurrentScope(session.query_scope);
-	const currentInputs = useEffectEvent(() => inputs);
+	const admitted = Boolean(scope && client.isCurrentScope(scope));
+	const currentDraft = useEffectEvent(
+		(owner: string): ComparisonDraft | null =>
+			intent.current
+				? null
+				: {
+						id: (draftId.current ??= crypto.randomUUID()),
+						scope: owner,
+						source,
+						scene,
+						title,
+						inputs: directComparison ? inputs : draft,
+						useHints,
+						carriedProduct,
+					},
+	);
+	const currentLanguageIssue = useEffectEvent((): LanguageIssue | null => {
+		if (!directComparison) return null;
+		if (profileForm.file) return "csv";
+		if (
+			invalidDemand.size ||
+			projectForm.current?.querySelector(
+				'[aria-invalid="true"], input:out-of-range',
+			)
+		)
+			return "number";
+		return null;
+	});
 	useEffect(() => {
 		if (
 			!draftEntry ||
 			(intent.current && !(profileCorrection && editedCorrection)) ||
-			!admitted ||
+			(!admitted && (session !== null || !ensureSession)) ||
 			(!draft &&
 				!title &&
 				useHints &&
@@ -328,22 +366,26 @@ export function NewProject({
 				!entryHints)
 		)
 			return;
-		const record = intent.current
-			? null
-			: {
-					id: (draftId.current ??= crypto.randomUUID()),
-					scope: session.query_scope,
-					source,
-					scene,
-					title,
-					inputs: directComparison ? currentInputs() : draft,
-					useHints,
-					carriedProduct,
-				};
-		if (record) {
-			savedDraft.current = record;
+		function save(
+			draft: ComparisonDraft,
+			languageUrl = savedDraft.current?.languageUrl,
+		) {
+			const usePvAddress =
+				projectForm.current?.querySelector<HTMLInputElement>(
+					'input[name="pvgis_use_address"]',
+				)?.checked ?? false;
+			const next = {
+				...draft,
+				usePvAddress,
+				...(languageUrl && { languageUrl }),
+			};
+			writeComparisonDraft(next, languageUrl);
+			savedDraft.current = next;
+		}
+		const record = currentDraft(scope);
+		if (record && admitted) {
 			try {
-				writeComparisonDraft(record);
+				save(record);
 				setDraftUnavailable(false);
 			} catch {
 				setDraftUnavailable(true);
@@ -359,33 +401,59 @@ export function NewProject({
 			notice?.focus({ preventScroll: true });
 			notice?.scrollIntoView({ block: "center", behavior: "instant" });
 		}
-		function handoff(event: MouseEvent) {
+		async function handoff(event: MouseEvent) {
+			if (
+				event.defaultPrevented ||
+				event.button !== 0 ||
+				event.altKey ||
+				event.ctrlKey ||
+				event.metaKey ||
+				event.shiftKey
+			)
+				return;
 			const target = event.target;
 			if (!(target instanceof window.Element)) return;
 			const link = target.closest<HTMLAnchorElement>(
 				"header a[hreflang][lang], footer a[hreflang][lang]",
 			);
-			if (!link || new URL(link.href).origin !== location.origin) return;
-			try {
-				if (
-					directComparison &&
-					(profileForm.file ||
-						projectForm.current?.querySelector(
-							'[aria-invalid="true"], input:out-of-range',
-						))
-				) {
-					showLanguageIssue(event, profileForm.file ? "csv" : "number");
+			if (
+				!link ||
+				(link.target && link.target.toLowerCase() !== "_self") ||
+				new URL(link.href).origin !== location.origin
+			)
+				return;
+			const destination = link.href;
+			const issue = currentLanguageIssue();
+			if (issue) {
+				showLanguageIssue(event, issue);
+				return;
+			}
+			if (!record) return;
+			let owner = scope;
+			if (!admitted) {
+				if (!ensureSession) return;
+				event.preventDefault();
+				try {
+					owner = (await ensureSession()).query_scope;
+				} catch {
 					return;
 				}
-				const usePvAddress =
-					projectForm.current?.querySelector<HTMLInputElement>(
-						'input[name="pvgis_use_address"]',
-					)?.checked ?? false;
-				if (record)
-					writeComparisonDraft({ ...record, usePvAddress }, link.href);
+				if (!client.isCurrentScope(owner)) return;
+				const latestIssue = currentLanguageIssue();
+				if (latestIssue) {
+					showLanguageIssue(event, latestIssue);
+					return;
+				}
+			}
+			const latest = currentDraft(owner);
+			if (!latest) return;
+			try {
+				save(latest, destination);
 			} catch {
 				showLanguageIssue(event, "storage");
+				return;
 			}
+			if (!admitted) window.location.assign(destination);
 		}
 		document.addEventListener("click", handoff, true);
 		return () => document.removeEventListener("click", handoff, true);
@@ -404,7 +472,10 @@ export function NewProject({
 		draft,
 		title,
 		useHints,
-		session.query_scope,
+		scope,
+		session,
+		ensureSession,
+		client,
 		source,
 	]);
 	useEffect(() => {
@@ -436,14 +507,14 @@ export function NewProject({
 		return () => {
 			lifetime.current++;
 		};
-	}, [session.query_scope]);
+	}, [scope]);
 	useEffect(() => {
 		if (recoveryChecking || !admitted) return;
 		let active = true;
 		setChecking(true);
-		void creationIntents(store, recoveryScopes ?? [session.query_scope])
+		void creationIntents(store, recoveryScopes ?? [scope])
 			.then((records) => {
-				if (!active || !client.isCurrentScope(session.query_scope)) return;
+				if (!active || !client.isCurrentScope(scope)) return;
 				const matching = records.filter((record) => {
 					if (record.destination === "roof-comparison") return roofEntry;
 					if (
@@ -490,7 +561,7 @@ export function NewProject({
 	}, [
 		admitted,
 		client,
-		session.query_scope,
+		scope,
 		store,
 		recoveryScopes,
 		recoveryChecking,
@@ -498,7 +569,45 @@ export function NewProject({
 		directComparison,
 		roofEntry,
 	]);
+
+	function admittedAction(
+		action: "details" | "submit",
+		...args: Parameters<typeof submit>
+	) {
+		if (admitted && !checking && !recoveryChecking) {
+			if (action === "details") enterDetails?.();
+			else void submit(...args);
+			return;
+		}
+		if (!ensureSession || !startedWithoutSession.current) return;
+		pendingSubmit.current = args;
+		setWaitingAction(action);
+		void ensureSession().catch(() => setWaitingAction(null));
+	}
+	const continueAction = useEffectEvent(() => {
+		if (waitingAction === "details") enterDetails?.();
+		if (waitingAction === "submit") void submit(...pendingSubmit.current);
+	});
+	useEffect(() => {
+		if (
+			waitingAction &&
+			admitted &&
+			!checking &&
+			!recoveryChecking &&
+			!recoveryDiscoveryFailed
+		) {
+			setWaitingAction(null);
+			continueAction();
+		}
+	}, [
+		waitingAction,
+		admitted,
+		checking,
+		recoveryChecking,
+		recoveryDiscoveryFailed,
+	]);
 	function restoreCreation(record: ScopedCreation) {
+		setWaitingAction(null);
 		intent.current = record.body;
 		const { profile: savedProfile, profileIssue: issue } = record;
 		profile.current = savedProfile;
@@ -542,13 +651,14 @@ export function NewProject({
 			!compareRoofSite &&
 			(roofEntry || openRoof || destination.current === "roof");
 		if (
+			!session ||
 			sending.current ||
 			creationPending ||
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
 			waitingForProduct ||
-			!client.isCurrentScope(session.query_scope) ||
+			!client.isCurrentScope(scope) ||
 			(!intent.current &&
 				!direction &&
 				!compareRoofSite &&
@@ -625,7 +735,7 @@ export function NewProject({
 		if (releaseCreation === null) return;
 		const instance = lifetime.current;
 		const submittedFrom = location.href;
-		if (!intent.current) intentScope.current = session.query_scope;
+		if (!intent.current) intentScope.current = scope;
 		const originScope = intentScope.current;
 
 		sending.current = true;
@@ -754,16 +864,12 @@ export function NewProject({
 			if (lifetime.current !== instance) return;
 			profile.current = nextProfile;
 			setProfileCorrection(false);
-			if (!client.isCurrentScope(session.query_scope)) {
+			if (!client.isCurrentScope(scope)) {
 				setFailed(true);
 				return;
 			}
 			let project = readProject(
-				await client.send(
-					"projects/create",
-					intent.current,
-					session.query_scope,
-				),
+				await client.send("projects/create", intent.current, scope),
 			);
 			if (lifetime.current !== instance) return;
 			creationConfirmed = true;
@@ -807,7 +913,7 @@ export function NewProject({
 			if (
 				destination.current === "roof" &&
 				location.href === submittedFrom &&
-				client.isCurrentScope(session.query_scope)
+				client.isCurrentScope(scope)
 			) {
 				if (roofPermission.current)
 					allowRoofImagery(project.id, roofPermission.current);
@@ -1015,11 +1121,10 @@ export function NewProject({
 			const disabled =
 				busy ||
 				creationPending ||
-				checking ||
-				recoveryChecking ||
+				(!startedWithoutSession.current && (checking || recoveryChecking)) ||
 				recoveryDiscoveryFailed ||
 				waitingForProduct ||
-				!admitted;
+				(session !== null && !admitted);
 			const retry = Boolean(intent.current);
 			return (
 				<section className="sc-main sc-direction-entry">
@@ -1036,26 +1141,38 @@ export function NewProject({
 						config={config ?? { locale, countries: {} }}
 						validity={reportDemand}
 						disabled={disabled || retry}
-						roof={() => void submit(undefined, { useRoofPlan: true })}
-						compare={
-							brief.system_scope &&
-							equipmentDraft(inputs).grid_phase != null &&
-							!invalidDemand.size
-								? () => void submit()
-								: undefined
+						roof={() =>
+							admittedAction("submit", undefined, { useRoofPlan: true })
 						}
-						details={enterDetails}
+						compare={() => {
+							if (
+								brief.system_scope &&
+								equipmentDraft(inputs).grid_phase != null
+							) {
+								admittedAction("submit");
+							} else {
+								preliminaryHeading.current?.focus();
+							}
+						}}
+						compareDisabled={invalidDemand.size > 0}
+						details={() => admittedAction("details")}
 					/>
 					<PreliminaryOptions
+						headingRef={preliminaryHeading}
 						locale={locale}
 						inputs={inputs}
 						disabled={disabled || retry || invalidDemand.size > 0}
-						choose={(direction) => void submit(direction)}
+						choose={(direction) => admittedAction("submit", direction)}
 						chooseRetrofit={(keepInverter) =>
-							void submit("storage_addition", { keepInverter })
+							admittedAction("submit", "storage_addition", { keepInverter })
 						}
 					/>
 					{pendingRequests}
+					{waitingAction && (
+						<p role="status">
+							{__("Preparing your workspace…", "linker-tools")}
+						</p>
+					)}
 					{(busy || creationPending) && (
 						<p role="status">{__("Creating…", "linker-tools")}</p>
 					)}
@@ -1066,7 +1183,7 @@ export function NewProject({
 								className="sc-button"
 								type="button"
 								disabled={disabled || inputContractRequired}
-								onClick={() => void submit()}
+								onClick={() => admittedAction("submit")}
 							>
 								{__("Retry project creation", "linker-tools")}
 							</button>
@@ -1123,7 +1240,7 @@ export function NewProject({
 					config={config}
 					site={brief.site}
 					client={client}
-					scope={session.query_scope}
+					scope={scope}
 					disabled={editingDisabled || inputContractRequired}
 					locked={Boolean(intent.current)}
 					busy={busy}
@@ -1427,7 +1544,7 @@ export function NewProject({
 								<ProjectEquipment
 									inputs={inputs}
 									client={client}
-									scope={session.query_scope}
+									scope={scope}
 									disabled={busy || Boolean(intent.current)}
 									edit={edit}
 									initiallyOpen={equipmentFirst}

@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	Fragment,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import type { ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,10 +17,16 @@ import { Notice } from "./Notice.tsx";
 
 export function SessionBoundary({
 	client,
+	publicIntake = false,
 	children,
 }: {
 	client: PlannerClient;
-	children: (session: Session, recheck: () => void) => ReactNode;
+	publicIntake?: boolean;
+	children: (
+		session: Session | null,
+		recheck: () => void,
+		ensureSession: () => Promise<Session>,
+	) => ReactNode;
 }) {
 	const cache = useMemo(
 		() =>
@@ -32,7 +45,9 @@ export function SessionBoundary({
 	// yet and after a probe confirms the identity changed. Revalidation of a
 	// confirmed session is stale-while-revalidate: the workspace stays visible
 	// and interactive, and a failed refresh never becomes an opening failure.
-	const [gate, setGate] = useState(true);
+	const [gate, setGate] = useState(!publicIntake);
+	const [identity, setIdentity] = useState(0);
+	const admission = useRef<Promise<Session> | null>(null);
 	const [failed, setFailed] = useState(false);
 	const [refreshFailed, setRefreshFailed] = useState(false);
 	const busy = useRef(false);
@@ -44,8 +59,10 @@ export function SessionBoundary({
 			if (
 				confirmed.current &&
 				confirmed.current.query_scope !== value.query_scope
-			)
+			) {
 				cache.clear();
+				setIdentity((generation) => generation + 1);
+			}
 			confirmed.current = value;
 			setSession(value);
 			setGate(false);
@@ -53,6 +70,37 @@ export function SessionBoundary({
 		},
 		[cache],
 	);
+
+	const bootstrap = useCallback(() => {
+		if (admission.current) return admission.current;
+		const request = client
+			.bootstrap()
+			.then((value) => {
+				if (!value.cookie_confirmed)
+					throw new ApiError(401, "cookie_confirmation_required");
+				adopt(value);
+				return value;
+			})
+			.finally(() => {
+				admission.current = null;
+			});
+		admission.current = request;
+		return request;
+	}, [client, adopt]);
+	const ensureSession = useCallback(async () => {
+		const current = confirmed.current;
+		if (current && client.isCurrentScope(current.query_scope)) return current;
+		try {
+			return await bootstrap();
+		} catch (error) {
+			if (!current) setFailed(true);
+			throw error;
+		}
+	}, [client, bootstrap]);
+	const prepare = () => {
+		if (publicIntake && !confirmed.current && !failed)
+			void ensureSession().catch(() => {});
+	};
 
 	const verify = useCallback(
 		(mode: "probe" | "full") => {
@@ -81,13 +129,12 @@ export function SessionBoundary({
 				// exactly one revalidation cycle. Without this, the admission
 				// drop can batch with the re-adoption render and the retry
 				// never fires.
-				flushSync(() => {
-					setPulse((value) => value + 1);
-				});
-				void client
-					.bootstrap(controller.signal)
-					.then((value) => {
-						adopt(value);
+				if (reason !== "initial")
+					flushSync(() => {
+						setPulse((value) => value + 1);
+					});
+				void bootstrap()
+					.then(() => {
 						done();
 					})
 					.catch(() => {
@@ -133,7 +180,7 @@ export function SessionBoundary({
 					done();
 				});
 		},
-		[adopt, cache, client],
+		[bootstrap, client],
 	);
 	useEffect(() => {
 		verifyRef.current = verify;
@@ -148,13 +195,14 @@ export function SessionBoundary({
 		verify("probe");
 	}, [verify]);
 	useEffect(() => {
-		startInitial();
-	}, [startInitial]);
+		if (!publicIntake) startInitial();
+	}, [publicIntake, startInitial]);
 	useEffect(() => () => cache.clear(), [cache]);
 
 	useEffect(() => {
 		let timer: ReturnType<typeof setTimeout> | undefined;
 		const request = () => {
+			if (publicIntake && !confirmed.current) return;
 			// focus and visibilitychange both fire on one tab switch; a
 			// single coalesced revalidation covers them.
 			if (timer !== undefined) return;
@@ -180,7 +228,7 @@ export function SessionBoundary({
 			window.removeEventListener("pageshow", restored);
 			document.removeEventListener("visibilitychange", visible);
 		};
-	}, [verify]);
+	}, [publicIntake, verify]);
 
 	const recheck = useCallback(() => verify("full"), [verify]);
 	const OpeningTitle = session ? "p" : "h1";
@@ -221,14 +269,28 @@ export function SessionBoundary({
 					)}
 				</div>
 			)}
-			{session && (
+			{(session || publicIntake) && (
 				<QueryClientProvider client={cache}>
-					<div hidden={gate} inert={gate}>
-						{children(session, recheck)}
+					<div
+						hidden={gate}
+						inert={gate}
+						onPointerDownCapture={prepare}
+						onFocusCapture={(event) => {
+							if (
+								event.target.matches("input, select, textarea, button, a[href]")
+							)
+								prepare();
+						}}
+						onInputCapture={prepare}
+						onChangeCapture={prepare}
+					>
+						<Fragment key={identity}>
+							{children(session, recheck, ensureSession)}
+						</Fragment>
 					</div>
 				</QueryClientProvider>
 			)}
-			{refreshFailed && !gate && (
+			{(refreshFailed || (publicIntake && failed)) && !gate && (
 				<div className="sc-session-state" role="status">
 					<Notice error>
 						<p>

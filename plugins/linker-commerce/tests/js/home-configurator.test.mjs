@@ -47,3 +47,17 @@ for (const [lang, base] of [
 		dom.window.close();
 	});
 }
+
+test('an incomplete tab set leaves its published configurator links usable', () => {
+	const dom = new JSDOM('<section id="configurator-showcase"><div role="tablist"><a role="tab" aria-controls="absent" href="/solution-configurator/">Open</a></div></section>', {
+		url: 'https://de-linker.com/', runScripts: 'outside-only',
+	});
+	const {window} = dom;
+	window.eval(readFileSync(script, 'utf8'));
+	const link = window.document.querySelector('a');
+	const click = new window.MouseEvent('click', {bubbles: true, cancelable: true});
+	link.dispatchEvent(click);
+	assert.equal(click.defaultPrevented, false);
+	assert.equal(link.pathname, '/solution-configurator/');
+	window.close();
+});

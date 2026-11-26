@@ -74,6 +74,7 @@ sc-design-toolbar
 sc-design-workspace
 sc-diagnostics
 sc-direction-action
+sc-direction-actions
 sc-direction-comparison
 sc-direction-details
 sc-direction-entry
@@ -147,6 +148,7 @@ sc-import-panel
 sc-import-review
 sc-import-steps
 sc-index
+sc-inquiry-contacts
 sc-inquiry-fields
 sc-inquiry-overview
 sc-inquiry-products

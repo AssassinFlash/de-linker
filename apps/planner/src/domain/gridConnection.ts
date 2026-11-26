@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/grid-connection.schema.json" with { type: "json" };
 import { ApiError, type JsonObject } from "../data/protocol.ts";
 
@@ -14,10 +14,7 @@ export interface GridConnection extends JsonObject {
 		date: string | null;
 	};
 }
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<GridConnection>(schema);
+const validate = validate2020<GridConnection>(schema);
 export function publicSourceUrl(value: string): boolean {
 	try {
 		const url = new URL(value);

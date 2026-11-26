@@ -831,6 +831,12 @@ test("visitors with project data can open setup from the comparison and keep the
 
 test("the first-visit entry compares directions and opens the native inquiry for the choice", async (t) => {
 	const fixture = setupDom();
+	const parse = Object.getOwnPropertyDescriptor(URL, "parse");
+	delete URL.parse;
+	t.after(() => {
+		if (parse) Object.defineProperty(URL, "parse", parse);
+	});
+
 	globalThis.indexedDB = new IDBFactory();
 	t.after(() => delete globalThis.indexedDB);
 	window.history.replaceState({}, "", "/workspace/#sc-preliminary-options");
@@ -953,6 +959,17 @@ test("the first-visit entry compares directions and opens the native inquiry for
 		'table[aria-label="Compare system options"]',
 	);
 	assert.ok(comparison, "Options belong in one project comparison table");
+	const compareWithoutDetails = [
+		...fixture.element.querySelectorAll("button"),
+	].find((button) => button.textContent === "Compare systems");
+	assert.ok(
+		compareWithoutDetails,
+		"A first-time visitor can compare without detailed inputs",
+	);
+	await until(() => compareWithoutDetails.matches(":enabled"));
+	await act(async () => compareWithoutDetails.click());
+	assert.equal(document.activeElement.textContent, "Preliminary options");
+	assert.deepEqual(created, []);
 	assert.deepEqual(
 		Array.from(comparison.querySelectorAll("tbody th")).map((cell) =>
 			cell.textContent.trim(),
@@ -1113,7 +1130,10 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	const refine = button("Enter project details");
 	assert.ok(refine, "The selected direction can lead into the same project");
 	await until(() => !button("Enter project details").disabled);
-	await act(async () => refine.click());
+	await act(async () => {
+		refine.click();
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
+	});
 	await until(() => document.body.textContent.includes("What is the project?"));
 	assert.equal(document.activeElement.textContent, "What is the project?");
 	assert.equal(
@@ -1271,6 +1291,48 @@ test("signed-in preliminary landing explains a failed recovery read and offers a
 	await until(() => !fixture.element.querySelector("tbody button").disabled);
 	assert.equal(recoveries, 2);
 	assert.equal(retry(), undefined);
+});
+
+test("an unavailable embedded form offers the configured inquiry, email and WhatsApp links", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { ReviewInquiry } =
+		await import("../src/components/configurator/ReviewInquiry.tsx");
+	const root = createRoot(fixture.element);
+	t.after(() => fixture.dispose(root));
+	const inquiryUrl = location.origin + "/de/proforma-anfrage/";
+	const contactMailbox = "contact@example.test";
+	const whatsappUrl = "https://wa.me/123?text=Anfrage";
+	await act(async () =>
+		root.render(
+			React.createElement(ReviewInquiry, {
+				project: { id: projectId, revision: 1, inputs: {} },
+				direction: "storage_only",
+				client: {
+					isCurrentScope: () => true,
+					query: async () => {
+						throw new Error("unavailable");
+					},
+				},
+				scope: session.query_scope,
+				locale: "de",
+				active: true,
+				contact: { inquiryUrl, contactMailbox, whatsappUrl },
+				changeSelection() {},
+				recheck() {},
+			}),
+		),
+	);
+	const failure = () => fixture.element.querySelector('[role="alert"]');
+	await until(failure);
+	assert.deepEqual(
+		[...failure().querySelectorAll("a")].map((a) => a.href),
+		[inquiryUrl, "mailto:" + contactMailbox, whatsappUrl],
+	);
+	assert.equal(
+		failure().querySelector("button").textContent,
+		"Load inquiry form again",
+	);
 });
 
 test("the review restores edited signed-in details and Woo billing controls on a language return", async (t) => {

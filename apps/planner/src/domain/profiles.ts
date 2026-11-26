@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import importSchema from "../contracts/profile-import.schema.json" with { type: "json" };
 import selectionSchema from "../contracts/profile-selections.schema.json" with { type: "json" };
 import { ApiError } from "../data/protocol.ts";
@@ -123,19 +123,14 @@ export interface ProfilePreview {
 	readonly gaps_truncated: boolean;
 	readonly next_offset: number | null;
 }
-const ajv = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-	allErrors: false,
-});
-const checkImport = ajv.compile<ImportCommand>(importSchema);
-const checkSelections = ajv.compile<ProfileSelections>(selectionSchema);
+const checkImport = validate2020<ImportCommand>(importSchema);
+const checkSelections = validate2020<ProfileSelections>(selectionSchema);
 export function readImport(value: unknown): ImportCommand {
 	readObject(value);
 	if (!checkImport(value)) throw new ApiError(422, "invalid_profile_import");
 	return value;
 }
-const checkStandard = ajv.compile<StandardProfileCommand>({
+const checkStandard = validate2020<StandardProfileCommand>({
 	type: "object",
 	additionalProperties: false,
 	required: [

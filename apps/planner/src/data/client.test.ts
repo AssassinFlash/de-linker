@@ -276,47 +276,59 @@ test("scope admission follows native confirmation immediately, independently of 
 	});
 });
 
-test("native bootstrap confirms the presented cookie before any private RPC", async () => {
-	const { client, calls } = fixture([
-		guest(),
-		json({ ...context, cookie_confirmed: false }),
-		json(context),
-		json({ items: [] }),
-	]);
-	await assert.rejects(client.query("projects/list", {}, context.query_scope), {
-		code: "session_confirmation_required",
-	});
-	assert.deepEqual(await client.bootstrap(), context);
-	await client.query(
-		"projects/list",
-		{
-			schema_version: 1,
-			page_size: 10,
-			after: null,
+for (const unconfirmed of [
+	{ schema_version: 1, cookie_confirmed: false },
+	{ ...context, cookie_confirmed: false },
+])
+	test(
+		"native bootstrap confirms the presented cookie before any private RPC (" +
+			("runtime" in unconfirmed ? "full" : "minimal") +
+			" reply)",
+		async () => {
+			const { client, calls } = fixture([
+				guest(),
+				json(unconfirmed),
+				json(context),
+				json({ items: [] }),
+			]);
+			await assert.rejects(
+				client.query("projects/list", {}, context.query_scope),
+				{
+					code: "session_confirmation_required",
+				},
+			);
+			assert.deepEqual(await client.bootstrap(), context);
+			await client.query(
+				"projects/list",
+				{
+					schema_version: 1,
+					page_size: 10,
+					after: null,
+				},
+				context.query_scope,
+			);
+			assert.equal(calls.length, 4);
+			assert.ok(calls[0]?.url.includes("action=rest-nonce"));
+			for (const call of calls) {
+				assert.equal(call.init.credentials, "same-origin");
+				assert.equal(call.init.cache, "no-store");
+				assert.equal(call.init.redirect, "error");
+				assert.ok(
+					!Object.keys(call.init.headers ?? {}).some((key) =>
+						/principal|actor|service|subject/i.test(key),
+					),
+				);
+			}
+			assert.equal(
+				new Headers(calls[1]?.init.headers).get("X-Linker-Planner-Nonce"),
+				null,
+			);
+			assert.equal(
+				new Headers(calls[3]?.init.headers).get("X-Linker-Planner-Nonce"),
+				context.nonce,
+			);
 		},
-		context.query_scope,
 	);
-	assert.equal(calls.length, 4);
-	assert.ok(calls[0]?.url.includes("action=rest-nonce"));
-	for (const call of calls) {
-		assert.equal(call.init.credentials, "same-origin");
-		assert.equal(call.init.cache, "no-store");
-		assert.equal(call.init.redirect, "error");
-		assert.ok(
-			!Object.keys(call.init.headers ?? {}).some((key) =>
-				/principal|actor|service|subject/i.test(key),
-			),
-		);
-	}
-	assert.equal(
-		new Headers(calls[1]?.init.headers).get("X-Linker-Planner-Nonce"),
-		null,
-	);
-	assert.equal(
-		new Headers(calls[3]?.init.headers).get("X-Linker-Planner-Nonce"),
-		context.nonce,
-	);
-});
 
 test("account nonce failure blocks bootstrap and cannot silently downgrade to guest", async () => {
 	const failed = fixture([new Response("maintenance", { status: 503 })]);

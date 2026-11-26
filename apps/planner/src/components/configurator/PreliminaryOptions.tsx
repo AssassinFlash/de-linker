@@ -1,13 +1,13 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 import type { JsonObject } from "../../data/protocol.ts";
 import { readBrief, type Brief } from "../../domain/brief.ts";
 import { __ } from "../../i18n.ts";
-import { energyGoal } from "./EnergyDemand.tsx";
+import { energyGoal } from "../../domain/energyGoal.ts";
 import { equipmentDraft } from "../../domain/equipment.ts";
 import { hasPlant } from "../../domain/equipmentPlant.ts";
 import { Icon } from "../Icon.tsx";
 import { ProjectSummary, projectFacts } from "./ProjectFacts.tsx";
-import { hasStorageToExclude } from "./ProjectDetails.tsx";
+import { hasStorageToExclude } from "../../domain/storageScope.ts";
 
 export function systemNames() {
 	return {
@@ -122,6 +122,7 @@ export function PreliminaryOptions({
 	choose,
 	chooseRetrofit,
 	projectTitle,
+	headingRef,
 	action,
 }: {
 	inputs: JsonObject;
@@ -129,13 +130,15 @@ export function PreliminaryOptions({
 	disabled: boolean;
 	choose: (scope: NonNullable<Brief["system_scope"]>) => void;
 	projectTitle?: string;
+	headingRef?: RefObject<HTMLHeadingElement | null>;
 	chooseRetrofit?: (keep: boolean) => void;
 	action?: ReactNode;
 }) {
 	const optionsHeading = useRef<HTMLHeadingElement>(null);
 	useEffect(() => {
-		optionsHeading.current?.focus({ preventScroll: true });
-	}, []);
+		if (!headingRef || location.hash === "#sc-preliminary-options")
+			(headingRef ?? optionsHeading).current?.focus({ preventScroll: true });
+	}, [headingRef]);
 	const names = systemNames();
 	const hasSolarPlan =
 		inputs.pv_string_plan != null ||
@@ -214,7 +217,7 @@ export function PreliminaryOptions({
 			<section className="sc-card sc-direction-comparison">
 				<header className="sc-section-head">
 					<div>
-						<h2 ref={optionsHeading} tabIndex={-1}>
+						<h2 ref={headingRef ?? optionsHeading} tabIndex={-1}>
 							{__("Preliminary options", "linker-tools")}
 						</h2>
 						<p>

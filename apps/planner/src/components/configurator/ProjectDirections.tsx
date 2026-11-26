@@ -18,7 +18,7 @@ import {
 	changeEnergyGoal,
 	energyGoal,
 	type EnergyGoal,
-} from "./EnergyDemand.tsx";
+} from "../../domain/energyGoal.ts";
 import { changeHomepagePvPower } from "./HomepagePvReference.tsx";
 
 const scenes = ["new", "known", "retrofit", "commercial"] as const;
@@ -36,6 +36,7 @@ export function ProjectDirections({
 	changeTitle,
 	roof,
 	compare,
+	compareDisabled,
 	details,
 }: {
 	selectedScene: Scene | null;
@@ -48,7 +49,8 @@ export function ProjectDirections({
 	title: string;
 	changeTitle: (value: string) => void;
 	roof: () => void;
-	compare?: (() => void) | undefined;
+	compare: () => void;
+	compareDisabled: boolean;
 	details?: (() => void) | undefined;
 }) {
 	const brief = readBrief(inputs.brief);
@@ -127,15 +129,6 @@ export function ProjectDirections({
 								</option>
 							))}
 						</select>
-					</label>
-					<label className="sc-field">
-						<span>{__("Project name", "linker-tools")}</span>
-						<input
-							name="project_name"
-							maxLength={256}
-							value={title}
-							onChange={(e) => changeTitle(e.currentTarget.value)}
-						/>
 					</label>
 					<label className="sc-field">
 						<span>{__("Country", "linker-tools")}</span>
@@ -244,6 +237,34 @@ export function ProjectDirections({
 							</option>
 						</select>
 					</label>
+					<label className="sc-field">
+						<span>{__("Project name", "linker-tools")}</span>
+						<input
+							name="project_name"
+							maxLength={256}
+							value={title}
+							onChange={(e) => changeTitle(e.currentTarget.value)}
+						/>
+					</label>
+				</div>
+				<div className="sc-actions sc-direction-actions">
+					<button
+						type="button"
+						className="sc-button sc-primary"
+						disabled={compareDisabled}
+						onClick={compare}
+					>
+						{__("Compare systems", "linker-tools")}
+					</button>
+					{details && (
+						<button
+							type="button"
+							className="sc-button btn-ghost"
+							onClick={details}
+						>
+							{__("Enter project details", "linker-tools")}
+						</button>
+					)}
 				</div>
 				<div className="callout-row sc-roof-callout">
 					<div>
@@ -264,24 +285,6 @@ export function ProjectDirections({
 					</button>
 				</div>
 				{brief.project_note && <p>{brief.project_note}</p>}
-				{compare && (
-					<button
-						type="button"
-						className="sc-button sc-primary"
-						onClick={compare}
-					>
-						{__("Compare systems", "linker-tools")}
-					</button>
-				)}
-				{details && (
-					<button
-						type="button"
-						className="sc-button btn-ghost"
-						onClick={details}
-					>
-						{__("Enter project details", "linker-tools")}
-					</button>
-				)}
 			</fieldset>
 		</>
 	);

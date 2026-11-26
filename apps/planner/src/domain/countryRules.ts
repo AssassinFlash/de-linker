@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import schema from "../contracts/country-rules.schema.json" with { type: "json" };
 import { ApiError, type JsonObject } from "../data/protocol.ts";
 import { isEuBasis } from "./euCountryRules.ts";
@@ -51,10 +51,7 @@ export interface CountryRuleInputs extends JsonObject {
 	ch_new_installation?: boolean | null;
 }
 
-const validate = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<CountryRuleInputs>(schema);
+const validate = validate2020<CountryRuleInputs>(schema);
 
 export function readCountryRuleInputs(
 	value: unknown,

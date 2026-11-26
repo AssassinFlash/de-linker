@@ -412,11 +412,18 @@ final class Publication {
 		$rows       = array();
 		$candidates = array();
 		$sources    = array();
-		foreach ( self::candidate_ids() as $locale_id ) {
+		$ids        = self::candidate_ids();
+		_prime_post_caches( $ids, true, true );
+		$canonical_ids = array_map( self::canonical_id( ... ), $ids );
+		$other_sources = array_values( array_unique( array_diff( $canonical_ids, $ids ) ) );
+		if ( $other_sources ) {
+			_prime_post_caches( $other_sources, true, true );
+		}
+		foreach ( $ids as $index => $locale_id ) {
 			if ( ! self::published_in_current_read( $locale_id ) ) {
 				continue;
 			}
-			$id = self::canonical_id( $locale_id );
+			$id = $canonical_ids[ $index ];
 			if ( isset( $sources[ $id ] ) ) {
 				continue;
 			}

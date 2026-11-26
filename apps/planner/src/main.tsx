@@ -2,12 +2,13 @@ import {
 	clearRoofImageryConsent,
 	onMapConsentChange,
 } from "./data/roofImageryConsent.ts";
-import { Component, StrictMode, useMemo } from "react";
+import { Component, StrictMode, Suspense, useMemo } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { readConfiguration } from "./data/config.ts";
 import type { Configuration } from "./data/config.ts";
 import { PlannerClient } from "./data/PlannerClient.ts";
+import { canStartPublicIntake } from "./data/publicIntake.ts";
 import { DraftStore } from "./data/DraftStore.ts";
 import { SessionBoundary } from "./components/SessionBoundary.tsx";
 import { Workspace } from "./components/Workspace.tsx";
@@ -52,18 +53,30 @@ function Application({ config }: { config: Configuration }) {
 		[config],
 	);
 	const store = useMemo(() => new DraftStore(), []);
+	const publicIntake = useMemo(
+		() => canStartPublicIntake(config, new URL(location.href)),
+		[config],
+	);
 	return (
-		<SessionBoundary client={client}>
-			{(session, recheck) => (
+		<SessionBoundary client={client} publicIntake={publicIntake}>
+			{(session, recheck, ensureSession) => (
 				<>
-					<Workspace
-						key={session.query_scope}
-						client={client}
-						store={store}
-						config={config}
-						session={session}
-						recheck={recheck}
-					/>
+					<Suspense
+						fallback={
+							<p className="sc-session-state" role="status">
+								{__("Opening the project…", "linker-tools")}
+							</p>
+						}
+					>
+						<Workspace
+							ensureSession={ensureSession}
+							client={client}
+							store={store}
+							config={config}
+							session={session}
+							recheck={recheck}
+						/>
+					</Suspense>
 					<ToolIdentity />
 				</>
 			)}

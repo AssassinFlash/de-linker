@@ -39,7 +39,6 @@ final class WindPressPageStyles {
 		'marketing-rhythm.css'     => 'marketing',
 		'homepage-focus.css'       => 'home',
 		'homepage-readability.css' => 'home',
-		'planner-maplibre.css'     => 'planner',
 		'planner.css'              => 'planner',
 		'contact-journal.css'      => 'contact',
 		'planner-equipment.css'    => 'planner',
@@ -62,7 +61,17 @@ final class WindPressPageStyles {
 	 * @return list<string>
 	 */
 	public static function filenames(): array {
-		return array_keys( self::BEFORE + self::AFTER );
+		return array_merge( array_keys( self::BEFORE + self::AFTER ), array( 'planner-maplibre.css' ) );
+	}
+
+	/**
+	 * Versioned map styles published alongside the volume, requested when the map opens.
+	 */
+	public static function map_style_url(): string {
+		$uploads  = wp_get_upload_dir();
+		$relative = '/windpress/cache/linker/planner-maplibre.css';
+		$file     = $uploads['basedir'] . $relative;
+		return $uploads['baseurl'] . $relative . ( is_file( $file ) ? '?ver=' . filemtime( $file ) : '' );
 	}
 
 	/** Both the cached frontend and LiveCanvas's live compiler use the same page styles. */

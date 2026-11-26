@@ -9,7 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Planner;
 
+use Linker\Commerce\Presentation\ContactChannels;
 use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Presentation\WindPressPageStyles;
 
 /** No layout, inline script, style or browser-selected identity is emitted. */
 final class Application {
@@ -79,11 +81,39 @@ final class Application {
 	private bool $mounted = false;
 
 	/**
+	 * A workspace was discovered in the queried page or LiveCanvas template.
+	 *
+	 * @var bool
+	 */
+	private bool $preloaded = false;
+
+	/**
+	 * Native translations have been printed for this workspace.
+	 *
+	 * @var bool
+	 */
+	private bool $translations_printed = false;
+
+	/**
 	 * Versioned URL of the full script-module translation catalog when split.
 	 *
 	 * @var string|null
 	 */
 	private ?string $catalog_url = null;
+
+	/**
+	 * Entry module followed by its static Vite imports.
+	 *
+	 * @var list<string>
+	 */
+	private array $module_preloads = array();
+
+	/**
+	 * Path WordPress uses to identify the entry's native translation catalog.
+	 *
+	 * @var string
+	 */
+	private string $entry_path = '';
 
 	/**
 	 * Public, reviewed build metadata; never a project-supplied executable URL.
@@ -109,10 +139,11 @@ final class Application {
 	/** Register only; the module loads where its shortcode is rendered. */
 	public function register(): void {
 		add_action( 'init', array( $this, 'assets' ) );
+		add_action( 'wp_head', array( $this, 'preload' ), 1 );
 		add_action( 'template_redirect', array( $this, 'inquiry_entry' ) );
 		add_shortcode( 'linker_planner', array( $this, 'mount' ) );
 		add_filter( 'load_script_translations', array( $this, 'filter_translations' ), 10, 4 );
-		add_action( 'wp_footer', array( $this, 'print_translation_loader' ), 22 );
+		add_action( 'wp_head', array( $this, 'translations' ), 99 );
 		add_filter( 'mod_rewrite_rules', array( $this, 'cache_rules' ) );
 		( new Indexing() )->register();
 		( new WindPress( $this->plugin_file ) )->register();
@@ -175,31 +206,96 @@ final class Application {
 		if ( count( $subset ) >= count( $messages ) ) {
 			return $translations;
 		}
-		$hash = hash_file( 'sha256', $file );
-		if ( is_string( $hash ) ) {
-			$this->catalog_url = plugin_dir_url( $this->plugin_file ) . 'languages/' . $name . '?ver=' . substr( $hash, 0, 12 );
-		}
+		$this->catalog_url    ??= $this->catalog_file_url( $file );
 		$decoded['locale_data'] = array( 'messages' => $subset );
 		$encoded                = wp_json_encode( $decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		return is_string( $encoded ) ? $encoded : $translations;
 	}
 
 	/**
-	 * Print the on-demand catalog loader as its own footer script.
+	 * The catalog filename identifies the script, so its URL also includes the translation revision.
 	 *
-	 * WordPress prints the module translation data on wp_footer at priority 21
-	 * (WP_Script_Modules::print_script_module_translations(), since 7.0.0)
-	 * through wp_print_inline_script_tag(), whose only filter is
-	 * wp_inline_script_attributes — attributes only, never the tag. The loader
-	 * therefore cannot be appended to that tag; it runs one priority later,
-	 * after filter_translations() has recorded the versioned catalog URL.
-	 *
-	 * `window.linkerToolsCatalog` settles exactly when the request settles: the
-	 * module awaits it before the first render, so a slow network delays that
-	 * frame instead of painting the untranslated shell. Only a failed fetch,
-	 * unreadable JSON or an absent runtime resolves it early, and then the
-	 * inline shell subset is what the page keeps.
+	 * @param string $file Readable generated catalog.
 	 */
+	private function catalog_file_url( string $file ): ?string {
+		$revision = hash_file( 'sha256', $file );
+		return is_string( $revision ) ? plugin_dir_url( $this->plugin_file ) . 'languages/' . basename( $file ) . '?ver=' . substr( $revision, 0, 12 ) : null;
+	}
+
+	/** Discover the entry's static imports and start the localized fetch in the document head. */
+	public function preload(): void {
+		if ( ! $this->module_preloads ) {
+			return;
+		}
+		$post    = get_queried_object();
+		$content = ( $post instanceof \WP_Post ? $post->post_content : '' ) . "\n" . ( $GLOBALS['lc_main_html'] ?? '' );
+		if ( ! $this->mounted && ! $this->includes_planner( $content ) ) {
+			return;
+		}
+		$this->preloaded = true;
+		foreach ( $this->module_preloads as $url ) {
+			echo '<link rel="modulepreload" href="' . esc_url( $url ) . '" crossorigin="anonymous">' . "\n";
+		}
+		$file = plugin_dir_path( $this->plugin_file ) . 'languages/linker-tools-' . determine_locale() . '-' . md5( $this->entry_path ) . '.json';
+		if ( ! is_readable( $file ) ) {
+			return;
+		}
+		$this->catalog_url = $this->catalog_file_url( $file );
+		if ( ! $this->catalog_url ) {
+			return;
+		}
+		// Both requests use no-cors for this same-origin catalog. WebKit otherwise makes a second GET.
+		echo '<link rel="preload" as="fetch" href="' . esc_url( $this->catalog_url ) . '">' . "\n";
+		wp_print_inline_script_tag(
+			'window.linkerPlannerCatalogRequest = fetch(' . wp_json_encode( $this->catalog_url, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) . ', { mode: "no-cors", credentials: "include" }).then(r => r.ok ? r.json() : null).catch(() => null);',
+			array( 'id' => 'linker-planner-catalog-request' )
+		);
+	}
+
+	/**
+	 * The retired inline homepage shortcode deliberately renders no planner.
+	 *
+	 * @param string $content Queried post and LiveCanvas template.
+	 */
+	private function includes_planner( string $content ): bool {
+		if ( ! str_contains( $content, '[linker_' ) ) {
+			return false;
+		}
+		preg_match_all( '/' . get_shortcode_regex( array( 'linker_planner', 'linker_configurator' ) ) . '/s', $content, $matches, PREG_SET_ORDER );
+		foreach ( $matches as $match ) {
+			if ( '[' === $match[1] && ']' === $match[6] ) {
+				continue;
+			}
+			$atts = shortcode_parse_atts( $match[3] );
+			if ( 'linker_configurator' === $match[2] || 'home' !== ( $atts['mode'] ?? '' ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Make the native i18n runtime and locale available before the workspace element is parsed. */
+	public function translations(): void {
+		if ( $this->translations_printed || ( ! $this->mounted && ! $this->preloaded ) || ! $this->module_preloads ) {
+			return;
+		}
+		$this->translations_printed = true;
+		wp_print_scripts( array( 'wp-i18n' ) );
+		$json = load_script_module_textdomain( self::HANDLE, 'linker-tools', plugin_dir_path( $this->plugin_file ) . 'languages' );
+		if ( is_string( $json ) ) {
+			$data     = json_decode( $json, true );
+			$messages = $data['locale_data']['linker-tools'] ?? $data['locale_data']['messages'] ?? null;
+			if ( is_array( $messages ) ) {
+				wp_print_inline_script_tag(
+					'wp.i18n.setLocaleData(' . wp_json_encode( $messages, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE ) . ', "linker-tools");',
+					array( 'id' => 'wp-script-module-translation-data-' . self::HANDLE )
+				);
+			}
+		}
+		$this->print_translation_loader();
+	}
+
+	/** After WordPress installs the shell translations, apply the catalog requested by the head. */
 	public function print_translation_loader(): void {
 		if ( ! is_string( $this->catalog_url ) || '' === $this->catalog_url ) {
 			return;
@@ -209,7 +305,7 @@ final class Application {
 			return;
 		}
 		$loader = sprintf(
-			'( ( domain, url ) => { window.linkerToolsCatalog = new Promise( ( resolve ) => { const done = () => resolve( true ); if ( typeof window.fetch !== "function" ) { done(); return; } fetch( url, { credentials: "same-origin" } ).then( ( r ) => ( r.ok ? r.json() : null ) ).then( ( data ) => { const localeData = data && data.locale_data && ( data.locale_data[ domain ] || data.locale_data.messages ); if ( localeData && window.wp && window.wp.i18n ) { localeData[ "" ] = Object.assign( {}, localeData[ "" ], { domain } ); window.wp.i18n.setLocaleData( localeData, domain ); } } ).catch( () => {} ).finally( done ); } ); } )( "linker-tools", %s );',
+			'window.linkerToolsCatalog = (window.linkerPlannerCatalogRequest || fetch(%s, { mode: "no-cors", credentials: "include" }).then(r => r.ok ? r.json() : null).catch(() => null)).then(data => { const messages = data && data.locale_data && (data.locale_data["linker-tools"] || data.locale_data.messages); if (messages && window.wp && window.wp.i18n) { messages[""] = Object.assign({}, messages[""], {domain: "linker-tools"}); window.wp.i18n.setLocaleData(messages, "linker-tools"); } });',
 			$url
 		);
 		wp_print_inline_script_tag( $loader, array( 'id' => 'linker-planner-translation-loader' ) );
@@ -239,7 +335,16 @@ final class Application {
 		if ( is_string( $map ) && 1 === preg_match( '~\Aassets/MapViewport-[a-zA-Z0-9_-]+\.js\z~', $map ) ) {
 			$this->map_module_url = plugin_dir_url( $this->plugin_file ) . 'build/planner/' . $map;
 		}
-		wp_register_script_module( self::HANDLE, plugin_dir_url( $this->plugin_file ) . 'build/planner/' . $file, array(), is_string( $version ) ? $version : null );
+		$base                  = plugin_dir_url( $this->plugin_file ) . 'build/planner/';
+		$this->entry_path      = 'build/planner/' . $file;
+		$this->module_preloads = array( $base . $file . ( is_string( $version ) ? '?ver=' . $version : '' ) );
+		foreach ( $manifest['src/main.tsx']['imports'] ?? array() as $import ) {
+			$chunk = $manifest[ $import ]['file'] ?? null;
+			if ( is_string( $chunk ) && preg_match( '~\Aassets/[a-zA-Z0-9_.-]+\.js\z~', $chunk ) ) {
+				$this->module_preloads[] = $base . $chunk;
+			}
+		}
+		wp_register_script_module( self::HANDLE, $base . $file, array(), is_string( $version ) ? $version : null );
 		wp_set_script_module_translations( self::HANDLE, 'linker-tools', plugin_dir_path( $this->plugin_file ) . 'languages' );
 	}
 
@@ -265,12 +370,17 @@ final class Application {
 		if ( $signed_in || ! empty( $_GET ) || 1 !== preg_match( '~^/' . self::LANDING_ROUTES . '$~D', $_SERVER['REQUEST_URI'] ?? '' ) ) {
 			return false;
 		}
+		return ! $this->has_workspace_session();
+	}
+
+	/** Woo session and planner transition cookies must be checked by the server, including HttpOnly cookies. */
+	private function has_workspace_session(): bool {
 		foreach ( array_keys( $_COOKIE ) as $name ) {
 			if ( preg_match( '~^' . self::PRIVATE_COOKIE . '~', (string) $name ) ) {
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -287,8 +397,13 @@ final class Application {
 			\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
 		}
 		$this->mounted = true;
-		wp_enqueue_script( 'wp-i18n' );
-		wp_enqueue_script_module( self::HANDLE );
+		$runtime       = '';
+		if ( ! $this->translations_printed && did_action( 'wp_head' ) ) {
+			// Dynamically mounted shortcodes can first become visible after the document head.
+			ob_start();
+			$this->translations();
+			$runtime = (string) ob_get_clean();
+		}
 		$countries    = function_exists( 'WC' ) ? WC()->countries->get_countries() : array();
 		$raw_maps_key = defined( 'LINKER_GOOGLE_MAPS_API_KEY' ) ? constant( 'LINKER_GOOGLE_MAPS_API_KEY' ) : get_option( 'linker_google_maps_api_key', '' );
 		$maps_key     = is_string( $raw_maps_key ) ? trim( $raw_maps_key ) : '';
@@ -297,7 +412,7 @@ final class Application {
 		}
 		$config = wp_json_encode(
 			array(
-				'base_url'            => rest_url( Gateway::NAMESPACE . Gateway::ROUTE ),
+				'base_url'              => rest_url( Gateway::NAMESPACE . Gateway::ROUTE ),
 				// `admin-ajax.php?action=rest-nonce` only answers a logged-in
 				// cookie: WordPress registers it under `wp_ajax_` alone, so a
 				// guest is answered `400` with the body `0` (measured
@@ -305,22 +420,35 @@ final class Application {
 				// has always treated it as the normal guest branch). Sending
 				// the URL only to a signed-in visitor removes a request that
 				// could never succeed from every guest's first paint.
-				'nonce_url'           => $signed_in
+				'nonce_url'             => $signed_in
 					? add_query_arg( 'action', 'rest-nonce', admin_url( 'admin-ajax.php' ) )
 					: null,
-				'locale'              => determine_locale(),
-				'countries'           => (object) $countries,
-				'scene_module_url'    => $this->scene_module_url,
-				'map_module_url'      => $this->map_module_url,
-				'google_maps_api_key' => '' !== $maps_key ? $maps_key : null,
+				'locale'                => determine_locale(),
+				'countries'             => (object) $countries,
+				'scene_module_url'      => $this->scene_module_url,
+				'map_module_url'        => $this->map_module_url,
+				'map_style_url'         => class_exists( WindPressPageStyles::class ) ? WindPressPageStyles::map_style_url() : null,
+				'has_workspace_session' => $this->has_workspace_session(),
+				'inquiry_url'           => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : null,
+				'contact_mailbox'       => class_exists( ContactChannels::class ) ? ContactChannels::DIRECT_EMAIL : null,
+				'whatsapp_url'          => class_exists( ContactChannels::class ) ? ContactChannels::url() : null,
+				'google_maps_api_key'   => '' !== $maps_key ? $maps_key : null,
 			)
 		);
+		$entry  = $this->module_preloads ? wp_get_script_tag(
+			array(
+				'id'    => self::HANDLE . '-js-module',
+				'type'  => 'module',
+				'async' => true,
+				'src'   => $this->module_preloads[0],
+			)
+		) : '';
 		return sprintf(
-			'<section data-linker-planner data-planner-config="%s"><div class="sc-configurator sc-intake sc-loading"><header class="sc-project-heading"><div><h1>%s</h1><p>%s</p></div></header><p role="status">%s</p></div></section>',
+			'<section data-linker-planner data-planner-config="%s"><div class="sc-configurator sc-intake sc-loading"><header class="sc-project-heading"><div><h1>%s</h1><p>%s</p></div></header>%s</div></section>',
 			esc_attr( is_string( $config ) ? $config : '{}' ),
 			esc_html__( 'Solution Configurator', 'linker-tools' ),
 			esc_html__( 'A project can start with the information already available. Roof drawing is optional.', 'linker-tools' ),
-			esc_html__( 'Opening your workspace…', 'linker-tools' )
-		);
+			$signed_in || $this->has_workspace_session() ? '<p role="status">' . esc_html__( 'Opening your workspace…', 'linker-tools' ) . '</p>' : ''
+		) . $runtime . $entry;
 	}
 }

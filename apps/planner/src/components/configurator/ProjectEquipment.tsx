@@ -3,9 +3,6 @@ import { ProductCard } from "../shared/ProductCard.tsx";
 import { CatalogStatus } from "../shared/CatalogStatus.tsx";
 import { useProductCards } from "../../data/productCards.ts";
 import { useState } from "react";
-import Ajv2020 from "ajv/dist/2020.js";
-import schema from "../../contracts/existing-system.schema.json" with { type: "json" };
-import { ApiError } from "../../data/protocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import {
 	useEquipmentProducts,
@@ -36,62 +33,11 @@ import { readPvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import { readBrief } from "../../domain/brief.ts";
 import { __, sprintf } from "../../i18n.ts";
 
-interface ExistingSystem extends JsonObject {
-	schema_version: 1;
-	name: string;
-	inverter_power_kw: number | null;
-	keep_inverter: boolean;
-}
-
-const checkExisting = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<ExistingSystem>(schema);
-export function existingSystem(inputs: JsonObject): ExistingSystem | undefined {
-	const value = inputs.existing_system;
-	if (value === undefined) return undefined;
-	if (!checkExisting(value)) throw new ApiError(422, "invalid_input");
-	return value;
-}
-
-export function changeExistingSystem(
-	current: JsonObject,
-	patch: Partial<ExistingSystem> | null,
-): JsonObject {
-	const {
-		existing_system: _previous,
-		equipment_candidate: _candidate,
-		...rest
-	} = current;
-	return patch === null
-		? rest
-		: {
-				...rest,
-				existing_system: {
-					schema_version: 1,
-					name: "",
-					inverter_power_kw: null,
-					keep_inverter: false,
-					...existingSystem(current),
-					...patch,
-				},
-			};
-}
-
-export function retainsUnverifiedInverter(inputs: JsonObject): boolean {
-	if (existingSystem(inputs)?.keep_inverter !== true) return false;
-	const primary = equipmentDraft(
-		hasPlant(inputs)
-			? (readPlantDraft(inputs).units[0]?.inputs ?? inputs)
-			: inputs,
-	);
-	const use = primary.equipment_use as EquipmentUse | null | undefined;
-	return !(
-		typeof primary.inverter_product_id === "number" &&
-		primary.inverter_product_id > 0 &&
-		use?.inverter === "retain"
-	);
-}
+import {
+	existingSystem,
+	changeExistingSystem,
+	type ExistingSystem,
+} from "../../domain/existingSystem.ts";
 
 function EquipmentDeclarations({
 	client,
@@ -712,3 +658,11 @@ export function ProjectEquipment({
 		</section>
 	);
 }
+
+export default ProjectEquipment;
+
+export {
+	existingSystem,
+	changeExistingSystem,
+	retainsUnverifiedInverter,
+} from "../../domain/existingSystem.ts";

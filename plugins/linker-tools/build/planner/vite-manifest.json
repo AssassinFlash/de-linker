@@ -1,26 +1,113 @@
 {
-  "_planner-core-Cm1we_Rv.js": {
-    "file": "assets/planner-core-Cm1we_Rv.js",
+  "_CatalogStatus-BLpww0uH.js": {
+    "file": "assets/CatalogStatus-BLpww0uH.js",
+    "name": "CatalogStatus",
+    "imports": [
+      "_planner-core-C1gmVgcF.js"
+    ]
+  },
+  "_ProductCard-DngN3_Ta.js": {
+    "file": "assets/ProductCard-DngN3_Ta.js",
+    "name": "ProductCard",
+    "imports": [
+      "_planner-core-C1gmVgcF.js"
+    ]
+  },
+  "_ReportLogo-qhpCwxpD.js": {
+    "file": "assets/ReportLogo-qhpCwxpD.js",
+    "name": "ReportLogo",
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-C1gmVgcF.js",
+      "_ProductCard-DngN3_Ta.js"
+    ]
+  },
+  "_planner-core-C1gmVgcF.js": {
+    "file": "assets/planner-core-C1gmVgcF.js",
     "name": "planner-core",
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js"
     ],
     "dynamicImports": [
-      "src/components/configurator/ProjectWorkbench.tsx"
+      "src/components/configurator/ProjectDetails.tsx",
+      "src/components/configurator/ProjectEquipment.tsx",
+      "src/components/ProjectBriefStart.tsx",
+      "src/components/SavedSolutionStart.tsx",
+      "src/components/configurator/ProjectWorkbench.tsx",
+      "src/components/configurator/PreliminaryProject.tsx"
     ]
   },
   "_rolldown-runtime-BWaJ3C7D.js": {
     "file": "assets/rolldown-runtime-BWaJ3C7D.js",
     "name": "rolldown-runtime"
   },
+  "src/components/ProjectBriefStart.tsx": {
+    "file": "assets/ProjectBriefStart-4AOBd5Vd.js",
+    "name": "ProjectBriefStart",
+    "src": "src/components/ProjectBriefStart.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-C1gmVgcF.js"
+    ]
+  },
+  "src/components/SavedSolutionStart.tsx": {
+    "file": "assets/SavedSolutionStart-DWyq4_5E.js",
+    "name": "SavedSolutionStart",
+    "src": "src/components/SavedSolutionStart.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_planner-core-C1gmVgcF.js",
+      "_CatalogStatus-BLpww0uH.js",
+      "_ProductCard-DngN3_Ta.js"
+    ]
+  },
+  "src/components/configurator/PreliminaryProject.tsx": {
+    "file": "assets/PreliminaryProject-kcvJGd-5.js",
+    "name": "PreliminaryProject",
+    "src": "src/components/configurator/PreliminaryProject.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-C1gmVgcF.js",
+      "_ReportLogo-qhpCwxpD.js"
+    ]
+  },
+  "src/components/configurator/ProjectDetails.tsx": {
+    "file": "assets/ProjectDetails-BUSOf8if.js",
+    "name": "ProjectDetails",
+    "src": "src/components/configurator/ProjectDetails.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-C1gmVgcF.js"
+    ]
+  },
+  "src/components/configurator/ProjectEquipment.tsx": {
+    "file": "assets/ProjectEquipment-DCxfUBu4.js",
+    "name": "ProjectEquipment",
+    "src": "src/components/configurator/ProjectEquipment.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-C1gmVgcF.js",
+      "_CatalogStatus-BLpww0uH.js",
+      "_ProductCard-DngN3_Ta.js"
+    ]
+  },
   "src/components/configurator/ProjectWorkbench.tsx": {
-    "file": "assets/ProjectWorkbench-CuIlER68.js",
+    "file": "assets/ProjectWorkbench-CfDNbpiW.js",
     "name": "ProjectWorkbench",
     "src": "src/components/configurator/ProjectWorkbench.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-Cm1we_Rv.js"
+      "_planner-core-C1gmVgcF.js",
+      "_CatalogStatus-BLpww0uH.js",
+      "_ProductCard-DngN3_Ta.js",
+      "_ReportLogo-qhpCwxpD.js",
+      "src/components/configurator/ProjectDetails.tsx",
+      "src/components/configurator/ProjectEquipment.tsx"
     ],
     "dynamicImports": [
       "src/components/design/SceneViewport.tsx",
@@ -28,24 +115,24 @@
     ]
   },
   "src/components/design/MapViewport.tsx": {
-    "file": "assets/MapViewport-OXbq5sx6.js",
+    "file": "assets/MapViewport-B2IC_CLT.js",
     "name": "MapViewport",
     "src": "src/components/design/MapViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-Cm1we_Rv.js",
+      "_planner-core-C1gmVgcF.js",
       "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
   "src/components/design/SceneViewport.tsx": {
-    "file": "assets/SceneViewport-XsSl8m4f.js",
+    "file": "assets/SceneViewport-XERnNe3d.js",
     "name": "SceneViewport",
     "src": "src/components/design/SceneViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-Cm1we_Rv.js",
+      "_planner-core-C1gmVgcF.js",
       "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
@@ -56,7 +143,7 @@
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-Cm1we_Rv.js"
+      "_planner-core-C1gmVgcF.js"
     ]
   }
 }

@@ -1,4 +1,4 @@
-import Ajv from "ajv";
+import { validateSchema } from "./schemaValidator.ts";
 import { inspectJson } from "./inspectJson.ts";
 
 export interface LayoutIssue {
@@ -49,10 +49,7 @@ const integer = {
 };
 const hash = { type: "string", pattern: "^[a-f0-9]{64}$" };
 const nullable = (value: object) => ({ anyOf: [value, { type: "null" }] });
-const check = new Ajv({
-	strict: true,
-	strictNumbers: true,
-}).compile<LayoutReview>(
+const check = validateSchema<LayoutReview>(
 	object({
 		schema_version: { const: 1, type: "integer" },
 		geometry_sha256: hash,

@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import batterySchema from "../contracts/battery-parameters.schema.json" with { type: "json" };
 import inputSchema from "../contracts/energy-inputs.schema.json" with { type: "json" };
 import dcLossSchema from "../contracts/dc-loss-scenario.schema.json" with { type: "json" };
@@ -123,14 +123,9 @@ const text = { type: "string" };
 const nonnegative = batterySchema.properties.usable_window_kwh;
 const nullableEnergy = nullable(nonnegative);
 const hashId = { type: "string", pattern: "^[a-f0-9]{32}$" };
-const ajv = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-	allErrors: false,
-});
-const checkBattery = ajv.compile<BatteryParameters>(batterySchema);
-const checkInputs = ajv.compile<EnergyInputs>(inputSchema);
-const checkParts = ajv.compile<JsonObject>({
+const checkBattery = validate2020<BatteryParameters>(batterySchema);
+const checkInputs = validate2020<EnergyInputs>(inputSchema);
+const checkParts = validate2020<JsonObject>({
 	...inputSchema,
 	required: inputSchema.required.filter(
 		(key) => key !== "battery_parameters_asset_id",
@@ -213,7 +208,7 @@ draftShape.required = draftShape.required.filter(
 			key,
 		),
 );
-const checkDraft = ajv.compile<ScenarioDraft>({
+const checkDraft = validate2020<ScenarioDraft>({
 	$defs: { ...batterySchema.$defs, ...dcLossSchema.$defs },
 	...draftShape,
 });

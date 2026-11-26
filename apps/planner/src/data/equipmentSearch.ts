@@ -1,4 +1,4 @@
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "./schemaValidator.ts";
 import existingSystemSchema from "../contracts/existing-system.schema.json" with { type: "json" };
 import declaredRequirementsSchema from "../contracts/declared-equipment-requirements.schema.json" with { type: "json" };
 import type { JsonObject } from "./protocol.ts";
@@ -61,15 +61,9 @@ const nonnegative = (v: unknown): v is number =>
 const PROFILE_BOUNDS = "profile_physical_bounds_v1";
 const BOUND_BASIS =
 	"optimistic_full_initial_storage_lossless_upper_bound_not_dispatch";
-const existingSystemValid = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<JsonObject>(existingSystemSchema);
+const existingSystemValid = validate2020<JsonObject>(existingSystemSchema);
 
-const declaredValid = new Ajv2020({
-	strict: true,
-	strictNumbers: true,
-}).compile<JsonObject>(declaredRequirementsSchema);
+const declaredValid = validate2020<JsonObject>(declaredRequirementsSchema);
 function readDeclaredRequirements(value: unknown): JsonObject {
 	if (!declaredValid(value)) throw new ApiError(502, "invalid_run_result");
 	return value;

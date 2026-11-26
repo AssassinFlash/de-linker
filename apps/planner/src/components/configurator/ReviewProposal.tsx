@@ -895,7 +895,10 @@ export function ReviewProposal({
 						</div>
 					) : (
 						<p role="status">
-							{__("Preparing planning report…", "linker-tools")}
+							{__(
+								"You can fill in your inquiry below while your PDF is being prepared.",
+								"linker-tools",
+							)}
 						</p>
 					)}
 				</InquiryExportBar>

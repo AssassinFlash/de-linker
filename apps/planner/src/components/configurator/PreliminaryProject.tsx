@@ -1,3 +1,4 @@
+import type { Configuration } from "../../data/config.ts";
 import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { DraftStore } from "../../data/DraftStore.ts";
@@ -9,8 +10,8 @@ import { emptyBrief, readBrief, type Brief } from "../../domain/brief.ts";
 import { editDraft, isDirty } from "../../domain/draft.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
-import { changeExistingSystem } from "./ProjectEquipment.tsx";
-import { energyGoal } from "./EnergyDemand.tsx";
+import { changeExistingSystem } from "../../domain/existingSystem.ts";
+import { energyGoal } from "../../domain/energyGoal.ts";
 import { PreliminaryOptions } from "./PreliminaryOptions.tsx";
 import { InquiryStages, ProjectHeading } from "./ProjectHeading.tsx";
 import { ReviewInquiry } from "./ReviewInquiry.tsx";
@@ -70,6 +71,7 @@ export function PreliminaryProject({
 	client,
 	store,
 	locale,
+	contact,
 	comparing,
 	guided,
 	recoveringRevision,
@@ -81,6 +83,7 @@ export function PreliminaryProject({
 	client: PlannerClient;
 	store: DraftStore;
 	locale: string;
+	contact: Configuration;
 	comparing: boolean;
 	guided: boolean;
 	recoveringRevision: boolean;
@@ -243,6 +246,7 @@ export function PreliminaryProject({
 			)}
 			{brief.system_scope && (
 				<ReviewInquiry
+					contact={contact}
 					project={reviewed}
 					direction={brief.system_scope}
 					client={client}
@@ -261,3 +265,5 @@ export function PreliminaryProject({
 		</div>
 	);
 }
+
+export default PreliminaryProject;

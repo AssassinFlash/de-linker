@@ -1,5 +1,5 @@
 /** A prepared import joins the same document/history; it never owns another scene. */
-import Ajv2020 from "ajv/dist/2020.js";
+import { validate2020 } from "../data/schemaValidator.ts";
 import commandSchema from "../contracts/geometry-import-command.schema.json" with { type: "json" };
 import optionsSchema from "../contracts/geometry-import-options.schema.json" with { type: "json" };
 import selectionsSchema from "../contracts/geometry-import-selections.schema.json" with { type: "json" };
@@ -53,10 +53,9 @@ export interface PreparedGeometryImport {
 	areaM2: number;
 	projection: JsonObject;
 }
-const ajv = new Ajv2020({ strict: true, strictNumbers: true }),
-	checkCommand = ajv.compile<GeometryImportCommand>(commandSchema),
-	checkOptions = ajv.compile<GeometryImportOptions>(optionsSchema),
-	checkSelections = ajv.compile<GeometryImportSelections>(selectionsSchema),
+const checkCommand = validate2020<GeometryImportCommand>(commandSchema),
+	checkOptions = validate2020<GeometryImportOptions>(optionsSchema),
+	checkSelections = validate2020<GeometryImportSelections>(selectionsSchema),
 	hash = (value: unknown): value is string =>
 		typeof value === "string" && /^[a-f0-9]{64}$/.test(value),
 	id = (value: unknown): value is string =>

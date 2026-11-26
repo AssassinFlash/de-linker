@@ -579,10 +579,10 @@
   .sc-configurator .sc-demand-metrics dd { margin: 3px 0 0; font-size: 18px; font-weight: 650; }
   .sc-configurator .sc-demand-profile > :is(details, figure) { margin-block: 16px 0; }
   .sc-configurator .sc-system-diagram { display: flex; flex-wrap: wrap; gap: 12px; margin-block: 18px; }
-  .sc-configurator .sc-system-node { display: grid; align-content: start; flex: 1 1 132px; min-width: 0; padding: 12px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-teal-50); text-align: center; overflow-wrap: anywhere; }
+  .sc-configurator .sc-system-node { display: grid; align-content: start; flex: 1 1 160px; min-width: 0; padding: 12px; border: 1px solid var(--proto-color-line); border-radius: var(--proto-radius-md); background: var(--proto-teal-50); text-align: center; overflow-wrap: break-word; hyphens: auto; }
   .sc-configurator .sc-system-node dt { display: grid; justify-items: center; gap: 6px; font-weight: 650; }
   .sc-configurator .sc-system-node dt svg { width: 20px; height: 20px; color: var(--proto-teal-800); }
-  .sc-configurator .sc-system-node dd { margin: 4px 0 0; color: var(--proto-neutral-600); font-size: 13px; }
+  .sc-configurator .sc-system-node dd { overflow-wrap: anywhere; margin: 4px 0 0; color: var(--proto-neutral-600); font-size: 13px; }
   .sc-configurator .sc-system-equipment { margin-top: 20px; }
   .sc-configurator dl.sc-equipment { grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); align-items: start; gap: 12px 20px; }
   .sc-configurator dl.sc-equipment dt { color: var(--proto-neutral-600); font-size: 13px; }
@@ -618,8 +618,7 @@
     .sc-configurator .sc-project-heading { gap: 6px; margin-bottom: 12px; }
     .sc-configurator .sc-project-heading .sc-actions .sc-button { padding-inline: 4px; border-color: transparent; background: transparent; color: var(--proto-teal-800); font-size: 13px; }
     .sc-configurator .sc-project-heading .sc-actions { gap: 16px; }
-    .sc-configurator .sc-inquiry-stages { grid-template-columns: 1fr; gap: 2px; }
-    .sc-configurator .sc-inquiry-stages :is(button,.sc-step-label) { min-height: 38px; }
+
     .sc-configurator .sc-direction-comparison thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .sc-configurator .sc-direction-comparison :is(table, tbody) { display: block; }
     .sc-configurator .sc-direction-comparison tbody tr { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-3); padding-block-end: var(--proto-space-5); }
@@ -707,6 +706,7 @@
   .sc-configurator .sc-solar .sc-next button { padding: 9px 15px; background: var(--proto-accent); border-color: var(--proto-accent); color: var(--proto-neutral-0); }
   .sc-configurator .sc-solar .sc-next button:hover:enabled { background: var(--proto-teal-700); border-color: var(--proto-teal-700); }
   @media (max-width: 600px) {
+    .sc-configurator .linker-inquiry-form .linker-form-primary { width: 100%; }
     .sc-configurator .sc-solar .sc-option-card { flex-basis: 100%; padding: 16px; }
     .sc-configurator .sc-solar .sc-roof-tools { gap: 5px; }
     .sc-configurator .sc-solar .sc-roof-tools button { padding: 6px 9px; font-size: 12px; }
@@ -717,6 +717,11 @@
 }
 
 @layer components {
+  @media (min-width: 1000px) {
+    .sc-configurator .sc-direction-fields > .sc-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .sc-configurator .sc-inquiry-contacts { margin-block-start: var(--proto-space-3); }
+  .sc-configurator .sc-direction-actions { margin-top: var(--proto-space-5); }
   .sc-configurator .sc-direction-entry { display: grid; gap: var(--proto-space-6); }
   .sc-configurator :is(.sc-direction-start,.sc-direction-fields) { min-width: 0; margin: 0; }
   .sc-configurator :is(.sc-direction-start,.sc-direction-fields) > legend { padding: 0 6px; font-size: 18px; font-weight: 650; }
@@ -734,6 +739,15 @@
   .sc-configurator .sc-direction-details > span { display: block; font-weight: 650; }
   .sc-configurator .sc-review-actions { margin-top: 12px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
   @media (max-width: 700px) {
+    .sc-configurator .sc-project-heading { gap: 4px 12px; margin-block: 4px 8px; }
+    .sc-intake > .sc-project-heading:has(+ .sc-project-navigation) { display: grid; grid-template-columns: auto 1fr; align-items: center; }
+    .sc-intake > .sc-project-heading:has(+ .sc-project-navigation) > div { display: contents; }
+    .sc-intake > .sc-project-heading:has(+ .sc-project-navigation) :is(.sc-eyebrow,h1) { grid-column: 1 / -1; }
+    .sc-intake > .sc-project-heading:has(+ .sc-project-navigation) > .sc-button { justify-self: start; }
+    .sc-configurator .sc-project-navigation { margin-block: 10px 16px; }
+    .sc-configurator .sc-inquiry-stages { gap: 2px; padding: 3px; }
+    .sc-configurator .sc-inquiry-stages :is(button,.sc-step-label) { min-height: 40px; padding: 4px 5px; gap: 4px; font-size: 12px; line-height: 1.2; hyphens: auto; }
+    .sc-configurator .sc-inquiry-stages .sc-step-number { width: 18px; height: 18px; font-size: 11px; }
     .sc-configurator .sc-roof-callout { align-items: start; flex-direction: column; }
     .sc-configurator .sc-direction-comparison tbody { grid-template-columns: minmax(0,1fr); }
     .sc-configurator .sc-direction-comparison tbody tr + tr { padding: 20px; }
