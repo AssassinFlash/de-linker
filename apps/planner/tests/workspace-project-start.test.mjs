@@ -1130,7 +1130,10 @@ test("the first-visit entry compares directions and opens the native inquiry for
 	const refine = button("Enter project details");
 	assert.ok(refine, "The selected direction can lead into the same project");
 	await until(() => !button("Enter project details").disabled);
-	await act(async () => refine.click());
+	await act(async () => {
+		refine.click();
+		await import("../src/components/configurator/ProjectWorkbench.tsx");
+	});
 	await until(() => document.body.textContent.includes("What is the project?"));
 	assert.equal(document.activeElement.textContent, "What is the project?");
 	assert.equal(
