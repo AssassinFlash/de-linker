@@ -6,6 +6,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import batch_r3_pages as batch
+import reviewed_page_pair as pairs
 from batch_r3_pages import page_changes, services_story_photo
 
 
@@ -81,7 +82,7 @@ def test_services_read_uses_the_page_pair_without_a_recovery_point(
     )
     current = services_story_photo(card, photo)
     pages = {"2748": current, "6700": current}
-    monkeypatch.setattr(batch.pairs, "read", lambda *_: {"pages": pages})
+    monkeypatch.setattr(pairs, "read", lambda *_: {"pages": pages})
     monkeypatch.setattr(
         batch, "media_call", lambda *_, **__: {"photos": {batch.STORY: photo}}
     )
