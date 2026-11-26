@@ -197,7 +197,7 @@ final class LlmsTxt {
 			$product = wc_get_product( $id );
 			if ( $product instanceof \WC_Product ) {
 				$titles = $view->card_titles( $product );
-				$series = implode( ' · ', array_filter( array( $titles['brand'], $titles['series'] ) ) );
+				$series = implode( ' · ', array_unique( array_filter( array( $titles['brand'], $titles['series'] ) ) ) );
 				$rows[] = ( '' !== $series ? $series . ': ' : '' ) . self::post_pair( $id, $de ) . $rating;
 			}
 		}
