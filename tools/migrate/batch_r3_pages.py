@@ -301,12 +301,18 @@ def main() -> None:
         media_call(args.wp, mode="logo")
         for item in baseline["covers"]:
             media_call(args.wp, mode="cover", item=item)
-    if args.action in {"apply", "read"}:
         inventory = media_call(args.wp, mode="inventory", names=PHOTOS)
+    if args.action in {"apply", "read"}:
+        report = media_call(
+            args.wp,
+            mode="readback",
+            ids=[item["id"] for item in baseline["covers"]],
+            names=PHOTOS,
+        )
         if (
             inventory["covers"]
-            or not inventory["logo"]
-            or not all(inventory["photos"].values())
+            or not report["logo"]
+            or not all(report["photos"].values())
         ):
             raise ValueError(
                 "Media readback is missing a converted or registered image"
@@ -326,7 +332,7 @@ def main() -> None:
             continue
         after = {
             str(pid): page_changes(
-                page, lang, current["pages"][str(pid)], inventory["photos"]
+                page, lang, current["pages"][str(pid)], report["photos"]
             )
             for lang, pid in zip(("en", "de"), ids, strict=True)
         }
@@ -354,12 +360,6 @@ def main() -> None:
             media_call(args.wp, mode="restore_cover", item=item)
         media_call(args.wp, mode="restore_registrations", before=baseline, names=PHOTOS)
     else:
-        report = media_call(
-            args.wp,
-            mode="readback",
-            ids=[item["id"] for item in baseline["covers"]],
-            names=PHOTOS,
-        )
         (folder / "media-readback.json").write_text(json.dumps(report, indent=2))
         print(
             f"{urlsplit(inventory['site']).netloc}: {len(report['covers'])} covers, 4 photos and footer read back"

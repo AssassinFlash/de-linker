@@ -104,10 +104,23 @@
 					$result['covers'][] = $picture( $id );
 				}
 			}
+			$registration = static function ( string $file ) use ( $exists, $picture, $task ): ?array {
+				$id = $exists( $file );
+				if ( ! $id ) {
+					return null;
+				}
+				if ( 'readback' === $task['mode'] ) {
+					return $picture( $id );
+				}
+				return array(
+					'id'   => $id,
+					'file' => $file,
+				);
+			};
 			foreach ( $task['names'] as $name ) {
-				$result['photos'][ $name ] = $picture( $exists( $photo_file( $name ) ) );
+				$result['photos'][ $name ] = $registration( $photo_file( $name ) );
 			}
-			$result['logo'] = $picture( $exists( $dir . $logo_name . '.webp' ) );
+			$result['logo'] = $registration( $dir . $logo_name . '.webp' );
 			break;
 		case 'photo':
 		case 'logo':
@@ -137,7 +150,7 @@
 				}
 				$id = $register( $file, $name );
 			}
-			$result = $picture( $id );
+			$result = array( 'id' => $id );
 			break;
 		case 'cover':
 		case 'restore_cover':
@@ -187,7 +200,7 @@
 				update_attached_file( $id, $file );
 				wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $file ) );
 			}
-			$result = $picture( $id );
+			$result = array( 'id' => $id );
 			break;
 		case 'restore_registrations':
 			foreach ( $task['names'] as $name ) {
