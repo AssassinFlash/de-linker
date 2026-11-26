@@ -1,7 +1,11 @@
+import type { Json } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
 
 /** Check structure before a recursive validator/stringifier sees local input. */
-export function inspectJson(value: unknown, maxDepth: number): void {
+export function inspectJson(
+	value: unknown,
+	maxDepth: number,
+): asserts value is Json {
 	if (!Number.isSafeInteger(maxDepth) || maxDepth < 1)
 		throw new Error("invalid_json_policy");
 	const active = new WeakSet<object>();

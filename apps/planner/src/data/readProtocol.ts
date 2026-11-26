@@ -29,11 +29,6 @@ const jsonDefinition = {
 	],
 };
 const definitions = { json: jsonDefinition };
-const checkObject = validateSchema<JsonObject>({
-	definitions,
-	type: "object",
-	additionalProperties: { $ref: "#/definitions/json" },
-});
 const checkProject = validateSchema<Project>({
 	definitions,
 	...object({
@@ -139,9 +134,13 @@ export function readSession(value: unknown): Session {
 		throw new ApiError(502, "invalid_session_reply");
 	return value;
 }
+function isJsonArray(value: unknown): value is readonly unknown[] {
+	return Array.isArray(value);
+}
 export function readObject(value: unknown, maxDepth = 32): JsonObject {
 	inspectJson(value, maxDepth);
-	if (!checkObject(value)) throw new ApiError(422, "invalid_json_object");
+	if (typeof value !== "object" || value === null || isJsonArray(value))
+		throw new ApiError(422, "invalid_json_object");
 	return value;
 }
 
