@@ -67,8 +67,14 @@ def seo_update(wp: str, folder: Path, name: str, action: str) -> None:
     value = state["values"][de][key]
     if action == "restore":
         if not path.exists():
-            if value != old:
-                raise ValueError(f"{name}: missing SEO restoration point")
+            original = json.loads((folder / f"{name}-seo-before.json").read_text())
+            if (
+                state["home"] != original["home"]
+                or state["values"] != original["values"]
+            ):
+                raise ValueError(
+                    f"{name}: SEO values differ from their original backup"
+                )
             return
         receipt = json.loads(path.read_text())
         target = receipt["before"]
