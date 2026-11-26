@@ -173,7 +173,11 @@ final class PageSchema {
 					'url'   => $url,
 				),
 			);
-		} elseif ( is_page( array( 'solution', 'loesung', 'residential-storage', 'heimspeicher', 'commercial-storage', 'gewerbespeicher', 'utility-storage', 'grossspeicher', 'about', 'ueber-uns', 'services-support', 'kundendienst', 'for-installer', 'fuer-installateur', 'for-epc', 'fuer-epc' ) ) ) {
+		} elseif ( is_page( array( 'compare-products', 'produkte-vergleichen', 'solution', 'loesung', 'residential-storage', 'heimspeicher', 'commercial-storage', 'gewerbespeicher', 'utility-storage', 'grossspeicher', 'about', 'ueber-uns', 'services-support', 'kundendienst', 'for-installer', 'fuer-installateur', 'for-epc', 'fuer-epc' ) ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Match the public comparison selection policy, including empty query values.
+			if ( in_array( $post->post_name, array( 'compare-products', 'produkte-vergleichen' ), true ) && ( isset( $_GET['ids'] ) || isset( $_GET['capped'] ) ) ) {
+				return;
+			}
 			$trail = array(
 				array(
 					'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),

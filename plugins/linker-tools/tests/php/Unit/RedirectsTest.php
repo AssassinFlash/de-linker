@@ -309,7 +309,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 305, $maps['products'] );
 		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 20, $maps['retired_tools'] );
+		$this->assertCount( 22, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
 	}
@@ -990,6 +990,8 @@ final class RedirectsTest extends TestCase {
 
 		$this->assertSame( self::HOME . '/solution-configurator/', ( new Redirects() )->target( '/quote-configurator/' ) );
 		$this->assertSame( self::HOME . '/de/loesungskonfigurator/', ( new Redirects() )->target( '/de/angebots-konfigurator/' ) );
+		$this->assertSame( self::HOME . '/solution-configurator/', ( new Redirects() )->target( '/system-configurator/' ) );
+		$this->assertSame( self::HOME . '/de/loesungskonfigurator/', ( new Redirects() )->target( '/de/system-konfigurator/' ) );
 	}
 
 	/**

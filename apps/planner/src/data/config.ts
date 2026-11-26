@@ -4,6 +4,11 @@ export interface Configuration {
 	readonly baseUrl: string;
 	readonly nonceUrl: string;
 	readonly locale: string;
+	readonly hasWorkspaceSession?: boolean;
+	readonly inquiryUrl?: string | null;
+	readonly contactMailbox?: string | null;
+	readonly whatsappUrl?: string | null;
+	readonly mapStyleUrl?: string | null;
 	readonly countries: Readonly<Record<string, string>>;
 	readonly sceneModuleUrl?: string | null;
 	readonly mapModuleUrl?: string | null;
@@ -70,6 +75,14 @@ export function readConfiguration(
 		baseUrl: data.base_url,
 		nonceUrl: typeof data.nonce_url === "string" ? data.nonce_url : "",
 		locale: data.locale.replaceAll("_", "-").replace("-formal", ""),
+		hasWorkspaceSession: data.has_workspace_session === true,
+		inquiryUrl: typeof data.inquiry_url === "string" ? data.inquiry_url : null,
+		contactMailbox:
+			typeof data.contact_mailbox === "string" ? data.contact_mailbox : null,
+		whatsappUrl:
+			typeof data.whatsapp_url === "string" ? data.whatsapp_url : null,
+		mapStyleUrl:
+			typeof data.map_style_url === "string" ? data.map_style_url : null,
 		countries: countries as Record<string, string>,
 		sceneModuleUrl: reviewedModule("scene", "SceneViewport"),
 		mapModuleUrl: reviewedModule("map", "MapViewport"),

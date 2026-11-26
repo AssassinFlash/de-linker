@@ -40,6 +40,17 @@ final class RevisionTest extends TestCase {
 		$this->current_faq_product( 12, array() );
 	}
 
+	/**
+	 * Each fresh PDF permission scan primes the candidate products as a batch.
+	 */
+	public function test_document_access_primes_candidates_before_reading_permissions(): void {
+		$url  = 'https://de-linker.com/wp-content/uploads/2026/manual.pdf';
+		$file = DocumentFiles::resolve( $url );
+		$this->assertIsArray( $file );
+		WP_Mock::userFunction( '_prime_post_caches' )->once()->with( array( 12 ), true, true );
+		$this->assertTrue( Publication::allows_document( $file ) );
+	}
+
 	/** Remove only this unit fixture's generated file. */
 	public function tearDown(): void {
 		$this->remove_managed_documents();

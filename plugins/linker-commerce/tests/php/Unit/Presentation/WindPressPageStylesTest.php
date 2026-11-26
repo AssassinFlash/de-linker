@@ -99,7 +99,7 @@ final class WindPressPageStylesTest extends TestCase {
 			'solution product links'   => array( '', '[linker_solution_products scope="utility"]', '', array( 'model-links.css' ), array() ),
 			'native search'            => array( 'is_search', '', '', array( 'blog-search.css' ), array( 'journal.css' ) ),
 			'account endpoint'         => array( 'is_account_page', '', '', array( 'account.css', 'auth.css', 'storefront.css' ), array() ),
-			'planner inside post'      => array( 'post', '[linker_planner]', '', array( 'blog.css', 'contact-invitation.css' ), array( 'planner-maplibre.css', 'planner.css', 'planner-equipment.css', 'planner-report.css', 'planner-site-energy.css', 'roof-studio.css' ) ),
+			'planner inside post'      => array( 'post', '[linker_planner]', '', array( 'blog.css', 'contact-invitation.css' ), array( 'planner.css', 'planner-equipment.css', 'planner-report.css', 'planner-site-energy.css', 'roof-studio.css' ) ),
 			'translated services'      => array( '', '<main id="service-redesign">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),
 			'installer stage controls' => array( '', '<main id="installer-journal">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),
 			'utility application dots' => array( '', '<main id="tv-utility-page-v1">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),

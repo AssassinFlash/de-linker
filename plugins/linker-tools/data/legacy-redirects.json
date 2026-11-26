@@ -382,6 +382,8 @@
 		"/de/design-canvas/": "/de/loesungskonfigurator/?step=roof",
 		"/de/entwurfsflache/": "/de/loesungskonfigurator/?step=roof",
 		"/quote-configurator/": "/solution-configurator/",
+		"/system-configurator/": "/solution-configurator/",
+		"/de/system-konfigurator/": "/de/loesungskonfigurator/",
 		"/de/angebots-konfigurator/": "/de/loesungskonfigurator/",
 		"/faq-documents/": "/faq-download/",
 		"/de/faq-documents/": "/de/faq-dokumente/",

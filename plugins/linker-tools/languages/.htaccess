@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{QUERY_STRING} ^ver=[a-f0-9]{12}$
+RewriteRule ^linker-tools-[a-zA-Z0-9_]+-[a-f0-9]{32}\.json$ - [E=LINKER_VERSIONED_CATALOG:1]
+</IfModule>
+<IfModule mod_headers.c>
+Header set Cache-Control "public, max-age=31536000, immutable" env=LINKER_VERSIONED_CATALOG
+</IfModule>

@@ -163,6 +163,7 @@ final class PlannerApplicationTest extends TestCase {
 		$this->assertSame( $base . 'build/planner/' . $scene, $config['scene_module_url'] );
 		$this->assertSame( $base . 'build/planner/' . $map, $config['map_module_url'] );
 		$this->assertNull( $config['google_maps_api_key'] );
+		$this->assertSame( (bool) array_intersect_key( $_COOKIE, array_flip( array( 'woocommerce_items_in_cart', 'linker_planner_transition_123', 'wp_woocommerce_session_site', 'wordpress_logged_in_site' ) ) ), $config['has_workspace_session'] );
 		$this->assertSame( array( 'FR' => 'France' ), $config['countries'] );
 		// A guest is never offered the nonce endpoint: it answers only a
 		// signed-in cookie, so the browser would spend a round trip on a
@@ -247,13 +248,13 @@ final class PlannerApplicationTest extends TestCase {
 		);
 		$this->assertStringContainsString( 'window.wp.i18n.setLocaleData', $captured );
 		$this->assertStringContainsString( 'window.linkerToolsCatalog', $captured );
-		$this->assertStringContainsString( 'new Promise', $captured );
+		$this->assertStringContainsString( 'window.linkerPlannerCatalogRequest || fetch(', $captured );
 		// The catalog settles on the request's own outcome: no timer may paint
 		// an untranslated first frame on a slow network, and the shared fetch
 		// must stay untouched for the rest of the page.
 		$this->assertStringNotContainsString( 'setTimeout', $captured );
 		$this->assertStringNotContainsString( 'window.fetch =', $captured );
-		$this->assertStringContainsString( '.catch( () => {} ).finally( done )', $captured );
+		$this->assertStringContainsString( '.catch(() => null)', $captured );
 		$this->assertConditionsMet();
 	}
 }

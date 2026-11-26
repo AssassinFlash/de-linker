@@ -1973,6 +1973,7 @@ export function SolarInstallation({
 								{map && positioned ? (
 									<LazyMapViewport
 										mapModuleUrl={config.mapModuleUrl ?? null}
+										mapStyleUrl={config.mapStyleUrl ?? null}
 										imagery={imagery.data?.imagery ?? viewingImagery}
 										viewOnly={viewOnly}
 										onAerialReady={setReadyAerial}

@@ -64,6 +64,7 @@ export function DesignEditor({
 	geometryImports = { schema_version: 1, selected: {} },
 	sceneModuleUrl = null,
 	mapModuleUrl = null,
+	mapStyleUrl = null,
 	googleMapsApiKey = null,
 	initialMapView = false,
 	commit,
@@ -100,6 +101,7 @@ export function DesignEditor({
 	} | null;
 	sceneModuleUrl?: string | null;
 	mapModuleUrl?: string | null;
+	mapStyleUrl?: string | null;
 	googleMapsApiKey?: string | null;
 	initialMapView?: boolean;
 	commit: (command: GeometryCommand) => boolean;
@@ -425,6 +427,7 @@ export function DesignEditor({
 							siteCentre={siteCentre}
 							siteOutline={siteOutline}
 							mapModuleUrl={mapModuleUrl}
+							mapStyleUrl={mapStyleUrl}
 							geometry={geometry}
 							previewGeometry={displayGeometry}
 							placement={placement}
