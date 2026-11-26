@@ -27,23 +27,30 @@ export interface Brief extends JsonObject {
 
 const validate = validate2020<Brief>(schema);
 export function readBrief(value: unknown): Brief {
+	if (value === blankBrief) return blankBrief;
 	if (!validate(value)) throw new ApiError(422, "invalid_project_brief");
 	return value;
 }
+/** The public intake can display the empty native shape before any external input needs validation. */
+export const blankBrief: Brief = Object.freeze({
+	schema_version: 1,
+	project_use: null,
+	system_scope: null,
+	site: Object.freeze({
+		country_code: null,
+		location_label: "",
+		latitude: null,
+		longitude: null,
+		coordinate_basis: "not_provided",
+		timezone: null,
+	}),
+	annual_load: Object.freeze({ kwh: null, basis: null, source_note: "" }),
+	project_note: "",
+});
 export function emptyBrief(): Brief {
 	return {
-		schema_version: 1,
-		project_use: null,
-		system_scope: null,
-		site: {
-			country_code: null,
-			location_label: "",
-			latitude: null,
-			longitude: null,
-			coordinate_basis: "not_provided",
-			timezone: null,
-		},
-		annual_load: { kwh: null, basis: null, source_note: "" },
-		project_note: "",
+		...blankBrief,
+		site: { ...blankBrief.site },
+		annual_load: { ...blankBrief.annual_load },
 	};
 }

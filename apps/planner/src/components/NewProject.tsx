@@ -21,7 +21,7 @@ import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
 import { readObject, readProject, wire } from "../data/readProtocol.ts";
 import type { Brief } from "../domain/brief.ts";
-import { emptyBrief, readBrief } from "../domain/brief.ts";
+import { blankBrief, emptyBrief, readBrief } from "../domain/brief.ts";
 import { changeEquipment, equipmentDraft } from "../domain/equipment.ts";
 import { readScenarioDraft } from "../domain/energyScenario.ts";
 import { issueLabel } from "./ProfileLabels.ts";
@@ -245,18 +245,20 @@ export function NewProject({
 						"linker-tools",
 					),
 				)
-			: { brief: emptyBrief() });
+			: { brief: blankBrief });
 	const seedBrief =
-		seed.brief === undefined ? emptyBrief() : readBrief(seed.brief);
+		seed.brief === undefined ? blankBrief : readBrief(seed.brief);
+	const needsDefaultScope =
+		!compareOnLoad &&
+		!returnToComparison &&
+		!directComparison &&
+		!roofEntry &&
+		seedBrief.system_scope === null;
 	const initialInputs = {
 		...seed,
-		brief: {
-			...seedBrief,
-			system_scope:
-				compareOnLoad || returnToComparison || directComparison || roofEntry
-					? seedBrief.system_scope
-					: (seedBrief.system_scope ?? "new_pv_storage"),
-		},
+		brief: needsDefaultScope
+			? { ...seedBrief, system_scope: "new_pv_storage" }
+			: seedBrief,
 	};
 	const goal = useHints ? entryHints?.commercialGoal : undefined;
 	const commercialInputs =
