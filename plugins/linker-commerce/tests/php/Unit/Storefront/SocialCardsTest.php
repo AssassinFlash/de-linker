@@ -34,6 +34,23 @@ final class SocialCardsTest extends TestCase {
 		$this->assertStringContainsString( 'property="og:image:height" content="630"', $tags );
 		$this->assertSame( '<meta name="twitter:image" content="https://example.org/uploads/journal.jpg">', $cards->twitter_image( '' ) );
 	}
+	/** SEOPress strips the dimensions from an original filename as though it were a crop. */
+	public function test_default_card_restores_the_original_url_after_seopress_crop_resolution(): void {
+		WP_Mock::userFunction( 'is_home', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_category', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_singular', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_option' )->with( 'linker_social_default_og_attachment_id' )->andReturn( 42 );
+		WP_Mock::userFunction( 'wp_get_attachment_url' )->with( 42 )->andReturn( 'https://example.org/uploads/linker-social/og-linker-default-1200x630.jpg' );
+		WP_Mock::userFunction( 'esc_url', array( 'return' => static fn( $s ) => $s ) );
+		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn( $s ) => $s ) );
+		$cards = new SocialCards();
+		$html  = '<meta property="og:image" content="https://example.org/uploads/linker-social/og-linker-default.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">';
+		$tags  = $cards->open_graph( $html );
+		$this->assertStringContainsString( '/linker-social/og-linker-default-1200x630.jpg"', $tags );
+		$this->assertStringContainsString( 'property="og:image:alt"', $tags );
+		$this->assertStringContainsString( '/linker-social/og-linker-default-1200x630.jpg"', $cards->twitter_image( '' ) );
+	}
+
 	/** A registered global default must not replace the equipment shown on a product page. */
 	public function test_product_keeps_its_own_featured_image_and_dimensions(): void {
 		WP_Mock::userFunction( 'is_home', array( 'return' => false ) );

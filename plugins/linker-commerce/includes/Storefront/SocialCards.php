@@ -49,7 +49,8 @@ final class SocialCards {
 		}
 
 		$url       = self::meta_content( $html, 'og:image' );
-		$dedicated = '' !== $url && ! str_contains( $url, '/linker-logo-full.png' ) && ! str_contains( $url, '/og-linker-default-1200x630.jpg' );
+		$dedicated = '' !== $url && ! str_contains( $url, '/linker-logo-full.png' ) && ! str_contains( $url, '/og-linker-default-1200x630.jpg' )
+			&& ! str_ends_with( $url, '/linker-social/og-linker-default.jpg' );
 		$story     = is_singular( 'post' );
 		if ( $story || is_singular( 'product' ) ) {
 			if ( ! $dedicated ) {
