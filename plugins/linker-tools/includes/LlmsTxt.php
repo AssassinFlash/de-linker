@@ -37,8 +37,8 @@ final class LlmsTxt {
 		if ( wp_parse_url( $home . '/llms.txt', PHP_URL_PATH ) !== $path ) {
 			return $parse;
 		}
-		do_action( 'litespeed_control_force_public', 'Public bilingual resource directory' );
-		do_action( 'litespeed_control_set_ttl', HOUR_IN_SECONDS );
+		do_action( 'litespeed_control_force_public', 'Public bilingual resource directory' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- LiteSpeed Cache public API.
+		do_action( 'litespeed_control_set_ttl', HOUR_IN_SECONDS ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- LiteSpeed Cache public API.
 		foreach ( self::HEADERS as $key => $value ) {
 			header( $key . ': ' . $value );
 		}
@@ -168,7 +168,7 @@ final class LlmsTxt {
 				'fields'           => 'ids',
 				'lang'             => '',
 				'suppress_filters' => false,
-				'tax_query'        => array(
+				'tax_query'        => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- WooCommerce visibility excludes hidden engineering references.
 					array(
 						'taxonomy' => 'product_visibility',
 						'field'    => 'term_taxonomy_id',
