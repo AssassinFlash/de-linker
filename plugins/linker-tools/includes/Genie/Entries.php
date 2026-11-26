@@ -770,7 +770,7 @@ JS,
 			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'de' ) : '' ) ),
 			esc_attr( esc_url_raw( ! is_user_logged_in() && class_exists( AuthTemplates::class ) && 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ? AuthTemplates::register_url() : '' ) ),
 			esc_attr( esc_url_raw( admin_url( 'admin-ajax.php?action=rest-nonce' ) ) ),
-			esc_url( class_exists( ContactChannels::class ) ? ContactChannels::url() : '' )
+			esc_attr( esc_url_raw( class_exists( ContactChannels::class ) ? ContactChannels::url() : '' ) )
 		);
 	}
 

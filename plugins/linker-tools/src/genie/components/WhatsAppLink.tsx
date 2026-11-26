@@ -1,4 +1,10 @@
-/** Direct, editable WhatsApp conversation with the Linker trade desk. */
+/**
+ * Opens an editable WhatsApp conversation with the Linker trade desk.
+ *
+ * @param props       Link options.
+ * @param props.url   Localized contact URL from the WordPress mount.
+ * @param props.label Visible link text.
+ */
 export function WhatsAppLink( {
 	url,
 	label = 'WhatsApp',
