@@ -219,6 +219,17 @@ final class GenieInquiryTest extends IntegrationTestCase {
 	 * customer get their mails.
 	 */
 	public function test_a_guest_sends_the_card_and_the_inquiry_matches_it(): void {
+		$cookies = $_COOKIE;
+		$this->later(
+			static function () use ( $cookies ): void {
+				$_COOKIE = $cookies;
+			}
+		);
+		$_COOKIE['cookieyes-consent'] = 'consent:yes,advertisement:yes';
+		unset( $_COOKIE['wp_consent_marketing'] );
+		$_COOKIE['sbjs_current']     = 'typ=utm|||src=linkedin|||mdm=social';
+		$_COOKIE['sbjs_current_add'] = 'ep=https://example.org/genie/|||rf=https://www.linkedin.com/feed/';
+
 		$product = $this->product( '1000' );
 		$product->set_sku( 'LINKER-CARD-' . strtoupper( self::tag() ) );
 		$product->save();
@@ -277,6 +288,11 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		// Proforma gateway, the inquiry's source and status.
 		$record = $this->record( $guest );
 		$this->assertSame( $data['inquiry']['order'], $record->get_id() );
+		$this->assertSame( 'utm', $record->get_meta( '_wc_order_attribution_source_type' ) );
+		$this->assertSame( 'linkedin', $record->get_meta( '_wc_order_attribution_utm_source' ) );
+		$this->assertSame( 'social', $record->get_meta( '_wc_order_attribution_utm_medium' ) );
+		$this->assertSame( 'https://www.linkedin.com/feed/', $record->get_meta( '_wc_order_attribution_referrer' ) );
+
 		$this->assertSame( 'linker_inquiry', $record->get_payment_method() );
 		$this->assertSame( 'inquiry', $record->get_meta( '_linker_inquiry_source' ) );
 		$this->assertSame( Statuses::RECEIVED, $record->get_status() );
