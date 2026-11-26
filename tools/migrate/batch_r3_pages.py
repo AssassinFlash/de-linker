@@ -88,6 +88,45 @@ def contacts(de: bool) -> str:
     return f'<div class="lk-desk-channels">{rows}{WHATSAPP}</div>'
 
 
+def registered_photo_tag(
+    tag: str, image: dict[str, Any], alt: str | None = None
+) -> str:
+    attributes = {
+        "src": image["src"],
+        "srcset": image["srcset"],
+        "width": str(image["width"]),
+        "height": str(image["height"]),
+    }
+    if ' sizes="' not in tag:
+        attributes["sizes"] = "(max-width: 760px) 90vw, 50vw"
+    if alt is not None:
+        attributes["alt"] = alt
+    for key, value in attributes.items():
+        attr = f'{key}="{escape(value, quote=True)}"'
+        if re.search(rf'\s{key}="[^"]*"', tag):
+            tag = re.sub(rf'\s{key}="[^"]*"', " " + attr, tag, count=1)
+        else:
+            tag = re.sub(r"\s*/?>$", " " + attr + "/>", tag)
+    return tag
+
+
+def services_story_photo(content: str, image: dict[str, Any]) -> str:
+    name = '<div class="lk-story-name">Stefan Hartmann</div>'
+    before, after = content.split(name)
+    start = before.rindex('<div class="lk-story-card')
+    card = before[start:]
+    (tag,) = re.findall(r"<img\b[^>]*>", card)
+    old = "/wp-content/uploads/2026/09/linker-partners-on-bess-support.webp"
+    if f'src="{old}"' not in tag and f'src="{image["src"]}"' not in tag:
+        raise ValueError("Services testimonial has an unreviewed photograph")
+    return (
+        before[:start]
+        + card.replace(tag, registered_photo_tag(tag, image))
+        + name
+        + after
+    )
+
+
 def photo_refs(content: str, page: str, de: bool, media: dict[str, Any]) -> str:
     names = {HERO: HERO, STORY: STORY, KIT + "-scaled": KIT, PACK: PACK}
     if page == "solution":
@@ -102,23 +141,9 @@ def photo_refs(content: str, page: str, de: bool, media: dict[str, Any]) -> str:
         if not name:
             return tag
         image = media[name]
-        attributes = {
-            "src": image["src"],
-            "srcset": image["srcset"],
-            "width": str(image["width"]),
-            "height": str(image["height"]),
-        }
-        if ' sizes="' not in tag:
-            attributes["sizes"] = "(max-width: 760px) 90vw, 50vw"
-        if name in ALT:
-            attributes["alt"] = ALT[name][int(de)]
-        for key, value in attributes.items():
-            attr = f'{key}="{escape(value, quote=True)}"'
-            if re.search(rf'\s{key}="[^"]*"', tag):
-                tag = re.sub(rf'\s{key}="[^"]*"', " " + attr, tag, count=1)
-            else:
-                tag = re.sub(r"\s*/?>$", " " + attr + "/>", tag)
-        return tag
+        return registered_photo_tag(
+            tag, image, ALT[name][int(de)] if name in ALT else None
+        )
 
     content = re.sub(r"<img\b[^>]*>", photo, content)
     for old, name in names.items():
@@ -144,6 +169,8 @@ def page_changes(page: str, language: str, content: str, media: dict[str, Any]) 
         )
     if page in {"about", "solution", "services-support"}:
         content = photo_refs(content, page, de, media)
+    if page == "services-support":
+        content = services_story_photo(content, media[STORY])
     if page in {"solution", "services-support"}:
         head = content.index(OLD_EMAIL) if OLD_EMAIL in content else -1
         if head != -1:
@@ -262,6 +289,49 @@ def save(path: Path, value: dict[str, Any]) -> None:
             json.dump(value, out, ensure_ascii=False)
 
 
+def publish_pair(
+    wp: str,
+    action: str,
+    folder: Path,
+    name: str,
+    ids: tuple[int, int],
+    current: dict[str, Any],
+    after: dict[str, str] | None,
+) -> None:
+    backup = json.loads((folder / f"{name}-before.json").read_text())
+    if current["home"] != backup["home"]:
+        raise ValueError("Mismatched page recovery point")
+    published = folder / f"{name}-published.json"
+    if after is None:
+        if current == backup:
+            return
+        if not published.exists() or current != json.loads(published.read_text()):
+            raise ValueError(f"{name} changed since publication")
+        pairs.write(wp, ids, current, backup["pages"], backup["metadata"])
+        return
+    if after == current["pages"]:
+        print(f"{name}: current")
+        return
+    if action == "read" or current != backup:
+        raise ValueError(f"{name} differs from its expected state")
+    metadata = current["metadata"]
+    if current["current"]:
+        preview = pairs.invoke(
+            wp,
+            {
+                "mode": "preview_page_adoption",
+                "changes": pairs.changes(ids, current["pages"], after),
+            },
+        )
+        metadata = preview["expected_metadata"]
+    expected = current | {"pages": after, "metadata": metadata}
+    save(published, expected)
+    if json.loads(published.read_text()) != expected:
+        raise ValueError(f"{name} differs from its publication receipt")
+    pairs.write(wp, ids, current, after, metadata, adopt=current["current"])
+    print(f"{name}: published and read back", flush=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True)
@@ -269,10 +339,42 @@ def main() -> None:
     parser.add_argument(
         "--assets", type=Path, help="Directory containing the four supplied R3 WebPs"
     )
+    parser.add_argument(
+        "--services-story-only",
+        action="store_true",
+        help="Only update Stefan Hartmann’s Services EN/DE photo using the existing registration",
+    )
     parser.add_argument("action", choices=("backup", "apply", "read", "restore"))
     args = parser.parse_args()
     folder = args.backup_dir
     folder.mkdir(parents=True, exist_ok=True)
+    if args.services_story_only:
+        ids = PAGES["services-support"]
+        current = pairs.read(args.wp, *ids)
+        name = "services-story"
+        if args.action in {"backup", "apply"}:
+            save(folder / f"{name}-before.json", current)
+        if args.action == "backup":
+            print(
+                f"{current['home']}: Services page pair and translation metadata backed up"
+            )
+            return
+
+        after = None
+        if args.action != "restore":
+            story = media_call(args.wp, mode="readback", names=[STORY], ids=[])[
+                "photos"
+            ][STORY]
+            if not story:
+                raise ValueError(
+                    "The reviewed commercial storage photo is not registered"
+                )
+            after = {
+                pid: services_story_photo(content, story)
+                for pid, content in current["pages"].items()
+            }
+        publish_pair(args.wp, args.action, folder, name, ids, current, after)
+        return
     inventory = media_call(args.wp, mode="inventory", names=PHOTOS)
     path = folder / "media-before.json"
     if not path.exists() and args.action == "restore":
@@ -319,42 +421,15 @@ def main() -> None:
             )
     for page, ids in PAGES.items():
         current = before[page]
-        backup = json.loads((folder / f"{page}-before.json").read_text())
-        if current["home"] != backup["home"]:
-            raise ValueError("Mismatched page recovery point")
-        published = folder / f"{page}-published.json"
-        if args.action == "restore":
-            if current == backup:
-                continue
-            if not published.exists() or current != json.loads(published.read_text()):
-                raise ValueError(f"{page} changed since publication")
-            pairs.write(args.wp, ids, current, backup["pages"], backup["metadata"])
-            continue
-        after = {
-            str(pid): page_changes(
-                page, lang, current["pages"][str(pid)], report["photos"]
-            )
-            for lang, pid in zip(("en", "de"), ids, strict=True)
-        }
-        if after == current["pages"]:
-            print(f"{page}: current")
-            continue
-        if args.action == "read" or current != backup:
-            raise ValueError(f"{page} differs from its expected state")
-        metadata = current["metadata"]
-        if current["current"]:
-            preview = pairs.invoke(
-                args.wp,
-                {
-                    "mode": "preview_page_adoption",
-                    "changes": pairs.changes(ids, current["pages"], after),
-                },
-            )
-            metadata = preview["expected_metadata"]
-        expected = current | {"pages": after, "metadata": metadata}
-        save(published, expected)
-        pairs.write(args.wp, ids, current, after, metadata, adopt=current["current"])
-        print(f"{page}: published and read back", flush=True)
+        after = None
+        if args.action != "restore":
+            after = {
+                str(pid): page_changes(
+                    page, lang, current["pages"][str(pid)], report["photos"]
+                )
+                for lang, pid in zip(("en", "de"), ids, strict=True)
+            }
+        publish_pair(args.wp, args.action, folder, page, ids, current, after)
     if args.action == "restore":
         for item in baseline["covers"]:
             media_call(args.wp, mode="restore_cover", item=item)
