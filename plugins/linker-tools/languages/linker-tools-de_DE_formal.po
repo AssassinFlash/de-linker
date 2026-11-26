@@ -17392,11 +17392,14 @@ msgstr "Summe der nutzbaren Batteriekapazitäten"
 msgid "Or chat on WhatsApp ↗"
 msgstr "Oder per WhatsApp schreiben ↗"
 
+#: ../../apps/planner/src/components/configurator/ReviewInquiry.tsx build/planner/assets/planner.js:1
 msgid "Open inquiry page"
 msgstr "Anfrageseite öffnen"
 
+#: ../../apps/planner/src/components/configurator/ReviewProposal.tsx build/planner/assets/planner.js:1
 msgid "You can fill in your inquiry below while your PDF is being prepared."
 msgstr "Während Ihr PDF erstellt wird, können Sie unten Ihre Anfrage ausfüllen."
 
+#: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
 msgid "Preparing your workspace…"
 msgstr "Arbeitsbereich wird vorbereitet…"
