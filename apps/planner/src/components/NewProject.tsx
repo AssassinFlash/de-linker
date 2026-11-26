@@ -6,7 +6,6 @@ import {
 } from "../data/comparisonDraft.ts";
 import {
 	lazy,
-	Suspense,
 	useCallback,
 	useEffect,
 	useEffectEvent,
@@ -1512,23 +1511,14 @@ export function NewProject({
 				)}
 			</form>
 		);
-		const detailsForm = (
-			<Suspense
-				fallback={
-					<p role="status">{__("Opening the project…", "linker-tools")}</p>
-				}
-			>
-				{form}
-			</Suspense>
-		);
-		if (!showSummary) return detailsForm;
+		if (!showSummary) return form;
 		return (
 			<>
 				{workspaceHeading && (
 					<ProjectHeading title={projectName} location={site} />
 				)}
 				<div className="sc-layout sc-intake-layout">
-					{detailsForm}
+					{form}
 					<ProjectSummary
 						title={projectName}
 						facts={[

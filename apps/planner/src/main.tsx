@@ -2,7 +2,7 @@ import {
 	clearRoofImageryConsent,
 	onMapConsentChange,
 } from "./data/roofImageryConsent.ts";
-import { Component, StrictMode, useMemo } from "react";
+import { Component, StrictMode, Suspense, useMemo } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { readConfiguration } from "./data/config.ts";
@@ -61,14 +61,22 @@ function Application({ config }: { config: Configuration }) {
 		<SessionBoundary client={client} publicIntake={publicIntake}>
 			{(session, recheck, ensureSession) => (
 				<>
-					<Workspace
-						ensureSession={ensureSession}
-						client={client}
-						store={store}
-						config={config}
-						session={session}
-						recheck={recheck}
-					/>
+					<Suspense
+						fallback={
+							<p className="sc-session-state" role="status">
+								{__("Opening the project…", "linker-tools")}
+							</p>
+						}
+					>
+						<Workspace
+							ensureSession={ensureSession}
+							client={client}
+							store={store}
+							config={config}
+							session={session}
+							recheck={recheck}
+						/>
+					</Suspense>
 					<ToolIdentity />
 				</>
 			)}
