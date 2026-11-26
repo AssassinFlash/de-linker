@@ -37,6 +37,7 @@ final class NativeInquirySubmissionTest extends IntegrationTestCase {
 				$GLOBALS['current_screen'] = $screen;
 			}
 		);
+		require_once ABSPATH . 'wp-admin/includes/admin.php';
 		set_current_screen( 'dashboard' );
 		$this->assertTrue( is_admin() );
 		$details = Submission::from_post(
