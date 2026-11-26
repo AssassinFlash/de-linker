@@ -12,7 +12,9 @@ test("the immutable blank intake matches the external brief contract and editabl
 		Object.isFrozen(blankBrief.site) && Object.isFrozen(blankBrief.annual_load),
 	);
 	const input = emptyBrief();
-	input.site.country_code = "DE";
+	assert.notEqual(input.site, blankBrief.site);
+	assert.notEqual(input.annual_load, blankBrief.annual_load);
+	assert.equal(Object.isFrozen(input.site), false);
 	assert.equal(blankBrief.site.country_code, null);
 	assert.throws(() => readBrief({ ...input, schema_version: 2 }));
 });
