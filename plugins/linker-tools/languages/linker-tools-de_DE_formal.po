@@ -17397,3 +17397,6 @@ msgstr "Anfrageseite öffnen"
 
 msgid "You can fill in your inquiry below while your PDF is being prepared."
 msgstr "Während Ihr PDF erstellt wird, können Sie unten Ihre Anfrage ausfüllen."
+
+msgid "Preparing your workspace…"
+msgstr "Arbeitsbereich wird vorbereitet…"
