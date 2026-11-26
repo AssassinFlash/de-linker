@@ -81,6 +81,20 @@ final class Application {
 	private bool $mounted = false;
 
 	/**
+	 * A workspace was discovered in the queried page or LiveCanvas template.
+	 *
+	 * @var bool
+	 */
+	private bool $preloaded = false;
+
+	/**
+	 * Native translations have been printed for this workspace.
+	 *
+	 * @var bool
+	 */
+	private bool $translations_printed = false;
+
+	/**
 	 * Versioned URL of the full script-module translation catalog when split.
 	 *
 	 * @var string|null
@@ -129,7 +143,7 @@ final class Application {
 		add_action( 'template_redirect', array( $this, 'inquiry_entry' ) );
 		add_shortcode( 'linker_planner', array( $this, 'mount' ) );
 		add_filter( 'load_script_translations', array( $this, 'filter_translations' ), 10, 4 );
-		add_action( 'wp_footer', array( $this, 'print_translation_loader' ), 22 );
+		add_action( 'wp_head', array( $this, 'translations' ), 99 );
 		add_filter( 'mod_rewrite_rules', array( $this, 'cache_rules' ) );
 		( new Indexing() )->register();
 		( new WindPress( $this->plugin_file ) )->register();
@@ -218,6 +232,7 @@ final class Application {
 		if ( ! $this->mounted && ! $this->includes_planner( $content ) ) {
 			return;
 		}
+		$this->preloaded = true;
 		foreach ( $this->module_preloads as $url ) {
 			echo '<link rel="modulepreload" href="' . esc_url( $url ) . '" crossorigin="anonymous">' . "\n";
 		}
@@ -257,6 +272,27 @@ final class Application {
 			}
 		}
 		return false;
+	}
+
+	/** Make the native i18n runtime and locale available before the workspace element is parsed. */
+	public function translations(): void {
+		if ( $this->translations_printed || ( ! $this->mounted && ! $this->preloaded ) || ! $this->module_preloads ) {
+			return;
+		}
+		$this->translations_printed = true;
+		wp_print_scripts( array( 'wp-i18n' ) );
+		$json = load_script_module_textdomain( self::HANDLE, 'linker-tools', plugin_dir_path( $this->plugin_file ) . 'languages' );
+		if ( is_string( $json ) ) {
+			$data     = json_decode( $json, true );
+			$messages = $data['locale_data']['linker-tools'] ?? $data['locale_data']['messages'] ?? null;
+			if ( is_array( $messages ) ) {
+				wp_print_inline_script_tag(
+					'wp.i18n.setLocaleData(' . wp_json_encode( $messages, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE ) . ', "linker-tools");',
+					array( 'id' => 'wp-script-module-translation-data-' . self::HANDLE )
+				);
+			}
+		}
+		$this->print_translation_loader();
 	}
 
 	/** After WordPress installs the shell translations, apply the catalog requested by the head. */
@@ -361,8 +397,13 @@ final class Application {
 			\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
 		}
 		$this->mounted = true;
-		wp_enqueue_script( 'wp-i18n' );
-		wp_enqueue_script_module( self::HANDLE );
+		$runtime       = '';
+		if ( ! $this->translations_printed && did_action( 'wp_head' ) ) {
+			// Dynamically mounted shortcodes can first become visible after the document head.
+			ob_start();
+			$this->translations();
+			$runtime = (string) ob_get_clean();
+		}
 		$countries    = function_exists( 'WC' ) ? WC()->countries->get_countries() : array();
 		$raw_maps_key = defined( 'LINKER_GOOGLE_MAPS_API_KEY' ) ? constant( 'LINKER_GOOGLE_MAPS_API_KEY' ) : get_option( 'linker_google_maps_api_key', '' );
 		$maps_key     = is_string( $raw_maps_key ) ? trim( $raw_maps_key ) : '';
@@ -394,12 +435,20 @@ final class Application {
 				'google_maps_api_key'   => '' !== $maps_key ? $maps_key : null,
 			)
 		);
+		$entry  = $this->module_preloads ? wp_get_script_tag(
+			array(
+				'id'    => self::HANDLE . '-js-module',
+				'type'  => 'module',
+				'async' => true,
+				'src'   => $this->module_preloads[0],
+			)
+		) : '';
 		return sprintf(
 			'<section data-linker-planner data-planner-config="%s"><div class="sc-configurator sc-intake sc-loading"><header class="sc-project-heading"><div><h1>%s</h1><p>%s</p></div></header>%s</div></section>',
 			esc_attr( is_string( $config ) ? $config : '{}' ),
 			esc_html__( 'Solution Configurator', 'linker-tools' ),
 			esc_html__( 'A project can start with the information already available. Roof drawing is optional.', 'linker-tools' ),
 			$signed_in || $this->has_workspace_session() ? '<p role="status">' . esc_html__( 'Opening your workspace…', 'linker-tools' ) . '</p>' : ''
-		);
+		) . $runtime . $entry;
 	}
 }

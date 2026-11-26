@@ -107,19 +107,14 @@ final class PlannerApplicationTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'wp_set_script_module_translations', array( 'times' => 1 ) );
 		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
-		WP_Mock::userFunction(
-			'wp_enqueue_script',
-			array(
-				'args'  => array( 'wp-i18n' ),
-				'times' => 1,
-			)
-		);
-		WP_Mock::userFunction(
-			'wp_enqueue_script_module',
-			array(
-				'args'  => array( Application::HANDLE ),
-				'times' => 1,
-			)
+		WP_Mock::userFunction( 'did_action' )->with( 'wp_head' )->andReturn( 0 );
+		WP_Mock::userFunction( 'wp_get_script_tag' )->once()->andReturnUsing(
+			static function ( array $atts ) use ( $base, $entry, $root ): string {
+				self::assertSame( $base . 'build/planner/' . $entry . '?ver=' . hash_file( 'sha256', $root . 'build/planner/' . $entry ), $atts['src'] );
+				self::assertSame( 'module', $atts['type'] );
+				self::assertTrue( $atts['async'] );
+				return '<script type="module" async></script>';
+			}
 		);
 		WP_Mock::userFunction(
 			'WC',
@@ -174,7 +169,7 @@ final class PlannerApplicationTest extends TestCase {
 			$this->assertArrayHasKey( 'nonce_url', $config );
 			$this->assertNull( $config['nonce_url'] );
 		}
-		$this->assertStringNotContainsString( '<script', $html );
+		$this->assertSame( 1, substr_count( $html, '<script type="module" async>' ) );
 		$this->assertSame( '', $app->mount() );
 		$this->assertConditionsMet();
 	}

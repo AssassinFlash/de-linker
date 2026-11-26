@@ -22,7 +22,7 @@ final class PlannerTranslationCatalogTest extends TestCase {
 	}
 
 	/** The shell subset prints inline and the catalog loader follows it. */
-	public function test_head_preloads_the_entry_imports_and_the_catalog_installed_in_the_footer(): void {
+	public function test_head_delivers_the_native_locale_before_the_async_workspace_entry(): void {
 		switch_to_locale( 'de_DE_formal' );
 		$previous                = $GLOBALS['lc_main_html'] ?? null;
 		$GLOBALS['lc_main_html'] = '[linker_planner]'; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- LiveCanvas supplies its template through this global.
@@ -40,22 +40,16 @@ final class PlannerTranslationCatalogTest extends TestCase {
 		$this->assertMatchesRegularExpression( '~<link rel="preload" as="fetch" href="[^"]+">~', $head );
 		$this->assertStringContainsString( 'mode: "no-cors"', $head );
 		$this->assertStringContainsString( 'linker-planner-catalog-request', $head );
-		wp_enqueue_script_module( Application::HANDLE );
 
 		ob_start();
-		/**
-		 * Fires the footer exactly as a page render does; core's own action.
-		 *
-		 * @since 0.1.0
-		 */
-		do_action( 'wp_footer' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress's own action, fired as core fires it.
+		$app->translations();
 		$html = (string) ob_get_clean();
 
 		$data_pos = strpos( $html, 'wp-script-module-translation-data-' . Application::HANDLE );
-		$this->assertIsInt( $data_pos, 'the module translation data is printed on wp_footer' );
+		$this->assertIsInt( $data_pos, 'the initial native translations print for this workspace' );
 		$data_tag = substr( $html, $data_pos, 20000 );
 		$this->assertStringContainsString( 'Neues Projekt', $data_tag, 'the inline subset carries the shell translations' );
-		$this->assertStringNotContainsString( 'Projekt anlegen', $data_tag, 'the inline subset stays a subset; form strings arrive on demand' );
+		$this->assertStringNotContainsString( 'Projekt anlegen', $data_tag, 'the inline subset stays small; form strings come from the catalog' );
 
 		$loader_pos = strpos( $html, 'linker-planner-translation-loader' );
 		$this->assertIsInt( $loader_pos, 'the on-demand catalog loader is printed as its own script' );
