@@ -1,29 +1,29 @@
 {
-  "_CatalogStatus-BP8S6dCE.js": {
-    "file": "assets/CatalogStatus-BP8S6dCE.js",
+  "_CatalogStatus-BfI56Wnh.js": {
+    "file": "assets/CatalogStatus-BfI56Wnh.js",
     "name": "CatalogStatus",
     "imports": [
-      "_planner-core-D6o_Pf8j.js"
+      "_planner-core-De8sv6Je.js"
     ]
   },
-  "_ProductCard-xejhozl7.js": {
-    "file": "assets/ProductCard-xejhozl7.js",
+  "_ProductCard-DdCWAz-4.js": {
+    "file": "assets/ProductCard-DdCWAz-4.js",
     "name": "ProductCard",
     "imports": [
-      "_planner-core-D6o_Pf8j.js"
+      "_planner-core-De8sv6Je.js"
     ]
   },
-  "_ReportLogo-CIm73hfy.js": {
-    "file": "assets/ReportLogo-CIm73hfy.js",
+  "_ReportLogo-D3bw1mLo.js": {
+    "file": "assets/ReportLogo-D3bw1mLo.js",
     "name": "ReportLogo",
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js",
-      "_ProductCard-xejhozl7.js"
+      "_planner-core-De8sv6Je.js",
+      "_ProductCard-DdCWAz-4.js"
     ]
   },
-  "_planner-core-D6o_Pf8j.js": {
-    "file": "assets/planner-core-D6o_Pf8j.js",
+  "_planner-core-De8sv6Je.js": {
+    "file": "assets/planner-core-De8sv6Je.js",
     "name": "planner-core",
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js"
@@ -42,70 +42,70 @@
     "name": "rolldown-runtime"
   },
   "src/components/ProjectBriefStart.tsx": {
-    "file": "assets/ProjectBriefStart-CTX_Aq30.js",
+    "file": "assets/ProjectBriefStart-CbMIrON2.js",
     "name": "ProjectBriefStart",
     "src": "src/components/ProjectBriefStart.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js"
+      "_planner-core-De8sv6Je.js"
     ]
   },
   "src/components/SavedSolutionStart.tsx": {
-    "file": "assets/SavedSolutionStart-BHAtmkRW.js",
+    "file": "assets/SavedSolutionStart-CopahOiF.js",
     "name": "SavedSolutionStart",
     "src": "src/components/SavedSolutionStart.tsx",
     "isDynamicEntry": true,
     "imports": [
-      "_planner-core-D6o_Pf8j.js",
-      "_CatalogStatus-BP8S6dCE.js",
-      "_ProductCard-xejhozl7.js"
+      "_planner-core-De8sv6Je.js",
+      "_CatalogStatus-BfI56Wnh.js",
+      "_ProductCard-DdCWAz-4.js"
     ]
   },
   "src/components/configurator/PreliminaryProject.tsx": {
-    "file": "assets/PreliminaryProject-B42c6Xku.js",
+    "file": "assets/PreliminaryProject-Crxw7BeZ.js",
     "name": "PreliminaryProject",
     "src": "src/components/configurator/PreliminaryProject.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js",
-      "_ReportLogo-CIm73hfy.js"
+      "_planner-core-De8sv6Je.js",
+      "_ReportLogo-D3bw1mLo.js"
     ]
   },
   "src/components/configurator/ProjectDetails.tsx": {
-    "file": "assets/ProjectDetails-pYSSQvmD.js",
+    "file": "assets/ProjectDetails-OdVFtO2_.js",
     "name": "ProjectDetails",
     "src": "src/components/configurator/ProjectDetails.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js"
+      "_planner-core-De8sv6Je.js"
     ]
   },
   "src/components/configurator/ProjectEquipment.tsx": {
-    "file": "assets/ProjectEquipment-lPOm_2Gg.js",
+    "file": "assets/ProjectEquipment-i3QprScL.js",
     "name": "ProjectEquipment",
     "src": "src/components/configurator/ProjectEquipment.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js",
-      "_CatalogStatus-BP8S6dCE.js",
-      "_ProductCard-xejhozl7.js"
+      "_planner-core-De8sv6Je.js",
+      "_CatalogStatus-BfI56Wnh.js",
+      "_ProductCard-DdCWAz-4.js"
     ]
   },
   "src/components/configurator/ProjectWorkbench.tsx": {
-    "file": "assets/ProjectWorkbench-Bd8V8aV0.js",
+    "file": "assets/ProjectWorkbench-DCJFZWr1.js",
     "name": "ProjectWorkbench",
     "src": "src/components/configurator/ProjectWorkbench.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js",
-      "_CatalogStatus-BP8S6dCE.js",
-      "_ProductCard-xejhozl7.js",
-      "_ReportLogo-CIm73hfy.js",
+      "_planner-core-De8sv6Je.js",
+      "_CatalogStatus-BfI56Wnh.js",
+      "_ProductCard-DdCWAz-4.js",
+      "_ReportLogo-D3bw1mLo.js",
       "src/components/configurator/ProjectDetails.tsx",
       "src/components/configurator/ProjectEquipment.tsx"
     ],
@@ -115,24 +115,24 @@
     ]
   },
   "src/components/design/MapViewport.tsx": {
-    "file": "assets/MapViewport-cLuOfSJK.js",
+    "file": "assets/MapViewport-CmKrbBp7.js",
     "name": "MapViewport",
     "src": "src/components/design/MapViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js",
+      "_planner-core-De8sv6Je.js",
       "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
   "src/components/design/SceneViewport.tsx": {
-    "file": "assets/SceneViewport-2Pkjx6QO.js",
+    "file": "assets/SceneViewport-DFfHYxbZ.js",
     "name": "SceneViewport",
     "src": "src/components/design/SceneViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js",
+      "_planner-core-De8sv6Je.js",
       "src/components/configurator/ProjectWorkbench.tsx"
     ]
   },
@@ -143,7 +143,7 @@
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D6o_Pf8j.js"
+      "_planner-core-De8sv6Je.js"
     ]
   }
 }
