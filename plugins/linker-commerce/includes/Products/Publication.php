@@ -419,16 +419,26 @@ final class Publication {
 		if ( $other_sources ) {
 			_prime_post_caches( $other_sources, true, true );
 		}
+		$attachment_ids = array();
 		foreach ( $ids as $index => $locale_id ) {
-			if ( ! self::published_in_current_read( $locale_id ) ) {
-				continue;
-			}
 			$id = $canonical_ids[ $index ];
-			if ( isset( $sources[ $id ] ) ) {
+			if ( array_key_exists( $id, $sources ) || ! self::published_in_current_read( $locale_id ) ) {
 				continue;
 			}
-			$sources[ $id ] = true;
-			foreach ( self::document_rows( $id ) as $row ) {
+			$downloads      = self::legacy_downloads( $id );
+			$sources[ $id ] = $downloads;
+			foreach ( $downloads ?? array() as $download ) {
+				$attachment_id = (int) ( $download['download_file'] ?? 0 );
+				if ( $attachment_id > 0 ) {
+					$attachment_ids[ $attachment_id ] = true;
+				}
+			}
+		}
+		if ( $attachment_ids ) {
+			_prime_post_caches( array_keys( $attachment_ids ), false, true );
+		}
+		foreach ( $sources as $id => $downloads ) {
+			foreach ( self::source_document_rows( $id, $downloads ) as $row ) {
 				if ( false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
 					continue;
 				}
@@ -797,14 +807,47 @@ final class Publication {
 	 * @return list<array<string,mixed>>
 	 */
 	public static function document_rows( int $id ): array {
-		// Resolve this relation read once; the next call still asks the language authority again.
-		$id   = self::canonical_id( $id );
+		$id = self::canonical_id( $id );
+		return self::source_document_rows( $id, self::legacy_downloads( $id ) );
+	}
+
+	/**
+	 * Legacy attachment rows in their authored order, or null when Woo directly manages the relations.
+	 *
+	 * @param int $id Canonical product ID.
+	 * @return list<array<string,mixed>>|null
+	 */
+	private static function legacy_downloads( int $id ): ?array {
+		if ( '1' === get_post_meta( $id, '_linker_documents_managed', true ) ) {
+			return null;
+		}
+		$downloads = array();
+		foreach ( array( '_tv_legacy_acf_json', '_linker_de_acf_json' ) as $key ) {
+			$raw = get_post_meta( $id, $key, true );
+			$acf = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+			foreach ( is_array( $acf ) && is_array( $acf['downloads'] ?? null ) ? $acf['downloads'] : array() as $download ) {
+				if ( is_array( $download ) ) {
+					$downloads[] = $download;
+				}
+			}
+		}
+		return $downloads;
+	}
+
+	/**
+	 * Resolve the current product relations and any legacy attachment URLs.
+	 *
+	 * @param int                            $id Canonical product ID.
+	 * @param list<array<string,mixed>>|null $downloads Legacy rows, or null for managed relations.
+	 * @return list<array<string,mixed>>
+	 */
+	private static function source_document_rows( int $id, ?array $downloads ): array {
 		$rows = get_post_meta( $id, EngineeringData::DOCUMENTS_META_KEY, true );
 		if ( is_string( $rows ) ) {
 			$rows = json_decode( $rows, true );
 		}
 		$rows = is_array( $rows ) ? array_values( array_filter( $rows, 'is_array' ) ) : array();
-		if ( '1' === get_post_meta( $id, '_linker_documents_managed', true ) ) {
+		if ( null === $downloads ) {
 			return $rows;
 		}
 		$urls      = array_column( $rows, 'url' );
@@ -822,24 +865,17 @@ final class Publication {
 				$citations[] = $legacy;
 			}
 		}
-		foreach ( array( '_tv_legacy_acf_json', '_linker_de_acf_json' ) as $key ) {
-			$raw = get_post_meta( $id, $key, true );
-			$acf = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
-			foreach ( is_array( $acf ) && is_array( $acf['downloads'] ?? null ) ? $acf['downloads'] : array() as $download ) {
-				if ( ! is_array( $download ) ) {
-					continue;
-				}
-				$url = wp_get_attachment_url( (int) ( $download['download_file'] ?? 0 ) );
-				if ( is_string( $url ) && ! in_array( $url, $urls, true ) ) {
-					$rows[] = array(
-						'url'   => $url,
-						'title' => (string) ( $download['download_title'] ?? '' ),
-						'type'  => (string) ( $download['download_type'] ?? 'document' ),
-						'lang'  => (string) ( $download['download_language'] ?? '' ),
-						'role'  => (string) ( $download['download_role'] ?? '' ),
-					);
-					$urls[] = $url;
-				}
+		foreach ( $downloads as $download ) {
+			$url = wp_get_attachment_url( (int) ( $download['download_file'] ?? 0 ) );
+			if ( is_string( $url ) && ! in_array( $url, $urls, true ) ) {
+				$rows[] = array(
+					'url'   => $url,
+					'title' => (string) ( $download['download_title'] ?? '' ),
+					'type'  => (string) ( $download['download_type'] ?? 'document' ),
+					'lang'  => (string) ( $download['download_language'] ?? '' ),
+					'role'  => (string) ( $download['download_role'] ?? '' ),
+				);
+				$urls[] = $url;
 			}
 		}
 		foreach ( array_unique( $citations ) as $url ) {
