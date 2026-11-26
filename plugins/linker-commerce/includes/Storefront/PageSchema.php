@@ -20,6 +20,7 @@ final class PageSchema {
 	public function register(): void {
 		add_filter( 'seopress_schemas_website', array( $this, 'localized_home' ) );
 		add_filter( 'seopress_get_json_data_organization', array( $this, 'organization' ) );
+		add_filter( 'seopress_schemas_auto_custom_html', array( $this, 'about_publisher' ) );
 		add_action( 'wp_head', array( $this, 'print_blocks' ) );
 		add_action( 'wp_head', array( $this, 'print_organization' ) );
 	}
@@ -91,6 +92,23 @@ final class PageSchema {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Connect the existing English AboutPage schema to the identified publisher.
+	 *
+	 * @param string $html A resolved SEOPress automatic custom schema.
+	 */
+	public function about_publisher( string $html ): string {
+		if ( ! is_page( 'about' ) || ! preg_match( '~^\s*<script\b[^>]*>(.*?)</script>\s*$~is', $html, $script ) ) {
+			return $html;
+		}
+		$node = json_decode( $script[1], true );
+		if ( ! is_array( $node ) || ! in_array( 'AboutPage', (array) ( $node['@type'] ?? array() ), true ) ) {
+			return $html;
+		}
+		$node['about'] = array( '@id' => PageUrls::home() . '#organization' );
+		return '<script type="application/ld+json">' . wp_json_encode( $node, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "</script>\n";
 	}
 
 	/** SEOPress prints its Knowledge Graph organization only on the front page. */
@@ -176,6 +194,9 @@ final class PageSchema {
 				'url'         => $url,
 				'description' => (string) get_post_meta( $post->ID, '_seopress_titles_desc', true ),
 			);
+			if ( 'ueber-uns' === $post->post_name ) {
+				$node['about'] = array( '@id' => $home . '#organization' );
+			}
 			if ( '' !== $type ) {
 				$hub     = in_array( $post->post_name, array( 'solution', 'loesung' ), true );
 				$trail[] = array(
