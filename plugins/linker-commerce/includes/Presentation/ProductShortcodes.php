@@ -2103,24 +2103,19 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * The family card's model picker: the live page's
-	 * `details.sf-card-variants.card-product-picker` with one button per
-	 * member article (the current one marked).
+	 * Render the model links from the same rows used for in-card selection.
 	 *
-	 * @param array<int>                                      $ids        The family's article ids.
-	 * @param int                                             $current_id The article the card shows.
-	 * @param array<string, mixed>                            $card       The current card fields.
-	 * @param array<int, array{label: string, value: string}> $stats      The current key figures.
-	 * @param string                                          $selection  The card's model line.
+	 * @param array<int,array<string,mixed>> $payload    Family articles.
+	 * @param int                            $current_id Selected article.
+	 * @param string                         $selection  Selected model line.
 	 */
-	private function family_picker( array $ids, int $current_id, array $card, array $stats, string $selection ): string {
+	private function family_picker( array $payload, int $current_id, string $selection ): string {
 		$heading = __( 'All models', 'linker-commerce' );
 		$html    = '<details class="sf-card-variants card-product-picker" data-picker-heading="' . esc_attr( $heading ) . '">';
 		$html   .= '<summary><span class="card-selection-copy"><small>' . esc_html__( 'Selected model', 'linker-commerce' ) . '</small> <strong data-card-selection>' . esc_html( $selection ) . '</strong></span> <span class="card-selection-action">' . esc_html( $heading ) . '</span></summary>';
 		$html   .= '<div class="card-product-picker__list" data-picker-heading="' . esc_attr( $heading ) . '">';
-		foreach ( $ids as $id ) {
-			$row   = $this->views->card_fields( (int) $id );
-			$html .= '<button type="button" class="sf-card-variant" data-linker-select-product="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $current_id ? ' aria-current="true"' : '' ) . '><span>' . esc_html( (string) ( $row['model'] ?? '' ) ) . '</span> <small>' . esc_html__( 'Item no.', 'linker-commerce' ) . ' ' . esc_html( (string) ( $row['sku'] ?? '' ) ) . '</small></button>';
+		foreach ( $payload as $row ) {
+			$html .= '<a class="sf-card-variant" href="' . esc_url( $row['url'] ) . '" data-linker-select-product="' . esc_attr( (string) $row['id'] ) . '"' . ( $row['id'] === $current_id ? ' aria-current="true"' : '' ) . '><span>' . esc_html( $row['model'] ) . '</span> <small>' . esc_html__( 'Item no.', 'linker-commerce' ) . ' ' . esc_html( $row['sku'] ) . '</small></a>';
 		}
 		return $html . '</div></details>';
 	}
