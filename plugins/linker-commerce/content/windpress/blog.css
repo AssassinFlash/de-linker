@@ -214,3 +214,21 @@ html:has(.reader-author-dialog[open]) { overflow: hidden; }
 #tv-blog-single-v1 .reader-search svg { width: 18px; height: 18px; }
 
 #tv-blog-single-v1 .reader-author-contacts { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem .9rem; font-size: .8125rem; }
+
+#tv-blog-single-v1 .reader-author-socials {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	margin-top: .25rem;
+	padding-top: .5rem;
+	border-top: 1px solid var(--proto-line-journal);
+}
+#tv-blog-single-v1 .reader-author-socials a {
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border-radius: var(--proto-radius-sm);
+	color: var(--proto-ink-deep);
+}
+#tv-blog-single-v1 .reader-author-socials a:is(:hover,:focus-visible) { color: var(--proto-teal-700); background: var(--proto-teal-50); }

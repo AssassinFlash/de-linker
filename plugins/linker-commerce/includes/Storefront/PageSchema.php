@@ -18,25 +18,98 @@ use WP_Post;
 final class PageSchema {
 	/** Register the public metadata hooks. */
 	public function register(): void {
-		add_filter( 'seopress_schemas_website', array( $this, 'localized_home' ) );
+		add_filter( 'seopress_schemas_website', array( $this, 'website' ) );
 		add_filter( 'seopress_get_json_data_organization', array( $this, 'organization' ) );
+		add_filter( 'seopress_schemas_auto_article_json', array( $this, 'article_schema' ) );
+		add_filter( 'seopress_pro_get_json_data_author', array( $this, 'author_schema' ), 10, 2 );
 		add_filter( 'seopress_schemas_auto_custom_html', array( $this, 'about_publisher' ) );
 		add_action( 'wp_head', array( $this, 'print_blocks' ) );
 		add_action( 'wp_head', array( $this, 'print_organization' ) );
 	}
 
 	/**
-	 * Use the translated homepage and its approved description.
+	 * Use the journal or homepage's public language for the site's identity.
 	 *
-	 * @param array<string,mixed> $node SEOPress's existing organization or website.
+	 * @param array<string,mixed> $node SEOPress website node.
+	 * @return array<string,mixed>
+	 */
+	public function website( array $node ): array {
+		$node['url']         = PageUrls::home();
+		$node['description'] = self::is_german()
+			? 'PV- und Batteriespeichersysteme für Wohngebäude, Gewerbe und Industrie mit dokumentierter Kompatibilität und technischer Unterstützung in Europa.'
+			: 'Residential and C&I solar and battery storage systems with documented compatibility and technical support for installers and EPCs across Europe.';
+		return $node;
+	}
+
+	/**
+	 * Resolve the public site identity for callers of the original filter.
+	 *
+	 * @param array<string,mixed> $node Site node.
 	 * @return array<string,mixed>
 	 */
 	public function localized_home( array $node ): array {
-		if ( is_front_page() && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
-			$node['url']         = PageUrls::home();
-			$node['description'] = (string) get_post_meta( get_queried_object_id(), '_seopress_titles_desc', true );
+		return $this->website( $node );
+	}
+
+	/** Current Polylang language. */
+	private static function is_german(): bool {
+		return function_exists( 'pll_current_language' ) && 'de' === pll_current_language();
+	}
+
+	/**
+	 * Identify the article's publisher and preserve the post's byline.
+	 *
+	 * @param array<string,mixed> $node Automatic Article or BlogPosting node.
+	 * @return array<string,mixed>
+	 */
+	public function article_schema( array $node ): array {
+		if ( isset( $node['author'] ) && is_array( $node['author'] ) ) {
+			$node['author'] = $this->author_schema( $node['author'] );
+		}
+		if ( isset( $node['publisher'] ) && is_array( $node['publisher'] ) ) {
+			$node['publisher']['@id']    = PageUrls::home() . '#organization';
+			$node['publisher']['sameAs'] = ContactChannels::company_same_as();
 		}
 		return $node;
+	}
+
+	/**
+	 * Chester's public profile in SEOPress's resolved article or Person template.
+	 *
+	 * @param array<string,mixed>      $node Author node.
+	 * @param array<string,mixed>|null $context SEOPress template context.
+	 * @return array<string,mixed>
+	 */
+	public function author_schema( array $node, ?array $context = null ): array {
+		$name = $node['name'] ?? '';
+		if ( '[[name]]' === $name ) {
+			$post = $context['post'] ?? get_post();
+			$user = $post instanceof WP_Post ? get_userdata( (int) $post->post_author ) : false;
+			if ( ! $user || 'chester-john' !== $user->user_nicename ) {
+				return $node;
+			}
+		} elseif ( 'Chester John' !== $name ) {
+			return $node;
+		}
+		$about = PageUrls::page( 'about' );
+		$home  = PageUrls::home();
+		return array_merge(
+			$node,
+			array(
+				'@type'    => 'Person',
+				'@id'      => $about . '#chester-john',
+				'name'     => 'Chester John',
+				'url'      => $about,
+				'jobTitle' => self::is_german() ? 'Spezialist für Speicherlösungen' : 'Storage Solutions Specialist',
+				'worksFor' => array(
+					'@type' => 'Organization',
+					'@id'   => $home . '#organization',
+					'name'  => 'Linker Technology GmbH',
+					'url'   => $home,
+				),
+				'sameAs'   => ContactChannels::chester_same_as(),
+			)
+		);
 	}
 
 	/**
@@ -46,7 +119,7 @@ final class PageSchema {
 	 * @return array<string,mixed>
 	 */
 	public function organization( array $node ): array {
-		$node    = $this->localized_home( $node );
+		$node    = $this->website( $node );
 		$sales   = ( new Options() )->team_mailbox();
 		$germany = str_replace( ' ', '-', ContactChannels::GERMANY_PHONE );
 		$direct  = str_replace( ' ', '-', ContactChannels::DIRECT_PHONE );
@@ -55,7 +128,7 @@ final class PageSchema {
 			array(
 				'name'         => 'Linker',
 				'legalName'    => 'Linker Technology GmbH',
-				'url'          => PageUrls::home(),
+				'sameAs'       => ContactChannels::company_same_as(),
 				'vatID'        => 'DE367367711',
 				'taxID'        => 'DE367367711',
 				'identifier'   => array(

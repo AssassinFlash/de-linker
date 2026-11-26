@@ -91,6 +91,8 @@ final class BlogShortcodesTest extends TestCase {
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $codes, 'enqueue_author_dialog' ) );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $codes, 'empty_search_title' ), 60 );
+		WP_Mock::expectActionAdded( 'template_redirect', array( $codes, 'redirect_chester_archive' ), -1 );
+		WP_Mock::expectFilterAdded( 'seopress_disable_archives_redirect_url', array( $codes, 'archive_destination' ) );
 		$codes->register();
 
 		$this->assertConditionsMet();
@@ -114,6 +116,27 @@ final class BlogShortcodesTest extends TestCase {
 		$this->assertSame( '', $codes->author() );
 		$this->assertSame( '<span>Guest Editor</span>', $codes->author( array( 'view' => 'byline' ) ) );
 		$this->assertSame( '<a class="reader-author-byline" href="#tv-blog-author">Chester John</a>', $codes->author( array( 'view' => 'byline' ) ) );
+	}
+
+	/** A personal byline offers the same three expert profiles as the Contact page. */
+	public function test_personal_card_has_expert_profiles(): void {
+		$post                  = $this->post( 551, 'System design', 'system-design' );
+		$post->post_author     = '12';
+		$author                = new WP_User();
+		$author->user_nicename = 'chester-john';
+		$author->display_name  = 'Chester John';
+		WP_Mock::userFunction( 'get_post' )->andReturn( $post );
+		WP_Mock::userFunction( 'get_userdata' )->with( 12 )->andReturn( $author );
+		WP_Mock::userFunction( 'shortcode_atts' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'plugins_url' )->andReturn( 'https://example.org/photo.webp' );
+		WP_Mock::userFunction( 'get_page_by_path' )->andReturn( $post );
+		WP_Mock::userFunction( 'get_permalink' )->andReturn( 'https://example.org/contact/' );
+		WP_Mock::userFunction( 'add_query_arg' )->andReturn( 'https://example.org/contact/?article_contact=1' );
+		$html = ( new BlogShortcodes() )->author();
+		$this->assertStringContainsString( 'class="reader-author-socials"', $html );
+		$this->assertStringContainsString( 'linkedin.com/in/chester-john-linker/', $html );
+		$this->assertStringContainsString( 'youtube.com/@chesterjohn.linker', $html );
+		$this->assertStringContainsString( 'x.com/chester_linker', $html );
 	}
 
 	/**
@@ -170,6 +193,11 @@ final class BlogShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'class="lc-sharing-buttons reader-share-links"', $html );
 		$this->assertStringNotContainsString( 'btn-outline-dark', $html );
 		$this->assertStringNotContainsString( 'd-lg-inline', $html );
+		$this->assertStringContainsString( 'title="Share on LinkedIn"', $html );
+		$this->assertSame( 5, substr_count( $html, 'rel="nofollow noopener noreferrer"' ) );
+		$this->assertLessThan( strpos( $html, 'www.facebook.com' ), strpos( $html, 'www.linkedin.com/sharing/share-offsite/?url=' ) );
+		$this->assertStringContainsString( 'telegram.me/share/url?url=https%3A%2F%2Flinker.test%2Fde%2Fbeitrag%2F&text=Ein%20Beitrag', $html );
+		$this->assertStringContainsString( '&via=chester_linker', $html );
 		$this->assertStringContainsString( 'title="Share on Facebook" aria-label="Share on Facebook"', $html );
 		$this->assertStringContainsString( 'title="Share on WhatsApp" aria-label="Share on WhatsApp"', $html );
 		$this->assertStringContainsString( 'title="Share on Telegram" aria-label="Share on Telegram"', $html );

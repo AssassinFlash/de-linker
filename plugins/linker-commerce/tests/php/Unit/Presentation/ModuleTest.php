@@ -133,9 +133,11 @@ final class ModuleTest extends TestCase {
 		// Data shortcodes across the product, checkout, comparison,
 		// library, account and blog families, including the product's configurator
 		// entry and the FAQ section's scoped rows.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 76 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 77 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $blog, 'empty_search_title' ), 60 );
+		WP_Mock::expectActionAdded( 'template_redirect', array( $blog, 'redirect_chester_archive' ), -1 );
+		WP_Mock::expectFilterAdded( 'seopress_disable_archives_redirect_url', array( $blog, 'archive_destination' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $account, 'orders_query' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );

@@ -38,6 +38,7 @@ final class Shortcodes {
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
 		add_shortcode( 'linker_contact_invitation', array( $this, 'contact_invitation' ) );
 		add_shortcode( 'linker_contact', array( ContactChannels::class, 'value' ) );
+		add_shortcode( 'linker_social_links', array( ContactChannels::class, 'social_shortcode' ) );
 		add_shortcode( 'linker_whatsapp', array( ContactChannels::class, 'shortcode' ) );
 		add_shortcode( 'linker_team_email', array( $this, 'team_email' ) );
 		add_shortcode( 'linker_site_url', array( $this, 'site_url' ) );
