@@ -110,7 +110,9 @@ final class PluginTest extends TestCase {
 		// AnyInstance matches the object the registration constructs.
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( ProductFilters::class ), 'normalize_query' ), 0 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( new AnyInstance( ProductFilters::class ), 'filter' ), 99 ); // @phpstan-ignore argument.type
-		WP_Mock::expectFilterAdded( 'seopress_schemas_website', array( new AnyInstance( PageSchema::class ), 'localized_home' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_schemas_website', array( new AnyInstance( PageSchema::class ), 'website' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_schemas_auto_article_json', array( new AnyInstance( PageSchema::class ), 'article_schema' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_pro_get_json_data_author', array( new AnyInstance( PageSchema::class ), 'author_schema' ), 10, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_get_json_data_organization', array( new AnyInstance( PageSchema::class ), 'organization' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_schemas_auto_custom_html', array( new AnyInstance( PageSchema::class ), 'about_publisher' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( PageSchema::class ), 'print_blocks' ) ); // @phpstan-ignore argument.type

@@ -91,4 +91,47 @@ final class GermanTitlesTest extends TestCase {
 
 		$this->assertSame( 'Eine andere Beschreibung.', $titles->shop_description( 'Eine andere Beschreibung.' ) );
 	}
+	/**
+	 * The German post owns its translated cover text even with a shared attachment.
+	 */
+	public function test_social_image_uses_the_german_post_cover(): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( true );
+		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 85 ) );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 85, \Linker\I18n\CoverAlt::DISPLAY, true )->andReturn( 'Speicher im Technikraum' );
+		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn( $s ) => $s ) );
+		$titles = new GermanTitles( new Languages() );
+		$input  = '<meta property="og:image" content="https://example.org/cover.jpg"><meta property="og:image:alt" content="Battery in the utility room">';
+		$this->assertSame( str_replace( 'Battery in the utility room', 'Speicher im Technikraum', $input ), $titles->social_image_alt( $input ) );
+	}
+
+	/** Native product images get the German product name if there was no alt tag. */
+	public function test_social_image_adds_german_product_title(): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( false );
+		WP_Mock::userFunction( 'is_singular' )->with( array( 'product', 'page' ) )->andReturn( true );
+		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 27 ) );
+		WP_Mock::userFunction( 'get_the_title' )->with( 27 )->andReturn( 'Gewerbespeicher' );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn( $s ) => $s ) );
+		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn( $s ) => $s ) );
+		$titles = new GermanTitles( new Languages() );
+		$this->assertStringContainsString( '<meta property="og:image:alt" content="Gewerbespeicher">', $titles->social_image_alt( '<meta property="og:image" content="https://example.org/product.webp">' ) );
+	}
+
+	/** Site and journal artwork carry distinct reviewed German descriptions. */
+	public function test_social_image_labels_each_german_fallback(): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn( $s ) => $s ) );
+		$titles = new GermanTitles( new Languages() );
+		$this->assertStringContainsString( 'für Wohngebäude, Gewerbe und Industrie', $titles->social_image_alt( '<meta property="og:image" content="/og-linker-default-1200x630.jpg">' ) );
+		$this->assertStringContainsString( 'Technische Leitfäden', $titles->social_image_alt( '<meta property="og:image" content="/og-linker-blog-1200x630.jpg">' ) );
+	}
+
+	/** The English attachment owns its original alternative text. */
+	public function test_social_image_preserves_english_output(): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		$titles = new GermanTitles( new Languages() );
+		$html   = '<meta property="og:image" content="/og-linker-blog-1200x630.jpg"><meta property="og:image:alt" content="Linker Journal">';
+		$this->assertSame( $html, $titles->social_image_alt( $html ) );
+	}
 }

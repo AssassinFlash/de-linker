@@ -147,6 +147,7 @@ final class Form {
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $embedded ? $back : $this->current_url() ) . '" />';
 		// Selection transport is submitted only by the inclusion checkbox.
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
+		$html .= '<wc-order-attribution-inputs></wc-order-attribution-inputs>';
 		$html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_url( $this->posted_referer() ) . '" />';
 		$html .= \Linker\Commerce\Inquiry\PublicGuard::fields();
 
@@ -257,10 +258,12 @@ final class Form {
 		$html .= '<h2 class="linker-contact-rail-title">' . esc_html__( 'Sales and technical support', 'linker-commerce' ) . '</h2>';
 		$html .= '<a class="linker-contact-address" href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a>';
 		$html .= '<a href="tel:' . esc_attr( ContactChannels::value( array( 'channel' => 'germany_tel' ) ) ) . '">' . esc_html__( 'Germany', 'linker-commerce' ) . ' · ' . esc_html( ContactChannels::GERMANY_PHONE ) . '</a>';
+		$html .= '<div><span class="linker-contact-socials-label">' . esc_html__( 'Official channels', 'linker-commerce' ) . '</span>' . ContactChannels::social_links( 'company', 'linker-contact-socials' ) . '</div>';
 		$html .= '<h3>' . esc_html__( 'Direct contact', 'linker-commerce' ) . '</h3>';
 		$html .= '<a class="linker-contact-address" href="mailto:' . esc_attr( ContactChannels::DIRECT_EMAIL ) . '">' . esc_html( ContactChannels::DIRECT_EMAIL ) . '</a>';
 		$html .= '<a href="tel:' . esc_attr( ContactChannels::value( array( 'channel' => 'direct_tel' ) ) ) . '">' . esc_html( ContactChannels::DIRECT_PHONE ) . '</a>';
 		$html .= ContactChannels::link( __( 'Chat on WhatsApp ↗', 'linker-commerce' ), classes: 'linker-whatsapp-outline' );
+		$html .= '<div><span class="linker-contact-socials-label">' . esc_html__( 'Chester John — Technical channels', 'linker-commerce' ) . '</span>' . ContactChannels::social_links( 'chester', 'linker-contact-socials' ) . '</div>';
 		$html .= '<p>' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-rail-card linker-contact-explore">';

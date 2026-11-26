@@ -7,6 +7,7 @@
 
 namespace Linker\Commerce\Tests\Unit\Storefront;
 
+use Linker\Commerce\Presentation\ContactChannels;
 use Linker\Commerce\Storefront\PageSchema;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -30,8 +31,67 @@ final class PageSchemaTest extends TestCase {
 		$node = ( new PageSchema() )->organization( array( '@id' => 'https://example.org/#organization' ) );
 		$this->assertSame( 'https://example.org/#organization', $node['@id'] );
 		$this->assertSame( 'DE367367711', $node['vatID'] );
+		$this->assertSame( ContactChannels::company_same_as(), $node['sameAs'] );
+		$this->assertStringNotContainsString( 'EcoFlow', $node['description'] );
 		$this->assertSame( 'Amtsgericht Stendal HRB 33824', $node['identifier']['value'] );
 		$this->assertSame( array( 'sales@de-linker.com', 'chester@de-linker.com' ), array_column( $node['contactPoint'], 'email' ) );
+	}
+
+	/**
+	 * The journal's site, author and publisher belong to its published language.
+	 *
+	 * @dataProvider public_languages
+	 * @param string $language Polylang slug.
+	 * @param string $home Localized homepage.
+	 * @param string $about Localized About page.
+	 * @param string $role Localized job title.
+	 */
+	public function test_localized_journal_graph( string $language, string $home, string $about, string $role ): void {
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( $language );
+		WP_Mock::userFunction( 'pll_home_url' )->andReturn( $home );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'is_front_page' )->andReturn( false );
+		WP_Mock::userFunction( 'get_page_by_path' )->with( 'about' )->andReturn( new WP_Post( (object) array( 'ID' => 10 ) ) );
+		WP_Mock::userFunction( 'pll_get_post' )->with( 10, 'de' )->andReturn( 11 );
+		WP_Mock::userFunction( 'get_permalink' )->with( 'de' === $language ? 11 : 10 )->andReturn( $about );
+		$schema  = new PageSchema();
+		$website = $schema->website( array( 'description' => 'EcoFlow' ) );
+		$this->assertSame( $home, $website['url'] );
+		$this->assertStringContainsString( 'de' === $language ? 'PV- und Batteriespeichersysteme' : 'Residential and C&I', $website['description'] );
+		$this->assertStringNotContainsString( 'EcoFlow', $website['description'] );
+		$node = $schema->article_schema(
+			array(
+				'author'    => array( 'name' => 'Chester John' ),
+				'publisher' => array( 'logo' => 'logo' ),
+			)
+		);
+		$this->assertSame( $about, $node['author']['url'] );
+		$this->assertSame( $about . '#chester-john', $node['author']['@id'] );
+		$this->assertSame( $role, $node['author']['jobTitle'] );
+		$this->assertSame( $home . '#organization', $node['author']['worksFor']['@id'] );
+		$this->assertSame( ContactChannels::chester_same_as(), $node['author']['sameAs'] );
+		$this->assertSame( ContactChannels::company_same_as(), $node['publisher']['sameAs'] );
+		$this->assertSame( 'logo', $node['publisher']['logo'] );
+		$template_author                = new \WP_User();
+		$template_author->user_nicename = 'chester-john';
+		$post                           = new WP_Post( (object) array( 'post_author' => '61' ) );
+		WP_Mock::userFunction( 'get_userdata' )->with( 61 )->andReturn( $template_author );
+		$person = $schema->author_schema( array( 'name' => '[[name]]' ), array( 'post' => $post ) );
+		$this->assertSame( $node['author'], $person );
+		$team = array( 'name' => 'Editorial team' );
+		$this->assertSame( $team, $schema->author_schema( $team ) );
+	}
+
+	/**
+	 * Public journal languages.
+	 *
+	 * @return array<string,list<string>>
+	 */
+	public static function public_languages(): array {
+		return array(
+			'English' => array( 'en', 'https://example.org/', 'https://example.org/about/', 'Storage Solutions Specialist' ),
+			'German'  => array( 'de', 'https://example.org/de/', 'https://example.org/de/ueber-uns/', 'Spezialist für Speicherlösungen' ),
+		);
 	}
 
 	/**

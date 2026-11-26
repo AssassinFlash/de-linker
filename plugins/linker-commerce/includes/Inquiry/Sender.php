@@ -157,7 +157,7 @@ final class Sender {
 		};
 		add_action( 'woocommerce_checkout_create_order', $prepare );
 		try {
-			$id = WC()->checkout()->create_order( $data );
+			$id = OrderAttribution::with_public_intake( static fn () => WC()->checkout()->create_order( $data ) );
 			if ( $id instanceof WP_Error ) {
 				return $id;
 			}
@@ -248,7 +248,11 @@ final class Sender {
 			}
 		}
 		try {
-			$this->receive( $order, $details, 'contact' );
+			OrderAttribution::with_public_intake(
+				function () use ( $order, $details ): void {
+					$this->receive( $order, $details, 'contact' );
+				}
+			);
 		} catch ( \Linker\Commerce\Protection\CapacityFull $error ) {
 			return $error->problem;
 		} catch ( \Throwable $error ) {
@@ -291,6 +295,7 @@ final class Sender {
 	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
 	 */
 	private function prepare( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
+		OrderAttribution::apply_to_order( $order );
 		$order->set_payment_method_title( '' );
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );

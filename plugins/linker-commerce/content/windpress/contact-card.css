@@ -552,3 +552,23 @@ html[lang^="de"] #contact-form [data-linker-contact-draft-error] p {
 
 #contact-form .linker-contact-rail-card.linker-contact-email { display: grid; justify-items: start; gap: .5rem; }
 #contact-form .linker-contact-rail-card.linker-contact-email h3 { margin: .5rem 0 0; }
+
+#contact-form .linker-contact-socials-label {
+	display: block;
+	margin-bottom: var(--proto-space-2);
+	font-size: var(--proto-size-sm);
+	color: var(--proto-ink-muted-deep);
+}
+#contact-form .linker-contact-socials { display: flex; align-items: center; gap: var(--proto-space-2); }
+#contact-form .linker-contact-socials a {
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-sm);
+	background: var(--proto-neutral-0);
+	color: var(--proto-ink-deep);
+}
+#contact-form .linker-contact-socials a:is(:hover,:focus-visible) { color: var(--proto-teal-700); border-color: currentColor; }
+#contact-form .linker-contact-socials a:focus-visible { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }

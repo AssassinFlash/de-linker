@@ -84,6 +84,9 @@ final class LlmsTxt {
 			'Sales: ' . ( new Options() )->team_mailbox() . ' · ' . ContactChannels::GERMANY_PHONE,
 			'',
 			'Direct: ' . ContactChannels::DIRECT_EMAIL . ' · ' . ContactChannels::DIRECT_PHONE . ' · [WhatsApp](' . ContactChannels::WHATSAPP_BASE . ')',
+			'',
+			'- Official YouTube: ' . ContactChannels::OFFICIAL_YOUTUBE,
+			'- Official Facebook: ' . ContactChannels::OFFICIAL_FACEBOOK,
 		);
 		foreach ( $sections as $heading => $rows ) {
 			$lines[] = '';

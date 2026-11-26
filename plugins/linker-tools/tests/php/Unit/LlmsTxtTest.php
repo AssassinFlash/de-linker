@@ -100,6 +100,8 @@ final class LlmsTxtTest extends TestCase {
 		$this->assertStringContainsString( '[Lösungen](https://linker.test/de/loesung/)', $text );
 		$this->assertStringContainsString( '[Wechselrichter](https://linker.test/de/produkt-kategorie/wechselrichter/)', $text );
 		$this->assertStringContainsString( 'Last updated: 2026-11-19', $text );
+		$this->assertStringContainsString( 'Official YouTube: https://www.youtube.com/@linkerenergystorage', $text );
+		$this->assertStringContainsString( 'Official Facebook: https://www.facebook.com/profile.php?id=61596580037537', $text );
 		$this->assertStringNotContainsString( 'EcoFlow', $text );
 	}
 
@@ -116,6 +118,8 @@ final class LlmsTxtTest extends TestCase {
 		$text = LlmsTxt::markdown( $sections, '2026-11-19', 'https://linker.test/sitemaps.xml' );
 		$this->assertStringStartsWith( '# Linker Technology GmbH', $text );
 		$this->assertStringContainsString( 'Last updated: 2026-11-19', $text );
+		$this->assertStringContainsString( 'Official YouTube: https://www.youtube.com/@linkerenergystorage', $text );
+		$this->assertStringContainsString( 'Official Facebook: https://www.facebook.com/profile.php?id=61596580037537', $text );
 		foreach ( $sections as $name => $links ) {
 			$this->assertStringContainsString( "## $name\n\n- " . $links[0], $text );
 		}

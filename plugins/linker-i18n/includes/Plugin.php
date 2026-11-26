@@ -123,6 +123,7 @@ final class Plugin {
 		add_filter( 'seopress_social_og_desc', array( $german_titles, 'shop_social_description' ), 40 );
 		add_filter( 'seopress_social_twitter_card_desc', array( $german_titles, 'shop_social_description' ), 40 );
 		add_filter( 'seopress_titles_canonical', array( $german_titles, 'canonical' ), 40 );
+		add_filter( 'seopress_social_og_thumb', array( $german_titles, 'social_image_alt' ), 30 );
 		add_filter( 'seopress_social_og_url', array( $german_titles, 'canonical' ), 40 );
 		add_filter( 'seopress_titles_canonical_on_noindex', array( $german_titles, 'category_canonical' ) );
 		$german_urls   = new GermanUrlMigration( $languages );

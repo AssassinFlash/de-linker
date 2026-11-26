@@ -72,8 +72,9 @@ final class ShortcodesTest extends TestCase {
 		}
 
 		foreach ( array(
-			'linker_contact'  => 'value',
-			'linker_whatsapp' => 'shortcode',
+			'linker_contact'      => 'value',
+			'linker_whatsapp'     => 'shortcode',
+			'linker_social_links' => 'social_shortcode',
 		) as $tag => $method ) {
 			WP_Mock::userFunction(
 				'add_shortcode',

@@ -128,6 +128,38 @@ final class GermanTitles {
 	}
 
 	/**
+	 * Localize the head's image description without changing the shared attachment.
+	 *
+	 * @param string $html SEOPress Open Graph tags or the raw URL used by its image service.
+	 */
+	public function social_image_alt( string $html ): string {
+		if ( ! str_contains( $html, '<meta property="og:image"' ) || 'de' !== $this->languages->current() ) {
+			return $html;
+		}
+		if ( str_contains( $html, '/og-linker-blog-1200x630.jpg' ) ) {
+			$alt = 'Linker Journal – Technische Leitfäden zu PV- und Batteriespeichersystemen von Chester John';
+		} elseif ( str_contains( $html, '/og-linker-default-1200x630.jpg' ) ) {
+			$alt = 'Linker Technology GmbH – Batteriespeichersysteme für Wohngebäude, Gewerbe und Industrie aus Barleben, Deutschland';
+		} elseif ( is_singular( 'post' ) ) {
+			$id  = get_queried_object_id();
+			$alt = (string) get_post_meta( $id, CoverAlt::DISPLAY, true );
+			if ( '' === $alt ) {
+				$alt = wp_strip_all_tags( get_the_title( $id ) );
+			}
+		} elseif ( is_singular( array( 'product', 'page' ) ) ) {
+			$alt = wp_strip_all_tags( get_the_title( get_queried_object_id() ) );
+		} else {
+			return $html;
+		}
+		$tag     = '<meta property="og:image:alt" content="' . esc_attr( $alt ) . '">';
+		$pattern = '/<meta property="og:image:alt" content="[^"]*"\s*\/?>/';
+		if ( preg_match( $pattern, $html ) ) {
+			return (string) preg_replace_callback( $pattern, static fn() => $tag, $html );
+		}
+		return rtrim( $html ) . "\n" . $tag . "\n";
+	}
+
+	/**
 	 * Whether this request is the German shop.
 	 */
 	private function is_german_shop(): bool {
