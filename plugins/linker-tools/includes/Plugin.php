@@ -96,6 +96,7 @@ final class Plugin {
 	 * Adds the plugin's hooks.
 	 */
 	public function register(): void {
+		add_filter( 'do_parse_request', array( LlmsTxt::class, 'serve' ), -1 );
 		add_action( 'init', array( $this->assets, 'register' ) );
 		add_action( 'init', array( $this->assets, 'load_text_domain' ) );
 		add_action( 'init', array( $this->conversations, 'register' ) );

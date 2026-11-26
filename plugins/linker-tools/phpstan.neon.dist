@@ -22,6 +22,11 @@ parameters:
 		- ../linker-commerce/includes/Inquiry/Assessment
 		# Conversation confirmation native tests inspect the companion Outbox handoff.
 	scanFiles:
+		- ../linker-commerce/includes/Presentation/PageUrls.php
+		- ../linker-commerce/includes/Presentation/ContactChannels.php
+		- ../linker-commerce/includes/Settings/Options.php
+		- ../linker-commerce/includes/Storefront/ProductFamilies.php
+		- ../linker-commerce/includes/Storefront/ProductView.php
 		# The optional commerce digest boundary; no runtime dependency before
 		# the linker_commerce_digest_blocks filter runs.
 		- ../linker-commerce/includes/Digest/Block.php

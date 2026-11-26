@@ -99,6 +99,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $quality_route, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $contact, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $inquiry_card, 'register' ) );
+		WP_Mock::expectFilterAdded( 'do_parse_request', array( \Linker\Tools\LlmsTxt::class, 'serve' ), -1 );
 		WP_Mock::expectFilterAdded( QualityStore::SUMMARY_FILTER, array( $quality, 'filter_summary' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'linker_commerce_digest_blocks', array( $quality, 'digest_blocks' ) );
 		WP_Mock::expectActionAdded( 'admin_menu', array( $quality_page, 'menu' ) );
