@@ -187,6 +187,9 @@ html:has(.reader-author-dialog[open]) { overflow: hidden; }
 #tv-blog-single-v1 :is(.tv-blog-single-related-meta,.tv-blog-single-related-excerpt,.tv-blog-single-related-arrow) { display: none; }
 #tv-blog-single-v1 .reader-all { display: inline-flex; align-items: center; gap: var(--proto-space-2); min-height: var(--proto-control-height); margin-top: var(--proto-space-5); font-size: .8125rem; font-weight: 500; }
 #tv-blog-single-v1 #tv-blog-single-related:not(:has(.tv-blog-single-related-card)) { display: none; }
+@media (min-width: 1280px) {
+  #tv-blog-single-v1 .reader-share-links { gap: var(--proto-space-1); }
+}
 @media (max-width:1279px) and (min-width:1000px) {
   #tv-blog-single-v1 .reader-layout { grid-template-columns: 160px minmax(0,1fr); }
   #tv-blog-single-v1 .reader-right { grid-column: 2; position: static; max-height: none; }
