@@ -112,6 +112,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( new AnyInstance( ProductFilters::class ), 'filter' ), 99 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_schemas_website', array( new AnyInstance( PageSchema::class ), 'localized_home' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_get_json_data_organization', array( new AnyInstance( PageSchema::class ), 'organization' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_schemas_auto_custom_html', array( new AnyInstance( PageSchema::class ), 'about_publisher' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( PageSchema::class ), 'print_blocks' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( PageSchema::class ), 'print_organization' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_noindex_bypass', array( new AnyInstance( PageIndexing::class ), 'noindex' ) ); // @phpstan-ignore argument.type
