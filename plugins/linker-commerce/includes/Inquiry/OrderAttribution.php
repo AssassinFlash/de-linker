@@ -62,8 +62,11 @@ final class OrderAttribution {
 		$cmp    = isset( $_COOKIE['cookieyes-consent'] ) ? wp_unslash( $_COOKIE['cookieyes-consent'] ) : null;
 		$bridge = isset( $_COOKIE['wp_consent_marketing'] ) ? wp_unslash( $_COOKIE['wp_consent_marketing'] ) : null;
 		// phpcs:enable
-		if ( null !== $cmp && ( ! is_string( $cmp ) || ! in_array( 'advertisement:yes', explode( ',', $cmp ), true ) || in_array( 'advertisement:no', explode( ',', $cmp ), true ) ) ) {
-			return false;
+		if ( null !== $cmp ) {
+			$choices = is_string( $cmp ) ? explode( ',', $cmp ) : array();
+			if ( ! in_array( 'advertisement:yes', $choices, true ) || in_array( 'advertisement:no', $choices, true ) || in_array( 'consent:no', $choices, true ) ) {
+				return false;
+			}
 		}
 		if ( null !== $bridge ) {
 			return 'allow' === $bridge && function_exists( 'wp_has_consent' ) && wp_has_consent( 'marketing' );

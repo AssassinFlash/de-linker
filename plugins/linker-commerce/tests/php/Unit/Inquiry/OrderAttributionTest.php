@@ -32,7 +32,8 @@ final class OrderAttributionTest extends TestCase {
 		WP_Mock::passthruFunction( 'wp_unslash' );
 		WP_Mock::userFunction( 'wp_has_consent', array( 'return' => true ) );
 		$order = Mockery::mock( WC_Order::class );
-		$order->allows( 'get_meta_data' )->andReturn( array() );
+		$order->allows( 'get_meta_data' )->andReturn( array( (object) array( 'key' => '_wc_order_attribution_source_type' ), (object) array( 'key' => '_linker_inquiry_source' ) ) );
+		$order->expects( 'delete_meta_data' )->with( '_wc_order_attribution_source_type' );
 		$order->shouldNotReceive( 'update_meta_data' );
 		try {
 			OrderAttribution::apply_to_order( $order );

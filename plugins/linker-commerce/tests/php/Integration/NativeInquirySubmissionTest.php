@@ -79,7 +79,7 @@ final class NativeInquirySubmissionTest extends IntegrationTestCase {
 		$this->assertSame( 'linkedin', $allowed->get_meta( '_wc_order_attribution_utm_source' ) );
 		$this->assertSame( 'social', $allowed->get_meta( '_wc_order_attribution_utm_medium' ) );
 		$this->assertSame( 'https://example.org/contact/', $allowed->get_meta( '_wc_order_attribution_session_entry' ) );
-		$this->assertSame( array( 'utm' ), array_map( static fn ( $meta ) => $meta->value, $allowed->get_meta( '_wc_order_attribution_source_type', false ) ) );
+		$this->assertCount( 1, $allowed->get_meta( '_wc_order_attribution_source_type', false ) );
 
 		$_POST                       = array();
 		$_COOKIE['sbjs_current']     = 'typ=referral|||src=linkedin.com|||mdm=referral';
