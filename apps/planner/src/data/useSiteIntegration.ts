@@ -79,6 +79,8 @@ export function projectLanguageUrl(
 	} else if (hints)
 		for (const [key, value] of Object.entries({
 			scope: hints.projectScope ?? null,
+			application: hints.commercial ? "commercial" : null,
+			goal: hints.commercialGoal ?? null,
 			pv_kwp: hints.pvKw,
 			annual_kwh: hints.annualKwh,
 			phase: hints.phase,
@@ -152,24 +154,27 @@ export function useSiteIntegration(projectId: string | null): void {
 		window.addEventListener("wheel", disarm, { passive: true });
 		window.addEventListener("touchstart", disarm, { passive: true });
 		const originals = new Map<HTMLAnchorElement, string>();
-		for (const link of document.querySelectorAll<HTMLAnchorElement>(
-			"header a[hreflang][lang], footer a[hreflang][lang]",
-		)) {
-			const href = link.getAttribute("href");
-			if (href === null) continue;
-			originals.set(link, href);
-		}
 		const updateLinks = () => {
+			for (const link of document.querySelectorAll<HTMLAnchorElement>(
+				"header a[hreflang][lang], footer a[hreflang][lang]",
+			)) {
+				const href = link.getAttribute("href");
+				if (href === null || originals.has(link)) continue;
+				originals.set(link, href);
+			}
+
 			for (const [link, href] of originals)
 				link.href = projectLanguageUrl(href, location.href, projectId);
 		};
 		updateLinks();
+		document.addEventListener("DOMContentLoaded", updateLinks);
 		window.addEventListener(PLANNER_NAVIGATION, updateLinks);
 		window.addEventListener("hashchange", updateLinks);
 		window.addEventListener("popstate", updateLinks);
 		// A native language-link click also covers links updated by a nested view.
 		document.addEventListener("click", updateLinks, true);
 		return () => {
+			document.removeEventListener("DOMContentLoaded", updateLinks);
 			window.removeEventListener(PLANNER_NAVIGATION, updateLinks);
 			window.removeEventListener("hashchange", updateLinks);
 			window.removeEventListener("popstate", updateLinks);

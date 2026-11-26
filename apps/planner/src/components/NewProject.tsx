@@ -137,6 +137,7 @@ export function NewProject({
 	beginCreation?: () => (() => void) | null;
 }) {
 	const scope = session?.query_scope ?? "";
+	const startedWithoutSession = useRef(session === null);
 	const roofPermission = useRef<PlaceImagery | null>(null);
 	const roofEntry = Boolean(
 		config &&
@@ -324,7 +325,33 @@ export function NewProject({
 		intent.current || draft || (title && title !== initialProject?.title),
 	);
 	const admitted = Boolean(scope && client.isCurrentScope(scope));
-	const currentInputs = useEffectEvent(() => inputs);
+	const currentDraft = useEffectEvent(
+		(owner: string): ComparisonDraft | null =>
+			intent.current
+				? null
+				: {
+						id: (draftId.current ??= crypto.randomUUID()),
+						scope: owner,
+						source,
+						scene,
+						title,
+						inputs: directComparison ? inputs : draft,
+						useHints,
+						carriedProduct,
+					},
+	);
+	const currentLanguageIssue = useEffectEvent((): LanguageIssue | null => {
+		if (!directComparison) return null;
+		if (profileForm.file) return "csv";
+		if (
+			invalidDemand.size ||
+			projectForm.current?.querySelector(
+				'[aria-invalid="true"], input:out-of-range',
+			)
+		)
+			return "number";
+		return null;
+	});
 	useEffect(() => {
 		if (
 			!draftEntry ||
@@ -339,22 +366,26 @@ export function NewProject({
 				!entryHints)
 		)
 			return;
-		const record = intent.current
-			? null
-			: {
-					id: (draftId.current ??= crypto.randomUUID()),
-					scope,
-					source,
-					scene,
-					title,
-					inputs: directComparison ? currentInputs() : draft,
-					useHints,
-					carriedProduct,
-				};
+		function save(
+			draft: ComparisonDraft,
+			languageUrl = savedDraft.current?.languageUrl,
+		) {
+			const usePvAddress =
+				projectForm.current?.querySelector<HTMLInputElement>(
+					'input[name="pvgis_use_address"]',
+				)?.checked ?? false;
+			const next = {
+				...draft,
+				usePvAddress,
+				...(languageUrl && { languageUrl }),
+			};
+			writeComparisonDraft(next, languageUrl);
+			savedDraft.current = next;
+		}
+		const record = currentDraft(scope);
 		if (record && admitted) {
-			savedDraft.current = record;
 			try {
-				writeComparisonDraft(record);
+				save(record);
 				setDraftUnavailable(false);
 			} catch {
 				setDraftUnavailable(true);
@@ -371,50 +402,58 @@ export function NewProject({
 			notice?.scrollIntoView({ block: "center", behavior: "instant" });
 		}
 		async function handoff(event: MouseEvent) {
+			if (
+				event.defaultPrevented ||
+				event.button !== 0 ||
+				event.altKey ||
+				event.ctrlKey ||
+				event.metaKey ||
+				event.shiftKey
+			)
+				return;
 			const target = event.target;
 			if (!(target instanceof window.Element)) return;
 			const link = target.closest<HTMLAnchorElement>(
 				"header a[hreflang][lang], footer a[hreflang][lang]",
 			);
-			if (!link || new URL(link.href).origin !== location.origin) return;
-			try {
-				if (
-					directComparison &&
-					(profileForm.file ||
-						projectForm.current?.querySelector(
-							'[aria-invalid="true"], input:out-of-range',
-						))
-				) {
-					showLanguageIssue(event, profileForm.file ? "csv" : "number");
+			if (
+				!link ||
+				(link.target && link.target.toLowerCase() !== "_self") ||
+				new URL(link.href).origin !== location.origin
+			)
+				return;
+			const destination = link.href;
+			const issue = currentLanguageIssue();
+			if (issue) {
+				showLanguageIssue(event, issue);
+				return;
+			}
+			if (!record) return;
+			let owner = scope;
+			if (!admitted) {
+				if (!ensureSession) return;
+				event.preventDefault();
+				try {
+					owner = (await ensureSession()).query_scope;
+				} catch {
 					return;
 				}
-				const usePvAddress =
-					projectForm.current?.querySelector<HTMLInputElement>(
-						'input[name="pvgis_use_address"]',
-					)?.checked ?? false;
-				if (record) {
-					if (admitted) {
-						writeComparisonDraft({ ...record, usePvAddress }, link.href);
-						return;
-					}
-					if (!ensureSession) return;
-					event.preventDefault();
-					let ready: Session;
-					try {
-						ready = await ensureSession();
-					} catch {
-						return;
-					}
-					if (!client.isCurrentScope(ready.query_scope)) return;
-					writeComparisonDraft(
-						{ ...record, scope: ready.query_scope, usePvAddress },
-						link.href,
-					);
-					window.location.assign(link.href);
+				if (!client.isCurrentScope(owner)) return;
+				const latestIssue = currentLanguageIssue();
+				if (latestIssue) {
+					showLanguageIssue(event, latestIssue);
+					return;
 				}
+			}
+			const latest = currentDraft(owner);
+			if (!latest) return;
+			try {
+				save(latest, destination);
 			} catch {
 				showLanguageIssue(event, "storage");
+				return;
 			}
+			if (!admitted) window.location.assign(destination);
 		}
 		document.addEventListener("click", handoff, true);
 		return () => document.removeEventListener("click", handoff, true);
@@ -540,7 +579,7 @@ export function NewProject({
 			else void submit(...args);
 			return;
 		}
-		if (!ensureSession) return;
+		if (!ensureSession || !startedWithoutSession.current) return;
 		pendingSubmit.current = args;
 		setWaitingAction(action);
 		void ensureSession().catch(() => setWaitingAction(null));
@@ -568,6 +607,7 @@ export function NewProject({
 		recoveryDiscoveryFailed,
 	]);
 	function restoreCreation(record: ScopedCreation) {
+		setWaitingAction(null);
 		intent.current = record.body;
 		const { profile: savedProfile, profileIssue: issue } = record;
 		profile.current = savedProfile;
@@ -1081,6 +1121,7 @@ export function NewProject({
 			const disabled =
 				busy ||
 				creationPending ||
+				(!startedWithoutSession.current && (checking || recoveryChecking)) ||
 				recoveryDiscoveryFailed ||
 				waitingForProduct ||
 				(session !== null && !admitted);

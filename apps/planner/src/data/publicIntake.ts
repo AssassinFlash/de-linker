@@ -1,9 +1,9 @@
 import { readEntryHints } from "../domain/entryHints.ts";
 import { hasComparisonDraft } from "./comparisonDraft.ts";
 
-export function canStartPublicIntake(
-	config: { nonceUrl: string; hasWorkspaceSession?: boolean },
+export function isPublicIntakeLocation(
 	url: URL,
+	hints = readEntryHints(url.searchParams),
 ): boolean {
 	const privateKeys = [
 		"project",
@@ -17,17 +17,22 @@ export function canStartPublicIntake(
 		"energy_view",
 		"product_id",
 	];
-	const hints = readEntryHints(url.searchParams);
+	return (
+		!hints?.invalid &&
+		!privateKeys.some((key) => url.searchParams.has(key)) &&
+		!url.searchParams.has("step") &&
+		(!url.hash || url.hash === "#sc-preliminary-options")
+	);
+}
+
+export function canStartPublicIntake(
+	config: { nonceUrl: string; hasWorkspaceSession?: boolean },
+	url: URL,
+): boolean {
 	return (
 		!config.nonceUrl &&
 		!config.hasWorkspaceSession &&
 		!hasComparisonDraft() &&
-		!privateKeys.some((key) => url.searchParams.has(key)) &&
-		!url.searchParams.has("step") &&
-		(!url.hash || url.hash === "#sc-preliminary-options") &&
-		(!hints ||
-			url.searchParams.get("compare") === "preliminary" ||
-			url.searchParams.get("scope") === "storage_addition" ||
-			url.searchParams.get("application") === "commercial")
+		isPublicIntakeLocation(url)
 	);
 }

@@ -1,3 +1,4 @@
+import { isPublicIntakeLocation } from "../data/publicIntake.ts";
 import {
 	lazy,
 	Suspense,
@@ -305,7 +306,8 @@ export function Workspace({
 	const firstVisitComparison =
 		canCompareDirections &&
 		(route === "sc-preliminary-options" ||
-			(bareComparison && (!entryHints || entryHints.commercial === true)));
+			(bareComparison &&
+				isPublicIntakeLocation(new URL(location.href), entryHints)));
 	const pageSize = session
 		? Math.min(30, session.runtime.limits.max_page_size)
 		: 0; // UI page policy, not total project capacity.
