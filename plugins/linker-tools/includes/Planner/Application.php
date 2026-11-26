@@ -247,7 +247,7 @@ final class Application {
 		// Both requests use no-cors for this same-origin catalog. WebKit otherwise makes a second GET.
 		echo '<link rel="preload" as="fetch" href="' . esc_url( $this->catalog_url ) . '">' . "\n";
 		wp_print_inline_script_tag(
-			'window.linkerPlannerCatalogRequest = fetch(' . wp_json_encode( $this->catalog_url, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) . ', { mode: "no-cors", credentials: "same-origin" }).then(r => r.ok ? r.json() : null).catch(() => null);',
+			'window.linkerPlannerCatalogRequest = fetch(' . wp_json_encode( $this->catalog_url, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) . ', { mode: "no-cors", credentials: "include" }).then(r => r.ok ? r.json() : null).catch(() => null);',
 			array( 'id' => 'linker-planner-catalog-request' )
 		);
 	}
@@ -305,7 +305,7 @@ final class Application {
 			return;
 		}
 		$loader = sprintf(
-			'window.linkerToolsCatalog = (window.linkerPlannerCatalogRequest || fetch(%s, { mode: "no-cors", credentials: "same-origin" }).then(r => r.ok ? r.json() : null).catch(() => null)).then(data => { const messages = data && data.locale_data && (data.locale_data["linker-tools"] || data.locale_data.messages); if (messages && window.wp && window.wp.i18n) { messages[""] = Object.assign({}, messages[""], {domain: "linker-tools"}); window.wp.i18n.setLocaleData(messages, "linker-tools"); } });',
+			'window.linkerToolsCatalog = (window.linkerPlannerCatalogRequest || fetch(%s, { mode: "no-cors", credentials: "include" }).then(r => r.ok ? r.json() : null).catch(() => null)).then(data => { const messages = data && data.locale_data && (data.locale_data["linker-tools"] || data.locale_data.messages); if (messages && window.wp && window.wp.i18n) { messages[""] = Object.assign({}, messages[""], {domain: "linker-tools"}); window.wp.i18n.setLocaleData(messages, "linker-tools"); } });',
 			$url
 		);
 		wp_print_inline_script_tag( $loader, array( 'id' => 'linker-planner-translation-loader' ) );
