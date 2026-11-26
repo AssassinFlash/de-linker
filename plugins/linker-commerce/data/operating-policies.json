@@ -74,7 +74,7 @@
           "packed_weight_confirmation",
           "consolidation_confirmation"
         ],
-        "pending_document": "proforma"
+        "pending_document": "quotation"
       },
       "source_refs": [
         "repository:plugins/terravolt-b2b-core/includes/shipping.php",
@@ -95,7 +95,7 @@
       "value": {
         "manufacturer_current_and_procureable": "orderable",
         "orderable_default_public_state": "in_stock",
-        "stock_basis": "The brands Linker sells are in stock in its warehouse in Germany.",
+        "stock_basis": "Availability and European project delivery schedules are confirmed per quotation from Barleben, Germany.",
         "counted_inventory_requires_current_evidence": true,
         "lead_time_range_requires_current_evidence": true,
         "stale_fact_fallback": "orderable_confirm_lead_time",

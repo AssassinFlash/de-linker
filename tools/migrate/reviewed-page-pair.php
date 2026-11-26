@@ -103,6 +103,9 @@ use Linker\I18n\Woo\Projection;
 						throw new RuntimeException( 'Expected a reviewed SEOPress title or description.' );
 					}
 					$values = get_post_meta( $id, $key, false );
+					if ( ! $values && in_array( $key, array( '_seopress_social_fb_desc', '_seopress_social_twitter_desc' ), true ) ) {
+						continue; // An absent social override inherits the search description.
+					}
 					if ( 1 !== count( $values ) ) {
 						throw new RuntimeException( esc_html( sprintf( 'Expected one published value for %d %s.', $id, $key ) ) );
 					}
