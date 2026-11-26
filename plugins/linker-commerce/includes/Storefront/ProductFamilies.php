@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Products\Publication;
+
 /** A family of models is one visible card in the current catalogue language. */
 final class ProductFamilies {
 	/**
@@ -34,12 +36,32 @@ final class ProductFamilies {
 			foreach ( is_array( $terms ) ? $terms : array() as $variant ) {
 				$member = (int) ( $variant['id'] ?? 0 );
 				if ( $member > 0 ) {
-					$twin   = $pair ? (int) pll_get_post( $member, $lang ) : 0;
-					$list[] = $twin > 0 ? $twin : $member;
+					$twin = $pair ? (int) pll_get_post( $member, $lang ) : 0;
+					if ( ! $pair || $twin > 0 ) {
+						$list[] = $pair ? $twin : $member;
+					}
 				}
 			}
 			$this->variants[ $id ] = array_values( array_unique( $list ) );
 		}
+	}
+
+	/**
+	 * The current PDP and its published reciprocal models in the same language.
+	 *
+	 * @param int $id Product page ID.
+	 * @return list<int>
+	 */
+	public static function published_members( int $id ): array {
+		$family = new self( array( $id ) );
+		if ( empty( $family->variants[ $id ] ) ) {
+			return array();
+		}
+		$ids = Publication::published_ids( array_values( array_unique( array_merge( array( $id ), $family->variants[ $id ] ) ) ) );
+		if ( ! in_array( $id, $ids, true ) ) {
+			return array();
+		}
+		return ( new self( $ids ) )->rows( $ids )[0]['ids'];
 	}
 
 	/**

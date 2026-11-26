@@ -16,7 +16,9 @@ use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Storefront\ProductFamilies;
 use Linker\Commerce\Storefront\ProductFilters;
+use Linker\Commerce\Storefront\SolutionProducts;
 use Linker\Commerce\Storefront\ProductView;
 use WC_Product;
 use WP_Term;
@@ -106,6 +108,8 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_products_contact', array( $this, 'products_contact' ) );
 		add_shortcode( 'linker_pdp_brand_class', array( $this, 'pdp_brand_class' ) );
 		add_shortcode( 'linker_pdp_brand', array( $this, 'pdp_brand' ) );
+		add_shortcode( 'linker_pdp_family', array( $this, 'pdp_family' ) );
+		add_shortcode( 'linker_solution_products', array( $this, 'solution_products' ) );
 		add_shortcode( 'linker_pdp_model', array( $this, 'pdp_model' ) );
 		add_shortcode( 'linker_pdp_brand_logo', array( $this, 'pdp_brand_logo' ) );
 		add_shortcode( 'linker_pdp_designation', array( $this, 'pdp_designation' ) );
@@ -744,6 +748,60 @@ final class ProductShortcodes {
 		unset( $atts );
 		$view = $this->current_view();
 		return null === $view ? '' : esc_html( (string) $view['model'] );
+	}
+
+	/** Published sibling links on the current product page. */
+	public function pdp_family(): string {
+		$id   = get_queried_object_id();
+		$rows = SolutionProducts::links( ProductFamilies::published_members( $id ) );
+		if ( count( $rows ) < 2 ) {
+			return '';
+		}
+		return '<section class="pdp-block sf-container pdp-family-links"><h2 class="pdp-section-title">' . esc_html__( 'Other models in this series', 'linker-commerce' ) . '</h2>' . self::model_links( $rows, $id ) . '</section>';
+	}
+
+	/**
+	 * Model links and the next catalogue or planning destinations for a solution.
+	 *
+	 * @param array<string,string>|string $atts Shortcode attributes.
+	 */
+	public function solution_products( $atts = array() ): string {
+		$scope = (string) ( ( (array) $atts )['scope'] ?? 'hub' );
+		$rows  = SolutionProducts::featured( $scope );
+		if ( ! $rows ) {
+			return '';
+		}
+		$categories = match ( $scope ) {
+			'residential' => array( 'home-storage', 'inverters' ),
+			'commercial'  => array( 'all-in-one-systems', 'battery-systems' ),
+			'utility'     => array( 'battery-systems' ),
+			default       => array( 'home-storage', 'commercial-storage' ),
+		};
+		$html = '<section class="lk-solution-products"><h2>' . esc_html__( 'Inverters and battery systems', 'linker-commerce' ) . '</h2>' . self::model_links( $rows ) . '<div class="lk-solution-categories">';
+		foreach ( $categories as $slug ) {
+			$category = $this->localized_category( $slug );
+			if ( $category ) {
+				$html .= '<a href="' . esc_url( $this->term_link( $category ) ) . '">' . esc_html( $this->category_crumb_name( $category ) ) . '</a>';
+			}
+		}
+		if ( 'utility' === $scope ) {
+			$html .= '<a href="' . esc_url( PageUrls::page( 'solution-configurator' ) ) . '">' . esc_html__( 'Solution Configurator', 'linker-commerce' ) . '</a>';
+		}
+		return $html . '</div></section>';
+	}
+
+	/**
+	 * Print a list of models with their current ratings.
+	 *
+	 * @param list<array{id:int,name:string,url:string,rating:string}> $rows Model links.
+	 * @param int                                                      $current Current PDP, if any.
+	 */
+	private static function model_links( array $rows, int $current = 0 ): string {
+		$html = '<ul class="lk-model-links">';
+		foreach ( $rows as $row ) {
+			$html .= '<li><a href="' . esc_url( $row['url'] ) . '"' . ( $current === $row['id'] ? ' aria-current="page"' : '' ) . '>' . esc_html( $row['name'] ) . ( '' !== $row['rating'] ? ' <small>' . esc_html( $row['rating'] ) . '</small>' : '' ) . '</a></li>';
+		}
+		return $html . '</ul>';
 	}
 
 	/**

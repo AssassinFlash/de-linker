@@ -155,6 +155,78 @@ final class PageSchema {
 					'url'   => $url,
 				),
 			);
+		} elseif ( is_page( array( 'solution', 'loesung', 'residential-storage', 'heimspeicher', 'commercial-storage', 'gewerbespeicher', 'utility-storage', 'grossspeicher', 'about', 'ueber-uns', 'services-support', 'kundendienst', 'for-installer', 'fuer-installateur', 'for-epc', 'fuer-epc' ) ) ) {
+			$trail = array(
+				array(
+					'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
+					'url'   => $home,
+				),
+			);
+			$type  = match ( $post->post_name ) {
+				'solution', 'loesung'             => __( 'Solar and battery storage solutions', 'linker-commerce' ),
+				'residential-storage', 'heimspeicher' => __( 'Residential Solar Battery Storage', 'linker-commerce' ),
+				'commercial-storage', 'gewerbespeicher' => __( 'Commercial & Industrial Battery Storage', 'linker-commerce' ),
+				'utility-storage', 'grossspeicher' => __( 'Utility-Scale Battery Energy Storage Systems', 'linker-commerce' ),
+				default                           => '',
+			};
+			$node = array(
+				'@type'       => 'ueber-uns' === $post->post_name ? array( 'AboutPage', 'WebPage' ) : 'WebPage',
+				'@id'         => $url . '#webpage',
+				'name'        => $title,
+				'url'         => $url,
+				'description' => (string) get_post_meta( $post->ID, '_seopress_titles_desc', true ),
+			);
+			if ( '' !== $type ) {
+				$hub     = in_array( $post->post_name, array( 'solution', 'loesung' ), true );
+				$trail[] = array(
+					'label' => __( 'Solutions', 'linker-commerce' ),
+					'url'   => PageUrls::page( 'solution' ),
+				);
+				if ( ! $hub ) {
+					$trail[] = array(
+						'label' => $title,
+						'url'   => $url,
+					);
+				}
+				$node['mainEntity'] = array(
+					'@type'       => 'Service',
+					'@id'         => $url . '#service',
+					'name'        => $title,
+					'url'         => $url,
+					'description' => $node['description'],
+					'provider'    => array( '@id' => $home . '#organization' ),
+					'areaServed'  => 'EU',
+					'serviceType' => $type,
+				);
+				if ( preg_match( '/' . get_shortcode_regex( array( 'linker_solution_products' ) ) . '/s', $post->post_content, $match ) && '[' !== $match[1] && ']' !== $match[6] ) {
+					$atts = shortcode_parse_atts( $match[3] );
+					$rows = SolutionProducts::featured( (string) ( $atts['scope'] ?? 'hub' ) );
+					if ( $rows ) {
+						$items = array();
+						foreach ( $rows as $index => $row ) {
+							$items[] = array(
+								'@type'    => 'ListItem',
+								'position' => $index + 1,
+								'name'     => trim( $row['name'] . ' ' . $row['rating'] ),
+								'url'      => $row['url'],
+							);
+						}
+						$node['mentions'] = array(
+							'@type'           => 'ItemList',
+							'itemListElement' => $items,
+						);
+					}
+				}
+			} else {
+				$trail[] = array(
+					'label' => $title,
+					'url'   => $url,
+				);
+			}
+			// SEOPress already supplies the English AboutPage and WebPage.
+			if ( 'about' !== $post->post_name ) {
+				$this->print_node( $node );
+			}
 		} elseif ( is_page( array( 'kontakt', 'faq-dokumente' ) ) && 'de' === pll_current_language() ) {
 			$contact = is_page( 'kontakt' );
 			$site    = array(
