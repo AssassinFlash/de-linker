@@ -336,6 +336,7 @@ export function SystemOptions({
 	comparison,
 	onSaveComparison,
 	onEditEquipment,
+	onReview,
 	onSelectionPending,
 	onSelect,
 }: {
@@ -350,6 +351,7 @@ export function SystemOptions({
 	comparison?: SystemComparison | null;
 	onSaveComparison?: (snapshot: SystemComparison) => void;
 	onEditEquipment?: () => void;
+	onReview?: () => void;
 	onSelectionPending?: (pending: boolean) => void;
 	onSelect: (
 		candidate: EquipmentCandidate,
@@ -1166,6 +1168,16 @@ export function SystemOptions({
 							<p>{title(candidate)}</p>
 						</div>
 						<p>{equipmentStatus(candidate.status)}</p>
+						{candidate.id === selectedId && onReview && (
+							<button
+								type="button"
+								className="sc-button sc-primary"
+								disabled={disabled || selecting}
+								onClick={onReview}
+							>
+								{__("Review the proposal", "linker-tools")}
+							</button>
+						)}
 					</header>
 					<div role="group" aria-label={__("System layout", "linker-tools")}>
 						{systems(candidate).map(({ id, name, selection }) => (

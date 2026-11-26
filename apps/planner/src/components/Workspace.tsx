@@ -585,6 +585,7 @@ export function Workspace({
 	)
 		return (
 			<PreliminaryProject
+				contact={config}
 				key={scope + ":" + selected}
 				project={project.data}
 				session={session}

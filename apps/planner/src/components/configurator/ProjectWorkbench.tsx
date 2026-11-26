@@ -1582,6 +1582,7 @@ export default function ProjectWorkbench({
 	);
 	const inlineReview = (
 		<ReviewInquiry
+			contact={config}
 			project={draft.baseline}
 			direction={brief.system_scope}
 			client={client}
@@ -2122,6 +2123,7 @@ export default function ProjectWorkbench({
 									}
 									comparison={comparison}
 									{...(!guided && {
+										onReview: () => navigate("review"),
 										onSaveComparison: setComparison,
 										onEditEquipment: () => navigate("project"),
 									})}
@@ -2226,7 +2228,7 @@ export default function ProjectWorkbench({
 										{__("Back", "linker-tools")}
 									</button>
 									<button
-										className="sc-button sc-primary"
+										className="sc-button"
 										disabled={
 											blocked ||
 											assessmentPending ||

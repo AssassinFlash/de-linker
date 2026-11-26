@@ -173,6 +173,7 @@ export function NewProject({
 		null,
 	);
 	const languageNotice = useRef<HTMLDivElement>(null);
+	const preliminaryHeading = useRef<HTMLHeadingElement>(null);
 	const projectForm = useRef<HTMLFormElement>(null);
 	const [useHints, setUseHints] = useState(restored?.useHints ?? true);
 	const [title, setTitle] = useState(
@@ -1080,16 +1081,21 @@ export function NewProject({
 						roof={() =>
 							admittedAction("submit", undefined, { useRoofPlan: true })
 						}
-						compare={
-							brief.system_scope &&
-							equipmentDraft(inputs).grid_phase != null &&
-							!invalidDemand.size
-								? () => admittedAction("submit")
-								: undefined
-						}
+						compare={() => {
+							if (
+								brief.system_scope &&
+								equipmentDraft(inputs).grid_phase != null
+							) {
+								admittedAction("submit");
+							} else {
+								preliminaryHeading.current?.focus();
+							}
+						}}
+						compareDisabled={invalidDemand.size > 0}
 						details={() => admittedAction("details")}
 					/>
 					<PreliminaryOptions
+						headingRef={preliminaryHeading}
 						locale={locale}
 						inputs={inputs}
 						disabled={disabled || retry || invalidDemand.size > 0}

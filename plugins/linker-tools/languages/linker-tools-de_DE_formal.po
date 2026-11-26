@@ -17391,3 +17391,9 @@ msgstr "Summe der nutzbaren Batteriekapazitäten"
 #: build/genie.js build/hero.js
 msgid "Or chat on WhatsApp ↗"
 msgstr "Oder per WhatsApp schreiben ↗"
+
+msgid "Open inquiry page"
+msgstr "Anfrageseite öffnen"
+
+msgid "You can fill in your inquiry below while your PDF is being prepared."
+msgstr "Während Ihr PDF erstellt wird, können Sie unten Ihre Anfrage ausfüllen."

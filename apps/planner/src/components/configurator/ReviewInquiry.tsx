@@ -8,6 +8,7 @@ import {
 	useState,
 	type ReactNode,
 } from "react";
+import type { Configuration } from "../../data/config.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError, type Project } from "../../data/protocol.ts";
 import { InquiryBomLine } from "./InquiryBomLine.tsx";
@@ -44,6 +45,14 @@ const contactFields = [
 	"consent",
 	"linker_include_project_notes",
 ];
+
+function parseUrl(input: string, base?: string): URL | null {
+	try {
+		return new URL(input, base);
+	} catch {
+		return null;
+	}
+}
 
 function customerFields(form: HTMLFormElement): CustomerField[] {
 	return Array.from(form.elements).filter(
@@ -149,6 +158,7 @@ export function ReviewInquiry({
 	changeRequestedQuantity,
 	equipmentDetails,
 	direction,
+	contact,
 	client,
 	scope,
 	locale,
@@ -169,6 +179,7 @@ export function ReviewInquiry({
 		next: number,
 	) => Promise<void>;
 	direction: Brief["system_scope"];
+	contact: Configuration;
 	client: PlannerClient;
 	scope: string;
 	locale: string;
@@ -271,7 +282,7 @@ export function ReviewInquiry({
 			const link = event.target.closest<HTMLAnchorElement>(
 				"header a[hreflang][lang], footer a[hreflang][lang]",
 			);
-			const target = link && URL.parse(link.href);
+			const target = link && parseUrl(link.href);
 			if (
 				!target ||
 				(link.target && link.target !== "_self") ||
@@ -377,7 +388,7 @@ export function ReviewInquiry({
 					"form.linker-inquiry-form",
 				);
 				const action = form?.getAttribute("action")?.trim();
-				const target = action ? URL.parse(action, node.baseURI) : null;
+				const target = action ? parseUrl(action, node.baseURI) : null;
 				if (
 					!form ||
 					form.method !== "post" ||
@@ -738,6 +749,21 @@ export function ReviewInquiry({
 							>
 								{__("Load inquiry form again", "linker-tools")}
 							</button>
+							<div className="sc-actions sc-inquiry-contacts">
+								{contact?.inquiryUrl && (
+									<a href={contact.inquiryUrl}>
+										{__("Open inquiry page", "linker-tools")}
+									</a>
+								)}
+								{contact?.contactMailbox && (
+									<a href={`mailto:${contact.contactMailbox}`}>
+										{contact.contactMailbox}
+									</a>
+								)}
+								{contact?.whatsappUrl && (
+									<a href={contact.whatsappUrl}>WhatsApp</a>
+								)}
+							</div>
 						</div>
 					)}
 					<div className="sc-review-actions">

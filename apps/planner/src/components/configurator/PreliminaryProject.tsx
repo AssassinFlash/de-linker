@@ -1,3 +1,4 @@
+import type { Configuration } from "../../data/config.ts";
 import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { DraftStore } from "../../data/DraftStore.ts";
@@ -70,6 +71,7 @@ export function PreliminaryProject({
 	client,
 	store,
 	locale,
+	contact,
 	comparing,
 	guided,
 	recoveringRevision,
@@ -81,6 +83,7 @@ export function PreliminaryProject({
 	client: PlannerClient;
 	store: DraftStore;
 	locale: string;
+	contact: Configuration;
 	comparing: boolean;
 	guided: boolean;
 	recoveringRevision: boolean;
@@ -243,6 +246,7 @@ export function PreliminaryProject({
 			)}
 			{brief.system_scope && (
 				<ReviewInquiry
+					contact={contact}
 					project={reviewed}
 					direction={brief.system_scope}
 					client={client}
