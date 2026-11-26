@@ -327,7 +327,7 @@ export function NewProject({
 		if (
 			!draftEntry ||
 			(intent.current && !(profileCorrection && editedCorrection)) ||
-			!admitted ||
+			(!admitted && (session !== null || !ensureSession)) ||
 			(!draft &&
 				!title &&
 				useHints &&
@@ -341,7 +341,7 @@ export function NewProject({
 			? null
 			: {
 					id: (draftId.current ??= crypto.randomUUID()),
-					scope: scope,
+					scope,
 					source,
 					scene,
 					title,
@@ -349,7 +349,7 @@ export function NewProject({
 					useHints,
 					carriedProduct,
 				};
-		if (record) {
+		if (record && admitted) {
 			savedDraft.current = record;
 			try {
 				writeComparisonDraft(record);
@@ -368,7 +368,7 @@ export function NewProject({
 			notice?.focus({ preventScroll: true });
 			notice?.scrollIntoView({ block: "center", behavior: "instant" });
 		}
-		function handoff(event: MouseEvent) {
+		async function handoff(event: MouseEvent) {
 			const target = event.target;
 			if (!(target instanceof window.Element)) return;
 			const link = target.closest<HTMLAnchorElement>(
@@ -390,8 +390,26 @@ export function NewProject({
 					projectForm.current?.querySelector<HTMLInputElement>(
 						'input[name="pvgis_use_address"]',
 					)?.checked ?? false;
-				if (record)
-					writeComparisonDraft({ ...record, usePvAddress }, link.href);
+				if (record) {
+					if (admitted) {
+						writeComparisonDraft({ ...record, usePvAddress }, link.href);
+						return;
+					}
+					if (!ensureSession) return;
+					event.preventDefault();
+					let ready: Session;
+					try {
+						ready = await ensureSession();
+					} catch {
+						return;
+					}
+					if (!client.isCurrentScope(ready.query_scope)) return;
+					writeComparisonDraft(
+						{ ...record, scope: ready.query_scope, usePvAddress },
+						link.href,
+					);
+					window.location.assign(link.href);
+				}
 			} catch {
 				showLanguageIssue(event, "storage");
 			}
@@ -414,6 +432,9 @@ export function NewProject({
 		title,
 		useHints,
 		scope,
+		session,
+		ensureSession,
+		client,
 		source,
 	]);
 	useEffect(() => {

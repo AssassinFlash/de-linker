@@ -92,7 +92,26 @@ test("a first-time guest can edit while native confirmation is pending and sees 
 	await enter(name, "Rooftop");
 	assert.equal(starts, 1);
 	assert.deepEqual(queries, []);
+	const language = document.createElement("a");
+	language.lang = "de";
+	language.hreflang = "de";
+	language.href = location.pathname + "#sc-preliminary-options";
+	document.querySelector("header").append(language);
+	const click = new window.MouseEvent("click", {
+		bubbles: true,
+		cancelable: true,
+	});
+	await act(async () => language.dispatchEvent(click));
+	assert.ok(click.defaultPrevented);
+	assert.equal(window.sessionStorage.getItem("linker-comparison-draft"), null);
 	await act(async () => admission.resolve());
+	await until(() => location.hash === "#sc-preliminary-options");
+	const handoff = JSON.parse(
+		window.sessionStorage.getItem("linker-comparison-draft"),
+	);
+	assert.equal(handoff.scope, session.query_scope);
+	assert.equal(handoff.title, "Rooftop");
+	assert.equal(handoff.languageUrl, language.href);
 	await until(() => admitted);
 	assert.equal(name, document.querySelector('input[name="project_name"]'));
 	assert.equal(name.value, "Rooftop");
