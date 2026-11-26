@@ -703,7 +703,7 @@ class Entries {
 			document.addEventListener(
 				'click',
 				function (event) {
-					var trigger = event.target.closest(
+					var trigger = event.target.closest?.(
 						'[data-linker-genie-open]'
 					);
 					if (!trigger) {
