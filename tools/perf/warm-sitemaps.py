@@ -90,30 +90,33 @@ def main() -> None:
             )
         if not ok:
             failed.append(url)
+    public_reads = {
+        url: {"first": first[i], "second": second[i]}
+        for i, url in enumerate(urls)
+        if url in public and urlsplit(url).path not in DYNAMIC
+    }
+    dynamic_reads = {
+        url: {"first": first[i], "second": second[i]}
+        for i, url in enumerate(urls)
+        if urlsplit(url).path in DYNAMIC
+    }
+    retired_reads = {
+        url: {"first": first[i], "second": second[i]}
+        for i, url in enumerate(urls)
+        if urlsplit(url).path in RETIRED
+    }
     report = {
         "sitemaps": maps,
-        "public": {
-            url: {"first": first[i], "second": second[i]}
-            for i, url in enumerate(urls)
-            if url in public and urlsplit(url).path not in DYNAMIC
-        },
-        "dynamic": {
-            url: {"first": first[i], "second": second[i]}
-            for i, url in enumerate(urls)
-            if urlsplit(url).path in DYNAMIC
-        },
-        "retired": {
-            url: {"first": first[i], "second": second[i]}
-            for i, url in enumerate(urls)
-            if urlsplit(url).path in RETIRED
-        },
+        "public": public_reads,
+        "dynamic": dynamic_reads,
+        "retired": retired_reads,
         "failed": failed,
     }
     args.output.write_text(json.dumps(report, indent=2))
     for name, entries in maps.items():
         print(f"{name}: {len(entries)} URLs")
     print(
-        f"{len(report['public'])} public cache reads; {len(report['dynamic'])} dynamic routes; {len(report['retired'])} retired drafts; {len(failed)} failures"
+        f"{len(public_reads)} public cache reads; {len(dynamic_reads)} dynamic routes; {len(retired_reads)} retired drafts; {len(failed)} failures"
     )
     if failed:
         raise SystemExit(1)
