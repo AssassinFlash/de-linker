@@ -1,8 +1,11 @@
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import batch_r3_pages as batch
 from batch_r3_pages import page_changes, services_story_photo
 
 
@@ -61,3 +64,43 @@ def test_services_photo_changes_only_the_image_on_stefans_card() -> None:
         result = services_story_photo(source, media)
         assert result == "<h1>Services</h1>" + other + expected + other
         assert services_story_photo(result, media) == result
+
+
+def test_services_read_uses_the_page_pair_without_a_recovery_point(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    photo = {
+        "src": "/wp-content/uploads/2026/11/linker-trusted-on-commercial-bess-r3.webp",
+        "srcset": "story.webp 1376w",
+        "width": 1376,
+        "height": 768,
+    }
+    card = (
+        '<div class="lk-story-card"><img src="/wp-content/uploads/2026/09/linker-partners-on-bess-support.webp"/>'
+        '<div class="lk-story-name">Stefan Hartmann</div></div>'
+    )
+    current = services_story_photo(card, photo)
+    pages = {"2748": current, "6700": current}
+    monkeypatch.setattr(batch.pairs, "read", lambda *_: {"pages": pages})
+    monkeypatch.setattr(
+        batch, "media_call", lambda *_, **__: {"photos": {batch.STORY: photo}}
+    )
+    folder = tmp_path / "unused"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "batch_r3_pages.py",
+            "--wp",
+            "wp",
+            "--backup-dir",
+            str(folder),
+            "--services-story-only",
+            "read",
+        ],
+    )
+    batch.main()
+    pages["6700"] = card
+    with pytest.raises(ValueError, match="expected state"):
+        batch.main()
+    assert not folder.exists()

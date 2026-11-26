@@ -285,6 +285,7 @@ def media_call(wp: str, **payload: Any) -> dict[str, Any]:
 
 def save(path: Path, value: dict[str, Any]) -> None:
     if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("x") as out:
             json.dump(value, out, ensure_ascii=False)
 
@@ -298,6 +299,11 @@ def publish_pair(
     current: dict[str, Any],
     after: dict[str, str] | None,
 ) -> None:
+    if action == "read":
+        if after != current["pages"]:
+            raise ValueError(f"{name} differs from its expected state")
+        print(f"{name}: current")
+        return
     backup = json.loads((folder / f"{name}-before.json").read_text())
     if current["home"] != backup["home"]:
         raise ValueError("Mismatched page recovery point")
@@ -312,7 +318,7 @@ def publish_pair(
     if after == current["pages"]:
         print(f"{name}: current")
         return
-    if action == "read" or current != backup:
+    if current != backup:
         raise ValueError(f"{name} differs from its expected state")
     metadata = current["metadata"]
     if current["current"]:
@@ -347,7 +353,6 @@ def main() -> None:
     parser.add_argument("action", choices=("backup", "apply", "read", "restore"))
     args = parser.parse_args()
     folder = args.backup_dir
-    folder.mkdir(parents=True, exist_ok=True)
     if args.services_story_only:
         ids = PAGES["services-support"]
         current = pairs.read(args.wp, *ids)
