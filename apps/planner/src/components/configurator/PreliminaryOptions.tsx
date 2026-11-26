@@ -136,7 +136,8 @@ export function PreliminaryOptions({
 }) {
 	const optionsHeading = useRef<HTMLHeadingElement>(null);
 	useEffect(() => {
-		if (!headingRef) optionsHeading.current?.focus({ preventScroll: true });
+		if (!headingRef || location.hash === "#sc-preliminary-options")
+			(headingRef ?? optionsHeading).current?.focus({ preventScroll: true });
 	}, [headingRef]);
 	const names = systemNames();
 	const hasSolarPlan =

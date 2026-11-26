@@ -740,6 +740,10 @@
   .sc-configurator .sc-review-actions { margin-top: 12px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
   @media (max-width: 700px) {
     .sc-configurator .sc-project-heading { gap: 4px 12px; margin-block: 4px 8px; }
+    .sc-intake > .sc-project-heading:has(+ .sc-project-navigation) { display: grid; grid-template-columns: auto 1fr; align-items: center; }
+    .sc-intake > .sc-project-heading:has(+ .sc-project-navigation) > div { display: contents; }
+    .sc-intake > .sc-project-heading:has(+ .sc-project-navigation) :is(.sc-eyebrow,h1) { grid-column: 1 / -1; }
+    .sc-intake > .sc-project-heading:has(+ .sc-project-navigation) > .sc-button { justify-self: start; }
     .sc-configurator .sc-project-navigation { margin-block: 10px 16px; }
     .sc-configurator .sc-inquiry-stages { gap: 2px; padding: 3px; }
     .sc-configurator .sc-inquiry-stages :is(button,.sc-step-label) { min-height: 40px; padding: 4px 5px; gap: 4px; font-size: 12px; line-height: 1.2; hyphens: auto; }
