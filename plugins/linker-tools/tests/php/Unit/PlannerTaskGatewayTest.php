@@ -92,13 +92,37 @@ final class PlannerTaskGatewayTest extends TestCase {
 		$handler->shouldReceive( 'get_customer_id' )->andReturn( $key );
 		$handler->shouldReceive( 'destroy_session', 'set', 'set_customer_session_cookie', 'save_data' )->once();
 		$woo = \Mockery::mock( \WooCommerce::class );
-		$woo->shouldReceive( 'initialize_session' );
-		$woo->session = $handler;
+		$woo->shouldReceive( 'initialize_session' )->andSet( 'session', $handler );
 		WP_Mock::userFunction( 'WC' )->andReturn( $woo );
-		$db         = \Mockery::mock( \wpdb::class );
-		$db->prefix = 'wp_';
-		$db->shouldReceive( 'prepare' )->andReturn( '' );
-		$db->shouldReceive( 'get_var' )->andReturn( $expiry );
+		$db              = new class( $expiry ) {
+			/**
+			 * Woo table prefix.
+			 *
+			 * @var string
+			 */
+			public string $prefix = 'wp_';
+
+			/**
+			 * Supply the current Woo row expiry.
+			 *
+			 * @param int $expiry Fixture row expiry.
+			 */
+			public function __construct( private readonly int $expiry ) {}
+
+			/**
+			 * Read the single fixture query.
+			 *
+			 * @param string $query Session-expiry query.
+			 */
+			public function prepare( string $query ): string {
+				return $query;
+			}
+
+			/** Existing Woo guest session expiry. */
+			public function get_var(): int {
+				return $this->expiry;
+			}
+		};
 		$GLOBALS['wpdb'] = $db; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Native guest row read in the isolated fixture.
 		WP_Mock::userFunction( 'is_wp_error' )->andReturnUsing( static fn( $v ) => $v instanceof WP_Error );
 		WP_Mock::userFunction( 'get_current_user_id' )->andReturn( 0 );
