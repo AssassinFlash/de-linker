@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 
@@ -38,8 +39,9 @@ final class SolutionProducts {
 		if ( ! isset( self::SKUS[ $scope ] ) ) {
 			return array();
 		}
+		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native product archive dependency includes models entering the selection.
 		$lang = function_exists( 'pll_current_language' ) ? (string) pll_current_language() : '';
-		$key  = $lang . ':' . $scope;
+		$key  = Materials::cache_revision() . ':' . $lang . ':' . $scope;
 		if ( ! isset( self::$selections[ $key ] ) ) {
 			$ids = array();
 			foreach ( self::SKUS[ $scope ] as $sku ) {

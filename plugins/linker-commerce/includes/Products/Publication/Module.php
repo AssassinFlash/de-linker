@@ -42,6 +42,11 @@ final class Module {
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_attachment' ), 10, 2 );
 	}
 
+	/** Product archives and the pages that display their published model data. */
+	private static function purge_product_links(): void {
+		do_action( 'litespeed_purge', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native LiteSpeed archive tag; metadata and taxonomy writes can bypass a post save.
+	}
+
 	/**
 	 * Product and technical-PDF events have their source ID as the first argument.
 	 *
@@ -50,6 +55,9 @@ final class Module {
 	public function source_changed( int $id ): void {
 		$post = get_post( $id );
 		if ( $post instanceof \WP_Post && self::is_source( $post ) ) {
+			if ( 'product' === $post->post_type ) {
+				self::purge_product_links();
+			}
 			( new PreparationJobs() )->changed();
 		}
 	}
@@ -78,6 +86,9 @@ final class Module {
 		$post = get_post( $id );
 		if ( ! $post instanceof \WP_Post || ! self::is_source( $post ) ) {
 			return;
+		}
+		if ( 'product' === $post->post_type && in_array( $key, array( \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, '_tv_legacy_acf_json', '_sku', \Linker\Commerce\Products\EngineeringReference::ROLE_META_KEY ), true ) ) {
+			self::purge_product_links();
 		}
 		if ( 'product' === $post->post_type || in_array( $key, array( '_wp_attached_file', '_wp_attachment_metadata', '_linker_document_public' ), true ) ) {
 			( new PreparationJobs() )->changed();
@@ -121,6 +132,7 @@ final class Module {
 	public function term_changed( int $id, int $taxonomy_id, string $taxonomy ): void {
 		unset( $id, $taxonomy_id );
 		if ( str_starts_with( $taxonomy, 'pa_' ) || str_starts_with( $taxonomy, 'product_' ) ) {
+			self::purge_product_links();
 			( new PreparationJobs() )->changed();
 		}
 	}

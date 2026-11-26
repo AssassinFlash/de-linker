@@ -760,6 +760,7 @@ final class ProductShortcodes {
 
 	/** Published sibling links on the current product page. */
 	public function pdp_family(): string {
+		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- A published sibling or its translation can change this page.
 		$id   = get_queried_object_id();
 		$rows = SolutionProducts::links( ProductFamilies::published_members( $id ) );
 		if ( count( $rows ) < 2 ) {
