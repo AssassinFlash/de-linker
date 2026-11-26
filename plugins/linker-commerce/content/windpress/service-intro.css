@@ -219,9 +219,6 @@
  * WordPress already stores for these attachments. A `body` prefix outranks the
  * body's own `#service-redesign .stack-N` rule without touching page content. */
 @media (max-width: 767px) {
-	body #service-redesign .stack-one {
-		background-image: url('/wp-content/uploads/2026/09/linker-the-kit-arrives-together-300x225.webp');
-	}
 	body #service-redesign .stack-two {
 		background-image: url('/wp-content/uploads/2026/10/linker-grid-documents-for-the-order-600x450.webp');
 	}
@@ -231,9 +228,6 @@
 }
 
 @media (min-width: 768px) {
-	body #service-redesign .stack-one {
-		background-image: url('/wp-content/uploads/2026/09/linker-the-kit-arrives-together-768x576.webp');
-	}
 	body #service-redesign .stack-two {
 		background-image: url('/wp-content/uploads/2026/10/linker-grid-documents-for-the-order-1024x768.webp');
 	}
@@ -340,5 +334,40 @@
 	}
 	body #tv-utility-page-v1 .us-application-dots button[aria-pressed] {
 		position: relative;
+	}
+}
+
+#service-redesign .lk-desk-channels {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 18px;
+	letter-spacing: normal;
+	text-transform: none;
+}
+#service-redesign .lk-topbar .lk-container > div:last-child {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+#service-redesign .lk-desk-channels > span {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 4px;
+}
+#service-redesign .lk-desk-channels small { font-size: 0.85em; }
+#service-redesign #start .lk-desk-channels { margin-top: 20px; font-size: 13px; }
+#service-redesign .lk-pair-ship > strong { display: block; margin-bottom: 4px; }
+@media (min-width: 769px) {
+	body #service-redesign .lk-hero-ss-inner .lk-hero-actions { max-width: 54%; }
+}
+@media (max-width: 768px) {
+	body #service-redesign .lk-hero-ss .lk-hero-proof {
+		position: relative;
+		inset: auto;
+		width: auto;
+		margin: 32px 21px 24px;
 	}
 }

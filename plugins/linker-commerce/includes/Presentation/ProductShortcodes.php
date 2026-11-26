@@ -646,7 +646,9 @@ final class ProductShortcodes {
 		foreach ( \array_slice( (array) $card['gallery'], 0, 1 ) as $image_id ) {
 			$image = wp_get_attachment_image_src( (int) $image_id, 'medium' );
 			if ( $image ) {
-				$html .= '<img data-card-image src="' . esc_url( $image[0] ) . '" width="' . (int) $image[1] . '" height="' . (int) $image[2] . '" alt="' . esc_attr( (string) $card['title'] ) . '" loading="lazy">';
+				$srcset = wp_get_attachment_image_srcset( (int) $image_id, 'medium' );
+				$html  .= '<img data-card-image src="' . esc_url( $image[0] ) . '" width="' . (int) $image[1] . '" height="' . (int) $image[2] . '" alt="' . esc_attr( (string) $card['title'] ) . '" loading="lazy" sizes="auto, (max-width: 760px) 70vw, 240px"'
+					. ( $srcset ? ' srcset="' . esc_attr( $srcset ) . '"' : '' ) . '>';
 			}
 		}
 		$html .= '</a></div>';
@@ -2071,7 +2073,8 @@ final class ProductShortcodes {
 			foreach ( $facts as $fact ) {
 				$factshtml .= '<div><dt>' . esc_html( $fact['label'] ) . '</dt><dd>' . esc_html( $fact['value'] ) . '</dd></div>';
 			}
-			$image     = wp_get_attachment_image_src( (int) ( $card['gallery'][0] ?? 0 ), 'medium' );
+			$image_id  = (int) ( $card['gallery'][0] ?? 0 );
+			$image     = wp_get_attachment_image_src( $image_id, 'medium' );
 			$payload[] = array(
 				'id'           => (int) $id,
 				'compareId'    => Publication::canonical_id( (int) $id ),
@@ -2082,6 +2085,7 @@ final class ProductShortcodes {
 				'model'        => (string) $card['model'],
 				'url'          => (string) get_permalink( (int) $id ),
 				'image'        => $image[0] ?? '',
+				'imageSrcset'  => $image ? (string) wp_get_attachment_image_srcset( $image_id, 'medium' ) : '',
 				'imageWidth'   => $image[1] ?? 0,
 				'imageHeight'  => $image[2] ?? 0,
 				'priceHtml'    => $gated
