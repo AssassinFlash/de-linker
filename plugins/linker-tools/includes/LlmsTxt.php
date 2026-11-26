@@ -11,11 +11,11 @@ namespace Linker\Tools;
 
 use Linker\Commerce\Presentation\ContactChannels;
 use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Storefront\ProductFamilies;
-use Linker\Commerce\Storefront\ProductView;
 
 /** Serve the site-root text document before SEOPress's generic recent-posts index. */
 final class LlmsTxt {
@@ -37,23 +37,33 @@ final class LlmsTxt {
 		if ( wp_parse_url( $home . '/llms.txt', PHP_URL_PATH ) !== $path ) {
 			return $parse;
 		}
+		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- use LiteSpeed's native product archive invalidation.
 		do_action( 'litespeed_control_force_public', 'Public bilingual resource directory' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- LiteSpeed Cache public API.
 		do_action( 'litespeed_control_set_ttl', HOUR_IN_SECONDS ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- LiteSpeed Cache public API.
 		foreach ( self::HEADERS as $key => $value ) {
 			header( $key . ': ' . $value );
 		}
 		if ( 'HEAD' !== sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) ) ) {
-			$sections = array(
-				'Solutions'                    => self::pages( array( 'solution', 'solution/residential-storage', 'solution/commercial-storage', 'solution/utility-storage' ) ),
-				'Planning tools and documents' => self::pages( array( 'solution-configurator', 'compare-products', 'faq-download', 'services-support', 'for-installer', 'for-epc', 'about', 'contact' ) ),
-				'Product categories'           => self::categories(),
-				'Product families'             => self::product_families(),
-			);
-			$latest   = max( (string) get_lastpostmodified( 'gmt', 'product' ), (string) get_lastpostmodified( 'gmt', 'post' ), (string) get_lastpostmodified( 'gmt', 'page' ) );
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the response is Markdown served as text/plain.
-			echo self::markdown( $sections, substr( $latest, 0, 10 ), $home . '/sitemaps.xml' );
+			echo self::document( $home );
 		}
 		exit;
+	}
+
+	/**
+	 * Build the public resource directory from both languages of the active site.
+	 *
+	 * @param string $home Site root without a trailing slash.
+	 */
+	public static function document( string $home ): string {
+		$sections = array(
+			'Solutions'                    => self::pages( array( 'solution', 'solution/residential-storage', 'solution/commercial-storage', 'solution/utility-storage' ) ),
+			'Planning tools and documents' => self::pages( array( 'solution-configurator', 'compare-products', 'faq-download', 'services-support', 'for-installer', 'for-epc', 'about', 'contact' ) ),
+			'Product categories'           => self::categories(),
+			'Product families'             => self::product_families(),
+		);
+		$latest   = max( (string) get_lastpostmodified( 'gmt', 'product' ), (string) get_lastpostmodified( 'gmt', 'post' ), (string) get_lastpostmodified( 'gmt', 'page' ) );
+		return self::markdown( $sections, substr( $latest, 0, 10 ), $home . '/sitemaps.xml' );
 	}
 
 	/**
@@ -178,28 +188,34 @@ final class LlmsTxt {
 				),
 			)
 		);
-		$published = Publication::published_ids( array_map( 'intval', $ids ) );
+		$published = Publication::published_ids( array_map( 'intval', $ids ), true );
 		$set       = array_fill_keys( $published, true );
 		$english   = array_values( array_filter( $published, static fn( int $id ): bool => PageUrls::twin( $id, 'en' ) === $id ) );
 		$rows      = array();
-		$view      = new ProductView();
+		$listed    = array();
 		foreach ( ( new ProductFamilies( $english, 'en' ) )->rows( $english ) as $family ) {
 			$id = $family['lead'];
 			$de = PageUrls::twin( $id, 'de' );
 			if ( ! isset( $set[ $de ] ) ) {
 				continue;
 			}
+			$terms  = get_the_terms( $id, 'pa_brand' );
+			$brand  = is_array( $terms ) && $terms ? $terms[0]->name : '';
+			$series = Materials::english_acf( $id )['product_series'] ?? '';
+			$series = is_string( $series ) ? trim( $series ) : '';
+			$label  = implode( ' · ', array_unique( array_filter( array( $brand, $series ) ) ) );
+			if ( '' !== $series && 0 !== strcasecmp( $brand, $series ) ) {
+				if ( isset( $listed[ $label ] ) ) {
+					continue;
+				}
+				$listed[ $label ] = true;
+			}
 			$facts  = SelectionFacts::for_product( $id );
 			$rating = is_float( $facts->ac_power_kw ) ? ' · ' . $facts->ac_power_kw . ' kW' : '';
 			if ( is_float( $facts->nominal_kwh ) ) {
 				$rating .= ' · ' . $facts->nominal_kwh . ' kWh';
 			}
-			$product = wc_get_product( $id );
-			if ( $product instanceof \WC_Product ) {
-				$titles = $view->card_titles( $product );
-				$series = implode( ' · ', array_unique( array_filter( array( $titles['brand'], $titles['series'] ) ) ) );
-				$rows[] = ( '' !== $series ? $series . ': ' : '' ) . self::post_pair( $id, $de ) . $rating;
-			}
+			$rows[] = ( '' !== $label ? $label . ': ' : '' ) . self::post_pair( $id, $de ) . $rating;
 		}
 		return $rows;
 	}
