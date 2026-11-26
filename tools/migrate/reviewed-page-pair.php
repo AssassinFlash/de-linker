@@ -99,8 +99,8 @@ use Linker\I18n\Woo\Projection;
 				$id = (int) $change['id'];
 				wp_cache_delete( $id, 'post_meta' );
 				foreach ( $change['keys'] as $key ) {
-					if ( ! in_array( $key, array( '_seopress_titles_desc', '_seopress_social_fb_desc', '_seopress_social_twitter_desc' ), true ) ) {
-						throw new RuntimeException( 'Expected a SEOPress description.' );
+					if ( ! in_array( $key, array( '_seopress_titles_title', '_seopress_titles_desc', '_seopress_social_fb_desc', '_seopress_social_twitter_desc' ), true ) ) {
+						throw new RuntimeException( 'Expected a reviewed SEOPress title or description.' );
 					}
 					$values = get_post_meta( $id, $key, false );
 					if ( 1 !== count( $values ) ) {
@@ -126,7 +126,7 @@ use Linker\I18n\Woo\Projection;
 				|| false === $wpdb->query( $wpdb->prepare( 'SELECT meta_id FROM %i WHERE post_id IN (%d,%d) ORDER BY post_id, meta_id FOR UPDATE', $wpdb->postmeta, $en, $de ) ) ) {
 				throw new RuntimeException( 'Cannot lock the reviewed page pair.' );
 			}
-			if ( $read_descriptions() !== $pair['before'] || $read() !== $pair['metadata_before'] || ! $translator->current( State::POST, $en ) ) {
+			if ( $read_descriptions() !== $pair['before'] || $read() !== $pair['metadata_before'] || $translator->current( State::POST, $en ) !== ( $pair['require_current'] ?? true ) ) {
 				throw new RuntimeException( 'The published descriptions or their translation baseline changed.' );
 			}
 			foreach ( $pair['after'] as $id => $values ) {
@@ -137,14 +137,16 @@ use Linker\I18n\Woo\Projection;
 					update_post_meta( (int) $id, $key, wp_slash( $value ) );
 				}
 			}
-			foreach ( array( State::SOURCE_HASH, State::UNITS ) as $key ) {
-				$expected = $pair['expected_metadata'][ $de ][ $key ];
-				if ( 1 !== count( $expected ) ) {
-					throw new RuntimeException( 'Expected the existing bilingual description baseline.' );
+			if ( $pair['require_current'] ?? true ) {
+				foreach ( array( State::SOURCE_HASH, State::UNITS ) as $key ) {
+					$expected = $pair['expected_metadata'][ $de ][ $key ];
+					if ( 1 !== count( $expected ) ) {
+						throw new RuntimeException( 'Expected the existing bilingual description baseline.' );
+					}
+					update_post_meta( $de, $key, wp_slash( $expected[0] ) );
 				}
-				update_post_meta( $de, $key, wp_slash( $expected[0] ) );
 			}
-			if ( $read_descriptions() !== $pair['after'] || $read() !== $pair['expected_metadata'] || ! $translator->current( State::POST, $en ) ) {
+			if ( $read_descriptions() !== $pair['after'] || $read() !== $pair['expected_metadata'] || $translator->current( State::POST, $en ) !== ( $pair['require_current'] ?? true ) ) {
 				throw new RuntimeException( 'The reviewed descriptions or translation failed readback.' );
 			}
 		};
