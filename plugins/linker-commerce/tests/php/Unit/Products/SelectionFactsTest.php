@@ -13,7 +13,7 @@ use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Tests\Support\MocksProducts;
 use WP_Mock;
-use WP_Mock\Tools\TestCase;
+use Linker\Commerce\Tests\TestCase;
 
 /**
  * Tests for SelectionFacts on constructed products; the live products are in

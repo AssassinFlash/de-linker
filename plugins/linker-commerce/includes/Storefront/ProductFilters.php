@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\ProductSearch;
 use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Products\SelectionFacts;
@@ -37,6 +39,33 @@ use Linker\Commerce\Products\SelectionFacts;
  * and the unfiltered list).
  */
 final class ProductFilters {
+
+	/** @var array<string,int[]> Ordered IDs for each archive query. */
+	private array $archives = array();
+
+	/** @var int[] Models in the current family index. */
+	private array $family_ids = array();
+
+	private ?ProductFamilies $families = null;
+	private string $family_context     = '';
+
+	/** The same price visibility rule used by Woo's product price filter. */
+	public function __construct( private readonly CommerceState $state = new CommerceState() ) {}
+
+	/**
+	 * Reuse the complete family index for counts and filtered grid rows.
+	 *
+	 * @param int[] $ids All models in the archive.
+	 */
+	public function families( array $ids ): ProductFamilies {
+		$context = Materials::cache_revision() . ':' . Materials::locale();
+		if ( null === $this->families || $this->family_ids !== $ids || $this->family_context !== $context ) {
+			$this->families       = new ProductFamilies( $ids );
+			$this->family_ids     = $ids;
+			$this->family_context = $context;
+		}
+		return $this->families;
+	}
 
 	/**
 	 * Request names accepted beside the contract keys, mapped to the key the
@@ -280,8 +309,9 @@ final class ProductFilters {
 	 * @param int                         $product_id The product.
 	 * @param SelectionFactSet            $facts      The product's facts.
 	 * @param array<string, string|float> $selected   The selected facet values.
+	 * @param array<string,true>|null     $brands     Preloaded brand slugs and names.
 	 */
-	private function matches( int $product_id, SelectionFactSet $facts, array $selected ): bool {
+	private function matches( int $product_id, SelectionFactSet $facts, array $selected, ?array $brands = null ): bool {
 		if ( isset( $selected['q'] ) ) {
 			$product = wc_get_product( $product_id );
 			// The search box's rule, one implementation for the archive and
@@ -293,8 +323,11 @@ final class ProductFilters {
 		if ( isset( $selected['application'] ) && $facts->application !== (string) $selected['application'] ) {
 			return false;
 		}
-		if ( isset( $selected['brand'] ) && ! has_term( (string) $selected['brand'], 'pa_brand', $product_id ) ) {
-			return false;
+		if ( isset( $selected['brand'] ) ) {
+			$brand = (string) $selected['brand'];
+			if ( null === $brands ? ! has_term( $brand, 'pa_brand', $product_id ) : ! isset( $brands[ $brand ] ) ) {
+				return false;
+			}
 		}
 		if ( isset( $selected['phase'] ) && (string) $facts->phase !== (string) $selected['phase'] ) {
 			return false;
@@ -409,12 +442,13 @@ final class ProductFilters {
 	 * is the newest invoicable model).
 	 *
 	 * @param int[] $ids The catalogue's product ids.
+	 * @param bool  $sees_prices Whether the filtered Woo price can be nonempty.
 	 * @return int[]
 	 */
-	private function recommended_order( array $ids ): array {
+	private function recommended_order( array $ids, bool $sees_prices ): array {
 		$rows = array();
 		foreach ( $ids as $id ) {
-			$product = wc_get_product( $id );
+			$product = $sees_prices ? wc_get_product( $id ) : false;
 			$rows[]  = array(
 				'id'        => (int) $id,
 				'can_order' => $product instanceof \WC_Product && $product->is_purchasable() && '' !== (string) $product->get_price() ? 1 : 0,
@@ -480,14 +514,9 @@ final class ProductFilters {
 	 *                                                                        is range_folds(), not a facet.
 	 */
 	public function facet_counts( array $product_ids, array $selected = array() ): array {
-		$facts = array();
-		$by_id = array();
-		foreach ( $product_ids as $product_id ) {
-			$fact                       = SelectionFacts::for_product( (int) $product_id );
-			$facts[]                    = array( (int) $product_id, $fact );
-			$by_id[ (int) $product_id ] = $fact;
-		}
-		$families = new ProductFamilies( $product_ids );
+		$by_id    = array();
+		$brands   = array();
+		$families = $this->families( $product_ids );
 
 		$counts = array(
 			'application' => array(),
@@ -504,8 +533,9 @@ final class ProductFilters {
 				'count' => 0,
 			);
 		}
-		foreach ( $facts as $pair ) {
-			list( $product_id, $fact ) = $pair;
+		foreach ( $product_ids as $product_id ) {
+			$fact                 = SelectionFacts::for_product( $product_id );
+			$by_id[ $product_id ] = $fact;
 			if ( SelectionFactSet::UNKNOWN !== $fact->application ) {
 				++$counts['application'][ $fact->application ]['count'];
 			}
@@ -528,9 +558,12 @@ final class ProductFilters {
 					}
 				}
 			}
-			$terms = wp_get_post_terms( $pair[0], 'pa_brand' );
+			$brands[ $product_id ] = array();
+			$terms                 = get_the_terms( $product_id, 'pa_brand' );
 			foreach ( \is_array( $terms ) ? $terms : array() as $term ) {
-				$counts['brand'][ $term->slug ] = $counts['brand'][ $term->slug ] ?? array(
+				$brands[ $product_id ][ $term->slug ] = true;
+				$brands[ $product_id ][ $term->name ] = true;
+				$counts['brand'][ $term->slug ]       = $counts['brand'][ $term->slug ] ?? array(
 					'label' => $term->name,
 					'count' => 0,
 				);
@@ -572,10 +605,10 @@ final class ProductFilters {
 			$others  = \array_diff_key( $selected, array( $facet => '' ) );
 			$context = $product_ids;
 			if ( array() !== $others ) {
-				$context = $this->matching( $product_ids, $others );
+				$context = array_filter( $product_ids, fn( int $id ): bool => $this->matches( $id, $by_id[ $id ], $others, $brands[ $id ] ) );
 			}
 			foreach ( $counts[ $facet ] as $value => $option ) {
-				$matching                            = array_filter( $context, fn( int $id ): bool => $this->matches( $id, $by_id[ $id ], array( $facet => (string) $value ) ) );
+				$matching                            = array_filter( $context, fn( int $id ): bool => $this->matches( $id, $by_id[ $id ], array( $facet => (string) $value ), $brands[ $id ] ) );
 				$counts[ $facet ][ $value ]['count'] = count( $families->rows( $matching ) );
 			}
 		}
@@ -807,8 +840,22 @@ final class ProductFilters {
 				'operator' => 'NOT IN',
 			);
 		}
-		$ids = get_posts( $args );
-		return $this->recommended_order( array_map( 'intval', $ids ) );
+		$sees_prices = $this->state->visitor_sees_prices();
+		$key         = (string) wp_json_encode( array( Materials::cache_revision(), Materials::locale(), $sees_prices ? get_current_user_id() : 0, $args ) );
+		if ( isset( $this->archives[ $key ] ) ) {
+			return $this->archives[ $key ];
+		}
+		$ids = array_map( 'intval', get_posts( $args ) );
+		if ( array() !== $ids ) {
+			_prime_post_caches( $ids, true, true );
+			if ( Materials::is_de() ) {
+				$sources = array_diff( array_map( array( Materials::class, 'source_product_id' ), $ids ), $ids );
+				if ( array() !== $sources ) {
+					_prime_post_caches( array_values( array_unique( $sources ) ), true, true );
+				}
+			}
+		}
+		return $this->archives[ $key ] = $this->recommended_order( $ids, $sees_prices );
 	}
 
 	/**

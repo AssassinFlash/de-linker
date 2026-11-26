@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
 
 /** A family of models is one visible card in the current catalogue language. */
@@ -23,14 +24,15 @@ final class ProductFamilies {
 	/**
 	 * Read the English model lists once for this archive.
 	 *
-	 * @param int[] $ids Archive product IDs.
+	 * @param int[]       $ids Archive product IDs.
+	 * @param string|null $locale Language of the requested family rows.
 	 */
-	public function __construct( array $ids ) {
-		$lang = function_exists( 'pll_current_language' ) ? (string) pll_current_language() : '';
+	public function __construct( array $ids, ?string $locale = null ) {
+		$lang = $locale ?? ( function_exists( 'pll_current_language' ) ? (string) pll_current_language() : '' );
 		$pair = '' !== $lang && function_exists( 'pll_get_post' );
 		foreach ( $ids as $id ) {
 			$source = $pair ? (int) pll_get_post( $id, 'en' ) : $id;
-			$data   = json_decode( (string) get_post_meta( $source > 0 ? $source : $id, '_tv_legacy_acf_json', true ), true );
+			$data   = Materials::english_acf( $source > 0 ? $source : $id );
 			$list   = array();
 			$terms  = $data['family_variants'] ?? array();
 			foreach ( is_array( $terms ) ? $terms : array() as $variant ) {

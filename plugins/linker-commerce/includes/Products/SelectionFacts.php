@@ -18,6 +18,14 @@ namespace Linker\Commerce\Products;
  */
 final class SelectionFacts {
 
+	/** @var array<int,SelectionFactSet> Facts keyed by the source product. */
+	private static array $products = array();
+
+	/** Drop facts after a product or its classification changes. */
+	public static function reset_cache(): void {
+		self::$products = array();
+	}
+
 	/**
 	 * Product meta that holds the figures.
 	 */
@@ -128,7 +136,7 @@ final class SelectionFacts {
 			 */
 			$product_id = (int) apply_filters( 'linker_commerce_facts_product_id', $product_id );
 		}
-		return self::from_figures( $product_id, self::figures( $product_id ) );
+		return self::$products[ $product_id ] ??= self::from_figures( $product_id, self::figures( $product_id ) );
 	}
 
 	/**

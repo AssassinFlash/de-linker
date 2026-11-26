@@ -1531,6 +1531,7 @@ final class ProductShortcodesTest extends TestCase {
 	 * @param array<string, mixed> $acf      The product's legacy ACF JSON branches.
 	 */
 	private function pdp( bool $in_stock, array $acf = array() ): ProductShortcodes {
+		\Linker\Commerce\Products\Materials::reset_cache();
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
@@ -1669,7 +1670,7 @@ final class ProductShortcodesTest extends TestCase {
 
 		$card = ( new ProductView() )->card_fields( self::PDP );
 		$line = new \ReflectionMethod( ProductShortcodes::class, 'selection_line' );
-		$this->assertSame( 'RS485 · GW60K-STS-G10', $line->invoke( $shortcodes, $this->pdp_product, $card ) );
+		$this->assertSame( 'RS485 · GW60K-STS-G10', $line->invoke( $shortcodes, \Linker\Commerce\Products\Materials::card_facts( $this->pdp_product ), $card ) );
 
 		$this->pdp_model = '';
 

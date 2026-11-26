@@ -641,9 +641,10 @@ final class ProductShortcodes {
 		);
 		$url   = (string) get_permalink( $product_id );
 
-		$html = '<article class="sf-card product-card" data-linker-family-card ' . implode( ' ', $data ) . '>';
-		if ( null !== $family && \count( (array) $family['ids'] ) > 1 ) {
-			$html .= '<script type="application/json" data-linker-products>' . wp_json_encode( $this->family_payload( (array) $family['ids'] ) ) . '</script>';
+		$html    = '<article class="sf-card product-card" data-linker-family-card ' . implode( ' ', $data ) . '>';
+		$payload = $multi ? $this->family_payload( (array) $family['ids'] ) : array();
+		if ( $multi ) {
+			$html .= '<script type="application/json" data-linker-products>' . wp_json_encode( $payload ) . '</script>';
 		}
 		$html .= '<div class="sf-card-media card-media">';
 		$html .= '<a data-card-media-link href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $title ) . '">';
@@ -666,13 +667,12 @@ final class ProductShortcodes {
 		if ( '' !== $card['sku'] ) {
 			$html .= '<p class="sf-card-sku">' . esc_html__( 'Item no.', 'linker-commerce' ) . ' <span data-card-sku>' . esc_html( $card['sku'] ) . '</span></p>';
 		}
-		$html     .= '</div>';
-		$stats     = \is_array( $card['stats'] ) ? $card['stats'] : array();
-		$selection = $this->selection_line( $product, $card );
+		$html .= '</div>';
+		$facts = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 		if ( $multi ) {
 			// The live page's family card: the model picker replaces the
 			// single-article model row.
-			$html .= $this->family_picker( (array) $family['ids'], $product_id, $card, $stats, $selection );
+			$html .= $this->family_picker( $payload, $product_id, $this->selection_line( $facts, $card ) );
 		} else {
 			$model_terms = get_the_terms( $product_id, 'pa_model' );
 			$model       = \is_array( $model_terms ) && array() !== $model_terms ? (string) reset( $model_terms )->name : '';
@@ -680,7 +680,6 @@ final class ProductShortcodes {
 				$html .= '<span class="card-product" data-linker-exact-product><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( $model ) . '</strong></span>';
 			}
 		}
-		$facts = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 		if ( array() !== $facts ) {
 			$html .= '<dl class="card-facts" data-card-facts aria-label="' . esc_attr__( 'Key product data', 'linker-commerce' ) . '">';
 			foreach ( $facts as $fact ) {
@@ -2075,7 +2074,7 @@ final class ProductShortcodes {
 	 * @return array<int, array{lead: int, ids: array<int>}>
 	 */
 	private function family_rows( array $ids ): array {
-		$rows = ( new \Linker\Commerce\Storefront\ProductFamilies( $ids ) )->rows( $ids );
+		$rows = $this->filters->families( $this->filters->archive_product_ids() )->rows( $ids );
 		if ( 'name' === $this->filters->requested_sort() ) {
 			// Sort complete families before pagination by the title the card prints.
 			$titles = array();
@@ -2097,11 +2096,10 @@ final class ProductShortcodes {
 	 * — live's `.card-product` ("RS485 · GW60K-STS-G10",
 	 * "Class B / 1.0 · DTSU666").
 	 *
-	 * @param \WC_Product|false|null $product The product.
-	 * @param array<string, mixed>   $card    The card fields.
+	 * @param array<int,array{key:string,label:string,value:string}> $facts The card facts.
+	 * @param array<string, mixed>                                   $card    The card fields.
 	 */
-	private function selection_line( $product, array $card ): string {
-		$facts = $product instanceof \WC_Product ? Materials::card_facts( $product, 1 ) : array();
+	private function selection_line( array $facts, array $card ): string {
 		$first = (string) ( $facts[0]['value'] ?? '' );
 		if ( '' === $first ) {
 			$first = (string) ( \is_array( $card['stats'] ) ? ( $card['stats'][0]['value'] ?? '' ) : '' );
@@ -2124,7 +2122,6 @@ final class ProductShortcodes {
 				continue;
 			}
 			$product   = wc_get_product( (int) $id );
-			$stats     = \is_array( $card['stats'] ) ? $card['stats'] : array();
 			$gated     = '' !== (string) ( $card['price']['url'] ?? '' );
 			$facts     = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 			$factshtml = '';
@@ -2153,7 +2150,7 @@ final class ProductShortcodes {
 				'canPurchase'  => ! $gated,
 				'addToCartUrl' => (string) $card['cta_url'],
 				'accountUrl'   => (string) $card['price']['url'],
-				'selection'    => $this->selection_line( $product, $card ),
+				'selection'    => $this->selection_line( $facts, $card ),
 				'factsHtml'    => $factshtml,
 			);
 		}
