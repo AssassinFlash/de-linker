@@ -37,7 +37,8 @@ final class PlannerTranslationCatalogTest extends TestCase {
 		}
 		$this->assertStringContainsString( 'rel="modulepreload"', $head );
 		$this->assertStringContainsString( 'assets/planner.js?ver=', $head );
-		$this->assertStringContainsString( 'rel="preload" as="fetch"', $head );
+		$this->assertMatchesRegularExpression( '~<link rel="preload" as="fetch" href="[^"]+">~', $head );
+		$this->assertStringContainsString( 'mode: "no-cors"', $head );
 		$this->assertStringContainsString( 'linker-planner-catalog-request', $head );
 		wp_enqueue_script_module( Application::HANDLE );
 
