@@ -65,7 +65,7 @@ def test_wp_escaped_tagline_round_trip(
             value = html.escape(html.unescape(command[-1]))
         return value
 
-    monkeypatch.setattr(migration.subprocess, "check_output", wp)
+    monkeypatch.setattr("batch_s3_pages.subprocess.check_output", wp)
     for action in ("backup", "apply", "apply", "read"):
         migration.tagline("wp", tmp_path, action)
     assert value == migration.TAGLINE.replace("&", "&amp;")
