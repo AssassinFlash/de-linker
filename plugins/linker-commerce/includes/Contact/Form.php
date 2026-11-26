@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Contact;
 
+use Linker\Commerce\Presentation\ContactChannels;
 use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Settings\Options;
 
@@ -255,6 +256,11 @@ final class Form {
 		$html .= '<div class="linker-contact-rail-card linker-contact-email">';
 		$html .= '<h2 class="linker-contact-rail-title">' . esc_html__( 'Sales and technical support', 'linker-commerce' ) . '</h2>';
 		$html .= '<a class="linker-contact-address" href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a>';
+		$html .= '<a href="tel:' . esc_attr( ContactChannels::value( array( 'channel' => 'germany_tel' ) ) ) . '">' . esc_html__( 'Germany', 'linker-commerce' ) . ' · ' . esc_html( ContactChannels::GERMANY_PHONE ) . '</a>';
+		$html .= '<h3>' . esc_html__( 'Direct contact', 'linker-commerce' ) . '</h3>';
+		$html .= '<a class="linker-contact-address" href="mailto:' . esc_attr( ContactChannels::DIRECT_EMAIL ) . '">' . esc_html( ContactChannels::DIRECT_EMAIL ) . '</a>';
+		$html .= '<a href="tel:' . esc_attr( ContactChannels::value( array( 'channel' => 'direct_tel' ) ) ) . '">' . esc_html( ContactChannels::DIRECT_PHONE ) . '</a>';
+		$html .= ContactChannels::link( __( 'Chat on WhatsApp ↗', 'linker-commerce' ), classes: 'linker-whatsapp-outline' );
 		$html .= '<p>' . esc_html__( 'The Linker team replies within one business day.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-rail-card linker-contact-explore">';

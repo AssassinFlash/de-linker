@@ -70,6 +70,18 @@ final class ShortcodesTest extends TestCase {
 			);
 		}
 
+		foreach ( array(
+			'linker_contact'  => 'value',
+			'linker_whatsapp' => 'shortcode',
+		) as $tag => $method ) {
+			WP_Mock::userFunction(
+				'add_shortcode',
+				array(
+					'args'  => array( $tag, array( \Linker\Commerce\Presentation\ContactChannels::class, $method ) ),
+					'times' => 1,
+				)
+			);
+		}
 		$codes->register();
 
 		$this->assertConditionsMet();

@@ -549,3 +549,6 @@ html[lang^="de"] #contact-form [data-linker-contact-draft-error] p {
 @media (max-width: 420px) {
 	#contact-form.linker-article-contact-main .linker-contact-form .linker-form-fields { grid-template-columns: minmax(0, 1fr); }
 }
+
+#contact-form .linker-contact-rail-card.linker-contact-email { display: grid; justify-items: start; gap: .5rem; }
+#contact-form .linker-contact-rail-card.linker-contact-email h3 { margin: .5rem 0 0; }

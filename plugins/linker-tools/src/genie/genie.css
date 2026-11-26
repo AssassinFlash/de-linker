@@ -2429,3 +2429,16 @@ body:has(dialog[open]) :is(.linker-genie, [data-linker-genie-peek]) {
 		bottom: max(0.75rem, env(safe-area-inset-bottom));
 	}
 }
+
+.linker-genie-whatsapp {
+	display: inline-flex;
+	align-items: center;
+	gap: .3em;
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: .2em;
+}
+.linker-genie-contact > .linker-genie-whatsapp {
+	margin-top: .5rem;
+	font-size: .8125rem;
+}

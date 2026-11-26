@@ -312,14 +312,17 @@ final class ComparePage {
 			$html .= '<label for="compare-search">' . esc_html__( 'Add a product to compare', 'linker-commerce' ) . '</label>';
 			$html .= '<input id="compare-search" type="search" autocomplete="off" placeholder="' . esc_attr__( 'Search by model, item number or power', 'linker-commerce' ) . '"><ul data-compare-matches></ul><p role="status"></p></div>';
 		}
+		/* translators: %s: comma-separated product names. */
+		$message = $columns ? sprintf( __( 'Hello Linker team, could you help me compare these models: %s?', 'linker-commerce' ), implode( ', ', array_column( $columns, 'title' ) ) ) : '';
+		$chat    = ContactChannels::link( __( 'Ask via WhatsApp →', 'linker-commerce' ), $message );
 		if ( array() === $columns ) {
-			return $html . '<p class="linker-compare-empty text-neutral-600">' . esc_html__( 'Choose products to compare their specifications.', 'linker-commerce' ) . '</p></div>';
+			return $html . '<p class="linker-compare-empty text-neutral-600">' . esc_html__( 'Choose products to compare their specifications.', 'linker-commerce' ) . ' ' . $chat . '</p></div>';
 		}
 
 		if ( count( $columns ) >= 2 ) {
 			$html .= '<label class="linker-compare-differences"><input type="checkbox" data-compare-differences> ' . esc_html__( 'Show differences only', 'linker-commerce' ) . '</label>';
 		}
-		$html .= '<p class="linker-compare-actions mb-4 text-sm"><a class="text-(--proto-accent) underline" href="' . esc_url( $this->page_url() ) . '">' . esc_html__( 'Clear comparison', 'linker-commerce' ) . '</a></p>';
+		$html .= '<p class="linker-compare-actions mb-4 text-sm"><a class="text-(--proto-accent) underline" href="' . esc_url( $this->page_url() ) . '">' . esc_html__( 'Clear comparison', 'linker-commerce' ) . '</a> · ' . $chat . '</p>';
 		$html .= '<p class="linker-compare-hint" data-compare-scroll-hint hidden>' . esc_html__( 'Scroll sideways to compare products.', 'linker-commerce' ) . '</p>';
 		$html .= '<div class="linker-compare-scroll overflow-x-auto" role="region" tabindex="0" aria-label="' . esc_attr__( 'Product comparison table', 'linker-commerce' ) . '">';
 		$html .= '<table class="linker-compare-table w-full border-collapse text-sm">';

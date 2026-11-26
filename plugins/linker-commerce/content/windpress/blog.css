@@ -212,3 +212,5 @@ html:has(.reader-author-dialog[open]) { overflow: hidden; }
 }
 
 #tv-blog-single-v1 .reader-search svg { width: 18px; height: 18px; }
+
+#tv-blog-single-v1 .reader-author-contacts { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem .9rem; font-size: .8125rem; }

@@ -1383,6 +1383,7 @@ export function HeroConversation( {
 							key={ `${ turn?.meta?.turn_id ?? 0 }-contact` }
 							block={ contactBlock }
 							contactUrl={ config.contactUrl }
+							whatsappUrl={ config.whatsappUrl }
 							nonce={ config.restNonce }
 							locale={ locale }
 							page={ config.page }

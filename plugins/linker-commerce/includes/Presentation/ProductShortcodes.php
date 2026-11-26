@@ -377,6 +377,7 @@ final class ProductShortcodes {
 				. '<b>' . esc_html__( 'Plan with the Solution Configurator', 'linker-commerce' ) . '</b>'
 				. '<p>' . esc_html__( 'Configure a storage system from your site data; the result is a solution draft you can send as an inquiry.', 'linker-commerce' ) . '</p>'
 				. '<a class="rail-help-btn" href="' . esc_url( $configurator ) . '">' . esc_html__( 'Open the Solution Configurator', 'linker-commerce' ) . '</a>'
+				. ContactChannels::link( __( 'Ask via WhatsApp →', 'linker-commerce' ) )
 				. '</div>';
 		}
 		$html .= '<div class="product-filter-actions">';
@@ -961,6 +962,9 @@ final class ProductShortcodes {
 			. esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>';
 		$html .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
 			. esc_html__( 'Documents', 'linker-commerce' ) . '</a>';
+		/* translators: 1: product title, 2: item number. */
+		$message = sprintf( __( 'Hello Linker team, I have a question about %1$s (Item %2$s).', 'linker-commerce' ), $view['title'], $view['sku'] );
+		$html   .= ContactChannels::link( 'WhatsApp', $message, 'pdp-tool' );
 		// The floating comparison chip is not copied here: ComparePage prints
 		// it from the footer on every surface that carries a selection
 		// control (spec 19 §5, one implementation).

@@ -6805,6 +6805,41 @@ msgstr ""
 "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. "
 "Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
 
+#: includes/Presentation/ContactChannels.php:37
+msgid "Hello Linker team, I would like to discuss a solar storage inquiry."
+msgstr "Guten Tag Linker-Team, ich habe eine Anfrage zu einem Speichersystem."
+
+#: includes/Presentation/ProductShortcodes.php:966
+#, php-format
+msgid "Hello Linker team, I have a question about %1$s (Item %2$s)."
+msgstr "Guten Tag Linker-Team, ich habe eine Frage zu %1$s (Art.-Nr. %2$s)."
+
+#: includes/Presentation/ComparePage.php:316
+#, php-format
+msgid "Hello Linker team, could you help me compare these models: %s?"
+msgstr "Guten Tag Linker-Team, können Sie mir beim Vergleich dieser Modelle helfen: %s?"
+
+#: includes/Presentation/ComparePage.php:317 includes/Presentation/ProductShortcodes.php:380
+msgid "Ask via WhatsApp →"
+msgstr "Per WhatsApp anfragen →"
+
+#: includes/Contact/Form.php:259
+msgid "Germany"
+msgstr "Deutschland"
+
+#: includes/Contact/Form.php:260
+msgid "Direct contact"
+msgstr "Direktkontakt"
+
+#: includes/Contact/Form.php:263
+msgid "Chat on WhatsApp ↗"
+msgstr "Per WhatsApp schreiben ↗"
+
+#: includes/Planning/Context.php:1131
+#, php-format
+msgid "Hello Linker team, I would like to discuss this storage project: %s."
+msgstr "Guten Tag Linker-Team, ich möchte dieses Speicherprojekt mit Ihnen besprechen: %s."
+
 #~ msgid "Checking the status of your earlier request…"
 #~ msgstr "Der Status Ihrer vorherigen Anfrage wird geprüft …"
 

@@ -37,6 +37,8 @@ final class Shortcodes {
 		add_shortcode( 'linker_faq_rows', array( $this, 'faq_rows' ) );
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
 		add_shortcode( 'linker_contact_invitation', array( $this, 'contact_invitation' ) );
+		add_shortcode( 'linker_contact', array( ContactChannels::class, 'value' ) );
+		add_shortcode( 'linker_whatsapp', array( ContactChannels::class, 'shortcode' ) );
 		add_shortcode( 'linker_team_email', array( $this, 'team_email' ) );
 		add_shortcode( 'linker_site_url', array( $this, 'site_url' ) );
 		add_shortcode( 'linker_form_assistant', array( $this, 'form_assistant' ) );
@@ -344,13 +346,17 @@ final class Shortcodes {
 		return esc_url( PageUrls::home() );
 	}
 
-	/** Open the existing assistant without leaving the customer's form. */
-	public static function form_assistant(): string {
+	/**
+	 * Open the assistant without leaving the customer's form.
+	 *
+	 * @param array<string,string>|string $attributes Shortcode attributes.
+	 */
+	public static function form_assistant( $attributes = array() ): string {
 		return sprintf(
 			'<a class="linker-form-assistant" href="%s" data-linker-genie-open aria-controls="linker-genie-mount" aria-expanded="false">%s</a>',
 			esc_url( PageUrls::page( 'genie' ) ),
 			esc_html__( 'Ask Genie', 'linker-commerce' )
-		);
+		) . ( '1' === ( $attributes['whatsapp'] ?? '' ) ? ' · ' . ContactChannels::link() : '' );
 	}
 
 	/**

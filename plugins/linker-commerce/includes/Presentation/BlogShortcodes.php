@@ -139,6 +139,7 @@ final class BlogShortcodes {
 			. '</dl>'
 			. '<a class="reader-author-cta" href="' . esc_url( $contact . '#' . Form::ANCHOR ) . '">'
 			. esc_html__( 'Talk to Chester', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></a>'
+			. '<div class="reader-author-contacts">' . ContactChannels::link() . '<a href="mailto:' . esc_attr( ContactChannels::DIRECT_EMAIL ) . '">' . esc_html( ContactChannels::DIRECT_EMAIL ) . '</a></div>'
 			. '</section>'
 			. $this->author_dialog( $name, $copy['role'], $portrait, $contact );
 	}

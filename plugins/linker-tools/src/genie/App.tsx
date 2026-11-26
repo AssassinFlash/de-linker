@@ -89,6 +89,7 @@ import type { SentInquiry } from './api/inquiry';
 import { CopyReply } from './components/CopyReply';
 import { ContactCard, ContactSent } from './components/ContactCard';
 import { GenieCards } from './components/GenieCard';
+import { WhatsAppLink } from './components/WhatsAppLink';
 import { HelperFooter } from './components/HelperFooter';
 import { GenieTitle } from './components/GenieTitle';
 import { Reply } from './components/Reply';
@@ -3199,6 +3200,7 @@ export function App( { config }: { config: GenieConfig } ) {
 											key={ `${ turn.meta?.turn_id ?? 0 }-${ block.reason }` }
 											block={ block }
 											contactUrl={ config.contactUrl }
+											whatsappUrl={ config.whatsappUrl }
 											nonce={
 												config.signedIn
 													? config.restNonce
@@ -3711,7 +3713,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * composer, inside the pinned zone. */ }
 						{ workspace && config.disclosure && ! historyView ? (
 							<p className="linker-genie-app__disclosure">
-								{ config.disclosure }
+								{ config.disclosure }{ ' ' }
+								<WhatsAppLink url={ config.whatsappUrl } />
 							</p>
 						) : null }
 						{ /* `.gp-prompts` — the opening questions, under the
@@ -3740,6 +3743,7 @@ export function App( { config }: { config: GenieConfig } ) {
 
 						{ ! workspace && ! historyView ? (
 							<HelperFooter
+								whatsappUrl={ config.whatsappUrl }
 								guestLinks={ guestLinks }
 								german={ german }
 								disclosure={ config.disclosure }

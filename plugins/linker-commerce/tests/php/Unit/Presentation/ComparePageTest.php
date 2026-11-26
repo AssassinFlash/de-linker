@@ -286,6 +286,8 @@ final class ComparePageTest extends TestCase {
 
 		$html = ( new ComparePage( $this->comparison() ) )->table();
 
+		$this->assertStringContainsString( 'https://wa.me/8613312892178?text=', $html );
+		$this->assertStringContainsString( 'Inverter 4107, Battery 1832', rawurldecode( $html ) );
 		$this->assertStringContainsString( 'data-compare-picker', $html );
 		$this->assertStringContainsString( 'data-compare-differences', $html );
 		$this->assertStringContainsString( 'data-compare-different="true"', $html );
