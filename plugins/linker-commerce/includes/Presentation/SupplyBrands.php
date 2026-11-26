@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
 
 /** Aggregate native product attributes without reading technical documents. */
@@ -39,7 +38,7 @@ final class SupplyBrands {
 		if ( array() === $categories ) {
 			return '';
 		}
-		$ids = array_values( array_filter( Publication::published_ids( fn (): array => $this->candidate_ids( $categories ) ), static fn ( int $id ): bool => ! EngineeringReference::is_reference( $id ) ) );
+		$ids = Publication::published_ids( fn (): array => $this->candidate_ids( $categories ), true );
 		if ( array() === $ids ) {
 			return '';
 		}

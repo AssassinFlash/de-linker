@@ -32,7 +32,11 @@ use Linker\Commerce\Products\Publication\DocumentFiles;
  */
 final class ProductView {
 
-	/** @var array<string,array<string,mixed>> Localized cards by user and price verdict. */
+	/**
+	 * Localized cards by user and price verdict.
+	 *
+	 * @var array<string,array<string,mixed>>
+	 */
 	private array $cards = array();
 
 	/**
@@ -102,7 +106,7 @@ final class ProductView {
 		$model  = $this->term_name( $product_id, 'pa_model' );
 		$titles = $this->card_titles( $product );
 
-		return $this->cards[ $key ] = array(
+		$this->cards[ $key ] = array(
 			'id'           => $product_id,
 			'title'        => $titles['title'],
 			'model'        => '' !== $model ? $model : $product->get_name(),
@@ -116,6 +120,7 @@ final class ProductView {
 			'availability' => $product->is_in_stock() ? __( 'In stock', 'linker-commerce' ) : __( 'Currently unavailable', 'linker-commerce' ),
 			'series'       => $titles['series'],
 		);
+		return $this->cards[ $key ];
 	}
 
 	/**

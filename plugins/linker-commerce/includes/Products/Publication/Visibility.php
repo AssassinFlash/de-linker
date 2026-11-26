@@ -99,7 +99,7 @@ final class Visibility {
 				'cache_results'               => false,
 			)
 		);
-		$allowed = array_values( array_filter( Publication::published_ids( array_map( 'intval', $ids ) ), static fn ( int $id ): bool => ! EngineeringReference::is_reference( $id ) ) );
+		$allowed = Publication::published_ids( array_map( 'intval', $ids ), true );
 		$include = $query->get( 'post__in' );
 		if ( $mixed ) {
 			// A product-only allow-list would erase matching pages and posts.

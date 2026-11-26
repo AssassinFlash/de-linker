@@ -18,7 +18,11 @@ namespace Linker\Commerce\Products;
  */
 final class SelectionFacts {
 
-	/** @var array<int,SelectionFactSet> Facts keyed by the source product. */
+	/**
+	 * Selection facts per canonical product.
+	 *
+	 * @var array<int,SelectionFactSet>
+	 */
 	private static array $products = array();
 
 	/** Drop facts after a product or its classification changes. */

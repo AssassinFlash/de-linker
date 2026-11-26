@@ -614,10 +614,19 @@ final class ProductShortcodes {
 	 * @param array<string, mixed>|string $atts Shortcode attributes (`family`).
 	 */
 	public function products_card( $atts = array() ): string {
-		$parsed     = \is_array( $atts ) ? $atts : shortcode_parse_atts( (string) $atts );
-		$family     = isset( $parsed['family'] ) && \is_array( $parsed['family'] ) ? $parsed['family'] : null;
-		$product_id = (int) get_the_ID();
-		$card       = $this->views->card_fields( $product_id );
+		$parsed = \is_array( $atts ) ? $atts : shortcode_parse_atts( (string) $atts );
+		$family = isset( $parsed['family'] ) && \is_array( $parsed['family'] ) ? $parsed['family'] : null;
+		return $this->render_card( (int) get_the_ID(), $family );
+	}
+
+	/**
+	 * Render the supplied model without setting up a second WordPress loop.
+	 *
+	 * @param int                      $product_id The visible model.
+	 * @param array<string,mixed>|null $family Family members in archive order.
+	 */
+	private function render_card( int $product_id, ?array $family ): string {
+		$card = $this->views->card_fields( $product_id );
 		if ( array() === $card ) {
 			return '';
 		}
@@ -1804,16 +1813,7 @@ final class ProductShortcodes {
 		$page = $this->family_page();
 		$html = '';
 		foreach ( $page->rows as $row ) {
-			$lead = get_post( (int) $row['lead'] );
-			if ( ! $lead instanceof \WP_Post ) {
-				continue;
-			}
-			// The card fragment reads the loop's post; set it to this family's
-			// lead article for the call.
-			$GLOBALS['post'] = $lead; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- the loop contract the card fragment reads.
-			setup_postdata( $lead );
-			$html .= $this->products_card( array( 'family' => $row ) );
-			wp_reset_postdata();
+			$html .= $this->render_card( $row['lead'], $row );
 		}
 		return $html;
 	}

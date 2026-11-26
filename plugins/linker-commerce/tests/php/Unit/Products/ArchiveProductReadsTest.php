@@ -14,7 +14,12 @@ use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
-/** @covers \Linker\Commerce\Products\SelectionFacts @covers \Linker\Commerce\Products\Materials */
+/**
+ * Repeated archive reads of native and translated models.
+ *
+ * @covers \Linker\Commerce\Products\SelectionFacts
+ * @covers \Linker\Commerce\Products\Materials
+ */
 final class ArchiveProductReadsTest extends TestCase {
 
 	/**
@@ -32,7 +37,12 @@ final class ArchiveProductReadsTest extends TestCase {
 			}
 		);
 		WP_Mock::userFunction( 'has_filter' )->andReturn( true );
-		$this->english_products( array( 51 => 51, 91 => 51 ) );
+		$this->english_products(
+			array(
+				51 => 51,
+				91 => 51,
+			)
+		);
 		WP_Mock::userFunction( 'get_the_terms' )->andReturn( false );
 		WP_Mock::userFunction( 'pll_get_post_language' )->andReturnUsing( static fn( int $id ): string => 91 === $id ? 'de' : 'en' );
 		WP_Mock::userFunction( 'pll_get_post' )->with( 91, 'en' )->andReturn( 51 );

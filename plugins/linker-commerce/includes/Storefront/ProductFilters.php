@@ -40,16 +40,39 @@ use Linker\Commerce\Products\SelectionFacts;
  */
 final class ProductFilters {
 
-	/** @var array<string,int[]> Ordered IDs for each archive query. */
+	/**
+	 * Ordered IDs for each archive query.
+	 *
+	 * @var array<string,int[]>
+	 */
 	private array $archives = array();
 
-	/** @var int[] Models in the current family index. */
+	/**
+	 * Models in the current family index.
+	 *
+	 * @var int[]
+	 */
 	private array $family_ids = array();
 
+	/**
+	 * The complete archive family index.
+	 *
+	 * @var ProductFamilies|null
+	 */
 	private ?ProductFamilies $families = null;
-	private string $family_context     = '';
 
-	/** The same price visibility rule used by Woo's product price filter. */
+	/**
+	 * Language and source revision of the family index.
+	 *
+	 * @var string
+	 */
+	private string $family_context = '';
+
+	/**
+	 * Share Woo's price rule when sorting recommended products.
+	 *
+	 * @param CommerceState $state Visitor price visibility.
+	 */
 	public function __construct( private readonly CommerceState $state = new CommerceState() ) {}
 
 	/**
@@ -855,7 +878,8 @@ final class ProductFilters {
 				}
 			}
 		}
-		return $this->archives[ $key ] = $this->recommended_order( $ids, $sees_prices );
+		$this->archives[ $key ] = $this->recommended_order( $ids, $sees_prices );
+		return $this->archives[ $key ];
 	}
 
 	/**

@@ -29,7 +29,11 @@ use Linker\Commerce\Storefront\ProductView;
  */
 final class Plugin {
 
-	/** Shared by the main query and the archive shortcodes. */
+	/**
+	 * Shared by the main query and the archive shortcodes.
+	 *
+	 * @var ProductFilters
+	 */
 	private readonly ProductFilters $filters;
 
 	/**
