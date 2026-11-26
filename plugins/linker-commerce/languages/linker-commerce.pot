@@ -6347,5 +6347,5 @@ msgstr ""
 
 #: includes/Storefront/PageIndexing.php
 #, php-format
-msgid "Articles on %s from the Linker journal. Read practical guidance on solar and storage projects for installers."
+msgid "Explore %s in the Linker journal. Read practical guidance on solar and storage projects for installers."
 msgstr ""

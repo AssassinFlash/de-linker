@@ -44,7 +44,7 @@ final class PageIndexing {
 			return __( 'Read about monitoring solar and storage systems, using meter data and managing energy flows. Find practical guidance for installers working on site.', 'linker-commerce' );
 		}
 		/* translators: %s: translated blog category name. */
-		return sprintf( __( 'Articles on %s from the Linker journal. Read practical guidance on solar and storage projects for installers.', 'linker-commerce' ), wp_strip_all_tags( $term->name ) );
+		return sprintf( __( 'Explore %s in the Linker journal. Read practical guidance on solar and storage projects for installers.', 'linker-commerce' ), wp_strip_all_tags( $term->name ) );
 	}
 
 	/**
