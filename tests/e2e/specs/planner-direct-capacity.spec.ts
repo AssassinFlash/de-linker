@@ -53,7 +53,9 @@ for (const lang of ['en', 'de'] as const) {
 				await page
 					.locator('[name="annual_load_basis"]')
 					.selectOption('user_estimate');
-				await page.locator('[name="site_pv_kw"]').fill('11.09');
+				await page
+					.locator('[name="site_pv_kw"]')
+					.fill(label('11.09', '11,09'));
 				await expect(
 					page.locator('[name="project_start"]')
 				).toHaveValue('known');
