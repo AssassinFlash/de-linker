@@ -94,6 +94,8 @@ final class WindPressPageStylesTest extends TestCase {
 			'custom showcase'          => array( '', '<section id="configurator-showcase">', '', array(), array( 'home-configurator.css' ) ),
 
 			'product category'         => array( 'is_product_taxonomy', '', '', array( 'products-mounts.css', 'products.css', 'storefront.css' ), array() ),
+			'matrix body'              => array( '', '[linker_compatibility_matrix]', '', array( 'compatibility-matrix.css' ), array() ),
+			'matrix link only'         => array( '', '[linker_compatibility_matrix_link]', '', array(), array() ),
 			'translated FAQ'           => array( '', '', '<div id="linker-faq-page">', array( 'faq.css' ), array() ),
 			'product detail'           => array( 'product', '', '', array( 'pdp.css', 'model-links.css', 'storefront.css' ), array() ),
 			'solution product links'   => array( '', '[linker_solution_products scope="utility"]', '', array( 'model-links.css' ), array() ),

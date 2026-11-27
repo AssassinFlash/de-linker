@@ -640,77 +640,50 @@ test.describe('the products', () => {
 	 * The FAQ block's prototype outline (docs/specs/174-pdp.md): the picture
 	 * panel stands beside the accordion for a product whose gallery holds a
 	 * picture beyond the featured one, and the panel takes the gallery's last
-	 * picture — the one the page nowhere else shows first. The rows are a
-	 * fixture written onto the product's own meta and removed again (the shape
-	 * tools/faq/import.py writes).
+	 * picture — the one the page nowhere else shows first. The review snapshot
+	 * supplies the published, source-bound FAQ for this model.
 	 */
 	test('the FAQ block carries the product picture beside its rows', async ({
 		page,
 	}) => {
-		const id = Number(
+		const publishedRows = Number(
 			wp([
 				'eval',
-				`$en = get_page_by_path( 'goodwe-gw60k-sts-g10', OBJECT, 'product' );` +
-					`echo $en ? $en->ID : 0;`,
+				"$product = get_page_by_path( 'goodwe-gw60k-sts-g10', OBJECT, 'product' );" +
+					'echo count( \\Linker\\Commerce\\Products\\Publication::faqs_for( $product->ID ) );',
 			]).trim()
 		);
-		expect(id, 'the reference product resolves').toBeGreaterThan(0);
-		// The same write the ticket's own field writers use
-		// (tools/faq/wordpress.php: Faqs::encode(), wp_slash(), the twin
-		// mirror) — `wp post meta update` would unslash the JSON apart.
-		const fixture = (action: string) =>
-			wp([
-				'eval',
-				`$product = ${id};` +
-					`$rows = array( array( 'question' => 'Is the inverter port also 60 kW?',` +
-					` 'answer' => 'No. The inverter side is rated 30 kW.',` +
-					` 'citation' => array( 'url' => 'https://de-linker.com/doc.pdf', 'page' => 2 ) ) );` +
-					`$json = \\Linker\\Commerce\\Products\\Faqs::encode( $rows );` +
-					`$twin = (int) pll_get_post( $product, 'de' );` +
-					`if ( '${action}' === 'delete' ) {` +
-					` delete_post_meta( $product, '_linker_faqs' );` +
-					` if ( $twin ) { delete_post_meta( $twin, '_linker_faqs' ); }` +
-					`} else {` +
-					` update_post_meta( $product, '_linker_faqs', wp_slash( $json ) );` +
-					` if ( $twin ) { update_post_meta( $twin, '_linker_faqs', wp_slash( $json ) ); }` +
-					`}` +
-					`echo count( \\Linker\\Commerce\\Products\\Faqs::of( $product ) ) . '/';`,
-			]).trim();
-
-		try {
-			const written = fixture('write');
-			expect(written, 'the fixture lands as one readable row').toContain(
-				'1/'
-			);
-			await page.goto(`${instance().url}${NO_CLAIM.en}`);
-			const block = await page.evaluate(() => {
-				const section = document.querySelector('.pdp-faqs')!;
-				const side = section?.querySelector('.pdp-faq-side');
-				const main = section?.querySelector('.pdp-faq-main');
-				return {
-					exists: Boolean(section),
-					side: Boolean(side),
-					sidePicture:
-						side?.querySelector('img')?.getAttribute('src') ?? '',
-					sideBox: side?.getBoundingClientRect().width ?? 0,
-					mainBox: main?.getBoundingClientRect().width ?? 0,
-					rows:
-						section?.querySelectorAll('.pdp-disclose').length ?? 0,
-				};
-			});
-			expect(block.exists, 'the FAQ block is on the page').toBe(true);
-			expect(block.rows, 'the fixture row is rendered').toBe(1);
-			expect(block.side, 'the picture panel stands beside it').toBe(true);
-			expect(
-				block.sidePicture,
-				'the panel takes the gallery picture the top does not show first'
-			).toContain('goodwe-sts-30-60kw-g10-product-20261007-02');
-			expect(
-				block.sideBox,
-				'the picture panel is a column, not a full-width strip'
-			).toBeLessThan(block.mainBox);
-		} finally {
-			expect(fixture('delete'), 'the fixture is removed').toBe('0/');
-		}
+		expect(
+			publishedRows,
+			'the review product has a cited FAQ'
+		).toBeGreaterThan(0);
+		await page.goto(`${instance().url}${NO_CLAIM.en}`);
+		const block = await page.evaluate(() => {
+			const section = document.querySelector('.pdp-faqs')!;
+			const side = section?.querySelector('.pdp-faq-side');
+			const main = section?.querySelector('.pdp-faq-main');
+			return {
+				exists: Boolean(section),
+				side: Boolean(side),
+				sidePicture:
+					side?.querySelector('img')?.getAttribute('src') ?? '',
+				sideBox: side?.getBoundingClientRect().width ?? 0,
+				mainBox: main?.getBoundingClientRect().width ?? 0,
+				rows: section?.querySelectorAll('.pdp-disclose').length ?? 0,
+			};
+		});
+		expect(block.exists, 'the FAQ block is on the page').toBe(true);
+		expect(block.rows, 'every authorized answer is visible').toBe(
+			publishedRows
+		);
+		expect(block.side, 'the picture panel stands beside it').toBe(true);
+		expect(
+			block.sidePicture,
+			'the panel takes the gallery picture the top does not show first'
+		).toContain('goodwe-sts-30-60kw-g10-product-20261007-02');
+		expect(
+			block.sideBox,
+			'the picture panel is a column, not a full-width strip'
+		).toBeLessThan(block.mainBox);
 	});
 });

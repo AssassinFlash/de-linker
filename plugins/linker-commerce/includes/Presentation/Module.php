@@ -59,6 +59,7 @@ final class Module {
 		( new WindPressPageStyles() )->register();
 		$this->compare->register();
 		$this->library->register();
+		( new CompatibilityMatrixPage() )->register();
 		$this->account->register();
 		$this->blog->register();
 		add_filter( 'wp_preload_resources', array( $this, 'preload_resources' ) );

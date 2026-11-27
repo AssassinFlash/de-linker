@@ -604,7 +604,7 @@ final class ProductView {
 		if ( null !== $this->document_reader ) {
 			return self::by_language( ( $this->document_reader )( $product_id ) );
 		}
-		if ( ! Publication::is_published( $product_id ) ) {
+		if ( null !== $manifest ? ! Publication::published_in_manifest( $product_id, $manifest ) : ! Publication::is_published( $product_id ) ) {
 			return array();
 		}
 		// Download links consume current listing metadata, not product revisions
@@ -730,6 +730,10 @@ final class ProductView {
 	 */
 	public static function crumbs( int $product_id ): array {
 		$crumbs = array(
+			array(
+				'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
+				'url'   => PageUrls::home(),
+			),
 			array(
 				'label' => __( 'Products', 'linker-commerce' ),
 				'url'   => (string) wc_get_page_permalink( 'shop' ),

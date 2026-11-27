@@ -2066,39 +2066,32 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertSame( 2, $reads );
 	}
 
-	/**
-	 * The live ETR relationship has partial manual evidence, not list approval.
-	 * Preserve a genuinely listed card while rejecting unestablished statuses.
-	 */
-	public function test_pairing_status_preserves_the_recorded_evidence_boundary(): void {
-		$registry = \Linker\Commerce\Products\Materials::registry();
-		$rows     = $registry['materials']['mat_goodwe_gw125k_etr_g10']['technical']['relationships'];
-		$method   = new \ReflectionMethod( ProductShortcodes::class, 'pairing_status' );
-		foreach ( $rows as $row ) {
-			$expected = 'one_way' === $row['status'] ? 'Partially documented' : 'Documented by GoodWe';
-			$this->assertSame( $expected, $method->invoke( null, $row, 'en' ) );
-		}
-		$eha_rows = $registry['materials']['mat_goodwe_gw10k_eha_g20']['technical']['relationships'];
-		foreach ( $eha_rows as $row ) {
-			$this->assertSame( 'Documented by GoodWe', $method->invoke( null, $row, 'en' ) );
-		}
-		$this->assertSame( 'Compatibility documented', $method->invoke( null, array( 'status' => 'listed' ), 'en' ) );
-		$contract = \Linker\Commerce\Products\Materials::contract();
-		foreach ( $contract['cells'] as $cell ) {
-			if ( 'one_way' === $cell['status'] ) {
-				$this->assertSame( 'Partially documented', $method->invoke( null, $cell, 'en' ) );
-			}
-		}
-		foreach ( array(
-			array(),
-			array( 'status' => 'not_listed' ),
-			array(
-				'status'    => 'unknown',
-				'listed_by' => 'GoodWe',
+	/** A released model's accessory, note and SKU stay attached to its own row. */
+	public function test_pairings_table_connects_models_to_release_conditions(): void {
+		WP_Mock::userFunction( 'esc_html__' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'esc_attr' )->andReturnUsing( 'strval' );
+		WP_Mock::userFunction( 'get_page_by_path' )->andReturn( null );
+		$row  = array(
+			'name'        => 'B2-10.0',
+			'sku'         => 'DLK-B2',
+			'url'         => '/b2/',
+			'category'    => 'Storage',
+			'rating'      => '10 kWh',
+			'verdict'     => 'released_with_accessory',
+			'accessories' => array(
+				array(
+					'name' => 'BC2',
+					'url'  => '/bc2/',
+				),
 			),
-		) as $row ) {
-			$this->assertSame( 'Compatibility information unavailable', $method->invoke( null, $row, 'en' ) );
-		}
+			'conditions'  => array( 'Use the specified control unit.' ),
+		);
+		$html = ProductShortcodes::pairings_table( array( $row ) );
+		$this->assertStringContainsString( '<th scope="row"><a class="pdp-pairing-link" href="/b2/">B2-10.0</a>', $html );
+		$this->assertStringContainsString( 'Released with accessory', $html );
+		$this->assertStringContainsString( 'href="/bc2/">BC2</a>', $html );
+		$this->assertStringContainsString( 'href="#pdp-pairing-note-1"', $html );
+		$this->assertSame( 1, substr_count( $html, 'Use the specified control unit.' ) );
 	}
 
 
@@ -2162,20 +2155,5 @@ final class ProductShortcodesTest extends TestCase {
 			$this->assertStringNotContainsString( '[linker_pdp_configurator]', substr( $html, (int) $tools_at, (int) $choices - (int) $tools_at ) );
 			$this->assertSame( 0, substr_count( $html, 'class="pdp-tool"' ) );
 		}
-	}
-
-	/**
-	 * A registry cell expansion repeats the cell's sentences in every pairing;
-	 * the footnote shares whole sentences and keeps each tail its own line.
-	 */
-	public function test_shared_constraint_prefix_shares_whole_sentences_only(): void {
-		$method = new \ReflectionMethod( ProductShortcodes::class, 'shared_constraint_prefix' );
-		$base   = "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. The listing does not cover the one-module B2-5.0.";
-		$first  = $base . " SAJ's B2 datasheet gives 179.2 to 230.4 V for the two-module B2-10.0.";
-		$second = $base . ' One BU2-5.0 module alone operates at 89.6 to 115.2 V.';
-		$this->assertSame( $base, $method->invoke( null, array( $first, $second ) ) );
-		$this->assertSame( $base, $method->invoke( null, array( $first, $base, $second ) ) );
-		$this->assertSame( $first, $method->invoke( null, array( $first ) ) );
-		$this->assertSame( '', $method->invoke( null, array() ) );
 	}
 }

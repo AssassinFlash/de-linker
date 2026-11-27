@@ -1095,6 +1095,7 @@ final class Materials {
 		return \strtr(
 			$text,
 			array(
+				'ships with'            => 'includes',
 				'an article of its own' => 'a separate product',
 				'one battery base article, which the battery article itself does not include' => 'one battery base, supplied separately from the battery',
 			)

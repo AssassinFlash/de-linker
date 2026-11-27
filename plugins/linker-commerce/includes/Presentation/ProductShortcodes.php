@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\EngineeringReference;
@@ -796,7 +797,7 @@ final class ProductShortcodes {
 		if ( 'utility' === $scope ) {
 			$html .= '<a href="' . esc_url( PageUrls::page( 'solution-configurator' ) ) . '">' . esc_html__( 'Solution Configurator', 'linker-commerce' ) . '</a>';
 		}
-		return $html . '</div></section>';
+		return $html . self::matrix_link() . '</div></section>';
 	}
 
 	/**
@@ -1429,14 +1430,14 @@ final class ProductShortcodes {
 		if ( array() === $decks ) {
 			return '<p class="tv-empty-state">' . esc_html__( 'The specification table for this product is in preparation. Ask us for the datasheet.', 'linker-commerce' ) . '</p>';
 		}
-		$html .= '<div class="pdp-stats-layout">' . $this->stats_summary( $view, $group ) . '<div class="pdp-info-deck pdp-spec-deck">';
+		$html .= '<div class="pdp-stats-layout">' . $this->stats_summary( $view, $group ) . '<div class="pdp-info-deck pdp-spec-deck pdp-all-panels">';
 		$html .= '<div class="pdp-info-tabs" role="tablist" aria-label="' . esc_attr__( 'Specification group', 'linker-commerce' ) . '">';
 		foreach ( $decks as $index => $deck ) {
 			$html .= '<button type="button" id="pdp-spec-tab-' . $index . '" role="tab" aria-controls="pdp-spec-panel-' . $index . '" aria-selected="' . ( 0 === $index ? 'true' : 'false' ) . '" tabindex="' . ( 0 === $index ? '0' : '-1' ) . '">' . esc_html( $deck['title'] ) . '</button>';
 		}
 		$html .= '</div>';
 		foreach ( $decks as $index => $deck ) {
-			$html .= '<div class="pdp-info-panel" id="pdp-spec-panel-' . $index . '"' . ( 0 === $index ? '' : ' hidden' ) . ' role="tabpanel" aria-labelledby="pdp-spec-tab-' . $index . '" tabindex="0">'
+			$html .= '<div class="pdp-info-panel" id="pdp-spec-panel-' . $index . '" role="tabpanel" aria-labelledby="pdp-spec-tab-' . $index . '" tabindex="0">'
 				. '<details class="pdp-disclose pdp-tab-disclosure" open><summary>' . esc_html( $deck['title'] ) . self::icon( 'chevron' ) . '</summary>'
 				. '<div class="pdp-disclose-body pdp-reading">' . $deck['body'] . '</div></details></div>';
 		}
@@ -1644,7 +1645,7 @@ final class ProductShortcodes {
 			. '<p>' . esc_html( $intro ) . '</p><div class="pdp-compatibility-actions">'
 			. '<button type="button" class="pdp-btn pdp-btn-secondary" data-pdp-ask data-ask-message="' . esc_attr( $prompt ) . '">' . esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>'
 			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( $plan ) . '">' . esc_html__( 'Open configurator', 'linker-commerce' ) . '</a>'
-			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( (string) $view['ask_url'] ) . '">' . esc_html__( 'Contact our team', 'linker-commerce' ) . '</a></div></section>';
+			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( (string) $view['ask_url'] ) . '">' . esc_html__( 'Contact our team', 'linker-commerce' ) . '</a>' . self::matrix_link() . '</div></section>';
 	}
 
 	/**
@@ -1660,129 +1661,56 @@ final class ProductShortcodes {
 		if ( null === $view ) {
 			return '';
 		}
-		$product_id = (int) $view['id'];
-		$locale     = Materials::locale();
-		$cards      = array();
-		$notes      = array();
-		foreach ( Materials::relationships( self::source_id( $product_id ) ) as $relationship ) {
-			$target_id = (int) ( $relationship['target_product_id'] ?? 0 );
-			if ( 'de' === $locale && \function_exists( 'pll_get_post' ) ) {
-				$twin = (int) pll_get_post( $target_id, 'de' );
-				if ( $twin > 0 ) {
-					$target_id = $twin;
-				}
-			}
-			$target = $target_id ? wc_get_product( $target_id ) : null;
-			if ( ! $target instanceof WC_Product || 'publish' !== $target->get_status() ) {
-				continue;
-			}
-			$status     = self::pairing_status( $relationship, $locale );
-			$cards[]    = array(
-				'name' => (string) $target->get_name(),
-				'html' => '<a class="pdp-pairing" href="' . esc_url( (string) get_permalink( $target_id ) ) . '">'
-					. wp_get_attachment_image(
-						(int) $target->get_image_id(),
-						'medium',
-						false,
-						array(
-							'alt'     => $target->get_name(),
-							'loading' => 'lazy',
-						)
-					)
-					. '<span class="pdp-pairing-copy">'
-					. '<span class="pdp-pairing-name">' . esc_html( $target->get_name() ) . '</span>'
-					. '<span class="pdp-pairing-sku">' . esc_html__( 'Item number', 'linker-commerce' ) . ' ' . esc_html( (string) $target->get_sku() ) . '</span>'
-					. '<span class="pdp-pairing-chips"><span class="pdp-doc-meta">' . esc_html( $status ) . '</span></span>'
-					. '</span></a>',
-			);
-			$constraint = Materials::localized_text( $relationship, 'constraint', $locale );
-			if ( '' !== $constraint ) {
-				// One registry cell expands to many relationships that each repeat
-				// the cell's shared sentences and add a pairing-specific tail.
-				$cell = Materials::relationship_cell_id( $relationship );
-				$notes[ '' !== $cell ? $cell : $constraint ][ $constraint ] = true;
-			}
-		}
-		if ( array() === $cards ) {
+		$rows = CompatibilityIndex::for_product( (int) $view['id'] )['compatible'];
+		return self::pairings_table( $rows );
+	}
+
+	/** Render the localized matrix entry when it has been published. */
+	private static function matrix_link(): string {
+		$url = PageUrls::translated( 'inverter-battery-compatibility' );
+		return '' === $url ? '' : '<a class="pdp-matrix-link" href="' . esc_url( $url ) . '">' . esc_html__( 'View full inverter & battery compatibility matrix', 'linker-commerce' ) . '</a>';
+	}
+
+	/** Accessible comparison table of manufacturer-released equipment.
+	 *
+	 * @param array<int,array<string,mixed>> $rows Published compatibility records.
+	 */
+	public static function pairings_table( array $rows ): string {
+		if ( ! $rows ) {
 			return '';
 		}
-		\usort( $cards, static fn( array $left, array $right ): int => strnatcasecmp( $left['name'], $right['name'] ) );
-		$html = '<div class="pdp-pairings">' . implode( '', array_column( $cards, 'html' ) ) . '</div>';
-		foreach ( $notes as $constraints ) {
-			$shared = self::shared_constraint_prefix( array_keys( $constraints ) );
-			$html  .= '<div class="pdp-pairing-footnote pdp-reading pdp-muted"><p>' . esc_html( $shared ) . '</p>';
-			foreach ( array_keys( $constraints ) as $constraint ) {
-				$tail = \trim( \substr( $constraint, \strlen( $shared ) ) );
-				if ( '' !== $tail ) {
-					$html .= '<p>' . esc_html( $tail ) . '</p>';
-				}
+		$html = '<div class="pdp-pairings-table-wrap"><table class="pdp-pairings-table"><thead><tr>';
+		foreach ( array( __( 'Compatible model', 'linker-commerce' ), __( 'Category', 'linker-commerce' ), __( 'Rating', 'linker-commerce' ), __( 'Status & required accessory', 'linker-commerce' ) ) as $heading ) {
+			$html .= '<th scope="col">' . esc_html( $heading ) . '</th>';
+		}
+		$html .= '</tr></thead><tbody>';
+		$notes = array();
+		foreach ( $rows as $row ) {
+			$status = 'released_with_accessory' === $row['verdict'] ? __( 'Released with accessory', 'linker-commerce' ) : __( 'Released', 'linker-commerce' );
+			$html  .= '<tr><th scope="row"><a class="pdp-pairing-link" href="' . esc_url( $row['url'] ) . '">' . esc_html( $row['name'] ) . '</a>';
+			if ( '' !== $row['sku'] ) {
+				$html .= '<small class="pdp-pairing-sku">' . esc_html__( 'Item number', 'linker-commerce' ) . ' ' . esc_html( $row['sku'] ) . '</small>';
 			}
-			$html .= '</div>';
-		}
-		return $html;
-	}
-
-	/**
-	 * The sentences every constraint of one registry cell repeats, so a cell
-	 * expansion prints them once instead of once per pairing.
-	 *
-	 * @param string[] $constraints The cell's localized constraints.
-	 */
-	private static function shared_constraint_prefix( array $constraints ): string {
-		if ( 2 > \count( $constraints ) ) {
-			return (string) ( $constraints[0] ?? '' );
-		}
-		$shared = (string) ( $constraints[0] ?? '' );
-		foreach ( $constraints as $constraint ) {
-			$cut    = \strspn( $shared ^ $constraint, "\0" );
-			$shared = \substr( $shared, 0, $cut );
-		}
-		if ( '' !== $shared && \str_ends_with( $shared, '.' ) ) {
-			$whole = true;
-			foreach ( $constraints as $constraint ) {
-				$next = $constraint[ \strlen( $shared ) ] ?? '';
-				if ( '' !== $next && ' ' !== $next ) {
-					$whole = false;
-					break;
-				}
+			$html .= '</th><td>' . esc_html( $row['category'] ) . '</td><td>' . esc_html( $row['rating'] ) . '</td><td>' . esc_html( $status );
+			foreach ( $row['accessories'] as $part ) {
+				$html .= '<a class="pdp-pairing-accessory" href="' . esc_url( $part['url'] ) . '">' . esc_html( $part['name'] ) . '</a>';
 			}
-			if ( $whole ) {
-				return $shared;
+			foreach ( $row['conditions'] as $condition ) {
+				$notes[ $condition ] ??= count( $notes ) + 1;
+				$n                     = (string) $notes[ $condition ];
+				$html                 .= ' <sup><a href="#pdp-pairing-note-' . esc_attr( $n ) . '">[' . esc_html( $n ) . ']</a></sup>';
 			}
+			$html .= '</td></tr>';
 		}
-		// Version numbers and model names hold periods; share whole sentences only.
-		$boundary = \strrpos( $shared, '. ' );
-		return false === $boundary ? $shared : \substr( $shared, 0, $boundary + 1 );
-	}
-
-	/**
-	 * The relationship's recorded evidence status; qualifications remain below the cards.
-	 *
-	 * @param array<string, mixed> $relationship The registry relationship.
-	 * @param string               $locale       'de' or 'en'.
-	 */
-	private static function pairing_status( array $relationship, string $locale ): string {
-		if ( 'one_way' === ( $relationship['status'] ?? '' ) ) {
-			return __( 'Partially documented', 'linker-commerce' );
+		$html .= '</tbody></table></div>';
+		if ( $notes ) {
+			$html .= '<ol class="pdp-pairing-footnote pdp-reading pdp-muted">';
+			foreach ( $notes as $condition => $n ) {
+				$html .= '<li id="pdp-pairing-note-' . esc_attr( (string) $n ) . '">' . esc_html( (string) $condition ) . '</li>';
+			}
+			$html .= '</ol>';
 		}
-		if ( 'listed' !== ( $relationship['status'] ?? '' ) ) {
-			return __( 'Compatibility information unavailable', 'linker-commerce' );
-		}
-		$by = trim( Materials::localized_text( $relationship, 'listed_by', $locale ) );
-		if ( '' === $by ) {
-			return __( 'Compatibility documented', 'linker-commerce' );
-		}
-		return sprintf( /* translators: %s: manufacturer */ __( 'Documented by %s', 'linker-commerce' ), $by );
-	}
-
-	/**
-	 * The product row an instance object belongs to: the German version's own
-	 * registry binding follows the English source (#9's translation group).
-	 *
-	 * @param int $product_id The product.
-	 */
-	private static function source_id( int $product_id ): int {
-		return Materials::source_product_id( $product_id );
+		return $html . self::matrix_link();
 	}
 
 	/**

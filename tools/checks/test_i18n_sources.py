@@ -30,16 +30,11 @@ class GettextSourceTests(unittest.TestCase):
         )
         with catalog.open("rb") as source:
             german = gettext.GNUTranslations(source)
+        self.assertEqual(german.gettext("Compatible model"), "Kompatibles Modell")
+        self.assertEqual(german.gettext("Rating"), "Leistung / Kapazität")
+        self.assertEqual(german.gettext("Released"), "Freigegeben")
         self.assertEqual(
-            german.gettext("Documented by %s") % "GoodWe", "Von GoodWe dokumentiert"
-        )
-        self.assertEqual(
-            german.gettext("Compatibility documented"), "Kompatibilität dokumentiert"
-        )
-        self.assertEqual(german.gettext("Partially documented"), "Teilweise dokumentiert")
-        self.assertEqual(
-            german.gettext("Compatibility information unavailable"),
-            "Keine Kompatibilitätsangabe verfügbar",
+            german.gettext("Released with accessory"), "Mit Zubehör freigegeben"
         )
 
 

@@ -55,9 +55,7 @@ final class Module {
 	public function source_changed( int $id ): void {
 		$post = get_post( $id );
 		if ( $post instanceof \WP_Post && self::is_source( $post ) ) {
-			if ( 'product' === $post->post_type ) {
-				self::purge_product_links();
-			}
+			self::purge_product_links();
 			( new PreparationJobs() )->changed();
 		}
 	}
@@ -87,10 +85,11 @@ final class Module {
 		if ( ! $post instanceof \WP_Post || ! self::is_source( $post ) ) {
 			return;
 		}
-		if ( 'product' === $post->post_type && in_array( $key, array( \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, '_tv_legacy_acf_json', '_sku', \Linker\Commerce\Products\EngineeringReference::ROLE_META_KEY ), true ) ) {
+		$pdf_change = 'attachment' === $post->post_type && in_array( $key, array( '_wp_attached_file', '_wp_attachment_metadata', '_linker_document_public' ), true );
+		if ( $pdf_change || ( 'product' === $post->post_type && in_array( $key, array( \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, \Linker\Commerce\Products\EngineeringData::DOCUMENTS_META_KEY, EvidenceBindings::META_KEY, CompatibilityClaims::META_KEY, '_tv_legacy_acf_json', '_sku', \Linker\Commerce\Products\EngineeringReference::ROLE_META_KEY ), true ) ) ) {
 			self::purge_product_links();
 		}
-		if ( 'product' === $post->post_type || in_array( $key, array( '_wp_attached_file', '_wp_attachment_metadata', '_linker_document_public' ), true ) ) {
+		if ( 'product' === $post->post_type || $pdf_change ) {
 			( new PreparationJobs() )->changed();
 		}
 	}
@@ -105,6 +104,7 @@ final class Module {
 	public function status_changed( string $new_status, string $old_status, \WP_Post $post ): void {
 		unset( $new_status, $old_status );
 		if ( self::is_source( $post ) ) {
+			self::purge_product_links();
 			( new PreparationJobs() )->changed();
 		}
 	}
@@ -118,6 +118,7 @@ final class Module {
 	public function source_deleted( int $id, \WP_Post $post ): void {
 		unset( $id );
 		if ( self::is_source( $post ) ) {
+			self::purge_product_links();
 			( new PreparationJobs() )->changed();
 		}
 	}

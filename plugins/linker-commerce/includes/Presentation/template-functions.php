@@ -10,6 +10,7 @@
 
 declare( strict_types = 1 );
 
+use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Storefront\ProductView;
 
@@ -34,17 +35,7 @@ if ( ! function_exists( 'linker_commerce_pdp_has_pairings' ) ) {
 	 */
 	function linker_commerce_pdp_has_pairings(): bool {
 		$id = linker_commerce_pdp_product_id();
-		if ( $id <= 0 ) {
-			return false;
-		}
-		foreach ( Materials::relationships( Materials::source_product_id( $id ) ) as $relationship ) {
-			$target_id = (int) ( $relationship['target_product_id'] ?? 0 );
-			$target    = $target_id ? wc_get_product( $target_id ) : null;
-			if ( $target instanceof WC_Product && 'publish' === $target->get_status() ) {
-				return true;
-			}
-		}
-		return false;
+		return $id > 0 && array() !== CompatibilityIndex::for_product( $id )['compatible'];
 	}
 }
 

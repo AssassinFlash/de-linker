@@ -268,6 +268,18 @@ final class PageSchema {
 		$home  = PageUrls::home();
 		$trail = array();
 		if ( is_singular( 'product' ) ) {
+			$this->print_node(
+				array(
+					'@type'      => 'WebPage',
+					'@id'        => $url . '#webpage',
+					'url'        => $url,
+					'name'       => $title,
+					'inLanguage' => self::is_german() ? 'de' : 'en',
+					'isPartOf'   => array( '@id' => $home . '#website' ),
+					'publisher'  => array( '@id' => self::organization_id() ),
+					'mainEntity' => array( '@id' => $url . '#product' ),
+				)
+			);
 			$trail = ProductView::crumbs( $post->ID );
 		} elseif ( is_singular( 'post' ) ) {
 			$trail = array(
@@ -305,7 +317,7 @@ final class PageSchema {
 					'url'   => $url,
 				),
 			);
-		} elseif ( is_page( array( 'compare-products', 'produkte-vergleichen', 'solution', 'loesung', 'residential-storage', 'heimspeicher', 'commercial-storage', 'gewerbespeicher', 'utility-storage', 'grossspeicher', 'about', 'ueber-uns', 'services-support', 'kundendienst', 'capability', 'leistungsfaehigkeit', 'imprint', 'impressum', 'privacy-policy', 'datenschutz', 'terms-of-sale', 'verkaufsbedingungen', 'refund-returns', 'rueckgabe-erstattung', 'for-installer', 'fuer-installateur', 'for-epc', 'fuer-epc' ) ) ) {
+		} elseif ( is_page( array( 'compare-products', 'produkte-vergleichen', 'solution', 'loesung', 'residential-storage', 'heimspeicher', 'commercial-storage', 'gewerbespeicher', 'utility-storage', 'grossspeicher', 'about', 'ueber-uns', 'services-support', 'kundendienst', 'capability', 'leistungsfaehigkeit', 'imprint', 'impressum', 'privacy-policy', 'datenschutz', 'terms-of-sale', 'verkaufsbedingungen', 'refund-returns', 'rueckgabe-erstattung', 'for-installer', 'fuer-installateur', 'for-epc', 'fuer-epc', 'inverter-battery-compatibility', 'wechselrichter-speicher-kompatibilitaet' ) ) ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Match the public comparison selection policy, including empty query values.
 			if ( in_array( $post->post_name, array( 'compare-products', 'produkte-vergleichen' ), true ) && ( isset( $_GET['ids'] ) || isset( $_GET['capped'] ) ) ) {
 				return;
@@ -332,6 +344,26 @@ final class PageSchema {
 				'url'         => $url,
 				'description' => (string) get_post_meta( $post->ID, '_seopress_titles_desc', true ),
 			);
+			if ( in_array( $post->post_name, array( 'inverter-battery-compatibility', 'wechselrichter-speicher-kompatibilitaet' ), true ) ) {
+				$node['inLanguage'] = self::is_german() ? 'de' : 'en';
+				$node['mainEntity'] = array(
+					'@type'            => 'Dataset',
+					'@id'              => $url . '#dataset',
+					'name'             => $title,
+					'url'              => $url,
+					'description'      => $node['description'],
+					'inLanguage'       => $node['inLanguage'],
+					'creator'          => $node['publisher'],
+					'variableMeasured' => array( 'Inverter-Battery Compatibility', 'Required Control Modules and Accessories', 'Smart Meter and Backup Switch Rules', 'Grid connection standard named in the manufacturer certificate' ),
+					'distribution'     => array(
+						array(
+							'@type'          => 'DataDownload',
+							'encodingFormat' => 'application/json',
+							'contentUrl'     => rest_url( 'linker/v1/engineering-feed' ),
+						),
+					),
+				);
+			}
 			if ( in_array( $post->post_name, array( 'about', 'ueber-uns' ), true ) ) {
 				$this->print_node( $this->author_schema( array( 'name' => 'Chester John' ) ) );
 			}

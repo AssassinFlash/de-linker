@@ -9,10 +9,21 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Products\CompatibilityIndex;
+use Linker\Commerce\Products\Materials;
+use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
+use Linker\Commerce\Products\SelectionFactSet;
 
 /** Public product identity and search metadata use the same WooCommerce facts. */
 final class ProductSchema {
+
+	/** Use the caller's snapshot or the current request's authority.
+	 *
+	 * @param array<string,mixed>|null $manifest Published source data.
+	 */
+	public function __construct( private readonly ?array $manifest = null ) {}
 
 	/**
 	 * Adds the block to the head of a product page.
@@ -31,8 +42,13 @@ final class ProductSchema {
 		if ( ! $product instanceof \WC_Product ) {
 			return;
 		}
+		$json = $this->encoded( $product );
+		if ( '' === $json ) {
+			return;
+		}
+		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Linked equipment and documents share the native product purge tag.
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payload is JSON, and encoded() is where its one dangerous character is handled.
-		echo '<script type="application/ld+json">' . $this->encoded( $product ) . "</script>\n";
+		echo '<script type="application/ld+json">' . $json . "</script>\n";
 	}
 
 	/**
@@ -48,7 +64,8 @@ final class ProductSchema {
 		// and the block would leave the page as text. JSON decodes `\u003C`
 		// back to the character, so an escaping pass over the encoded string
 		// is the one place that keeps the payload out of HTML's way.
-		return str_replace( '<', '\u003C', (string) wp_json_encode( $this->data( $product ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+		$node = $this->data( $product );
+		return ! $node ? '' : str_replace( '<', '\u003C', (string) wp_json_encode( $node, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
 	}
 
 	/**
@@ -58,17 +75,28 @@ final class ProductSchema {
 	 * @return array<string, mixed>
 	 */
 	public function data( \WC_Product $product ): array {
-		$id    = $product->get_id();
+		$id       = $product->get_id();
+		$manifest = $this->manifest ?? CompatibilityIndex::manifest();
+		$source   = Publication::canonical_id( $id );
+		$records  = array_column( $manifest['products'], null, 'product_id' );
+		if ( ! Publication::published_in_manifest( $id, $manifest ) || ! empty( $records[ $source ]['engineering_role'] ) ) {
+			return array();
+		}
 		$url   = (string) get_permalink( $id );
 		$brand = $this->term_name( $id, 'pa_brand' );
 		$model = $this->term_name( $id, 'pa_model' );
 
-		$data = array(
-			'@context'    => 'https://schema.org',
-			'@type'       => 'Product',
-			'name'        => $this->text( $product->get_name() ),
-			'url'         => $url,
-			'description' => $this->summary( $product, $brand, $model ),
+		$figures = Publication::figures_in_manifest( $source, $manifest );
+		$facts   = SelectionFacts::from_figures( $source, $figures );
+		$data    = array(
+			'@context'         => 'https://schema.org',
+			'@type'            => 'Product',
+			'@id'              => $url . '#product',
+			'mainEntityOfPage' => array( '@id' => $url . '#webpage' ),
+			'inLanguage'       => Materials::locale(),
+			'name'             => $this->text( $product->get_name() ),
+			'url'              => $url,
+			'description'      => $this->summary( $product, $brand, $model, $facts ),
 		);
 
 		$sku = $this->text( $product->get_sku() );
@@ -97,7 +125,123 @@ final class ProductSchema {
 			$data['image'] = $image;
 		}
 
+		$series = $this->term_name( $source, 'pa_series' );
+		if ( '' === $series ) {
+			$series = trim( (string) ( Materials::english_acf( $source )['product_series'] ?? '' ) );
+		}
+		$source_brand = $records[ $source ]['brand'];
+		if ( 0 === strcasecmp( $source_brand, $series ) ) {
+			$series = '';
+		}
+		if ( '' === $series ) {
+			$members = ProductFamilies::published_members( $source );
+			if ( count( $members ) > 1 ) {
+				$series = $records[ min( $members ) ]['model'] ?? '';
+			}
+		}
+		if ( '' !== $series ) {
+			$data['inProductGroupWithID'] = PageUrls::root() . '#product-group-' . sanitize_title( str_starts_with( strtolower( $series ), strtolower( $source_brand . ' ' ) ) ? $series : $source_brand . '-' . $series );
+		}
+		$material = Materials::material_for_product( $source );
+		$mpn      = $this->text( (string) ( $material['identity']['manufacturer_part_number'] ?? '' ) );
+		if ( '' !== $mpn ) {
+			$data['mpn'] = $mpn;
+		}
+		$downloads = ( new ProductView() )->downloads( $id, $manifest );
+		foreach ( $downloads as $doc ) {
+			$title = Materials::localized_document_title( $doc['title'], null, $doc['url'] );
+			$node  = array(
+				'@type'          => 'DigitalDocument',
+				'name'           => $this->text( $title ),
+				'url'            => $doc['url'],
+				'encodingFormat' => 'application/pdf',
+			);
+			$lang  = strtolower( $doc['language'] );
+			if ( in_array( $lang, array( 'en', 'de' ), true ) ) {
+				$node['inLanguage'] = $lang;
+			} elseif ( in_array( $lang, array( 'mul', 'de/en', 'en/de' ), true ) ) {
+				$node['inLanguage'] = array( 'en', 'de' );
+			}
+			$data['subjectOf'][] = $node;
+		}
+		$properties = $this->properties( $source, $facts, $figures, $downloads );
+		if ( $properties ) {
+			$data['additionalProperty'] = $properties;
+		}
+		$links   = CompatibilityIndex::for_product( $id, $manifest );
+		$related = array();
+		foreach ( $links['compatible'] as $item ) {
+			$related[] = $item;
+			array_push( $related, ...$item['accessories'] );
+		}
+		foreach ( array(
+			'isRelatedTo'               => $related,
+			'isAccessoryOrSparePartFor' => $links['accessory_for'],
+		) as $property => $items ) {
+			$nodes = array();
+			foreach ( $items as $item ) {
+				$nodes[ $item['url'] ] = array(
+					'@id'  => $item['url'] . '#product',
+					'name' => $this->text( $item['name'] ),
+					'url'  => $item['url'],
+				);
+			}
+			if ( $nodes ) {
+				$data[ $property ] = array_values( $nodes );
+			}
+		}
 		return $data;
+	}
+
+	/** Localized public facts with numeric values kept numeric for consumers.
+	 *
+	 * @param int                               $id Canonical product ID.
+	 * @param SelectionFactSet                  $f Verified public facts.
+	 * @param array<string,array<string,mixed>> $figures Authorized technical figures.
+	 * @param array<int,array<string,mixed>>    $downloads Published document links.
+	 * @return list<array<string,mixed>> Schema.org PropertyValue nodes.
+	 */
+	private function properties( int $id, SelectionFactSet $f, array $figures, array $downloads ): array {
+		$mppt   = $figures['n_mppt']['value'] ?? null;
+		$mppt   = is_string( $mppt ) && ctype_digit( $mppt ) ? (int) $mppt : $mppt;
+		$values = array(
+			array( __( 'Rated AC output power', 'linker-commerce' ), $f->ac_power_kw, 'kW', 'KWT' ),
+			array( __( 'Maximum PV input power', 'linker-commerce' ), $f->pv_input_kw, 'kW', 'KWT' ),
+			array( __( 'Usable battery energy', 'linker-commerce' ), $f->usable_kwh, 'kWh', 'KWH' ),
+			array( __( 'Nominal battery energy', 'linker-commerce' ), $f->nominal_kwh, 'kWh', 'KWH' ),
+			array( __( 'MPPT trackers', 'linker-commerce' ), $mppt, '', '' ),
+			array( __( 'Ingress protection', 'linker-commerce' ), $figures['ip_rating']['value'] ?? null, '', '' ),
+			array( __( 'Battery voltage range', 'linker-commerce' ), Materials::de_number( (string) ( $figures['battery_voltage_range_v']['value'] ?? '' ) ), 'V', 'VLT' ),
+			array( __( 'Grid compliance standards', 'linker-commerce' ), implode( ', ', CompatibilityIndex::grid_standards( $id, $downloads, $figures ) ), '', '' ),
+		);
+		if ( is_int( $f->phase ) ) {
+			$values[] = array( __( 'Grid phases', 'linker-commerce' ), 1 === $f->phase ? __( 'Single-phase', 'linker-commerce' ) : __( 'Three-phase', 'linker-commerce' ), '', '' );
+		}
+		if ( null !== $f->kwh_range ) {
+			$values[] = array( __( 'System energy range', 'linker-commerce' ), Materials::de_number( $f->kwh_range['min'] . '–' . $f->kwh_range['max'] ), 'kWh', 'KWH' );
+		}
+		if ( 'unknown' !== $f->application ) {
+			$values[] = array( __( 'Application', 'linker-commerce' ), 'home' === $f->application ? __( 'Residential', 'linker-commerce' ) : __( 'Commercial & Industrial', 'linker-commerce' ), '', '' );
+		}
+		$result = array();
+		foreach ( $values as list( $name, $value, $unit, $code ) ) {
+			if ( ! is_scalar( $value ) || '' === $value || 'unknown' === $value ) {
+				continue;
+			}
+			$node = array(
+				'@type' => 'PropertyValue',
+				'name'  => $name,
+				'value' => $value,
+			);
+			if ( '' !== $unit ) {
+				$node += array(
+					'unitText' => $unit,
+					'unitCode' => $code,
+				);
+			}
+			$result[] = $node;
+		}
+		return $result;
 	}
 
 	/**
@@ -138,17 +282,18 @@ final class ProductSchema {
 	/**
 	 * Ratings and translated category of a model whose name has no description.
 	 *
-	 * @param \WC_Product $product Localized product.
-	 * @param string      $name Published product name.
-	 * @param string      $brand Brand term.
-	 * @param string      $model Model term.
+	 * @param \WC_Product           $product Localized product.
+	 * @param string                $name Published product name.
+	 * @param string                $brand Brand term.
+	 * @param string                $model Model term.
+	 * @param SelectionFactSet|null $facts Authorized figures for the current graph.
 	 * @return list<string>
 	 */
-	private function model_details( \WC_Product $product, string $name, string $brand, string $model ): array {
+	private function model_details( \WC_Product $product, string $name, string $brand, string $model, ?SelectionFactSet $facts = null ): array {
 		if ( '' === $model || ( trim( $brand . ' ' . $model ) !== $name && $name !== $model ) ) {
 			return array();
 		}
-		$facts    = SelectionFacts::for_product( $product->get_id() );
+		$facts  ??= SelectionFacts::for_product( $product->get_id() );
 		$category = $this->term_name( $product->get_id(), 'product_cat' );
 		$details  = '' !== $category ? array( $category ) : array();
 		if ( is_float( $facts->ac_power_kw ) ) {
@@ -165,13 +310,14 @@ final class ProductSchema {
 	/**
 	 * Add the category and published rating when the Woo title is only a model.
 	 *
-	 * @param \WC_Product $product Localized product.
-	 * @param string      $brand   Manufacturer name.
-	 * @param string      $model   Model designation.
+	 * @param \WC_Product           $product Localized product.
+	 * @param string                $brand   Manufacturer name.
+	 * @param string                $model   Model designation.
+	 * @param SelectionFactSet|null $facts Authorized figures for a structured description.
 	 */
-	private function summary( \WC_Product $product, string $brand, string $model ): string {
+	private function summary( \WC_Product $product, string $brand, string $model, ?SelectionFactSet $facts = null ): string {
 		$name    = $this->text( $product->get_name() );
-		$details = $this->model_details( $product, $name, $brand, $model );
+		$details = $this->model_details( $product, $name, $brand, $model, $facts );
 		if ( $details ) {
 			$name .= ' – ' . implode( ', ', $details );
 		}
