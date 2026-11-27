@@ -35,19 +35,24 @@ final class WindPressPageStyles {
 
 	/** Volume imports following the shared control styles. */
 	private const AFTER = array(
-		'journal.css'              => 'journal',
-		'service-intro.css'        => 'services',
-		'marketing-rhythm.css'     => 'marketing',
-		'homepage-focus.css'       => 'home',
-		'homepage-readability.css' => 'home',
-		'planner.css'              => 'planner',
-		'contact-journal.css'      => 'contact',
-		'planner-equipment.css'    => 'planner',
-		'planner-report.css'       => 'planner',
-		'planner-site-energy.css'  => 'planner',
-		'home-configurator.css'    => 'showcase',
-		'not-found.css'            => 'not_found',
-		'roof-studio.css'          => 'planner',
+		'journal.css'                => 'journal',
+		'service-intro.css'          => 'services',
+		'marketing-rhythm.css'       => 'marketing',
+		'homepage-focus.css'         => 'home',
+		'homepage-readability.css'   => 'home',
+		'planner.css'                => 'planner',
+		'contact-journal.css'        => 'contact',
+		'planner-equipment.css'      => 'planner',
+		'planner-report.css'         => 'planner',
+		'planner-site-energy.css'    => 'planner',
+		'home-configurator.css'      => 'showcase',
+		'home-sections.css'          => 'home',
+		'home-journal.css'           => 'home',
+		'capability-cards.css'       => 'capability_cards',
+		'app-details.css'            => 'app_details',
+		'reference-photo-scenes.css' => 'photo_scenes',
+		'not-found.css'              => 'not_found',
+		'roof-studio.css'            => 'planner',
 	);
 
 	/**
@@ -77,10 +82,30 @@ final class WindPressPageStyles {
 
 	/** Both the cached frontend and LiveCanvas's live compiler use the same page styles. */
 	public function register(): void {
+		add_shortcode( 'linker_marketing_style', array( $this, 'marketing_style' ) );
 		add_action( 'a!windpress/core/runtime:enqueue_css_cache.before', array( $this, 'before_cache' ) );
 		add_action( 'a!windpress/core/runtime:enqueue_css_cache.after', array( $this, 'after_cache' ) );
 		add_action( 'a!windpress/core/runtime:enqueue_play_cdn.before', array( $this, 'before_cache' ) );
 		add_action( 'a!windpress/core/runtime:enqueue_play_cdn.after', array( $this, 'after_cache' ) );
+	}
+
+	/**
+	 * Retain cascade order on marketing pages whose own rules precede these shared rules.
+	 *
+	 * @param array<string,string>|string $atts Stylesheet selected in the page content.
+	 */
+	public function marketing_style( $atts = array() ): string {
+		$name = is_array( $atts ) ? ( $atts['name'] ?? '' ) : '';
+		if ( ! in_array( $name, array( 'capability-cards', 'app-details' ), true ) ) {
+			return '';
+		}
+		$handle = 'linker-volume-' . $name;
+		$styles = wp_styles();
+		$asset  = $styles->registered[ $handle ] ?? null;
+		if ( null === $asset ) {
+			return '';
+		}
+		return '<link rel="stylesheet" href="' . esc_url( $styles->_css_href( $asset->src, $asset->ver, $handle ) ) . '">';
 	}
 
 	/** Before shared control overrides. */
@@ -142,27 +167,33 @@ final class WindPressPageStyles {
 		$search    = is_search() || isset( $ids['tv-blog-search-v1'] );
 		$services  = isset( $ids['service-redesign'] );
 
+		$capabilities = $home || $services || isset( $ids['tv-rs-page-v1'] ) || isset( $ids['tv-cs-page-v1'] ) || isset( $ids['tv-solution-v1'] ) || isset( $ids['installer-journal'] ) || isset( $ids['tv-solutions-developers-v1'] );
+		$app_details  = $home || $services || isset( $ids['tv-solution-v1'] ) || isset( $ids['installer-journal'] ) || isset( $ids['tv-solutions-developers-v1'] ) || isset( $ids['about-journal'] );
+
 		return array(
-			'account'       => $account,
-			'forms'         => $account || $cart || $inquiry || $contact || str_contains( $content, 'linker-gate' ) || str_contains( $content, '[linker_form_assistant' ),
-			'library'       => isset( $ids['linker-faq-page'] ) || str_contains( $content, '[linker_library_' ),
-			'product'       => $product,
-			'compatibility' => isset( $ids['linker-compatibility-matrix'] ) || 1 === preg_match( '/(?<!\[)\[linker_compatibility_matrix(?=[\s\/\]])/', $content ),
-			'model_links'   => $product || str_contains( $content, '[linker_solution_products' ),
-			'catalogue'     => $catalogue,
-			'storefront'    => $catalogue || $product || $cart || $inquiry || $account || $compare,
-			'article'       => is_singular( 'post' ) || isset( $ids['tv-blog-single-v1'] ) || str_contains( $content, '[linker_blog_' ),
-			'contact'       => $contact,
-			'category'      => $category,
-			'blog'          => $blog,
-			'search'        => $search,
-			'journal'       => $blog || $category || $search,
-			'services'      => $services || isset( $ids['installer-journal'] ) || isset( $ids['tv-utility-page-v1'] ),
-			'marketing'     => $home || $services || array() !== array_intersect( array_keys( $ids ), array( 'installer-journal', 'about-journal', 'tv-rs-page-v1', 'tv-cs-page-v1', 'tv-cp-page-v1', 'tv-solution-v1', 'tv-solutions-developers-v1', 'tv-utility-page-v1' ) ),
-			'home'          => $home,
-			'showcase'      => $home || isset( $ids['configurator-showcase'] ),
-			'planner'       => 1 === preg_match( '/<(?:section|div)\b[^>]*\sdata-linker-planner(?=[\s=\/>])|(?<!\[)\[(?:linker_planner|linker_configurator)(?=[\s\/\]])/i', $content ),
-			'not_found'     => is_404() || isset( $ids['tv-404-v1'] ),
+			'capability_cards' => $capabilities,
+			'app_details'      => $app_details,
+			'photo_scenes'     => $home || isset( $ids['about-journal'] ),
+			'account'          => $account,
+			'forms'            => $account || $cart || $inquiry || $contact || str_contains( $content, 'linker-gate' ) || str_contains( $content, '[linker_form_assistant' ),
+			'library'          => isset( $ids['linker-faq-page'] ) || str_contains( $content, '[linker_library_' ),
+			'product'          => $product,
+			'compatibility'    => isset( $ids['linker-compatibility-matrix'] ) || 1 === preg_match( '/(?<!\[)\[linker_compatibility_matrix(?=[\s\/\]])/', $content ),
+			'model_links'      => $product || str_contains( $content, '[linker_solution_products' ),
+			'catalogue'        => $catalogue,
+			'storefront'       => $catalogue || $product || $cart || $inquiry || $account || $compare,
+			'article'          => is_singular( 'post' ) || isset( $ids['tv-blog-single-v1'] ) || str_contains( $content, '[linker_blog_' ),
+			'contact'          => $contact,
+			'category'         => $category,
+			'blog'             => $blog,
+			'search'           => $search,
+			'journal'          => $blog || $category || $search,
+			'services'         => $services || isset( $ids['installer-journal'] ) || isset( $ids['tv-utility-page-v1'] ),
+			'marketing'        => $home || $services || array() !== array_intersect( array_keys( $ids ), array( 'installer-journal', 'about-journal', 'tv-rs-page-v1', 'tv-cs-page-v1', 'tv-cp-page-v1', 'tv-solution-v1', 'tv-solutions-developers-v1', 'tv-utility-page-v1' ) ),
+			'home'             => $home,
+			'showcase'         => $home || isset( $ids['configurator-showcase'] ),
+			'planner'          => 1 === preg_match( '/<(?:section|div)\b[^>]*\sdata-linker-planner(?=[\s=\/>])|(?<!\[)\[(?:linker_planner|linker_configurator)(?=[\s\/\]])/i', $content ),
+			'not_found'        => is_404() || isset( $ids['tv-404-v1'] ),
 		);
 	}
 }

@@ -470,7 +470,7 @@ for (const outcome of ['load', 'error', 'cached-load', 'cached-error']) {
   });
   const tile = dom.window.document.querySelector('.linker-library-thumb');
   tile.className = 'linker-library-thumb has-src';
-  tile.innerHTML = '<img src="/thumb.webp" alt=""><svg class="linker-library-icon"></svg>';
+  tile.innerHTML = '<img src="/thumb.webp" alt="">';
   const doc = boot(dom);
   const input = doc.querySelector('.linker-library-q');
   input.value = 'document 1';

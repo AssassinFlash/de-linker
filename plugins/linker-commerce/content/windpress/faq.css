@@ -57,7 +57,6 @@
 #linker-faq-page p { margin: 0; }
 #linker-faq-page h1, #linker-faq-page h2, #linker-faq-page h3 { margin: 0; color: inherit; }
 #linker-faq-page ul { margin: 0; padding: 0; list-style: none; }
-#linker-faq-page .linker-library-icon { flex: none; display: block; }
 #linker-faq-page .linker-library-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 #linker-faq-page .linker-library-wrap { width: min(var(--ll-container), 100%); margin-inline: auto; padding-inline: var(--ll-pad); }
 
@@ -211,11 +210,33 @@
 #linker-faq-page .linker-library-badge.is-warranty { background: #f6ebe6; color: #7a3e2e; }
 #linker-faq-page .linker-library-badge.is-brochure { background: #eeeaf4; color: #3d3560; }
 #linker-faq-page .linker-library-thumb { grid-area: thumb; width: 52px; height: 72px; flex: none; display: grid; place-items: center; overflow: hidden; position: relative; border: 1px solid rgba(21, 53, 47, 0.14); border-radius: 3px; background: #fff; color: var(--ll-muted); box-shadow: 0 1px 2px rgba(21, 53, 47, 0.05), 0 4px 12px rgba(21, 53, 47, 0.07); }
+#linker-faq-page .linker-library-thumb::before {
+	content: "";
+	display: block;
+	flex: none;
+	width: 18px;
+	height: 18px;
+	background-color: currentColor;
+	--library-mask: url("data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22black%22 stroke-width%3D%221.8%22%3E%3Cpath d%3D%22M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z%22%2F%3E%3Cpath d%3D%22M14 3v6h6%22%2F%3E%3C%2Fsvg%3E");
+	-webkit-mask: var(--library-mask) center / contain no-repeat;
+	mask: var(--library-mask) center / contain no-repeat;
+}
+#linker-faq-page .linker-library-dl::after {
+	content: "";
+	display: block;
+	flex: none;
+	width: 14px;
+	height: 14px;
+	background-color: currentColor;
+	--library-mask: url("data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22black%22 stroke-width%3D%222%22%3E%3Cpath d%3D%22M12 3v12m0 0l-4-4m4 4l4-4M4 21h16%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+	-webkit-mask: var(--library-mask) center / contain no-repeat;
+	mask: var(--library-mask) center / contain no-repeat;
+}
 #linker-faq-page .linker-library-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
 /* Keep a type icon until this particular image has loaded. A search clone
  * may have a source URL before its own readiness listener has completed. */
-#linker-faq-page:not(.is-enhanced) .linker-library-thumb.has-src .linker-library-icon,
-#linker-faq-page .linker-library-thumb.has-img .linker-library-icon { visibility: hidden; }
+#linker-faq-page:not(.is-enhanced) .linker-library-thumb.has-src::before,
+#linker-faq-page .linker-library-thumb.has-img::before { visibility: hidden; }
 #linker-faq-page.is-enhanced .linker-library-thumb.has-src img { opacity: 0; transition: opacity 0.16s linear; }
 #linker-faq-page.is-enhanced .linker-library-thumb.has-img img { opacity: 1; }
 #linker-faq-page .linker-library-thumb.is-type.is-datasheet { background: #e5f4f2; color: var(--ll-accent-dark); }

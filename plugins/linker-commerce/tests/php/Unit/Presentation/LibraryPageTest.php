@@ -257,8 +257,8 @@ final class LibraryPageTest extends TestCase {
 		$html = ( new LibraryPage( $this->library() ) )->documents();
 
 		$this->assertStringContainsString( 'data-library-filters', $html );
-		self::assertSame( 1, substr_count( $html, '<symbol id="library-download"' ) );
-		self::assertStringContainsString( '<use href="#library-download"', $html );
+		self::assertStringNotContainsString( '<svg', $html );
+		self::assertStringContainsString( 'class="linker-library-thumb', $html );
 		$this->assertStringContainsString( 'data-library-skus=', $html );
 		$this->assertStringContainsString( 'DLK-EXAMPLE', $html );
 		$this->assertStringContainsString( 'aria-label="Document type"', $html );
