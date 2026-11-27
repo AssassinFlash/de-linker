@@ -15,13 +15,16 @@ use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
-use Linker\Commerce\Storefront\ProductFamilies;
+use Linker\Commerce\Products\CompatibilityIndex;
+use Linker\Commerce\Products\SelectionFactSet;
+use Linker\Commerce\Storefront\AgentMarkdown;
+use Linker\Commerce\Storefront\SitemapSync;
 
 /** Serve the site-root text document before SEOPress's generic recent-posts index. */
 final class LlmsTxt {
 	public const HEADERS = array(
 		'Content-Type'  => 'text/plain; charset=utf-8',
-		'X-Robots-Tag'  => 'noindex',
+		'X-Robots-Tag'  => 'noindex, follow',
 		'Cache-Control' => 'public, max-age=3600',
 	);
 
@@ -34,10 +37,13 @@ final class LlmsTxt {
 		$home = untrailingslashit( (string) get_option( 'home' ) );
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only the parsed path is compared to a site-owned path.
 		$path = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH );
-		if ( wp_parse_url( $home . '/llms.txt', PHP_URL_PATH ) !== $path ) {
+		$full = wp_parse_url( $home . '/llms-full.txt', PHP_URL_PATH ) === $path;
+		if ( ! $full && wp_parse_url( $home . '/llms.txt', PHP_URL_PATH ) !== $path ) {
 			return $parse;
 		}
-		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- use LiteSpeed's native product archive invalidation.
+		foreach ( array( 'PT.product', 'PT.post', 'PT.page' ) as $tag ) {
+			do_action( 'litespeed_tag_add', $tag ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native LiteSpeed archive invalidation.
+		}
 		do_action( 'litespeed_control_force_public', 'Public bilingual resource directory' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- LiteSpeed Cache public API.
 		do_action( 'litespeed_control_set_ttl', HOUR_IN_SECONDS ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- LiteSpeed Cache public API.
 		foreach ( self::HEADERS as $key => $value ) {
@@ -45,7 +51,7 @@ final class LlmsTxt {
 		}
 		if ( 'HEAD' !== sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) ) ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the response is Markdown served as text/plain.
-			echo self::document( $home );
+			echo $full ? self::full_document( $home ) : self::document( $home );
 		}
 		exit;
 	}
@@ -57,10 +63,13 @@ final class LlmsTxt {
 	 */
 	public static function document( string $home ): string {
 		$sections = array(
-			'Solutions'                    => self::pages( array( 'solution', 'solution/residential-storage', 'solution/commercial-storage', 'solution/utility-storage' ) ),
-			'Planning tools and documents' => self::pages( array( 'solution-configurator', 'compare-products', 'faq-download', 'services-support', 'for-installer', 'for-epc', 'about', 'contact' ) ),
-			'Product categories'           => self::categories(),
-			'Product families'             => self::product_families(),
+			'Solutions'                         => self::pages( array( 'solution', 'solution/residential-storage', 'solution/commercial-storage', 'solution/utility-storage' ) ),
+			'Machine-Readable Engineering Data' => self::endpoints( $home ),
+			'Manufacturers'                     => self::brands(),
+			'Technical journal'                 => self::journal(),
+			'Planning tools and documents'      => self::pages( array( 'inverter-battery-compatibility', 'solution-configurator', 'compare-products', 'faq-download', 'services-support', 'for-installer', 'for-epc', 'about', 'contact' ) ),
+			'Product categories'                => self::categories(),
+			'Product families'                  => self::product_families(),
 		);
 		$latest   = max( (string) get_lastpostmodified( 'gmt', 'product' ), (string) get_lastpostmodified( 'gmt', 'post' ), (string) get_lastpostmodified( 'gmt', 'page' ) );
 		return self::markdown( $sections, substr( $latest, 0, 10 ), $home . '/sitemaps.xml' );
@@ -74,7 +83,7 @@ final class LlmsTxt {
 	 * @param string                     $sitemap Site's sitemap index.
 	 */
 	public static function markdown( array $sections, string $updated, string $sitemap ): string {
-		$lines = array(
+		$lines    = array(
 			'# Linker Technology GmbH',
 			'',
 			'> Linker supplies hybrid inverters, battery storage systems and energy management accessories to installers and EPC contractors in Germany and across Europe. The solutions cover residential, commercial, industrial and utility-scale projects.',
@@ -85,9 +94,16 @@ final class LlmsTxt {
 			'',
 			'Direct: ' . ContactChannels::DIRECT_EMAIL . ' · ' . ContactChannels::DIRECT_PHONE . ' · [WhatsApp](' . ContactChannels::WHATSAPP_BASE . ')',
 			'',
-			'- Official YouTube: ' . ContactChannels::OFFICIAL_YOUTUBE,
-			'- Official Facebook: ' . ContactChannels::OFFICIAL_FACEBOOK,
 		);
+		$profiles = ContactChannels::company_same_as();
+		foreach ( $profiles as $url ) {
+			$label = match ( $url ) {
+				ContactChannels::OFFICIAL_YOUTUBE => 'Official YouTube',
+				ContactChannels::OFFICIAL_FACEBOOK => 'Official Facebook',
+				default => (string) wp_parse_url( $url, PHP_URL_HOST ),
+			};
+			$lines[] = '- ' . $label . ': ' . $url;
+		}
 		foreach ( $sections as $heading => $rows ) {
 			$lines[] = '';
 			$lines[] = '## ' . $heading;
@@ -163,7 +179,7 @@ final class LlmsTxt {
 	}
 
 	/**
-	 * List a published representative of each reciprocal model family.
+	 * Group every published model under its manufacturer and series.
 	 *
 	 * @return list<string>
 	 */
@@ -195,32 +211,241 @@ final class LlmsTxt {
 		$set       = array_fill_keys( $published, true );
 		$english   = array_values( array_filter( $published, static fn( int $id ): bool => PageUrls::twin( $id, 'en' ) === $id ) );
 		$rows      = array();
-		$listed    = array();
-		foreach ( ( new ProductFamilies( $english, 'en' ) )->rows( $english ) as $family ) {
-			$id = $family['lead'];
-			$de = PageUrls::twin( $id, 'de' );
-			if ( ! isset( $set[ $de ] ) ) {
+		foreach ( $english as $id ) {
+			$de               = PageUrls::twin( $id, 'de' );
+			$terms            = get_the_terms( $id, 'pa_brand' );
+			$brand            = is_array( $terms ) && $terms ? $terms[0]->name : '';
+			$series           = Materials::english_acf( $id )['product_series'] ?? '';
+			$label            = implode( ' · ', array_unique( array_filter( array( $brand, is_string( $series ) ? trim( $series ) : '' ) ) ) );
+			$facts            = SelectionFacts::for_product( $id );
+			$ratings          = array_filter( array( self::power( $facts ), self::energy( $facts ) ) );
+			$rating           = $ratings ? ' · ' . implode( ' · ', $ratings ) : '';
+			$rows[ $label ][] = isset( $set[ $de ] ) ? self::post_pair( $id, $de, $rating ) : self::link( get_the_title( $id ), (string) get_permalink( $id ) ) . $rating;
+		}
+		$lines = array();
+		foreach ( $rows as $label => $models ) {
+			$lines[] = ( '' === $label ? '' : $label . ': ' ) . implode( ' / ', $models );
+		}
+		return $lines;
+	}
+
+	/**
+	 * Authoritative public engineering endpoints.
+	 *
+	 * @param string $home Site root.
+	 * @return list<string>
+	 */
+	private static function endpoints( string $home ): array {
+		return array_merge(
+			array(
+				self::link( 'Full equipment & compatibility reference', $home . '/llms-full.txt' ),
+				self::link( 'Live engineering feed JSON', $home . '/wp-json/linker/v1/engineering-feed' ),
+				self::link( 'MCP Server Card', $home . '/.well-known/mcp.json' ),
+				self::link( 'A2A Agent Card', $home . '/.well-known/agent-card.json' ),
+			),
+			self::pages( array( 'inverter-battery-compatibility' ) )
+		);
+	}
+
+	/**
+	 * Manufacturer archives with a published model in the linked language.
+	 *
+	 * @return list<string>
+	 */
+	private static function brands(): array {
+		$rows  = array();
+		$terms = get_terms(
+			array(
+				'taxonomy'   => 'product_brand',
+				'hide_empty' => true,
+			)
+		);
+		if ( is_wp_error( $terms ) ) {
+			return $rows;
+		}
+		$archives = new SitemapSync();
+		foreach ( $terms as $term ) {
+			$link = get_term_link( $term );
+			if ( is_wp_error( $link ) ) {
 				continue;
 			}
-			$terms  = get_the_terms( $id, 'pa_brand' );
-			$brand  = is_array( $terms ) && $terms ? $terms[0]->name : '';
-			$series = Materials::english_acf( $id )['product_series'] ?? '';
-			$series = is_string( $series ) ? trim( $series ) : '';
-			$label  = implode( ' · ', array_unique( array_filter( array( $brand, $series ) ) ) );
-			if ( '' !== $series && 0 !== strcasecmp( $brand, $series ) ) {
-				if ( isset( $listed[ $label ] ) ) {
-					continue;
-				}
-				$listed[ $label ] = true;
+			$entry = $archives->brand_urls( array( 'loc' => $link ), $term );
+			if ( null !== $entry ) {
+				$rows[] = self::link( $term->name, $entry['loc'] ) . ( isset( $entry['linker_brand_twin'] ) ? ' · ' . self::link( $term->name . ' (DE)', $entry['linker_brand_twin'] ) : '' );
 			}
-			$facts  = SelectionFacts::for_product( $id );
-			$rating = is_float( $facts->ac_power_kw ) ? ' · ' . $facts->ac_power_kw . ' kW' : '';
-			if ( is_float( $facts->nominal_kwh ) ) {
-				$rating .= ' · ' . $facts->nominal_kwh . ' kWh';
-			}
-			$rows[] = ( '' !== $label ? $label . ': ' : '' ) . self::post_pair( $id, $de, $rating );
 		}
 		return $rows;
+	}
+
+	/**
+	 * Pair published posts, including posts with only one language.
+	 *
+	 * @return list<string>
+	 */
+	private static function journal(): array {
+		$ids       = get_posts(
+			array(
+				'post_type'    => 'post',
+				'post_status'  => 'publish',
+				'has_password' => false,
+				'numberposts'  => -1,
+				'fields'       => 'ids',
+				'orderby'      => 'date',
+				'order'        => 'DESC',
+				'lang'         => '',
+			)
+		);
+		$published = array_fill_keys( $ids, true );
+		$seen      = array();
+		$rows      = array();
+		foreach ( $ids as $id ) {
+			if ( isset( $seen[ $id ] ) ) {
+				continue;
+			}
+			$en = PageUrls::twin( $id, 'en' );
+			$de = PageUrls::twin( $id, 'de' );
+			if ( isset( $published[ $en ], $published[ $de ] ) ) {
+				$rows[]      = self::post_pair( $en, $de );
+				$seen[ $en ] = true;
+				$seen[ $de ] = true;
+			} else {
+				$rows[] = self::link( get_the_title( $id ), (string) get_permalink( $id ) );
+			}
+		}
+		return $rows;
+	}
+
+	/**
+	 * Public engineering tables with linked models and their release conditions.
+	 *
+	 * @param string $home Site root.
+	 */
+	public static function full_document( string $home ): string {
+		$manifest     = Publication::manifest();
+		$declarations = CompatibilityIndex::declarations( $manifest );
+		$equipment    = array();
+		$names        = array();
+		$documents    = array_column( $manifest['documents'], null, 'document_id' );
+		foreach ( $manifest['products'] as $product ) {
+			if ( '' !== $product['engineering_role'] ) {
+				continue;
+			}
+			$id           = $product['product_id'];
+			$names[ $id ] = '' !== $product['model'] ? $product['model'] : $product['title'];
+			$locales      = $product['locale_product_ids'];
+			$facts        = SelectionFacts::for_product( $id );
+			$material     = Materials::material_for_product( $id );
+			$figures      = get_post_meta( $id, '_tv_b2b_figures', true );
+			$figures      = is_string( $figures ) ? json_decode( $figures, true ) : $figures;
+			$downloads    = array();
+			foreach ( $product['documents'] as $key ) {
+				$downloads[] = $documents[ $key ];
+			}
+			$equipment[] = AgentMarkdown::row(
+				array(
+					$product['brand'],
+					$names[ $id ],
+					$material['identity']['manufacturer_part_number'] ?? '',
+					str_replace( '_', ' ', $facts->device_class ),
+					$facts->application,
+					self::power( $facts ),
+					self::energy( $facts ),
+					'unknown' === $facts->phase ? '' : (string) $facts->phase,
+					(string) ( $figures['ip_rating']['value'] ?? '' ),
+					implode( ', ', CompatibilityIndex::grid_standards( $id, $downloads ) ),
+					isset( $locales['en'] ) ? (string) get_permalink( $locales['en'] ) : '',
+					isset( $locales['de'] ) ? (string) get_permalink( $locales['de'] ) : '',
+				)
+			);
+		}
+		$intro = self::markdown( array( 'Machine-Readable Engineering Data' => self::endpoints( $home ) ), substr( (string) get_lastpostmodified( 'gmt' ), 0, 10 ), $home . '/sitemaps.xml' );
+		$lines = array(
+			$intro,
+			'## Published Equipment Index',
+			'',
+			'| Brand | Model | MPN | Category | Application | Power | Energy | Phase | IP | Grid standards | EN URL | DE URL |',
+			AgentMarkdown::row( array_fill( 0, 12, '---' ) ),
+			...$equipment,
+			'',
+			'## Verified Inverter & Battery Compatibility',
+			'',
+			'| Inverter | Battery | Verdict | Required accessory | Notes |',
+			'| --- | --- | --- | --- | --- |',
+		);
+		foreach ( $declarations['pairs'] as $pair ) {
+			$inverter = $names[ $pair['inverter_product_id'] ] ?? '';
+			$battery  = $names[ $pair['battery_product_id'] ] ?? '';
+			if ( '' === $inverter || '' === $battery || ! in_array( $pair['verdict'], array( 'released', 'released_with_accessory' ), true ) ) {
+				continue;
+			}
+			$lines[] = AgentMarkdown::row( array( $inverter, $battery, str_replace( '_', ' ', $pair['verdict'] ), self::accessories( $pair, $names ), self::conditions( $pair ) ) );
+		}
+		$lines[] = "\n## Meter, Backup & Parallel Controller Rules\n";
+		$lines[] = '| Inverter | Rule type | Status | Accessories | Summary |';
+		$lines[] = '| --- | --- | --- | --- | --- |';
+		foreach ( $declarations['requirements'] as $rule ) {
+			$inverter = $names[ $rule['inverter_product_id'] ] ?? '';
+			if ( '' !== $inverter ) {
+				$lines[] = AgentMarkdown::row( array( $inverter, str_replace( '_', ' ', $rule['kind'] ), $rule['included'] ? 'Included' : 'Supplied separately', self::accessories( $rule, $names ), self::conditions( $rule ) ) );
+			}
+		}
+		$lines[] = "\n## Key Documentation & Compliance Pages\n";
+		foreach ( self::pages( array( 'inverter-battery-compatibility', 'faq-download', 'solution-configurator' ) ) as $page ) {
+			$lines[] = '- ' . $page;
+		}
+		return implode( "\n", $lines ) . "\n";
+	}
+
+	/**
+	 * Display the manufacturer conditions in the English reference.
+	 *
+	 * @param array<string,mixed> $rule Engineering declaration.
+	 */
+	private static function conditions( array $rule ): string {
+		return Materials::apply_terms( implode( ' ', array_column( $rule['conditions'], 'en' ) ), false );
+	}
+
+	/**
+	 * Display authorized accessories with quantities and basis.
+	 *
+	 * @param array<string,mixed> $rule Engineering declaration.
+	 * @param array<int,string>   $names Public models.
+	 */
+	private static function accessories( array $rule, array $names ): string {
+		$items = array();
+		foreach ( $rule['accessories'] as $accessory ) {
+			if ( isset( $names[ $accessory['product_id'] ] ) ) {
+				$items[] = trim( $names[ $accessory['product_id'] ] . ' × ' . $accessory['quantity'] . ' ' . ( empty( $accessory['per'] ) ? '' : 'per ' . $accessory['per'] ) );
+			}
+		}
+		return implode( ', ', $items );
+	}
+
+	/**
+	 * Keep real and apparent power in their source units.
+	 *
+	 * @param SelectionFactSet $facts Published selection facts.
+	 */
+	private static function power( SelectionFactSet $facts ): string {
+		if ( is_float( $facts->ac_power_kw ) ) {
+			return $facts->ac_power_kw . ' kW';
+		}
+		return null === $facts->ac_apparent_kva ? '' : $facts->ac_apparent_kva . ' kVA';
+	}
+
+	/**
+	 * Show a system range, nominal capacity, or usable capacity as documented.
+	 *
+	 * @param SelectionFactSet $facts Published selection facts.
+	 */
+	private static function energy( SelectionFactSet $facts ): string {
+		if ( null !== $facts->kwh_range ) {
+			return $facts->kwh_range['min'] . '–' . $facts->kwh_range['max'] . ' kWh';
+		}
+		if ( is_float( $facts->nominal_kwh ) ) {
+			return $facts->nominal_kwh . ' kWh';
+		}
+		return is_float( $facts->usable_kwh ) ? $facts->usable_kwh . ' kWh usable' : '';
 	}
 
 	/**

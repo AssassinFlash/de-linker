@@ -122,6 +122,14 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_titles_noindex_bypass', array( new AnyInstance( PageIndexing::class ), 'noindex' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_robots_attrs', array( new AnyInstance( PageIndexing::class ), 'robots' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_robots', array( new AnyInstance( PageIndexing::class ), 'native_robots' ) ); // @phpstan-ignore argument.type
+		$markdown = new AnyInstance( \Linker\Commerce\Storefront\AgentMarkdown::class );
+		WP_Mock::expectFilterAdded( 'seopress_agent_ready_markdown_post_types', array( $markdown, 'markdown_post_types' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_agent_ready_html_to_markdown', array( $markdown, 'html_to_markdown' ), 10, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_agent_ready_markdown_body', array( $markdown, 'markdown_body' ), 20, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_agent_ready_home_markdown_body', array( $markdown, 'home_markdown_body' ), 20 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_agent_ready_a2a_agent_card', array( $markdown, 'clean_well_known_card' ), 20 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_agent_ready_mcp_card', array( $markdown, 'mcp_card' ), 20 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_agent_ready_agent_skills', array( $markdown, 'clean_well_known_card' ), 20 ); // @phpstan-ignore argument.type
 		$crawl = new AnyInstance( \Linker\Commerce\Storefront\CrawlHygiene::class );
 		WP_Mock::expectFilterAdded( 'wp_headers', array( $crawl, 'headers' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'template_redirect', array( $crawl, 'respond' ), 2 ); // @phpstan-ignore argument.type

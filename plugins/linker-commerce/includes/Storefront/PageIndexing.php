@@ -189,7 +189,7 @@ final class PageIndexing {
 	}
 
 	/** The Woo endpoint's queried object remains the assigned page. */
-	private function transaction(): bool {
+	public function transaction(): bool {
 		$post = get_queried_object();
 		return $post instanceof \WP_Post && 'page' === $post->post_type && $this->transaction_id( $this->source( $post->ID ) );
 	}

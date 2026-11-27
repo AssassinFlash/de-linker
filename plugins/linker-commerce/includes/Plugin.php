@@ -98,6 +98,7 @@ final class Plugin {
 		( new Storefront\CrawlHygiene() )->register();
 		( new Storefront\PageIndexing() )->register();
 		( new Storefront\PageSchema() )->register();
+		( new Storefront\AgentMarkdown() )->register();
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
 		( new Storefront\SitemapSync() )->register();

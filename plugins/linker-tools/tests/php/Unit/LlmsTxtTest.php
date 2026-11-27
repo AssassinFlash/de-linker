@@ -26,7 +26,7 @@ final class LlmsTxtTest extends TestCase {
 		$this->assertSame(
 			array(
 				'Content-Type'  => 'text/plain; charset=utf-8',
-				'X-Robots-Tag'  => 'noindex',
+				'X-Robots-Tag'  => 'noindex, follow',
 				'Cache-Control' => 'public, max-age=3600',
 			),
 			LlmsTxt::HEADERS
@@ -51,6 +51,8 @@ final class LlmsTxtTest extends TestCase {
 			4102 => '/de/loesung/',
 			1101 => '/product/esa-one/',
 			1102 => '/de/produkt/esa-eins/',
+			1103 => '/product/esa-two/',
+			1104 => '/de/produkt/esa-zwei/',
 		);
 		$en     = (object) array(
 			'term_id' => 1,
@@ -64,12 +66,12 @@ final class LlmsTxtTest extends TestCase {
 		WP_Mock::userFunction( 'pll_get_post' )->andReturnUsing( static fn( int $id, string $lang ) => $id - ( 1 - $id % 2 ) + ( 'de' === $lang ? 1 : 0 ) );
 		WP_Mock::userFunction( 'pll_get_term' )->andReturnUsing( static fn( int $id, string $lang ) => 'de' === $lang ? 2 : 1 );
 		WP_Mock::userFunction( 'is_wp_error' )->andReturn( false );
-		WP_Mock::userFunction( 'get_terms' )->andReturn( array( $en, $de ) );
+		WP_Mock::userFunction( 'get_terms' )->andReturnUsing( static fn( $args ) => 'product_cat' === $args['taxonomy'] ? array( $en, $de ) : array() );
 		WP_Mock::userFunction( 'get_term_link' )->andReturnUsing( static fn( \stdClass $term ) => $home . ( 1 === $term->term_id ? '/product-category/inverters/' : '/de/produkt-kategorie/wechselrichter/' ) );
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
 		WP_Mock::userFunction( 'wc_get_product_visibility_term_ids' )->andReturn( array( 'exclude-from-catalog' => 12 ) );
-		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 1101, 1102, 1103, 1104, 1105, 1106 ) );
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing( static fn( $args ) => 'post' === $args['post_type'] ? array( 4101, 4102 ) : array( 1101, 1102, 1103, 1104, 1105, 1106 ) );
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
 		WP_Mock::userFunction( 'get_post_status' )->andReturnUsing( static fn( int $id ) => 1105 === $id ? 'draft' : 'publish' );
 		WP_Mock::userFunction( 'has_filter' )->andReturn( false );
@@ -90,12 +92,21 @@ final class LlmsTxtTest extends TestCase {
 		WP_Mock::userFunction( 'get_permalink' )->andReturnUsing( static fn( int $id ) => $home . $routes[ $id ] );
 		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'get_option' )->andReturn( 'sales@de-linker.com' );
+		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing( 'parse_url' );
 		WP_Mock::userFunction( 'sanitize_email', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'get_lastpostmodified' )->andReturnUsing( static fn( string $zone, string $type ) => 'product' === $type ? '2026-11-19 12:00:00' : '2026-11-17 09:00:00' );
 
 		$text = LlmsTxt::document( $home );
 		$this->assertSame( 1, substr_count( $text, 'GoodWe · ESA Series' ) );
 		$this->assertStringContainsString( '[ESA One](https://linker.test/product/esa-one/) · 112.6 kWh', $text );
+		$this->assertStringContainsString( '## Technical journal', $text );
+		$this->assertStringContainsString( '## Manufacturers', $text );
+		$this->assertStringContainsString( '[ESA Two](https://linker.test/product/esa-two/)', $text );
+		$this->assertStringContainsString( '/llms-full.txt', $text );
+		$this->assertStringContainsString( '/wp-json/linker/v1/engineering-feed', $text );
+		foreach ( \Linker\Commerce\Presentation\ContactChannels::company_same_as() as $profile ) {
+			$this->assertStringContainsString( $profile, $text );
+		}
 		$this->assertStringContainsString( '[ESA Eins](https://linker.test/de/produkt/esa-eins/) · 112,6 kWh', $text );
 		$this->assertStringContainsString( '[Lösungen](https://linker.test/de/loesung/)', $text );
 		$this->assertStringContainsString( '[Wechselrichter](https://linker.test/de/produkt-kategorie/wechselrichter/)', $text );
@@ -114,6 +125,7 @@ final class LlmsTxtTest extends TestCase {
 			'Product families'             => array( '[SAJ H2](https://linker.test/product/saj-h2/)' ),
 		);
 		WP_Mock::userFunction( 'get_option', array( 'return' => 'sales@de-linker.com' ) );
+		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing( 'parse_url' );
 		WP_Mock::userFunction( 'sanitize_email', array( 'return_arg' => 0 ) );
 		$text = LlmsTxt::markdown( $sections, '2026-11-19', 'https://linker.test/sitemaps.xml' );
 		$this->assertStringStartsWith( '# Linker Technology GmbH', $text );
