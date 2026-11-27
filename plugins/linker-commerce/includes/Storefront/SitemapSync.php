@@ -54,10 +54,10 @@ final class SitemapSync {
 	/**
 	 * Append a second URL only for the manufacturer that owns this entry.
 	 *
-	 * @param string              $xml   SEOPress's current URL element.
-	 * @param array<string,mixed> $entry URL data supplied to its serializer.
+	 * @param string                   $xml   SEOPress's current URL element.
+	 * @param array<string,mixed>|null $entry URL data, or null for an excluded post.
 	 */
-	public function brand_xml( string $xml, array $entry ): string {
+	public function brand_xml( string $xml, ?array $entry ): string {
 		return isset( $entry['linker_brand_twin'] ) ? $xml . "\n<url><loc>" . $entry['linker_brand_twin'] . '</loc></url>' : $xml;
 	}
 

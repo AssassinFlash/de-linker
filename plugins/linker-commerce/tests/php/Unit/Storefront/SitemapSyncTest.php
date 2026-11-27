@@ -73,6 +73,11 @@ final class SitemapSyncTest extends TestCase {
 		);
 	}
 
+	/** SEOPress also calls the XML hook when an omitted Woo page has no entry. */
+	public function test_excluded_page_stays_out_of_post_sitemaps(): void {
+		$this->assertSame( '', ( new SitemapSync() )->brand_xml( '', null ) );
+	}
+
 	/** Saves and deletions invalidate native index entries at the configured pagination size. */
 	public function test_index_cache_refreshes_for_pages_and_products(): void {
 		$sync = new SitemapSync();
