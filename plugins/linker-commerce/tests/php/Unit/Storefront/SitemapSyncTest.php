@@ -11,7 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Storefront;
 
 use Linker\Commerce\Storefront\SitemapSync;
 use WP_Mock;
-use WP_Mock\Tools\TestCase;
+use Linker\Commerce\Tests\TestCase;
 
 /**
  * Public outputs supplied to the SEOPress sitemap serializer.
@@ -76,7 +76,7 @@ final class SitemapSyncTest extends TestCase {
 	/** Saves and deletions invalidate native index entries at the configured pagination size. */
 	public function test_index_cache_refreshes_for_pages_and_products(): void {
 		$sync = new SitemapSync();
-		WP_Mock::onFilter( 'seopress_sitemaps_max_posts_per_sitemap' )->with( 1000 )->reply( 250 );
+		$this->filter_returns( 'seopress_sitemaps_max_posts_per_sitemap', 250, array( 1000 ) );
 		foreach ( array( 'page', 'product' ) as $type ) {
 			foreach ( array( 250, 1000 ) as $size ) {
 				WP_Mock::userFunction( 'delete_transient' )->with( 'seopress_sitemap_lastmod_all_' . $type . '_' . $size )->once();
