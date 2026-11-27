@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-11-27T11:26:28+00:00\n"
+"POT-Creation-Date: 2026-11-27T11:34:01+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -3082,7 +3082,7 @@ msgstr "Vergleichstabelle der Produkte"
 #: includes/Presentation/ProductShortcodes.php:206
 #: includes/Presentation/ProductShortcodes.php:210
 #: includes/Presentation/ProductShortcodes.php:1889
-#: includes/Storefront/ArchiveSchema.php:305
+#: includes/Storefront/ArchiveSchema.php:306
 #: includes/Storefront/ProductView.php:734
 #: templates/myaccount/linker-saved-solutions.php:29
 #: templates/myaccount/linker-saved-solutions.php:41
@@ -3366,7 +3366,7 @@ msgstr "Unser Grund:"
 
 #: includes/Presentation/ProductShortcodes.php:198
 #: includes/Storefront/ArchiveSchema.php:97
-#: includes/Storefront/ArchiveSchema.php:187
+#: includes/Storefront/ArchiveSchema.php:188
 #: includes/Storefront/PageSchema.php:275
 #: includes/Storefront/PageSchema.php:300
 #: includes/Storefront/PageSchema.php:315
@@ -3376,7 +3376,7 @@ msgid "Home"
 msgstr "Startseite"
 
 #: includes/Presentation/ProductShortcodes.php:213
-#: includes/Storefront/ArchiveSchema.php:149
+#: includes/Storefront/ArchiveSchema.php:150
 msgid "Search products or filter by category and project requirements."
 msgstr ""
 "Suchen Sie Produkte oder filtern Sie nach Kategorie und Projektanforderungen."
