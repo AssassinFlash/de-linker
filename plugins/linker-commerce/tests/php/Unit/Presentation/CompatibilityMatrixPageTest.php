@@ -26,6 +26,7 @@ final class CompatibilityMatrixPageTest extends TestCase {
 		$this->plain_text();
 		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( 'strip_tags' );
 		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing( 'parse_url' );
+		WP_Mock::userFunction( 'get_permalink' )->andReturn( 'https://linker.test/inverter-battery-compatibility/' );
 		WP_Mock::userFunction( 'get_locale' )->andReturn( 'en_US' );
 		$products = array();
 		foreach ( array(
@@ -79,8 +80,10 @@ final class CompatibilityMatrixPageTest extends TestCase {
 			),
 		);
 		$claims                        = array(
+			'available'    => true,
 			'pairs'        => array(
 				$pair,
+				array_merge( $pair, array( 'conditions' => array() ) ),
 				array_merge(
 					$pair,
 					array(
@@ -115,13 +118,28 @@ final class CompatibilityMatrixPageTest extends TestCase {
 		$xpath = new DOMXPath( $dom );
 		$this->assertSame( 4.0, $xpath->evaluate( 'count(//section//table)' ) );
 		foreach ( array( 'residential-pairings', 'commercial-pairings', 'system-requirements', 'grid-certificates' ) as $section ) {
-			$this->assertSame( 1.0, $xpath->evaluate( 'count(//section[@id="' . $section . '"]//tbody/tr)' ) );
+			$this->assertSame( 'residential-pairings' === $section ? 2.0 : 1.0, $xpath->evaluate( 'count(//section[@id="' . $section . '"]//tbody/tr)' ) );
 		}
+		$this->assertStringContainsString( 'cover 2 inverter and battery combinations. An accessory is required for 1 of them.', $html );
+		$this->assertSame( '3', $xpath->evaluate( 'string(//dt[.="Release declarations"]/following-sibling::dd)' ) );
+		$this->assertSame( '2', $xpath->evaluate( 'string(//dt[.="Declarations requiring an accessory"]/following-sibling::dd)' ) );
+		$this->assertSame( 5.0, $xpath->evaluate( 'count(//nav[@class="lk-matrix-anchors"]/a[starts-with(@href,"https://linker.test/inverter-battery-compatibility/#")])' ) );
 		$this->assertStringNotContainsString( 'Battery B', (string) $xpath->evaluate( 'string(//section[@id="residential-pairings"])' ) );
 		$this->assertStringContainsString( 'Battery B', (string) $xpath->evaluate( 'string(//section[@id="not-released-boundaries"])' ) );
 		$this->assertStringContainsString( 'Controller', (string) $xpath->evaluate( 'string(//section[@id="residential-pairings"])' ) );
 		$this->assertSame( $url . '#page=7', $xpath->evaluate( 'string(//section[@id="residential-pairings"]//a[@target="_blank"]/@href)' ) );
 		$this->assertStringContainsString( 'EN 50549', (string) $xpath->evaluate( 'string(//section[@id="grid-certificates"])' ) );
 		$this->assertStringContainsString( 'Supplied separately', (string) $xpath->evaluate( 'string(//section[@id="system-requirements"])' ) );
+	}
+
+	/** A missing projection retains the page title and navigation without reporting zero releases. */
+	public function test_unavailable_declarations(): void {
+		$this->plain_text();
+		$html = CompatibilityMatrixPage::body( array(), array( 'available' => false ), array() );
+		$this->assertStringContainsString( '<h1>', $html );
+		$this->assertStringContainsString( 'temporarily unavailable', $html );
+		$this->assertStringContainsString( 'lk-matrix-crumb', $html );
+		$this->assertStringNotContainsString( 'lk-matrix-kpis', $html );
+		$this->assertStringNotContainsString( '<table', $html );
 	}
 }

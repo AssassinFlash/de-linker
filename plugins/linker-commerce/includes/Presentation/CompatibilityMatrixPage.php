@@ -11,6 +11,7 @@ namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\Materials;
+use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Storefront\ProductView;
 
@@ -47,6 +48,9 @@ final class CompatibilityMatrixPage {
 		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Invalidate the matrix when a product changes.
 		$manifest = CompatibilityIndex::manifest();
 		$claims   = CompatibilityIndex::declarations( $manifest );
+		if ( ! $claims['available'] ) {
+			return self::body( array(), $claims, array() );
+		}
 		$language = Materials::locale();
 		$view     = new ProductView();
 		$products = array();
@@ -56,7 +60,7 @@ final class CompatibilityMatrixPage {
 			if ( ! $id || ! in_array( $id, $item['published_locale_ids'], true ) || '' !== $item['engineering_role'] ) {
 				continue;
 			}
-			$facts   = SelectionFacts::for_product( $source );
+			$facts   = SelectionFacts::from_figures( $source, Publication::figures_in_manifest( $source, $manifest ) );
 			$ratings = array();
 			if ( is_float( $facts->ac_power_kw ) ) {
 				$ratings[] = Materials::de_number( (string) $facts->ac_power_kw ) . ' kW';
@@ -104,17 +108,23 @@ final class CompatibilityMatrixPage {
 	 * @param array<string,array<string,string>> $documents Published PDFs keyed by uploads path.
 	 */
 	public static function body( array $products, array $claims, array $documents ): string {
-		$sections        = array(
+		$title = __( 'Inverter & HV Battery Compatibility Matrix', 'linker-commerce' );
+		$html  = '<div id="linker-compatibility-matrix" class="lk-matrix"><nav class="lk-matrix-crumb" aria-label="' . esc_attr__( 'Breadcrumb', 'linker-commerce' ) . '"><a href="' . esc_url( PageUrls::home() ) . '">' . esc_html_x( 'Home', 'breadcrumb', 'linker-commerce' ) . '</a> / <span aria-current="page">' . esc_html__( 'Compatibility matrix', 'linker-commerce' ) . '</span></nav><header><h1>' . esc_html( $title ) . '</h1>';
+		if ( ! $claims['available'] ) {
+			return $html . '<p>' . esc_html__( 'The compatibility reference is temporarily unavailable. Please try again later or contact the Linker team.', 'linker-commerce' ) . '</p></header>' . self::destinations() . '</div>';
+		}
+		$sections               = array(
 			'residential-pairings'    => __( 'Residential inverter and battery pairings', 'linker-commerce' ),
 			'commercial-pairings'     => __( 'Commercial and industrial pairings', 'linker-commerce' ),
 			'system-requirements'     => __( 'Meters, backup switches and parallel controllers', 'linker-commerce' ),
 			'grid-certificates'       => __( 'European grid-code certificates', 'linker-commerce' ),
 			'not-released-boundaries' => __( 'Documented non-released combinations', 'linker-commerce' ),
 		);
-		$tables          = array_fill_keys( array_keys( $sections ), array() );
-		$pairs           = array();
-		$accessory_pairs = array();
-		$boundaries      = array();
+		$tables                 = array_fill_keys( array_keys( $sections ), array() );
+		$pairs                  = array();
+		$accessory_pairs        = array();
+		$accessory_declarations = 0;
+		$boundaries             = array();
 		foreach ( $claims['pairs'] as $pair ) {
 			$i = $pair['inverter_product_id'];
 			$b = $pair['battery_product_id'];
@@ -141,6 +151,7 @@ final class CompatibilityMatrixPage {
 			$needs_accessory = 'released_with_accessory' === $pair['verdict'];
 			if ( $needs_accessory ) {
 				$accessory_pairs[ $key ] = true;
+				++$accessory_declarations;
 			}
 			$status               = $needs_accessory ? __( 'Accessory required', 'linker-commerce' ) : __( 'Released', 'linker-commerce' );
 			$tables[ $section ][] = array(
@@ -183,24 +194,24 @@ final class CompatibilityMatrixPage {
 			}
 		}
 		$kpis  = array(
-			__( 'Released model pairs', 'linker-commerce' ) => count( $pairs ),
-			__( 'Pairs requiring an accessory', 'linker-commerce' ) => count( $accessory_pairs ),
+			__( 'Release declarations', 'linker-commerce' ) => count( $tables['residential-pairings'] ) + count( $tables['commercial-pairings'] ),
+			__( 'Declarations requiring an accessory', 'linker-commerce' ) => $accessory_declarations,
 			__( 'System requirements', 'linker-commerce' ) => count( $tables['system-requirements'] ),
 			__( 'Grid-code certificate PDFs', 'linker-commerce' ) => count( $certificate_urls ),
 		);
-		$title = __( 'Inverter & HV Battery Compatibility Matrix', 'linker-commerce' );
-		$html  = '<div id="linker-compatibility-matrix" class="lk-matrix"><nav class="lk-matrix-crumb" aria-label="' . esc_attr__( 'Breadcrumb', 'linker-commerce' ) . '"><a href="' . esc_url( PageUrls::home() ) . '">' . esc_html_x( 'Home', 'breadcrumb', 'linker-commerce' ) . '</a> / <span aria-current="page">' . esc_html__( 'Compatibility matrix', 'linker-commerce' ) . '</span></nav><header><h1>' . esc_html( $title ) . '</h1><p>' . sprintf(
+		$html .= '<p>' . sprintf(
 			/* translators: 1: number of distinct model pairs, 2: number requiring an accessory. */
-			esc_html__( 'The manufacturer documents cover %1$d inverter and battery combinations. Of these, %2$d require an accessory. Find the inverter model to see which batteries it supports and which control modules it needs. Each entry links to its source. The meter and backup requirements and grid-code certificates are listed separately for the models they cover.', 'linker-commerce' ),
+			esc_html__( 'The manufacturer documents cover %1$d inverter and battery combinations. An accessory is required for %2$d of them. Find the inverter model to see which batteries it supports and which control modules it needs. Each entry links to its source. The meter and backup requirements and grid-code certificates are listed separately for the models they cover.', 'linker-commerce' ),
 			count( $pairs ),
 			count( $accessory_pairs )
 		) . '</p><dl class="lk-matrix-kpis">';
 		foreach ( $kpis as $label => $value ) {
 			$html .= '<div><dt>' . esc_html( $label ) . '</dt><dd>' . (int) $value . '</dd></div>';
 		}
-		$html .= '</dl></header><nav class="lk-matrix-anchors" aria-label="' . esc_attr__( 'On this page', 'linker-commerce' ) . '">';
+		$html     .= '</dl></header><nav class="lk-matrix-anchors" aria-label="' . esc_attr__( 'On this page', 'linker-commerce' ) . '">';
+		$permalink = (string) get_permalink();
 		foreach ( $sections as $id => $label ) {
-			$html .= '<a href="#' . esc_attr( $id ) . '">' . esc_html( $label ) . '</a>';
+			$html .= '<a href="' . esc_url( $permalink . '#' . $id ) . '">' . esc_html( $label ) . '</a>';
 		}
 		$html                          .= '</nav>';
 		$headers                        = array(
@@ -228,7 +239,12 @@ final class CompatibilityMatrixPage {
 			}
 			$html .= '</section>';
 		}
-		$html .= '<footer class="lk-matrix-handoff">';
+		return $html . self::destinations() . '</div>';
+	}
+
+	/** Planning and contact destinations, including when the reference is unavailable. */
+	private static function destinations(): string {
+		$html = '<footer class="lk-matrix-handoff">';
 		foreach ( array(
 			'solution-configurator' => __( 'Solution Configurator', 'linker-commerce' ),
 			'faq-download'          => __( 'FAQ and documents', 'linker-commerce' ),
@@ -239,7 +255,7 @@ final class CompatibilityMatrixPage {
 				$html .= '<a href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
 			}
 		}
-		return $html . '</footer></div>';
+		return $html . '</footer>';
 	}
 
 	/**
