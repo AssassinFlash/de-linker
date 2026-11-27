@@ -74,11 +74,12 @@ final class AgentMarkdownTest extends TestCase {
 	public function test_semantic_content(): void {
 		WP_Mock::userFunction( 'strip_shortcodes', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'esc_url_raw', array( 'return_arg' => 0 ) );
-		$html = '<h2>Geräte</h2><table><tr><th>Model</th><th>Power</th></tr><tr><td><a href="/saj/">SAJ</a></td><td>10 kW</td></tr></table><dl><div><dt>Strom</dt><dd>10 A</dd></div></dl><dialog>PRIVATE</dialog><div hidden>HIDDEN</div>[linker_create_account][lc_if x="1"][/lc_if]';
+		$html = '<h2>Geräte</h2><nav><a href="/a/">Alpha</a><a href="/b/">Beta</a></nav><table><tr><th>Model</th><th>Power</th></tr><tr><td><a href="/saj/">SAJ</a></td><td>10 kW</td></tr></table><dl><div><dt>Strom</dt><dd>10 A</dd></div></dl><dialog>PRIVATE</dialog><div hidden>HIDDEN</div>[linker_create_account][lc_if x="1"][/lc_if]';
 		$text = ( new AgentMarkdown() )->html_to_markdown( null, $html );
 		$this->assertStringContainsString( '## Geräte', $text );
 		$this->assertStringContainsString( "| Model | Power |\n| --- | --- |\n| [SAJ](/saj/) | 10 kW |", $text );
 		$this->assertStringContainsString( '- **Strom**: 10 A', $text );
+		$this->assertStringContainsString( '[Alpha](/a/) [Beta](/b/)', $text );
 		$this->assertDoesNotMatchRegularExpression( '/PRIVATE|HIDDEN|linker_create|lc_if/', $text );
 	}
 }

@@ -13,6 +13,7 @@ use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
+use Linker\Tools\Planner\Application;
 
 /** Integrate structured content with the native Markdown negotiation and discovery endpoints. */
 final class AgentMarkdown {
@@ -82,7 +83,11 @@ final class AgentMarkdown {
 		}
 		$body = '';
 		foreach ( $node->childNodes as $child ) {
-			$body .= self::node( $child );
+			$piece = self::node( $child );
+			if ( str_ends_with( $body, ')' ) && str_starts_with( $piece, '[' ) ) {
+				$body .= ' ';
+			}
+			$body .= $piece;
 		}
 		$value = trim( $body );
 		return match ( $node->nodeName ) {
@@ -186,6 +191,11 @@ final class AgentMarkdown {
 			}
 			$product = wc_get_product( $post->ID );
 			return $product instanceof \WC_Product ? $this->product_markdown( $product ) : '';
+		}
+		if ( 'page' === $post->post_type && in_array( $post->post_name, array( 'solution-configurator', 'loesungskonfigurator' ), true ) ) {
+			$title = html_entity_decode( wp_strip_all_tags( get_the_title( $post ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+			$guide = $this->html_to_markdown( null, Application::static_guide() );
+			return '# ' . $title . "\n\n> URL: " . $url . "\n> Last modified: " . get_post_modified_time( 'c', true, $post ) . "\n\n" . $guide . "\n";
 		}
 		$description = (string) get_post_meta( $post->ID, '_seopress_titles_desc', true );
 		if ( '' === trim( $description ) ) {
