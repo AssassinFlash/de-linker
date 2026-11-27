@@ -90,7 +90,7 @@ final class ArchiveSchema {
 		if ( null === $target ) {
 			return array();
 		}
-		$items   = array(
+		$items    = array(
 			array(
 				'@type'    => 'ListItem',
 				'position' => 1,
@@ -98,9 +98,10 @@ final class ArchiveSchema {
 				'item'     => PageUrls::home(),
 			),
 		);
-		$blog_id = (int) get_option( 'page_for_posts' );
-		if ( $blog_id && function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) ) {
-			$blog_id = (int) pll_get_post( $blog_id, pll_current_language() );
+		$blog_id  = (int) get_option( 'page_for_posts' );
+		$language = function_exists( 'pll_current_language' ) ? pll_current_language() : false;
+		if ( $blog_id && is_string( $language ) && function_exists( 'pll_get_post' ) ) {
+			$blog_id = (int) pll_get_post( $blog_id, $language );
 		}
 		$blog_url = $blog_id ? get_permalink( $blog_id ) : PageUrls::translated( 'blog' );
 		if ( $blog_url ) {
