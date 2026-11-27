@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "source_revision": "lynx-c",
+  "model_identity_revision": "fixture-identity-1",
+  "products": [
+    {
+      "product_id": 1949,
+      "model": "LX C101-10",
+      "product_revision": "1949",
+      "documents": [
+        "lynx-c",
+        "lynx-c-de"
+      ],
+      "published_locale_ids": [
+        1949
+      ],
+      "ready": {
+        "knowledge": true
+      }
+    },
+    {
+      "product_id": 1951,
+      "model": "LX C138-10",
+      "product_revision": "1951",
+      "documents": [
+        "lynx-c",
+        "lynx-c-de"
+      ],
+      "published_locale_ids": [
+        1951
+      ],
+      "ready": {
+        "knowledge": true
+      }
+    },
+    {
+      "product_id": 1952,
+      "model": "LX C156-10",
+      "product_revision": "1952",
+      "documents": [
+        "lynx-c",
+        "lynx-c-de"
+      ],
+      "published_locale_ids": [
+        1952
+      ],
+      "ready": {
+        "knowledge": true
+      }
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "lynx-c",
+      "document_revision": "lynx-c-datasheet",
+      "blob_sha256": "18175dc8771980aaf2c16ae2baeac2363416df81adf8b7c67bb54d21acbca6bf",
+      "url": "https://site.test/lynx-c.pdf",
+      "product_ids": [
+        1949,
+        1951,
+        1952
+      ],
+      "title": "GoodWe Lynx C Series 101–156 kWh Datasheet (EMEA, EN)",
+      "type": "datasheet",
+      "lang": "en"
+    },
+    {
+      "document_id": "lynx-c-de",
+      "document_revision": "lynx-c-datasheet-de",
+      "blob_sha256": "2f4cff9fa8fc2d27e4711bc3a2417f82f59b280ebcff5f8176c6886af0b6bbc1",
+      "url": "https://site.test/lynx-c-de.pdf",
+      "product_ids": [
+        1949,
+        1951,
+        1952
+      ],
+      "title": "GoodWe Lynx C Serie 101–156 kWh Datenblatt (EMEA, DE)",
+      "type": "datasheet",
+      "lang": "de"
+    }
+  ]
+}

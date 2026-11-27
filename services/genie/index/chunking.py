@@ -283,6 +283,12 @@ class _Chunker:
     def add_page(self, page: Page, section: str) -> str:
         """The chunks of one page; returns the section in force at its end."""
         texts: list[str] = []
+        axis_starts = {
+            axis["source_ids"][0]
+            for table in page.blocks
+            for cell in table.source_cells
+            if (axis := cell.get("external_axis")) and axis["source_ids"]
+        }
         for block_index, block in enumerate(page.blocks):
             if block.source_picture != self._source_picture:
                 if texts:
@@ -307,6 +313,8 @@ class _Chunker:
                 section = block.text
                 self._pending_headings.append(block.text)
                 self._preceding_text = []
+                if block.source_id in axis_starts:
+                    texts.append(block.text)
             elif block.kind == "text":
                 # Keep the manufacturer's role sentence apart from following
                 # diagrams or a different model's paragraphs. Recognition here

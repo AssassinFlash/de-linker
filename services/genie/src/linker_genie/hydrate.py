@@ -286,7 +286,7 @@ def hydrate(
 
 
 def _figure_with_source(fact: Fact, facts: TurnFacts) -> Fact | None:
-    if fact.source == "datasheet-figures":
+    if fact.source in {"datasheet-figures", "product-requirement"}:
         return fact
     product, _, field = fact.id.partition(".")
     if fact.source != "selection-facts" or field != "usable_kwh":
@@ -566,7 +566,7 @@ def fill(
         ):
             # Only this complete condition from the checked pairing is protected.
             return qualified_mask(fact.value) + after
-        if fact.source == "datasheet-figures":
+        if fact.source in {"datasheet-figures", "product-requirement"}:
             value = _qualified_woo_value(fact, locale, len(facts.product_ids) > 1)
             if qualified_mask is not None and fact.id in facts.supporting_documents:
                 value = qualified_mask(value)

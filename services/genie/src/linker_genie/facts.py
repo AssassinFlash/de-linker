@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field, replace
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from linker_genie.figures import chunk_of, swap_decimals, tag
 from linker_genie.hs3_evidence import (
@@ -24,6 +24,10 @@ from linker_genie.hs3_evidence import (
 from linker_genie.stock import phrase
 from linker_genie.tools import READ_ATTACHMENT, READ_PAGE, READ_PLANNING, READ_SOLUTION
 from linker_genie.warranty_answer import answers as warranty_answers
+from linker_genie.warranty_scope import policy_document_is
+
+if TYPE_CHECKING:
+    from linker_genie.route import Route
 
 
 @dataclass
@@ -84,6 +88,7 @@ class Document:
     page: int | None
     evidence: DocumentEvidence | None = None
     figure_product_id: int | None = None
+    warranty_language: str = ""
 
     @property
     def citation_owner(self) -> int | None:
@@ -339,6 +344,51 @@ def pairing_card_sets(facts: TurnFacts) -> list[list[int]]:
     return sets
 
 
+def single_released_check(facts: TurnFacts) -> list[int] | None:
+    """Unindexed condition refs belong to one exact check, never a mix of pairs."""
+    checks = [
+        call
+        for call in facts.tool_calls
+        if call["name"] == "linker/check-compatibility"
+    ]
+    if len(checks) != 1:
+        return None
+    ids = released_pair(checks[0])
+    return ids if ids and pairing_card_sets(facts) == [ids] else None
+
+
+def checked_condition_refs(facts: TurnFacts) -> list[str]:
+    """Condition facts of the pair check, in the tool's order.
+
+    `compat.condition.0` is that check. `compat.condition.3612.0` is a battery
+    on a search-products pairing row and is a different answer.
+    """
+    found: list[tuple[int, str]] = []
+    for fact_id in facts.facts:
+        head, _, tail = fact_id.rpartition(".")
+        if head == "compat.condition" and tail.isdigit():
+            found.append((int(tail), fact_id))
+    return [fact_id for _, fact_id in sorted(found)]
+
+
+def checked_backup_refs(facts: TurnFacts, route: Route | None) -> list[str]:
+    """The named inverter's sourced backup conditions requested alongside an exact pair."""
+    if (
+        route is None
+        or route.name != "pairing"
+        or not any(call.ability == "linker/check-compatibility" for call in route.calls)
+    ):
+        return []
+    for call in route.calls:
+        if (
+            call.ability == "linker/get-product"
+            and call.arguments.get("requirement_kind") == "backup"
+        ):
+            prefix = f"p{call.arguments['product_id']}.requirement.backup."
+            return [ref for ref in facts.supporting_documents if ref.startswith(prefix)]
+    return []
+
+
 def merge(parts: list[TurnFacts]) -> TurnFacts:
     combined = TurnFacts()
     for part in parts:
@@ -499,6 +549,9 @@ def _from_product(
         raw_facts = payload.get("facts")
         facts = raw_facts if isinstance(raw_facts, dict) else {}
         _add_selection_facts(gathered, product_id, facts)
+        for index, requirement in enumerate(payload.get("requirements", [])):
+            if requirement["inverter_product_id"] == (evidence_owner or product_id):
+                _add_requirement(gathered, product_id, index, requirement, locale)
         raw_figures = payload.get("figures")
         documents = payload.get("documents") or []
         if isinstance(raw_figures, dict):
@@ -526,9 +579,86 @@ def _from_product(
                 continue
             url = document.get("url")
             if isinstance(url, str) and url:
+                warranty = policy_document_is(document, "warranty")
                 gathered.documents[f"p{product_id}.document.{index}"] = _document(
-                    document, url, document.get("page")
+                    document,
+                    url,
+                    document.get("page"),
+                    evidence=(
+                        DocumentEvidence.read(document, evidence_owner or product_id)
+                        if (document.get("type") == "certificate" or warranty)
+                        and (evidence_owner or product_id)
+                        in document.get("product_ids", [])
+                        else None
+                    ),
+                    warranty_language=document.get("lang", "") if warranty else "",
                 )
+
+
+def _add_requirement(
+    gathered: TurnFacts, product_id: int, index: int, row: dict[str, Any], locale: str
+) -> None:
+    """Keep a Woo requirement's conditions, operating scope and bound pages together."""
+    kind = row["kind"]
+    fact_id = f"p{product_id}.requirement.{kind}.{index}"
+    german = locale.startswith("de")
+    conditions = [item.get("de" if german else "en") for item in row["conditions"]]
+    if not conditions or not all(isinstance(text, str) and text for text in conditions):
+        return
+    value = " ".join(conditions)
+    scope = row.get("applicability")
+    if scope:
+        modes = {
+            "backup": ("Backup operation", "Ersatzstrombetrieb"),
+            "grid_connected": ("Grid operation", "Netzbetrieb"),
+        }
+        topologies = {
+            "single_converter": ("single inverter", "ein Wechselrichter"),
+            "parallel_group": (
+                "parallel inverters",
+                "parallel geschaltete Wechselrichter",
+            ),
+        }
+        mode = modes.get(scope["operating_mode"])
+        topology = topologies.get(scope["topology"])
+        if not mode or not topology:
+            return
+        terms = [topology[german]]
+        if network := scope.get("control_network"):
+            terms.append(network.upper())
+        if controller := scope.get("controller_product_id"):
+            model = next(
+                (
+                    part["model"]
+                    for part in row["accessories"]
+                    if part["product_id"] == controller
+                ),
+                None,
+            )
+            if not model:
+                return
+            terms.append(model)
+        value = f"{mode[german]} ({', '.join(terms)})\n\n{value}"
+    sources = {}
+    for number, document in enumerate(row["documents"]):
+        evidence = DocumentEvidence.read(document, document.get("product_id"))
+        page = document.get("page")
+        url = document.get("url")
+        if (
+            evidence is None
+            or not isinstance(url, str)
+            or not url
+            or type(page) is not int
+            or page < 1
+        ):
+            return
+        sources[f"{fact_id}.source.{number}"] = _document(
+            document, url, page, evidence=evidence
+        )
+    if sources:
+        gathered.documents.update(sources)
+        gathered.add(Fact(id=fact_id, value=value, source="product-requirement"))
+        gathered.supporting_documents[fact_id] = tuple(sources)
 
 
 # One product this turn can state stock for: its id, then the flag.
@@ -1253,6 +1383,7 @@ def _document(
     *,
     evidence: DocumentEvidence | None = None,
     figure_product_id: int | None = None,
+    warranty_language: str = "",
 ) -> Document:
     title = document.get("title")
     return Document(
@@ -1261,6 +1392,7 @@ def _document(
         page=page if isinstance(page, int) else None,
         evidence=evidence,
         figure_product_id=figure_product_id,
+        warranty_language=warranty_language,
     )
 
 

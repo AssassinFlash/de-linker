@@ -1,0 +1,96 @@
+# GoodWe GW50K-ET-10 (50 kW three-phase high-voltage hybrid inverter)
+
+- id: 1945
+- slug: `goodwe-gw50k-et-10`
+- sku: `DLK-GOODWE-GW50KET10`
+- model: GW50K-ET-10
+
+## 1. Can a PV string on the GW50K-ET-10 operate continuously up to the 1,000 V maximum input voltage?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Can a PV string on the GW50K-ET-10 operate continuously up to the 1,000 V maximum input voltage?
+
+No. Footnote 3 on page 2 of the EMEA datasheet states that when the PV input voltage exceeds 980 V, the GW50K-ET-10 enters standby mode and returns to normal operation only after the PV voltage drops below 970 V. Its MPPT operating voltage range is 165–850 V (400–850 V at nominal power in the user manual, p. 72).
+
+**DE Q:** Kann ein PV-String am GW50K-ET-10 dauerhaft bis zur maximalen Eingangsspannung von 1.000 V betrieben werden?
+
+Nein. Laut Fußnote 3 auf Seite 2 des EMEA-Datenblatts wechselt der Wechselrichter GW50K-ET-10 bei einer PV-Eingangsspannung über 980 V in den Standby-Modus und kehrt erst unterhalb von 970 V in den Normalbetrieb zurück. Der MPPT-Betriebsspannungsbereich liegt bei 165–850 V (400–850 V bei Nennleistung laut Benutzerhandbuch, S. 72).
+
+**Citation:** GoodWe ET50 Series 40–50 kW Datasheet V1.1 (EMEA, EN) · p.2 · https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_et4050-datasheet.pdf
+
+## 2. Which grid-connection certificates cover the GW50K-ET-10?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which grid-connection certificates cover the GW50K-ET-10?
+
+The GW50K-ET-10 holds both a low-voltage VDE-AR-N 4105:2018-11 unit certificate (TÜV Rheinland Registration No. A3 50626232 0001, report CN24WXK2 001, p. 3) and a medium-/high-voltage VDE-AR-N 4110:2023 and VDE-AR-N 4120:2018 unit certificate (Certificate No. 968/GI 2226.01/25, valid until 11 June 2030, PDF p. 1). The certification covers the inverter without the optional STS module (PDF p. 4).
+
+**DE Q:** Welche Netzanschlusszertifikate decken den GW50K-ET-10 ab?
+
+Für den Wechselrichter GW50K-ET-10 liegen sowohl das Einheitenzertifikat nach VDE-AR-N 4105:2018-11 für das Niederspannungsnetz (TÜV Rheinland Registrier-Nr. A3 50626232 0001, Prüfbericht CN24WXK2 001, S. 3) als auch das Einheitenzertifikat nach VDE-AR-N 4110:2023 und VDE-AR-N 4120:2018 (Zertifikat Nr. 968/GI 2226.01/25, gültig bis 11. Juni 2030, PDF-S. 1) vor. Das Zertifikat erfasst den Wechselrichter ohne das optionale STS-Modul (PDF-S. 4).
+
+**Citation:** GoodWe ET 40–50 kW VDE-AR-N 4110 & 4120 Unit Certificate · p.1 · https://de-linker.com/wp-content/uploads/2026/11/GW_ET40-50kW_Certificate-VDE4110_VDE4120.pdf
+
+## 3. Which battery cabinets work with the GW50K-ET-10?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which battery cabinets work with the GW50K-ET-10?
+
+GoodWe lists the Lynx C101-10, C120-10, C138-10 and C156-10 for the ET 40–50 kW. The battery BMS must be version 25600 or later (date in the serial number: 1 June 2024 or later; ET solutions manual, PDF p. 3). A single C101-10 or C120-10 cannot reach 50 kW. At nominal voltage the C138-10 and C156-10 have sufficient rated DC power; available power depends on operating voltage and current. The BAT-AC models GW61.4-BAT-AC-G10, GW102.4-BAT-AC-G10 and GW112.6-BAT-AC-G10 require inverter firmware ARM 10 or later.
+
+**DE Q:** Welche Batterieschränke sind mit dem GW50K-ET-10 kompatibel?
+
+GoodWe führt die Lynx C101-10, C120-10, C138-10 und C156-10 für den ET 40–50 kW auf. Für die Batterie ist die BMS-Version 25600 oder höher erforderlich (Datum in der Seriennummer ab dem 1. Juni 2024, ET-Systemhandbuch, PDF-S. 3). Ein einzelner C101-10 oder C120-10 erreicht keine 50 kW. Die DC-Nennleistung des C138-10 und des C156-10 reicht bei Nennspannung aus. Die verfügbare Leistung hängt von der Betriebsspannung und vom zulässigen Strom ab. Für die BAT-AC-Modelle GW61.4-BAT-AC-G10, GW102.4-BAT-AC-G10 und GW112.6-BAT-AC-G10 ist die Wechselrichter-Firmware ARM 10 oder höher erforderlich.
+
+**Citation:** GoodWe Battery Compatibility Overview V029.1 (EMEA, EN) · p.6 · https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf
+
+## 4. Which accessories does the GW50K-ET-10 need for metering, parallel operation and backup?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which accessories does the GW50K-ET-10 need for metering, parallel operation and backup?
+
+For a single inverter, GoodWe supplies a GM330 or GM3000 meter and the meter cable. The GM330 needs separate current transformers (200–5,000 A primary, 5 A secondary). The GM3000 uses the transformers supplied with the meter. For up to ten inverters in parallel, GoodWe specifies the SEC3000C and one WiFi/LAN Kit-20 per inverter. All inverters must run the same software, with ARM 11.475 and DSP 4.400 or later. Backup uses the STS200-80-10 transfer cabinet with cabinet software 4.400 or later. With one inverter, GoodWe specifies transfer in under 10 ms for a backup load below 50 kW. If the inverters also operate in parallel off-grid, transfer takes under 20 ms and the total backup load must stay below 90% of their combined rating. If they operate separately off-grid, transfer takes under 10 ms and the load on each STS must stay below its inverter’s rated power (ET solutions manual, PDF pp. 30–32, 112, 115 and 117).
+
+**DE Q:** Welches Zubehör braucht der GW50K-ET-10 für Messung, Parallelbetrieb und Ersatzstrom?
+
+Für einen einzelnen Wechselrichter liefert GoodWe einen Zähler GM330 oder GM3000 mit Kommunikationskabel. Der GM330 benötigt separate Stromwandler (primär 200–5.000 A, sekundär 5 A). Der GM3000 verwendet die mit dem Zähler gelieferten Wandler. Für bis zu zehn parallel betriebene Wechselrichter nennt GoodWe den SEC3000C und je Wechselrichter ein WiFi/LAN Kit-20. Alle Wechselrichter müssen denselben Softwarestand haben, mindestens ARM 11.475 und DSP 4.400. Für Ersatzstrom ist der STS200-80-10 mit Schranksoftware ab Version 4.400 vorgesehen. Bei einem Wechselrichter nennt GoodWe eine Umschaltzeit unter 10 ms für eine Ersatzstromlast unter 50 kW. Laufen die Wechselrichter auch im Inselbetrieb parallel, dauert die Umschaltung weniger als 20 ms. Die gesamte Ersatzstromlast muss unter 90 % der gemeinsamen Nennleistung bleiben. Arbeiten die Wechselrichter im Inselbetrieb getrennt, dauert die Umschaltung weniger als 10 ms. Die Last an jedem STS muss unter der Nennleistung des zugehörigen Wechselrichters liegen (ET-Systemhandbuch, englische PDF-S. 30–32, 112, 115 und 117).
+
+**Citation:** GoodWe Commercial Smart Inverter Solutions User Manual, ET 25–50 kW (EN) · p.31 · https://de-linker.com/wp-content/uploads/2026/11/GW_Commercial-Smart-Inverter-Solutions_User-Manual-ET25-50kW-EN.pdf
+
+## 5. Which grid earthing systems and unbalanced phase loads does the GW50K-ET-10 support?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** Which grid earthing systems and unbalanced phase loads does the GW50K-ET-10 support?
+
+According to the user manual (pp. 10 and 24), the GW50K-ET-10 supports TN-S, TN-C, TN-C-S, and TT three-phase four-wire/five-wire grid configurations (380/400 V, 3L/N/PE) and unbalanced three-phase AC output up to 18.33 kW per phase.
+
+**DE Q:** Welche Netzformen und unsymmetrischen Phasenlasten unterstützt der GW50K-ET-10?
+
+Laut Benutzerhandbuch (S. 10 und 24) unterstützt der GW50K-ET-10 die Netzformen TN-S, TN-C, TN-C-S und TT (380/400 V, 3L/N/PE) sowie einen unsymmetrischen dreiphasigen AC-Ausgang mit bis zu 18,33 kW pro Phase.
+
+**Citation:** GoodWe ET 40–50 kW Hybrid Inverter User Manual V1.0 (EN) · p.24 · https://de-linker.com/wp-content/uploads/2026/11/GW_ET40-50kW_User-Manual-EN.pdf
+
+## 6. What European manufacturer warranty applies to the GW50K-ET-10?
+
+**Status:** pass
+**Review:** pass
+
+**EN Q:** What European manufacturer warranty applies to the GW50K-ET-10?
+
+GoodWe’s European inverter warranty gives the GW50K-ET-10 five years of cover. The period starts at first installation or twelve months after production, whichever is earlier. If the installation date cannot be documented, GoodWe uses its shipment date in place of the installation date.
+
+**DE Q:** Welche europäische Herstellergarantie gilt für den GW50K-ET-10?
+
+Für den GW50K-ET-10 gewährt GoodWe nach den europäischen Garantiebedingungen fünf Jahre Herstellergarantie. Die Frist beginnt mit der Erstinstallation, spätestens zwölf Monate nach Herstellung. Fehlt ein ausreichender Nachweis des Installationsdatums, zählt für GoodWe der Tag, an dem das Gerät das Werk verlassen hat.
+
+**Citation:** GoodWe Limited Warranty for Inverter System Europe Rev 3.9 (EN) · p.1 · https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf

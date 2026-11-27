@@ -44,12 +44,16 @@ final class GetProduct {
 			'input_schema'        => array(
 				'type'                 => 'object',
 				'properties'           => array(
-					'product_id' => array(
+					'product_id'       => array(
 						'type'        => 'integer',
 						'minimum'     => 1,
 						'description' => __( 'Product ID.', 'linker-commerce' ),
 					),
-					'lang'       => array(
+					'requirement_kind' => array(
+						'type' => 'string',
+						'enum' => array( 'backup', 'meter', 'parallel_controller' ),
+					),
+					'lang'             => array(
 						'type' => 'string',
 						'enum' => array( 'en', 'de' ),
 					),
@@ -60,33 +64,33 @@ final class GetProduct {
 			'output_schema'       => array(
 				'type'                 => 'object',
 				'properties'           => array(
-					'product_id' => array( 'type' => 'integer' ),
-					'title'      => array( 'type' => 'string' ),
-					'url'        => array( 'type' => 'string' ),
-					'sku'        => array( 'type' => 'string' ),
-					'model'      => array( 'type' => array( 'string', 'null' ) ),
-					'brand'      => array( 'type' => array( 'string', 'null' ) ),
-					'series'     => array( 'type' => array( 'string', 'null' ) ),
-					'facts'      => array(
+					'product_id'   => array( 'type' => 'integer' ),
+					'title'        => array( 'type' => 'string' ),
+					'url'          => array( 'type' => 'string' ),
+					'sku'          => array( 'type' => 'string' ),
+					'model'        => array( 'type' => array( 'string', 'null' ) ),
+					'brand'        => array( 'type' => array( 'string', 'null' ) ),
+					'series'       => array( 'type' => array( 'string', 'null' ) ),
+					'facts'        => array(
 						'description' => __( 'Selection facts of the product.', 'linker-commerce' ),
 						'type'        => 'object',
 					),
-					'figures'    => array(
+					'figures'      => array(
 						'description' => __( 'Cited figure entries as stored.', 'linker-commerce' ),
 						'type'        => 'object',
 					),
-					'attributes' => array(
+					'attributes'   => array(
 						'type'                 => 'object',
 						'additionalProperties' => array(
 							'type'  => 'array',
 							'items' => array( 'type' => 'string' ),
 						),
 					),
-					'documents'  => array(
+					'documents'    => array(
 						'type'  => 'array',
 						'items' => array( 'type' => 'object' ),
 					),
-					'faq'        => array(
+					'faq'          => array(
 						'type'  => 'array',
 						'items' => array(
 							'type'                 => 'object',
@@ -98,7 +102,11 @@ final class GetProduct {
 							'additionalProperties' => false,
 						),
 					),
-					'commerce'   => ProductCommerce::schema(),
+					'requirements' => array(
+						'type'  => 'array',
+						'items' => array( 'type' => 'object' ),
+					),
+					'commerce'     => ProductCommerce::schema(),
 				),
 				'required'             => array( 'product_id', 'title', 'url', 'sku', 'model', 'brand', 'series', 'facts', 'figures', 'attributes', 'documents', 'faq', 'commerce' ),
 				'additionalProperties' => false,
@@ -132,17 +140,29 @@ final class GetProduct {
 		}
 		$product      = wc_get_product( $id );
 		$facts        = $this->publication->facts( $id, $manifest );
-		$dependencies = $this->publication->dependencies( array( $id ), $manifest );
+		$ids          = array( $id );
+		$requirements = array();
+		if ( isset( $input['requirement_kind'] ) ) {
+			$requirements = $this->publication->requirements( $id, $input['requirement_kind'], $manifest );
+			foreach ( $requirements as $row ) {
+				$ids = array_merge( $ids, array_column( $row['accessories'], 'product_id' ), array_column( $row['documents'], 'product_id' ) );
+				if ( isset( $row['applicability']['controller_product_id'] ) ) {
+					$ids[] = $row['applicability']['controller_product_id'];
+				}
+			}
+		}
+		$dependencies = $this->publication->dependencies( $ids, $manifest );
 
 		$result = array(
-			'product_id' => $id,
-			'title'      => ProductText::title( $id, $lang, $manifest ),
-			'url'        => ProductText::url( $id, $lang, $manifest ),
-			'sku'        => $product instanceof WC_Product ? (string) $product->get_sku() : '',
-			'facts'      => $facts->to_array(),
-			'figures'    => (object) $this->publication->figures( $id, $manifest ),
-			'attributes' => (object) $this->attributes( $id ),
-			'faq'        => $this->faq( $id, $lang, $manifest ),
+			'product_id'   => $id,
+			'title'        => ProductText::title( $id, $lang, $manifest ),
+			'url'          => ProductText::url( $id, $lang, $manifest ),
+			'sku'          => $product instanceof WC_Product ? (string) $product->get_sku() : '',
+			'facts'        => $facts->to_array(),
+			'figures'      => (object) $this->publication->figures( $id, $manifest ),
+			'attributes'   => (object) $this->attributes( $id ),
+			'requirements' => $requirements,
+			'faq'          => $this->faq( $id, $lang, $manifest ),
 			...$this->customer_fields( $id, $lang, $manifest, $product instanceof WC_Product ? $product : null ),
 		);
 		return $this->publication->unchanged( $dependencies ) ? $result : $this->empty( $id, $lang );
@@ -229,19 +249,20 @@ final class GetProduct {
 		unset( $lang );
 
 		return array(
-			'product_id' => $id,
-			'title'      => '',
-			'url'        => '',
-			'sku'        => '',
-			'model'      => null,
-			'brand'      => null,
-			'series'     => null,
-			'facts'      => (object) array(),
-			'figures'    => (object) array(),
-			'attributes' => (object) array(),
-			'documents'  => array(),
-			'faq'        => array(),
-			'commerce'   => ProductCommerce::hidden(),
+			'product_id'   => $id,
+			'title'        => '',
+			'url'          => '',
+			'sku'          => '',
+			'model'        => null,
+			'brand'        => null,
+			'series'       => null,
+			'facts'        => (object) array(),
+			'figures'      => (object) array(),
+			'attributes'   => (object) array(),
+			'documents'    => array(),
+			'faq'          => array(),
+			'requirements' => array(),
+			'commerce'     => ProductCommerce::hidden(),
 		);
 	}
 }

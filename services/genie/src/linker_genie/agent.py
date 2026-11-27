@@ -81,7 +81,9 @@ INPUT_DOCS: dict[str, str] = {
         "kWh; cheapest ranks by a price this account can see and is not "
         "applied when prices are hidden."
     ),
-    "linker/get-product": "{product_id: int>=1, lang: 'en'|'de'}",
+    "linker/get-product": (
+        "{product_id: int>=1, lang: 'en'|'de', requirement_kind?: 'backup'|'meter'|'parallel_controller'}"
+    ),
     "linker/compare-products": "{product_ids: [2..4 ints], lang: 'en'|'de'}",
     "linker/check-compatibility": (
         "{inverter_id: int, battery_id: int} or {product_ids: [2 ints]} — "
@@ -814,6 +816,13 @@ def _user_prompt(
         )
     if prepared is not None and prepared.route.hint:
         lines.append("Service routing: " + prepared.route.hint)
+    if prepared is not None:
+        for fact in prepared.facts.facts.values():
+            if fact.source == "product-requirement":
+                lines.append(
+                    f"Use {{fact:{fact.id}}} for this complete manufacturer requirement "
+                    f"and its conditions: {fact.value}"
+                )
     if prepared is not None and prepared.facts.warranty_answers:
         lines.append(
             "Write manufacturer warranty claims without an introduction or closing summary. "

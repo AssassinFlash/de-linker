@@ -3,9 +3,10 @@
 Runs every golden question against a built index: the production path first (by
 product: narrowed to the products that sell the question's model, vectors when the
 index has them), then the whole library, then keywords only. Prints a Markdown table
-and writes `eval.json` next to the index. Fails when a vector setting falls below
-the recorded baseline (`BASELINE`, docs/specs/10-knowledge-index.md 验收 (a)), and says
-by how much.
+and keeps the historical scores in `eval.json` next to the index. The release gate
+applies the original vector floors to questions about current Woo sale products
+and requires the live knowledge tool to refuse withdrawn models. The per-question
+results, active scores and publication identity are in `eval-publication.json`.
 """
 
 from __future__ import annotations
@@ -15,13 +16,16 @@ import json
 import sqlite3
 import sys
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from index.eval.goldset import GOLDEN_PATH, Question, load
 from index.eval.metrics import Score, score
+from index.eval.scope import coverage_failures, publication_cases, require_same_source
 from index.paths import INDEX_DIR
 from linker_genie.embedding import GeminiEmbedder
+from linker_genie.knowledge import KnowledgeSearch
+from linker_genie.publication import current
 from linker_genie.retrieval import DocumentIndex
 
 RECALL_AT = 5
@@ -204,13 +208,27 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--index", type=Path, default=None, help="index.sqlite (default: latest build)"
     )
-    parser.add_argument("--golden", type=Path, default=GOLDEN_PATH)
+    parser.add_argument(
+        "--golden",
+        type=Path,
+        default=GOLDEN_PATH,
+        help="An alternate question set writes eval-diagnostic.json and exits 2 (diagnostic only).",
+    )
     args = parser.parse_args(argv)
     index_path = args.index or latest_build()
     questions = load(args.golden)
     products = product_ids_by_model(index_path)
     hybrid = DocumentIndex(index_path)
     keyword = DocumentIndex(index_path, encoder=None)
+    authority = current()
+    snapshot = authority.snapshot()
+    require_same_source(hybrid, snapshot)
+    cases = publication_cases(
+        questions, authority, snapshot, KnowledgeSearch(lambda: hybrid, authority)
+    )
+    failures = coverage_failures(cases, snapshot, products)
+    selected = [i for i, case in enumerate(cases) if case.model_status == "published"]
+    positive = [questions[i] for i in selected]
     # The production path first: Genie asks about a model it has resolved to products
     # (docs/specs/13-genie.md, linker/search-knowledge takes product_ids), so the search
     # narrows to those products' documents; with vectors when the index has them.
@@ -226,27 +244,70 @@ def main(argv: Sequence[str] | None = None) -> int:
             ("keywords, by product", keyword, products),
             ("keywords, whole library", keyword, None),
         ]
-    summaries = []
+    historical = []
+    active = []
+    outcomes: dict[str, list[Score]] = {}
     for name, index, by_product in settings:
-        summaries.append(
-            summarize(name, questions, evaluate(index, questions, by_product))
-        )
+        scores = evaluate(index, questions, by_product)
+        outcomes[name] = scores
+        historical.append(summarize(name, questions, scores))
+        active.append(summarize(name, positive, [scores[i] for i in selected]))
         print(f"{name}: done", file=sys.stderr, flush=True)
-    scoped = sum(1 for question in questions if question.model.casefold() in products)
-    report = table(summaries)
+    require_same_source(hybrid, authority.snapshot())
+    print(f"Index {hybrid.version} ({hybrid.embedding_model})")
+    print(f"Historical golden set ({len(questions)} questions)\n")
+    print(table(historical))
+    print(f"\nCurrent Woo sale products ({len(positive)} questions)\n")
+    print(table(active))
+    denied = [case for case in cases if case.refused is not None]
     print(
-        f"Index {hybrid.version} ({hybrid.embedding_model}); golden set {len(questions)} questions, "
-        f"{scoped} with products for their model.\n"
+        f"\nWithdrawn requests refused: {sum(case.refused is True for case in denied)}/{len(denied)}"
     )
-    print(report)
+    print(
+        f"Unknown historical labels: {sum(c.model_status == 'unknown' for c in cases)} questions"
+    )
+    print("\n" + "\n".join(against_baseline(active)))
+    failures.extend(regressions(active))
+    historical_report = [asdict(summary) for summary in historical]
+    report = {
+        "index_version": hybrid.version,
+        "source_revision": snapshot.source_revision,
+        "model_identity_revision": snapshot.model_identity_revision,
+        "baseline": BASELINE,
+        "published": [asdict(summary) for summary in active],
+        "cases": [
+            {
+                **asdict(case),
+                "scores": {
+                    name: asdict(scores[i]) for name, scores in outcomes.items()
+                },
+            }
+            for i, case in enumerate(cases)
+        ],
+        "failures": failures,
+    }
+    if args.golden.resolve() != GOLDEN_PATH.resolve():
+        diagnostic = {
+            **report,
+            "golden": str(args.golden),
+            "historical": historical_report,
+        }
+        path = index_path.parent / "eval-diagnostic.json"
+        path.write_text(
+            json.dumps(diagnostic, indent=1, ensure_ascii=False), encoding="utf-8"
+        )
+        print(
+            f"Custom golden set: diagnostic results at {path}; release gate not evaluated."
+        )
+        return 2
     (index_path.parent / "eval.json").write_text(
-        json.dumps([summary.__dict__ for summary in summaries], indent=1),
-        encoding="utf-8",
+        json.dumps(historical_report, indent=1), encoding="utf-8"
     )
-    print("\n" + "\n".join(against_baseline(summaries)))
-    failed = regressions(summaries)
-    if failed:
-        print("\nBelow the baseline:\n" + "\n".join(failed))
+    (index_path.parent / "eval-publication.json").write_text(
+        json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8"
+    )
+    if failures:
+        print("\nRelease gate failed:\n" + "\n".join(failures))
         return 1
     return 0
 

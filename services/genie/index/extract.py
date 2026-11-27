@@ -26,6 +26,7 @@ from docling_core.types.doc.items.picture.picture import PictureItem
 from docling_core.types.doc.items.table.table import TableItem
 from docling_core.types.doc.items.text import SectionHeaderItem, TextItem, TitleItem
 
+from index import et_datasheet
 from linker_genie.table_projection import (
     MIN_WRAPPED_STEM,
     TOKEN,
@@ -36,6 +37,7 @@ from linker_genie.table_projection import (
     SourceSpan,
     SourceTextSpan,
     SourceWordWrap,
+    pdf_footnote_pattern,
     subtitle_above_title,
     valid_word_wrap,
 )
@@ -1286,16 +1288,15 @@ def _native_footnotes(
             text_page = page.get_textpage()
             try:
                 body = text_page.get_text_range()
-                start = body.find(text)
-                if (
-                    len(body) != text_page.count_chars()
-                    or start < 0
-                    or body.find(text, start + 1) >= 0
-                ):
+                if len(body) != text_page.count_chars():
                     continue
+                matches = list(re.finditer(pdf_footnote_pattern(text, sha), body))
+                if len(matches) != 1:
+                    continue
+                original = matches[0]
                 glyphs = [
                     text_page.get_charbox(index)
-                    for index in range(start, start + len(text))
+                    for index in range(original.start(), original.end())
                     if not body[index].isspace()
                 ]
                 if not glyphs or any(
@@ -1329,10 +1330,10 @@ def _native_footnotes(
                             char_end=len(text),
                         ),
                         pdf_span=SourceSpan(
-                            text=text,
+                            text=original[0],
                             bbox=bounds,
-                            char_start=start,
-                            char_end=start + len(text),
+                            char_start=original.start(),
+                            char_end=original.end(),
                             page=source_page.number,
                             source_sha256=sha,
                             page_size=(width, height),
@@ -1840,12 +1841,39 @@ def _preceding_axis_blocks(blocks: Sequence[Block]) -> list[Block]:
             if block.kind == "table":
                 break
             continue
+        if block.kind == "heading" and re.fullmatch(
+            r"Technical Data|Technische Daten", block.text, re.I
+        ):
+            return [replace(block, kind="text"), *reversed(result)]
         if block.kind != "text":
             break
         result.append(block)
         if re.match(r"^(?:Technical\s+Data|Technische\s+Daten)\b", block.text, re.I):
             return list(reversed(result))
     return []
+
+
+def _detached_table_body(table: Block) -> Block:
+    """Keep the numeric usable-energy row as data under a detached model header."""
+    first = [cell for cell in table.source_cells if cell["row_start"] == 0]
+    if (
+        len(first) < 2
+        or first[0]["col_start"] != 0
+        or not re.fullmatch(
+            r"(?:Usable Energy|Nutzbare Energie)\s*\(kWh\)\s*\*\d+",
+            first[0]["text"],
+            re.I,
+        )
+        or not all(re.fullmatch(r"\d+(?:[.,]\d+)?", cell["text"]) for cell in first[1:])
+    ):
+        return table
+    return replace(
+        table,
+        source_cells=tuple(
+            {**cell, "column_header": False} if cell["row_start"] == 0 else cell
+            for cell in table.source_cells
+        ),
+    )
 
 
 def _pdf_word_wraps(pdf: object, number: int, sha: str) -> list[SourceWordWrap]:
@@ -2132,14 +2160,39 @@ def enrich_model_axes(
                 word_wraps = []
             blocks = []
             for index, block in enumerate(page.blocks):
+                if (
+                    sha in et_datasheet.SOURCES
+                    and page.number == 2
+                    and page.source == "docling"
+                    and block.source_id == "#/tables/0"
+                    and not block.source_picture
+                    and len(block.source_prov) == 1
+                ):
+                    physical = pdf[page.number - 1]
+                    try:
+                        box = _visible_box(
+                            block.source_prov[0].bbox,
+                            physical.get_width(),
+                            physical.get_height(),
+                        )
+                        if box:
+                            grid = et_datasheet.independent_cells(
+                                physical, sha, spans, box
+                            )
+                            if grid:
+                                blocks.append(replace(block, source_cells=tuple(grid)))
+                                continue
+                    finally:
+                        physical.close()
                 cells: list[SourceCell] = []
                 recovered = False
+                body = _detached_table_body(block) if block.kind == "table" else block
                 external_result = (
                     _external_axis(
                         pdf,
                         page.number,
                         _preceding_axis_blocks(page.blocks[:index]),
-                        block,
+                        body,
                         spans,
                     )
                     if index and block.kind == "table" and block.source_cells
@@ -2148,6 +2201,7 @@ def enrich_model_axes(
                 external = None
                 block_repaired = False
                 if external_result is not None:
+                    block = body
                     external, repaired_cells = external_result
                     if repaired_cells is not None:
                         block = replace(block, source_cells=repaired_cells)

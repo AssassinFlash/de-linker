@@ -15,6 +15,7 @@ the reviewed degraded sentence (#410). A page outage is not one of these.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
@@ -211,6 +212,11 @@ def _seal_and_finish(
         return mismatch
     if mismatch is not None:
         sealed = priced
+    if priced_facts.qualifications and any(
+        isinstance(block, TextBlock) and re.search(r"±\s*°\s*[CF]\b", block.text)
+        for block in sealed.blocks
+    ):
+        return "Omit the incomplete temperature tolerance. The service attaches the full manufacturer's condition."
     return finish(sealed, priced_facts, route, customer_message(request))
 
 

@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Products;
 
+use Linker\Commerce\Abilities\PublicationData;
 use Linker\Commerce\Products\Compatibility;
 use Linker\Commerce\Products\EngineeringData;
 use Linker\Commerce\Products\Publication;
@@ -370,6 +371,30 @@ final class CompatibilityTest extends TestCase {
 			array( 'GW124.99K-ETR-G10' ),
 			array( 'GW125K-ETR-G10' ),
 		);
+	}
+
+	/** Product detail exposes only the requested owner's current requirement and its cited files. */
+	public function test_product_ability_requires_current_equipment_evidence(): void {
+		$owner = $this->product_id( 'GW100K-ETR-G10' );
+		foreach ( $this->manifest['documents'] as &$document ) {
+			$document['title'] = 'Manufacturer manual';
+		}
+		unset( $document );
+		$reader = new PublicationData();
+		$rows   = $reader->requirements( $owner, 'parallel_controller', $this->manifest );
+		$this->assertCount( 1, $rows );
+		$this->assertSame( $owner, $rows[0]['inverter_product_id'] );
+		$this->assertSame( 'SEC3000C', $rows[0]['accessories'][0]['model'] );
+		$source = $rows[0]['documents'][0];
+		$this->assertSame( 'Manufacturer manual', $source['title'] );
+		$this->assertArrayHasKey( 'document_revision', $source );
+		$this->assertSame( array(), $reader->requirements( $this->product_id( 'SEC3000C' ), 'parallel_controller', $this->manifest ) );
+
+		$this->manifest['documents'] = array_filter(
+			$this->manifest['documents'],
+			static fn( array $entry ): bool => $entry['document_id'] !== $source['document_id']
+		);
+		$this->assertSame( array(), $reader->requirements( $owner, 'parallel_controller', $this->manifest ) );
 	}
 
 	/** Exact canonical IDs keep their release when a model label is edited. */

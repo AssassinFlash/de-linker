@@ -206,7 +206,7 @@ def page_changes(page: str, language: str, content: str, media: dict[str, Any]) 
         for old, new in (
             (
                 "Aus dem Lager liefern wir ab. Bei Lieferungen berechnen wir die Fracht gesondert nach Zielort.",
-                "Der Versand erfolgt ab unserem Lager in Deutschland. Die Frachtkosten berechnen wir gesondert nach Zielort.",
+                "Wir liefern ab Lager. Die Frachtkosten berechnen wir gesondert nach Zielort.",
             ),
             (
                 "<strong>Mit den Geräten</strong> Hinterlegte Handbücher und die für Genehmigung und Installation angeforderten Zertifikate.",

@@ -1,11 +1,13 @@
 """Published Woo figures through the same turn cycle used by the HTTP service."""
 
+from typing import Any
+
 import pytest
 
 from linker_genie.cycle import run
 from linker_genie.facts import TurnFacts, collect, merge
 from linker_genie.hydrate import hydrate
-from linker_genie.route import Route
+from linker_genie.route import NamedModel, Route
 from linker_genie.schema import (
     DocumentBlock,
     Locale,
@@ -310,3 +312,117 @@ def test_catalog_usable_energy_cites_only_the_same_unambiguous_published_figure(
         for b in blocks
         if isinstance(b, DocumentBlock) and b.url and "#page=" in b.url
     ] == pages
+
+
+@pytest.mark.parametrize(
+    ("lang", "question", "field", "value", "unit", "qualifier", "expected"),
+    [
+        (
+            "en",
+            "According to the GoodWe datasheet, what is the usable energy of the LX C138-10 battery in kWh?",
+            "system_usable_energy_kwh",
+            "138.24",
+            "kWh",
+            "Test conditions: 100% DoD, 0.2C charge and discharge at +25 ± 2 °C.",
+            "138.24 kWh",
+        ),
+        (
+            "de",
+            "Welche nutzbare Energie in kWh gibt das GoodWe-Datenblatt für den Batterieschrank LX C138-10 an?",
+            "system_usable_energy_kwh",
+            "138,24",
+            "kWh",
+            "Prüfbedingungen: 100 % DoD, 0,2C Laden und Entladen bei +25 ± 2 °C.",
+            "138,24 kWh",
+        ),
+        (
+            "en",
+            "How many independent MPPTs does the GoodWe GW120K-HT have according to its datasheet?",
+            "n_mppt",
+            "12",
+            None,
+            None,
+            "12 MPPTs",
+        ),
+        (
+            "de",
+            "Welchen MPPT-Betriebsspannungsbereich in Volt nennt das GoodWe-Datenblatt für den GW50K-ET-10?",
+            "mppt_voltage_range_v",
+            "165 ~ 850",
+            "V",
+            None,
+            "165 ~ 850 V",
+        ),
+    ],
+)
+def test_single_datasheet_parameter_keeps_the_bound_page_and_localized_conditions(
+    lang: Locale,
+    question: str,
+    field: str,
+    value: str,
+    unit: str | None,
+    qualifier: str | None,
+    expected: str,
+) -> None:
+    from linker_genie.template import prepared_answer
+
+    model = next(
+        label
+        for label in ("LX C138-10", "GW120K-HT", "GW50K-ET-10")
+        if label in question
+    )
+    data: dict[str, Any] = {
+        "product_id": 12,
+        "brand": "GoodWe",
+        "model": model,
+        "documents": [
+            {
+                "url": DATASHEET,
+                "type": "datasheet",
+                "document_id": "doc-sheet",
+                "document_revision": "rev",
+            }
+        ],
+        "figures": {
+            field: {
+                "value": value,
+                "unit": unit,
+                "qualifier": {lang: qualifier} if qualifier else None,
+                "citation": {"url": DATASHEET, "page": 2},
+            }
+        },
+    }
+    facts = collect("linker/get-product", data, lang)
+    facts.tool_calls.append(
+        {
+            "name": "linker/get-product",
+            "arguments": {"product_id": 12},
+            "result": data,
+            "ok": True,
+        }
+    )
+    route = Route("documents", named_models=(NamedModel(model, (12,)),))
+    draft = prepared_answer(facts, route, lang, question=question)
+    assert draft is not None
+    request = TurnRequest(
+        conversation_id="parameter",
+        locale=lang,
+        messages=[TurnMessage(role="user", content=question)],
+    )
+    result = run(request, lambda *_: (draft, TurnFacts()), route, facts)
+    assert result.grounded
+    text = next(b.text for b in result.output.blocks if isinstance(b, TextBlock))
+    assert model in text and expected in text
+    if qualifier:
+        assert qualifier in text
+    assert [b.url for b in result.output.blocks if isinstance(b, DocumentBlock)] == [
+        DATASHEET + "#page=2"
+    ]
+    assert (
+        prepared_answer(
+            facts, route, lang, question=question + " Also give the maximum current."
+        )
+        is None
+    )
+    data["documents"][0]["type"] = "manual"
+    assert prepared_answer(facts, route, lang, question=question) is None
