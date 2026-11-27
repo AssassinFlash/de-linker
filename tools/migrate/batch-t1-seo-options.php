@@ -10,7 +10,13 @@
 
 namespace Linker\Migrate\SeoT1;
 
+use Linker\Commerce\Mail\NativeTransaction;
 use Linker\I18n\Jobs;
+use Linker\I18n\Languages;
+use Linker\I18n\LinkLocalizer;
+use Linker\I18n\Twins;
+use Linker\I18n\Translation\{Aligner, DeepSeekClient, Fields, HtmlTokenizer, Planner, Rules, Segmenter, State, Translator, Validator};
+use Linker\I18n\Woo\Projection;
 use RuntimeException;
 use WP_CLI;
 
@@ -96,20 +102,43 @@ function options_snapshot(): array {
 	return $selected;
 }
 
+function translator(): Translator {
+	$languages = new Languages();
+	$tokenizer = new HtmlTokenizer();
+	$links     = new LinkLocalizer( $languages, $tokenizer );
+	$rules     = Rules::load( WP_PLUGIN_DIR . '/linker-i18n/data' );
+	return new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), new State(), DeepSeekClient::from_environment( $rules ), new Validator( $rules ), new Twins( $languages, $links, new Projection( $languages ) ), $links );
+}
+
+function translation_meta(): array {
+	$meta = array();
+	foreach ( array( TERMS['en'][0] => array( State::STATUS, State::NOTE ), TERMS['de'][0] => array( State::SOURCE_HASH, State::UNITS ) ) as $id => $keys ) {
+		foreach ( $keys as $key ) {
+			$meta[ $id ][ $key ] = get_term_meta( $id, $key, false );
+		}
+	}
+	return $meta;
+}
+
 function snapshot(): array {
 	$terms = array();
+	$names = array();
 	foreach ( TERMS as $lang => list( $id, $slug ) ) {
 		$term = get_term( $id, 'product_cat', OBJECT, 'raw' );
 		if ( ! $term instanceof \WP_Term || $slug !== $term->slug || $lang !== pll_get_term_language( $id ) || (int) pll_get_term( TERMS['en'][0], $lang ) !== $id ) {
 			throw new RuntimeException( "Expected the published $lang inverter category." );
 		}
 		$terms[ $id ] = $term->description;
+		$names[ $id ] = $term->name;
 	}
 	$icon = ABSPATH . 'favicon.ico';
 	$file = ABSPATH . '.htaccess';
 	return array(
 		'home'          => get_option( 'home' ),
 		'terms'         => $terms,
+		'term_names'    => $names,
+		'translation'   => translation_meta(),
+		'current'       => translator()->current( State::TERM, TERMS['en'][0] ),
 		'options'       => options_snapshot(),
 		'favicon'       => is_file( $icon ) ? base64_encode( bytes( $icon ) ) : null,
 		'favicon_mode'  => is_file( $icon ) ? fileperms( $icon ) & 0777 : null,
@@ -152,16 +181,35 @@ function pause_term_translation(): void {
 	}
 }
 
-function publish( array $current, array $target ): void {
+function publish( array $current, array $target, bool $adopt ): void {
 	pause_term_translation();
-	foreach ( $target['terms'] as $id => $text ) {
-		if ( $current['terms'][ $id ] !== $text ) {
-			$result = wp_update_term( $id, 'product_cat', array( 'description' => wp_slash( $text ) ) );
-			if ( is_wp_error( $result ) ) {
-				throw new RuntimeException( $result->get_error_message() );
+	NativeTransaction::run(
+		static function () use ( $current, $target, $adopt ): void {
+			foreach ( $target['terms'] as $id => $text ) {
+				if ( $current['terms'][ $id ] !== $text ) {
+					$result = wp_update_term( $id, 'product_cat', array( 'description' => wp_slash( $text ) ) );
+					if ( is_wp_error( $result ) ) {
+						throw new RuntimeException( $result->get_error_message() );
+					}
+				}
+			}
+			if ( $adopt ) {
+				$translator = translator();
+				if ( State::SYNCED !== $translator->adopt_current( State::TERM, TERMS['en'][0] ) || ! $translator->current( State::TERM, TERMS['en'][0] ) ) {
+					throw new RuntimeException( 'Cannot adopt the reviewed German inverter description.' );
+				}
+			} else {
+				foreach ( $target['translation'] as $id => $keys ) {
+					foreach ( $keys as $key => $values ) {
+						delete_term_meta( $id, $key );
+						foreach ( $values as $value ) {
+							add_term_meta( $id, $key, wp_slash( $value ) );
+						}
+					}
+				}
 			}
 		}
-	}
+	);
 	foreach ( OPTIONS as $name => $fields ) {
 		$option = get_option( $name );
 		foreach ( $fields as $key => $value ) {
@@ -210,7 +258,17 @@ if ( $current['home'] !== $before['home'] ) {
 }
 $after  = published( $before );
 $target = 'apply' === $mode ? $after : $before;
-if ( $current === $target ) {
+// The native translator calculates the new segment baseline from the reviewed pair.
+$matches = static function ( array $state ) use ( $mode, $target ): bool {
+	if ( 'restore' === $mode ) {
+		return $state === $target;
+	}
+	return $state['current'] && array_diff_key( $state, array_flip( array( 'translation', 'current' ) ) ) === array_diff_key( $target, array_flip( array( 'translation', 'current' ) ) );
+};
+if ( $current['term_names'] !== $before['term_names'] || ( ! $current['current'] && $current['translation'] !== $before['translation'] ) ) {
+	WP_CLI::error( 'Inverter names or translation baseline changed since the snapshot.' );
+}
+if ( $matches( $current ) ) {
 	WP_CLI::success( 'SEO settings, bilingual copy and files already match.' );
 	return;
 }
@@ -227,8 +285,8 @@ foreach ( array( 'favicon', 'favicon_mode', 'htaccess', 'htaccess_mode' ) as $ke
 		WP_CLI::error( "$key changed after the snapshot." );
 	}
 }
-publish( $current, $target );
-if ( snapshot() !== $target ) {
+publish( $current, $target, 'apply' === $mode );
+if ( ! $matches( snapshot() ) ) {
 	WP_CLI::error( 'Published settings or files differ from the requested state.' );
 }
 WP_CLI::success( 'SEO settings, bilingual copy and files verified.' );
