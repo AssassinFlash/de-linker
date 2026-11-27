@@ -1127,6 +1127,30 @@ msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
 #: includes/Genie/Entries.php
+msgid "Datasheet & manual by model"
+msgstr "Datenblatt & Handbuch zum Modell"
+
+#: includes/Genie/Entries.php
+msgid "Find the datasheet and installation manual for an inverter or battery model"
+msgstr "Datenblatt und Installationshandbuch für ein Wechselrichter- oder Speichermodell finden"
+
+#: includes/Genie/Entries.php
+msgid "Inverter & HV battery pairing"
+msgstr "Wechselrichter & HV-Speicher-Paarung"
+
+#: includes/Genie/Entries.php
+msgid "VDE-AR-N 4105 / 4110 certificates"
+msgstr "Zertifikate VDE-AR-N 4105 / 4110"
+
+#: includes/Genie/Entries.php
+msgid "Which high-voltage batteries are compatible with my hybrid inverter and capacity ratio?"
+msgstr "Welche Hochvolt-Batterien sind mit meinem Hybrid-Wechselrichter und Leistungsbereich kompatibel?"
+
+#: includes/Genie/Entries.php
+msgid "Which models have VDE-AR-N 4105 or VDE-AR-N 4110 grid certificates?"
+msgstr "Für welche Modelle liegen Netzanschlusszertifikate nach VDE-AR-N 4105 oder VDE-AR-N 4110 vor?"
+
+#: includes/Genie/Entries.php
 msgid "Is there a datasheet for my model?"
 msgstr "Gibt es ein Datenblatt zu meinem Modell?"
 

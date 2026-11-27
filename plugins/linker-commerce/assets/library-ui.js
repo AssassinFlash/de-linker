@@ -153,9 +153,17 @@
 		return String(pathname || "") + base + named + (hash || "");
 	}
 
+	var QUESTION = /(\?|\b(how|what|which|where|when|why|who|can|could|do|does|is|are|will|would|should|help|find|recommend|compare|need|want|wie|was|welche|welcher|welches|wo|wann|warum|wer|kann|können|koennen|ist|sind|soll|sollte|hilfe|hilf|empfehl|vergleich|brauche|möchte|moechte|habe|gibt)\b)/i;
+
+	function isQuestion(value) {
+		var text = String(value == null ? "" : value).trim();
+		return text.length >= 8 && QUESTION.test(text);
+	}
+
 	if (typeof module !== "undefined" && module.exports) {
 		module.exports = {
 			normalize: normalize,
+			isQuestion: isQuestion,
 			terms: terms,
 			matches: matches,
 			score: score,
@@ -721,21 +729,26 @@
 		return hit.kind === "document" ? label("document") : hit.kind === "trade" ? label("trade") : label("answer");
 	}
 
-	function emptyResult() {
-		var ledger = scope.document.createElement("div");
-		ledger.className = "linker-library-ledger";
-		var empty = scope.document.createElement("div");
-		empty.className = "linker-library-empty";
-		var text = scope.document.createElement("p");
-		text.textContent = label("empty");
+	function genieAction(query) {
 		var link = scope.document.createElement("a");
 		link.className = "linker-library-genie";
 		link.setAttribute("data-linker-genie-open", "");
 		link.setAttribute("data-page-type", "faq");
 		link.href = genieUrl;
 		link.textContent = label("askGenie");
+		link.setAttribute("data-ask-message", query);
+		return link;
+	}
+
+	function emptyResult(query) {
+		var ledger = scope.document.createElement("div");
+		ledger.className = "linker-library-ledger";
+		var empty = scope.document.createElement("div");
+		empty.className = "linker-library-empty";
+		var text = scope.document.createElement("p");
+		text.textContent = label("empty");
 		empty.appendChild(text);
-		empty.appendChild(link);
+		empty.appendChild(genieAction(query));
 		ledger.appendChild(empty);
 		return ledger;
 	}
@@ -752,8 +765,14 @@
 		state.searchPage = window_.page;
 		clear(host);
 		if (!hits.length) {
-			host.appendChild(emptyResult());
+			host.appendChild(emptyResult(query));
 		} else {
+			if (isQuestion(query)) {
+				var bar = scope.document.createElement("div");
+				bar.className = "linker-library-ask-bar";
+				bar.appendChild(genieAction(query));
+				host.appendChild(bar);
+			}
 			var ledger = scope.document.createElement("div");
 			ledger.className = "linker-library-ledger";
 			window_.items.forEach(function (hit) {
@@ -1164,9 +1183,20 @@
 					}
 					return;
 				}
-				if (event.key === "Enter" && state.suggestIndex >= 0) {
-					event.preventDefault();
-					activateSuggestion(state.suggestIndex);
+				if (event.key === "Enter") {
+					if (state.suggestIndex >= 0) {
+						event.preventDefault();
+						activateSuggestion(state.suggestIndex);
+						return;
+					}
+					var asked = state.q.trim();
+					if (isQuestion(asked) || (asked.length >= 2 && !hitsOfTab(asked, state.tab).length)) {
+						event.preventDefault();
+						closeSuggestions();
+						scope.dispatchEvent(new scope.CustomEvent("linker-genie-ask", {
+							detail: { message: asked, opener: input },
+						}));
+					}
 					return;
 				}
 				if (event.key === "Escape" && state.suggestOpen) {
