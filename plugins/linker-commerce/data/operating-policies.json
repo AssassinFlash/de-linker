@@ -190,7 +190,7 @@
       "policy_id": "service_and_presence",
       "value": {
         "dispatch_country": "DE",
-        "warehouse_country": "DE",
+        "operations_country": "DE",
         "germany_based_engineering_support": true,
         "pre_shipment_testing": true,
         "authorised_distribution": true,

@@ -92,6 +92,21 @@ class ScopeTest(unittest.TestCase):
                     expected,
                 )
 
+    def test_warehouse_claims_run_for_template_and_catalog_only_changes(self):
+        for path, module in (
+            ("plugins/linker-commerce/content/livecanvas/not_found.html", "presentation"),
+            ("tools/checks/test_warehouse_stock_claims.py", "content"),
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(self.classify(("M", path)), [module])
+                command = " ".join(ci_scope.MODULE_COMMANDS[module])
+                self.assertIn("run: " + command, TEXT)
+                self.assertRegex(JUSTFILE, rf"(?m)^{command.removeprefix('just ')}:.*\bwarehouse-claims\b")
+        self.assertIn(
+            "content",
+            self.classify(("M", "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po")),
+        )
+
     def test_translation_check_changes_keep_their_actual_consumers(self):
         self.assertEqual(
             self.classify(("M", "tools/checks/test_i18n_sources.py")),

@@ -34,11 +34,11 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check e2e-check py-check pull::check cutover::check german-copy internal-home-urls i18n-coverage i18n-validity commerce-terms build::check
+check: php-check js-check e2e-check py-check pull::check cutover::check german-copy internal-home-urls i18n-coverage i18n-validity commerce-terms warehouse-claims build::check
 
 # CI's strict commerce scope reuses a proven unchanged base. This recipe keeps
 # the entire commerce source/unit surface, rather than selecting assertions.
-commerce-check: german-copy internal-home-urls i18n-coverage i18n-validity commerce-terms
+commerce-check: german-copy internal-home-urls i18n-coverage i18n-validity commerce-terms warehouse-claims
     #!/usr/bin/env bash
     set -euo pipefail
     python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p "test_ci_*.py"
@@ -59,7 +59,7 @@ commerce-check: german-copy internal-home-urls i18n-coverage i18n-validity comme
 
 # CI's presentation scope: existing presentation surfaces only. The workflow
 # and the local preflight call this same recipe, so both apply the same guards.
-ci-presentation:
+ci-presentation: warehouse-claims
     #!/usr/bin/env bash
     set -euo pipefail
     cd "{{ justfile_directory() }}/plugins/linker-commerce"
@@ -77,7 +77,7 @@ ci-presentation:
     fi
 
 # Fast, source-only gates shared by CI and the local preflight.
-ci-content:
+ci-content: warehouse-claims
     python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p "test_ci_*.py"
     just --justfile "{{ justfile() }}" german-copy
     just --justfile "{{ justfile() }}" internal-home-urls
@@ -109,6 +109,7 @@ ci-planner: ci-planner-deps
 ci-planner-check:
     #!/usr/bin/env bash
     source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "Planner Check"
+    python3 "{{ justfile_directory() }}/tools/checks/warehouse-stock-claims.py" --gettext-dir apps/planner/src
     cd "{{ justfile_directory() }}/apps/planner"
     npm run lint:js
     npm run lint:types
@@ -228,6 +229,7 @@ ci-js-package package:
     #!/usr/bin/env bash
     set -euo pipefail
     case "$1" in commerce|tools) project="plugins/linker-$1" ;; e2e) project=tests/e2e ;; *) exit 2 ;; esac
+    if [ "$1" != e2e ]; then python3 "{{ justfile_directory() }}/tools/checks/warehouse-stock-claims.py" --gettext-dir "$project"; fi
     just --justfile "{{ justfile() }}" ci-node-deps "$project"
     cd "{{ justfile_directory() }}/$project"
     echo "== $project: lint / types / format"
@@ -883,6 +885,11 @@ i18n-tools:
 commerce-terms:
     python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p test_commerce_terms.py
     python3 "{{ justfile_directory() }}/tools/checks/commerce-terms.py"
+
+[group('check')]
+warehouse-claims:
+    python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p test_warehouse_stock_claims.py
+    python3 "{{ justfile_directory() }}/tools/checks/warehouse-stock-claims.py"
 
 # Every catalog compiles: msgfmt --check over each plugin's .po and .pot
 # (tools/checks/i18n-validity.py). The coverage gate above reads the German

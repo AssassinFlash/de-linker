@@ -145,8 +145,43 @@ def write(site: dict[str, Any], request: dict[str, Any]) -> None:
     site["writes"].append(request)
 
 
+def reviewed_pair(site_path: Path, script: str) -> None:
+    match = re.search(
+        r"\$pair\s*= json_decode\( base64_decode\( '([A-Za-z0-9+/=]+)'", script
+    )
+    assert match
+    request = json.loads(base64.b64decode(match.group(1)))
+    site = json.loads(site_path.read_text())
+    changes = request["changes"]
+    en = str(changes[0]["id"])
+    state = site["pairs"][en]
+    mode = request["mode"]
+    if mode == "read":
+        answer = state
+    elif mode == "preview_page_adoption":
+        answer = {"expected_metadata": {"reviewed": en}}
+    else:
+        assert mode in {"restore", "adopt"}
+        assert state["metadata"] == request["metadata_before"]
+        assert state["current"] == request["require_current"]
+        assert all(state["pages"][str(c["id"])] == c["before"] for c in changes)
+        if mode == "adopt":
+            assert state["current"]
+        state["pages"] = {str(c["id"]): c["after"] for c in changes}
+        state["metadata"] = request[
+            "expected_metadata" if mode == "adopt" else "metadata_restore"
+        ]
+        site["writes"].append([mode, en])
+        site_path.write_text(json.dumps(site))
+        answer = {}
+    print("@@reviewed-pair@@" + json.dumps(answer))
+
+
 def main() -> int:
     site_path = Path(sys.argv[1])
+    if sys.argv[2:] == ["eval", "eval( stream_get_contents( STDIN ) );"]:
+        reviewed_pair(site_path, sys.stdin.read())
+        return 0
     if sys.argv[2:] != ["eval-file", "-"]:
         print(f"unexpected arguments {sys.argv[2:]}", file=sys.stderr)
         return 1
