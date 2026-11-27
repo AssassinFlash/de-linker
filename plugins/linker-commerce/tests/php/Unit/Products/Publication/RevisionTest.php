@@ -56,6 +56,16 @@ final class RevisionTest extends TestCase {
 		$this->assertTrue( Publication::allows_document( $file ) );
 	}
 
+	/** Page objects used by native permalinks share the fresh product cache batch. */
+	public function test_permalink_pages_share_the_authorization_batch(): void {
+		$file = DocumentFiles::resolve( 'https://de-linker.com/wp-content/uploads/2026/manual.pdf' );
+		self::assertNotNull( $file );
+		WP_Mock::userFunction( 'get_option' )->with( 'woocommerce_shop_page_id' )->andReturn( 23 );
+		WP_Mock::userFunction( 'get_option' )->with( 'linker_document_library_page_id' )->andReturn( 24 );
+		WP_Mock::userFunction( '_prime_post_caches' )->with( array( 12, 23, 24 ), true, true )->once();
+		self::assertSame( array( 12 ), Publication::authorize_document( $file )['owner_ids'] ?? array() );
+	}
+
 	/** A single source product identifies full, HEAD and partial public downloads. */
 	public function test_single_product_canonical_and_inline_name_follow_the_authorized_bytes(): void {
 		$file = DocumentFiles::resolve( 'https://de-linker.com/wp-content/uploads/2026/manual.pdf' );
@@ -108,6 +118,19 @@ final class RevisionTest extends TestCase {
 		self::assertSame( '<https://de-linker.com/product/model-12/>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
 		$series[13] = 'HS2';
 		self::assertSame( '<https://de-linker.com/faq-download/>; rel="canonical"', $access->response( $file, 'GET' )['headers']['Link'] );
+		WP_Mock::userFunction( 'get_option' )->with( 'linker_document_library_page_id' )->andReturn( 25 );
+		WP_Mock::userFunction( 'get_post_type' )->with( 25 )->andReturn( 'page' );
+		$status = 'publish';
+		WP_Mock::userFunction( 'get_post_status' )->with( 25 )->andReturnUsing(
+			static function () use ( &$status ): string {
+				return $status;
+			}
+		);
+		WP_Mock::userFunction( 'get_post_meta' )->with( 25, 'lc_use_template_of_slug', true )->andReturn( 'linker-faq' );
+		WP_Mock::userFunction( 'get_permalink' )->with( 25 )->andReturn( 'https://de-linker.com/library/' );
+		self::assertSame( '<https://de-linker.com/library/>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
+		$status = 'draft';
+		self::assertSame( '<https://de-linker.com/faq-download/>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
 		$role = \Linker\Commerce\Products\EngineeringReference::CABLE;
 		self::assertSame(
 			array(

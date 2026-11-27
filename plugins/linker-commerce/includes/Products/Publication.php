@@ -15,6 +15,9 @@ use Linker\Commerce\Products\Publication\EvidenceBindings;
 
 /** A current read; no TTL, index or preparation acknowledgement grants access. */
 final class Publication {
+	/** English page assigned the document library template during presentation sync. */
+	public const LIBRARY_PAGE_OPTION = 'linker_document_library_page_id';
+
 	/** Exact whitespace-normalized Unicode-boundary matching contract. */
 	public const IDENTITY_PROTOCOL = 'native-model-identification-v1';
 
@@ -424,7 +427,9 @@ final class Publication {
 		$candidates = array();
 		$sources    = array();
 		$ids        = self::candidate_ids();
-		_prime_post_caches( $ids, true, true );
+		// Woo's shop base and the document library are read by the native permalink filters.
+		$route_pages = array_filter( array( (int) get_option( 'woocommerce_shop_page_id' ), (int) get_option( self::LIBRARY_PAGE_OPTION ) ) );
+		_prime_post_caches( array_merge( $ids, $route_pages ), true, true );
 		$canonical_ids = array_map( self::canonical_id( ... ), $ids );
 		$other_sources = array_values( array_unique( array_diff( $canonical_ids, $ids ) ) );
 		if ( $other_sources ) {
