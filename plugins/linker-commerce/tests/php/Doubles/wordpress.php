@@ -148,6 +148,7 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 
 	if ( ! class_exists( 'WP_Post' ) ) {
 		class WP_Post {
+		public $post_mime_type = '';
 		public $ID          = 0;
 		public $post_type   = 'post';
 		public $post_author = '0';

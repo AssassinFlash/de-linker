@@ -59,10 +59,15 @@ const PAGES = array(
 	),
 );
 
-/** The SEOPress fields owned by this bilingual page pair. */
-function seo( string $language ): array {
+/**
+ * The matrix page template and reviewed metadata.
+ *
+ * @param string $language Page language.
+ */
+function page_meta( string $language ): array {
 	list( , , $title, $description ) = PAGES[ $language ];
 	return array(
+		'_wp_page_template'              => 'page-templates/empty.php',
 		'_seopress_titles_title'         => $title,
 		'_seopress_titles_desc'          => $description,
 		'_seopress_social_fb_title'      => $title,
@@ -72,18 +77,29 @@ function seo( string $language ): array {
 	);
 }
 
+/**
+ * Read the exact bytes of a local recovery or deployment file.
+ *
+ * @param string $path Site file or snapshot.
+ * @throws RuntimeException When the local file cannot be read.
+ */
 function read_file( string $path ): string {
-	$text = file_get_contents( $path );
+	$text = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Snapshot exact local file bytes.
 	if ( false === $text ) {
-		throw new RuntimeException( 'Cannot read ' . $path );
+		throw new RuntimeException( 'Cannot read ' . esc_html( $path ) );
 	}
 	return $text;
 }
 
-/** Insert the site rule outside both plugin-managed blocks. */
+/**
+ * Insert the site rule outside both plugin-managed blocks.
+ *
+ * @param string $original Original .htaccess bytes.
+ * @throws RuntimeException When the managed blocks cannot be identified.
+ */
 function edge_rules( string $original ): string {
-	$anchor = '# END NON_LSCACHE';
-	$end    = strpos( $original, '# BEGIN WordPress' );
+	$anchor  = '# END NON_LSCACHE';
+	$end     = strpos( $original, '# BEGIN WordPress' );
 	$newline = str_contains( $original, "\r\n" ) ? "\r\n" : "\n";
 	$block   = $newline . $newline . str_replace( "\n", $newline, EDGE );
 	$pos     = strpos( $original, $anchor );
@@ -96,6 +112,13 @@ function edge_rules( string $original ): string {
 	return substr_replace( $original, $block, $pos + strlen( $anchor ), 0 );
 }
 
+/**
+ * Atomically replace the rewrite rules with the original permissions.
+ *
+ * @param string $body Complete rewrite file.
+ * @param int    $mode Saved filesystem mode.
+ * @throws RuntimeException When staging or replacement fails.
+ */
 function install_edge( string $body, int $mode ): void {
 	$path = ABSPATH . '.htaccess';
 	$tmp  = tempnam( dirname( $path ), '.matrix-' );
@@ -103,6 +126,7 @@ function install_edge( string $body, int $mode ): void {
 		throw new RuntimeException( 'Cannot stage .htaccess.' );
 	}
 	try {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.file_system_operations_chmod, WordPress.WP.AlternativeFunctions.rename_rename -- Stage with the original permissions and atomically rename on the same filesystem.
 		if ( strlen( $body ) !== file_put_contents( $tmp, $body ) || ! chmod( $tmp, $mode ) || ! rename( $tmp, $path ) ) {
 			throw new RuntimeException( 'Cannot install .htaccess.' );
 		}
@@ -123,7 +147,7 @@ function pages(): array {
 			continue;
 		}
 		$meta = array();
-		foreach ( array_merge( array_keys( seo( $language ) ), array( State::STATUS, State::NOTE, State::SOURCE_HASH, State::UNITS ) ) as $key ) {
+		foreach ( array_merge( array_keys( page_meta( $language ) ), array( State::STATUS, State::NOTE, State::SOURCE_HASH, State::UNITS ) ) as $key ) {
 			$meta[ $key ] = get_post_meta( $post->ID, $key, false );
 		}
 		$result[ $language ] = array(
@@ -139,6 +163,9 @@ function pages(): array {
 	return $result;
 }
 
+/**
+ * Keep both reviewed translations under this migration during page writes.
+ */
 function pause_post_translation(): void {
 	global $wp_filter;
 	foreach ( array( 'pre_post_update', 'wp_after_insert_post' ) as $hook ) {
@@ -151,7 +178,12 @@ function pause_post_translation(): void {
 	}
 }
 
-/** Install the two reviewed pages and retain their IDs on every repeat. */
+/**
+ * Install the two reviewed pages and retain their IDs on every repeat.
+ *
+ * @param array<string,mixed> $current Original language pair.
+ * @throws RuntimeException When the page or its native translation cannot be saved.
+ */
 function publish_pages( array $current ): void {
 	$ids = array();
 	foreach ( PAGES as $language => list( $slug, $title ) ) {
@@ -159,21 +191,27 @@ function publish_pages( array $current ): void {
 		if ( $page && $language !== $page['language'] ) {
 			throw new RuntimeException( 'Another language uses the matrix slug.' );
 		}
-		$post = array( 'post_type' => 'page', 'post_name' => $slug, 'post_title' => $title, 'post_status' => 'publish', 'post_content' => '[linker_compatibility_matrix]' );
+		$post = array(
+			'post_type'    => 'page',
+			'post_name'    => $slug,
+			'post_title'   => $title,
+			'post_status'  => 'publish',
+			'post_content' => '[linker_compatibility_matrix]',
+		);
 		if ( $page ) {
 			$post['ID'] = $page['id'];
 		}
 		if ( ! $page || $title !== $page['title'] || $post['post_content'] !== $page['content'] || 'publish' !== $page['status'] ) {
 			$id = wp_insert_post( wp_slash( $post ), true );
 			if ( is_wp_error( $id ) || ! $id ) {
-				throw new RuntimeException( 'Cannot publish matrix page ' . $slug );
+				throw new RuntimeException( 'Cannot publish matrix page ' . esc_html( $slug ) );
 			}
 		} else {
 			$id = $page['id'];
 		}
 		$ids[ $language ] = $id;
 		pll_set_post_language( $id, $language );
-		foreach ( seo( $language ) as $key => $value ) {
+		foreach ( page_meta( $language ) as $key => $value ) {
 			update_post_meta( $id, $key, wp_slash( $value ) );
 		}
 	}
@@ -184,6 +222,13 @@ function publish_pages( array $current ): void {
 	}
 }
 
+/**
+ * Restore the saved page identities, metadata and language pairing.
+ *
+ * @param array<string,mixed> $current Current language pair.
+ * @param array<string,mixed> $before  Original page snapshot.
+ * @throws RuntimeException When the page identity changed or restoration fails.
+ */
 function restore_pages( array $current, array $before ): void {
 	foreach ( $before as $lang => $saved ) {
 		$page = $current[ $lang ];
@@ -196,9 +241,19 @@ function restore_pages( array $current, array $before ): void {
 		if ( ! $page || $page['id'] !== $saved['id'] ) {
 			throw new RuntimeException( 'Original matrix page ID has changed.' );
 		}
-		$id = wp_update_post( wp_slash( array( 'ID' => $page['id'], 'post_title' => $saved['title'], 'post_content' => $saved['content'], 'post_status' => $saved['status'] ) ), true );
+		$id = wp_update_post(
+			wp_slash(
+				array(
+					'ID'           => $page['id'],
+					'post_title'   => $saved['title'],
+					'post_content' => $saved['content'],
+					'post_status'  => $saved['status'],
+				)
+			),
+			true
+		);
 		if ( is_wp_error( $id ) ) {
-			throw new RuntimeException( $id->get_error_message() );
+			throw new RuntimeException( esc_html( $id->get_error_message() ) );
 		}
 		pll_set_post_language( $id, $saved['language'] );
 		foreach ( $saved['meta'] as $key => $values ) {
@@ -213,13 +268,18 @@ function restore_pages( array $current, array $before ): void {
 	}
 }
 
+/**
+ * Whether the live pages match the reviewed pair and translation baseline.
+ *
+ * @param array<string,mixed> $pages Current page snapshot.
+ */
 function published( array $pages ): bool {
 	foreach ( PAGES as $lang => list( , $title ) ) {
 		$page = $pages[ $lang ];
 		if ( ! $page || $title !== $page['title'] || 'publish' !== $page['status'] || '[linker_compatibility_matrix]' !== $page['content'] || $lang !== $page['language'] ) {
 			return false;
 		}
-		foreach ( seo( $lang ) as $key => $value ) {
+		foreach ( page_meta( $lang ) as $key => $value ) {
 			if ( array( $value ) !== $page['meta'][ $key ] ) {
 				return false;
 			}
@@ -230,7 +290,12 @@ function published( array $pages ): bool {
 
 ( static function ( array $args ): void {
 	$path    = ABSPATH . '.htaccess';
-	$current = array( 'home' => get_option( 'home' ), 'htaccess' => read_file( $path ), 'mode' => fileperms( $path ) & 0777, 'pages' => pages() );
+	$current = array(
+		'home'     => get_option( 'home' ),
+		'htaccess' => read_file( $path ),
+		'mode'     => fileperms( $path ) & 0777,
+		'pages'    => pages(),
+	);
 	$mode    = $args[0] ?? 'snapshot';
 	if ( 'snapshot' === $mode ) {
 		echo wp_json_encode( $current, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR ) . "\n";
@@ -259,18 +324,20 @@ function published( array $pages ): bool {
 	}
 	pause_post_translation();
 	if ( ! $ready ) {
-		NativeTransaction::run( static function () use ( $applying, $current, $before ): void {
-			if ( $applying ) {
-				publish_pages( $current['pages'] );
-			} else {
-				restore_pages( $current['pages'], $before['pages'] );
+		NativeTransaction::run(
+			static function () use ( $applying, $current, $before ): void {
+				if ( $applying ) {
+					publish_pages( $current['pages'] );
+				} else {
+					restore_pages( $current['pages'], $before['pages'] );
+				}
 			}
-		} );
+		);
 	}
 	if ( $edge !== $current['htaccess'] ) {
 		install_edge( $edge, $current['mode'] );
 	}
-	foreach ( array_unique( array( 1000, (int) apply_filters( 'seopress_sitemaps_max_posts_per_sitemap', 1000 ) ) ) as $max ) {
+	foreach ( array_unique( array( 1000, (int) apply_filters( 'seopress_sitemaps_max_posts_per_sitemap', 1000 ) ) ) as $max ) { // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Use the configured native SEOPress sitemap size.
 		delete_transient( "seopress_sitemap_lastmod_all_page_{$max}" );
 	}
 	$actual = pages();

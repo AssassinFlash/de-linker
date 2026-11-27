@@ -842,4 +842,8 @@ body:has([data-linker-planner]) .linker-genie-peek { display: none; }
   }
   .sc-direction-fields > .sc-fields > .sc-field { min-width: 0; }
   .sc-direction-fields > .sc-fields > :first-child { grid-column: 1 / -1; }
+  .sc-configurator .sc-direction-fields .sc-fields select {
+    padding-inline: .625rem 1.625rem;
+    background-position: right .375rem center;
+  }
 }

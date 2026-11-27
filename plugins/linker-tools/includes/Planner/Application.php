@@ -449,11 +449,11 @@ final class Application {
 			esc_html__( 'Solution Configurator', 'linker-tools' ),
 			esc_html__( 'A project can start with the information already available. Roof drawing is optional.', 'linker-tools' ),
 			$signed_in || $this->has_workspace_session() ? '<p role="status">' . esc_html__( 'Opening your workspace…', 'linker-tools' ) . '</p>' : ''
-		) . $this->static_guide() . $runtime . $entry;
+		) . self::static_guide() . $runtime . $entry;
 	}
 
 	/** Planning information available alongside the interactive workbench. */
-	private function static_guide(): string {
+	public static function static_guide(): string {
 		$rows = array(
 			array(
 				esc_html__( 'Residential hybrid storage', 'linker-tools' ),

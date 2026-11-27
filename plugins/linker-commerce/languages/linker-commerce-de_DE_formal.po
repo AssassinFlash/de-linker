@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-11-27T14:02:28+00:00\n"
+"POT-Creation-Date: 2026-11-27T14:12:19+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -843,8 +843,8 @@ msgid "Key"
 msgstr "Schlüssel"
 
 #: includes/Admin/FiguresMetaBox.php:76
-#: includes/Storefront/AgentMarkdown.php:225
-#: includes/Storefront/AgentMarkdown.php:233
+#: includes/Storefront/AgentMarkdown.php:235
+#: includes/Storefront/AgentMarkdown.php:243
 msgid "Value"
 msgstr "Wert"
 
@@ -1081,7 +1081,7 @@ msgstr "Produkt"
 #: includes/Contact/SelectionView.php:96
 #: includes/Presentation/ProductShortcodes.php:342
 #: includes/Presentation/ProductShortcodes.php:538
-#: includes/Storefront/AgentMarkdown.php:210
+#: includes/Storefront/AgentMarkdown.php:220
 msgid "Brand"
 msgstr "Marke"
 
@@ -2595,7 +2595,7 @@ msgid "Quantities"
 msgstr "Mengen"
 
 #: includes/Inquiry/OrderAdmin.php:134
-#: includes/Storefront/AgentMarkdown.php:242
+#: includes/Storefront/AgentMarkdown.php:252
 msgid "Conditions"
 msgstr "Projektbedingungen"
 
@@ -3131,101 +3131,30 @@ msgstr "Nein"
 msgid "Yes"
 msgstr "Ja"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:38
-#: includes/Presentation/CompatibilityMatrixPage.php:192
+#: includes/Presentation/CompatibilityMatrixPage.php:39
+#: includes/Presentation/CompatibilityMatrixPage.php:112
 msgid "Compatibility matrix"
 msgstr "Kompatibilitätsmatrix"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:65
+#: includes/Presentation/CompatibilityMatrixPage.php:69
 #: includes/Storefront/ProductSchema.php:209
 msgid "Single-phase"
 msgstr "Einphasig"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:65
+#: includes/Presentation/CompatibilityMatrixPage.php:69
 #: includes/Storefront/ProductSchema.php:209
 msgid "Three-phase"
 msgstr "Dreiphasig"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:108
-msgid "Residential inverter and battery pairings"
-msgstr "Wechselrichter und Speicher für Wohngebäude"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:109
-msgid "Commercial and industrial pairings"
-msgstr "Kombinationen für Gewerbe und Industrie"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:110
-msgid "Meters, backup switches and parallel controllers"
-msgstr "Zähler, Ersatzstromumschalter und Parallelsteuerungen"
-
 #: includes/Presentation/CompatibilityMatrixPage.php:111
-msgid "European grid-code certificates"
-msgstr "Netzanschlusszertifikate für Europa"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:112
-msgid "Documented non-released combinations"
-msgstr "Dokumentierte Kombinationen ohne Freigabe"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:145
-msgid "Accessory required"
-msgstr "Zubehör erforderlich"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:145
-#: includes/Presentation/ProductShortcodes.php:1689
-#: includes/Products/Publication/CompatibilityEditor.php:87
-#: includes/Storefront/AgentMarkdown.php:246
-msgid "Released"
-msgstr "Freigegeben"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:155
-msgid "Smart meter"
-msgstr "Smart Meter"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:156
-msgid "Backup switch"
-msgstr "Ersatzstromumschalter"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:157
-#: includes/Products/Publication/CompatibilityEditor.php:105
-#: includes/Products/Publication/CompatibilityEditor.php:399
-#: includes/Products/Publication/PackageContentsEditor.php:102
-msgid "Parallel controller"
-msgstr "Parallelsteuerung"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:167
-#: includes/Products/Publication/CompatibilityEditor.php:113
-msgid "Included"
-msgstr "Enthalten"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:167
-msgid "Supplied separately"
-msgstr "Separat erhältlich"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:186
-msgid "Released model pairs"
-msgstr "Freigegebene Modellkombinationen"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:187
-msgid "Pairs requiring an accessory"
-msgstr "Kombinationen mit erforderlichem Zubehör"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:188
-msgid "System requirements"
-msgstr "Systemanforderungen"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:189
-msgid "Grid-code certificate PDFs"
-msgstr "Netzanschlusszertifikate (PDF)"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:191
 msgid "Inverter & HV Battery Compatibility Matrix"
 msgstr "Wechselrichter- & Hochvoltspeicher-Kompatibilitätsmatrix"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:192
+#: includes/Presentation/CompatibilityMatrixPage.php:112
 msgid "Breadcrumb"
 msgstr "Brotkrumen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:192
+#: includes/Presentation/CompatibilityMatrixPage.php:112
 #: includes/Presentation/ProductShortcodes.php:199
 #: includes/Storefront/ArchiveSchema.php:97
 #: includes/Storefront/ArchiveSchema.php:188
@@ -3238,12 +3167,91 @@ msgctxt "breadcrumb"
 msgid "Home"
 msgstr "Startseite"
 
+#: includes/Presentation/CompatibilityMatrixPage.php:114
+msgid ""
+"The compatibility reference is temporarily unavailable. Please try again "
+"later or contact the Linker team."
+msgstr ""
+"Die Kompatibilitätsübersicht ist vorübergehend nicht verfügbar. Bitte "
+"versuchen Sie es später erneut oder wenden Sie sich an das Linker-Team."
+
+#: includes/Presentation/CompatibilityMatrixPage.php:117
+msgid "Residential inverter and battery pairings"
+msgstr "Wechselrichter und Speicher für Wohngebäude"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:118
+msgid "Commercial and industrial pairings"
+msgstr "Kombinationen für Gewerbe und Industrie"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:119
+msgid "Meters, backup switches and parallel controllers"
+msgstr "Zähler, Ersatzstromumschalter und Parallelsteuerungen"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:120
+msgid "European grid-code certificates"
+msgstr "Netzanschlusszertifikate für Europa"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:121
+msgid "Documented non-released combinations"
+msgstr "Dokumentierte Kombinationen ohne Freigabe"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:156
+msgid "Accessory required"
+msgstr "Zubehör erforderlich"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:156
+#: includes/Presentation/ProductShortcodes.php:1689
+#: includes/Products/Publication/CompatibilityEditor.php:87
+#: includes/Storefront/AgentMarkdown.php:256
+msgid "Released"
+msgstr "Freigegeben"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:166
+msgid "Smart meter"
+msgstr "Smart Meter"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:167
+msgid "Backup switch"
+msgstr "Ersatzstromumschalter"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:168
+#: includes/Products/Publication/CompatibilityEditor.php:105
+#: includes/Products/Publication/CompatibilityEditor.php:399
+#: includes/Products/Publication/PackageContentsEditor.php:102
+msgid "Parallel controller"
+msgstr "Parallelsteuerung"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:178
+#: includes/Products/Publication/CompatibilityEditor.php:113
+msgid "Included"
+msgstr "Enthalten"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:178
+msgid "Supplied separately"
+msgstr "Separat erhältlich"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:197
+msgid "Release declarations"
+msgstr "Freigabeerklärungen"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:198
+msgid "Declarations requiring an accessory"
+msgstr "Freigaben mit erforderlichem Zubehör"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:199
+msgid "System requirements"
+msgstr "Systemanforderungen"
+
+#: includes/Presentation/CompatibilityMatrixPage.php:200
+msgid "Grid-code certificate PDFs"
+msgstr "Netzanschlusszertifikate (PDF)"
+
 #. translators: 1: number of distinct model pairs, 2: number requiring an accessory.
-#: includes/Presentation/CompatibilityMatrixPage.php:194
+#: includes/Presentation/CompatibilityMatrixPage.php:204
 #, php-format
 msgid ""
-"The manufacturer documents cover %1$d inverter and battery combinations. Of "
-"these, %2$d require an accessory. Find the inverter model to see which "
+"The manufacturer documents cover %1$d inverter and battery combinations. An "
+"accessory is required for %2$d of them. Find the inverter model to see which "
 "batteries it supports and which control modules it needs. Each entry links "
 "to its source. The meter and backup requirements and grid-code certificates "
 "are listed separately for the models they cover."
@@ -3255,62 +3263,62 @@ msgstr ""
 "Unterlagen. Angaben zu Zählern, Ersatzstrom und Netzanschlusszertifikaten "
 "finden Sie in eigenen Tabellen, jeweils nach Modell aufgeschlüsselt."
 
-#: includes/Presentation/CompatibilityMatrixPage.php:201
+#: includes/Presentation/CompatibilityMatrixPage.php:211
 msgid "On this page"
 msgstr "Auf dieser Seite"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:207
-#: includes/Presentation/CompatibilityMatrixPage.php:208
+#: includes/Presentation/CompatibilityMatrixPage.php:218
+#: includes/Presentation/CompatibilityMatrixPage.php:219
 msgid "Accessory and conditions"
 msgstr "Zubehör und Bedingungen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:207
+#: includes/Presentation/CompatibilityMatrixPage.php:218
 msgid "Compatible HV battery"
 msgstr "Kompatibler Hochvoltspeicher"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:207
+#: includes/Presentation/CompatibilityMatrixPage.php:218
 msgid "Inverter (power and phase)"
 msgstr "Wechselrichter (Leistung und Phasen)"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:207
-#: includes/Presentation/CompatibilityMatrixPage.php:208
+#: includes/Presentation/CompatibilityMatrixPage.php:218
+#: includes/Presentation/CompatibilityMatrixPage.php:219
 msgid "Manufacturer document"
 msgstr "Herstellerunterlage"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:207
-#: includes/Storefront/AgentMarkdown.php:242
+#: includes/Presentation/CompatibilityMatrixPage.php:218
+#: includes/Storefront/AgentMarkdown.php:252
 msgid "Release status"
 msgstr "Freigabestatus"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:208
+#: includes/Presentation/CompatibilityMatrixPage.php:219
 msgid "Accessory role"
 msgstr "Zubehörfunktion"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:208
+#: includes/Presentation/CompatibilityMatrixPage.php:219
 msgid "Inverter"
 msgstr "Wechselrichter"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:208
+#: includes/Presentation/CompatibilityMatrixPage.php:219
 msgid "Scope"
 msgstr "Umfang"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:209
+#: includes/Presentation/CompatibilityMatrixPage.php:220
 msgid "Brand and model"
 msgstr "Hersteller und Modell"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:209
+#: includes/Presentation/CompatibilityMatrixPage.php:220
 msgid "Category and rating"
 msgstr "Kategorie und Nennleistung"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:209
+#: includes/Presentation/CompatibilityMatrixPage.php:220
 msgid "Certificate PDFs"
 msgstr "Zertifikate (PDF)"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:209
+#: includes/Presentation/CompatibilityMatrixPage.php:220
 msgid "Verified standards"
 msgstr "Nachgewiesene Normen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:215
+#: includes/Presentation/CompatibilityMatrixPage.php:226
 msgid ""
 "For the specific models below, the cited documents do not establish a "
 "release. Open a series to see the exact models."
@@ -3319,41 +3327,41 @@ msgstr ""
 "keine Freigabe vor. Öffnen Sie eine Baureihe, um die genauen Modelle zu "
 "sehen."
 
-#: includes/Presentation/CompatibilityMatrixPage.php:233
+#: includes/Presentation/CompatibilityMatrixPage.php:249
 #: includes/Presentation/ProductShortcodes.php:798
 msgid "Solution Configurator"
 msgstr "Lösungskonfigurator"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:234
+#: includes/Presentation/CompatibilityMatrixPage.php:250
 msgid "FAQ and documents"
 msgstr "FAQ und Dokumente"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:235
+#: includes/Presentation/CompatibilityMatrixPage.php:251
 #: includes/Registration/AccountsTable.php:44
 msgid "Contact"
 msgstr "Kontakt"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:263
+#: includes/Presentation/CompatibilityMatrixPage.php:279
 msgid "per stack"
 msgstr "je Speicherturm"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:264
+#: includes/Presentation/CompatibilityMatrixPage.php:280
 msgid "per system"
 msgstr "je System"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:265
+#: includes/Presentation/CompatibilityMatrixPage.php:281
 msgid "per unit"
 msgstr "je Gerät"
 
 #. translators: 1 and 2: minimum and maximum number of battery modules.
-#: includes/Presentation/CompatibilityMatrixPage.php:272
+#: includes/Presentation/CompatibilityMatrixPage.php:288
 #, php-format
 msgid "%1$d–%2$d battery modules"
 msgstr "%1$d–%2$d Batteriemodule"
 
 #. translators: %d: PDF page number.
 #. translators: %d: page number.
-#: includes/Presentation/CompatibilityMatrixPage.php:298
+#: includes/Presentation/CompatibilityMatrixPage.php:314
 #: includes/Products/DocumentLibrary.php:318
 #, php-format
 msgid "p. %d"
@@ -3638,7 +3646,7 @@ msgstr "Zurücksetzen"
 
 #: includes/Presentation/ProductShortcodes.php:319
 #: includes/Presentation/ProductShortcodes.php:1683
-#: includes/Storefront/AgentMarkdown.php:214
+#: includes/Storefront/AgentMarkdown.php:224
 msgid "Category"
 msgstr "Kategorie"
 
@@ -3741,8 +3749,8 @@ msgid "Item no."
 msgstr "Produktnr."
 
 #: includes/Presentation/ProductShortcodes.php:690
-#: includes/Storefront/AgentMarkdown.php:211
-#: includes/Storefront/AgentMarkdown.php:242
+#: includes/Storefront/AgentMarkdown.php:221
+#: includes/Storefront/AgentMarkdown.php:252
 #: templates/emails/linker-genie-conversation.php:46
 msgid "Model"
 msgstr "Modell"
@@ -3994,7 +4002,7 @@ msgid "Status & required accessory"
 msgstr "Freigabe und erforderliches Zubehör"
 
 #: includes/Presentation/ProductShortcodes.php:1689
-#: includes/Storefront/AgentMarkdown.php:246
+#: includes/Storefront/AgentMarkdown.php:256
 msgid "Released with accessory"
 msgstr "Mit Zubehör freigegeben"
 
@@ -4921,11 +4929,11 @@ msgid "Installation conditions need English and German text."
 msgstr ""
 "Installationsbedingungen brauchen einen englischen und einen deutschen Text."
 
-#: includes/Products/Publication/Module.php:179
+#: includes/Products/Publication/Module.php:180
 msgid "Public technical document"
 msgstr "Öffentliche technische Unterlage"
 
-#: includes/Products/Publication/Module.php:182
+#: includes/Products/Publication/Module.php:183
 msgid ""
 "Requires an associated published product. Clear to withdraw this document "
 "from every product."
@@ -6161,31 +6169,31 @@ msgstr ""
 msgid "The product's stock status after the push."
 msgstr ""
 
-#: includes/Storefront/AgentMarkdown.php:221
+#: includes/Storefront/AgentMarkdown.php:231
 msgid "Technical specifications"
 msgstr "Technische Daten"
 
-#: includes/Storefront/AgentMarkdown.php:225
+#: includes/Storefront/AgentMarkdown.php:235
 msgid "Specification"
 msgstr "Merkmal"
 
-#: includes/Storefront/AgentMarkdown.php:233
+#: includes/Storefront/AgentMarkdown.php:243
 msgid "Engineering data"
 msgstr "Technische Kenndaten"
 
-#: includes/Storefront/AgentMarkdown.php:241
+#: includes/Storefront/AgentMarkdown.php:251
 msgid "Verified compatibility"
 msgstr "Geprüfte Kompatibilität"
 
-#: includes/Storefront/AgentMarkdown.php:242
+#: includes/Storefront/AgentMarkdown.php:252
 msgid "Required accessory"
 msgstr "Erforderliches Zubehör"
 
-#: includes/Storefront/AgentMarkdown.php:251
+#: includes/Storefront/AgentMarkdown.php:261
 msgid "Manufacturer documentation"
 msgstr "Herstellerunterlagen"
 
-#: includes/Storefront/AgentMarkdown.php:256
+#: includes/Storefront/AgentMarkdown.php:266
 msgid "Support & quotation"
 msgstr "Beratung und Angebot"
 
@@ -7247,6 +7255,27 @@ msgid ""
 msgstr ""
 "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. "
 "Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
+
+#~ msgid "Released model pairs"
+#~ msgstr "Freigegebene Modellkombinationen"
+
+#~ msgid "Pairs requiring an accessory"
+#~ msgstr "Kombinationen mit erforderlichem Zubehör"
+
+#, php-format
+#~ msgid ""
+#~ "The manufacturer documents cover %1$d inverter and battery combinations. "
+#~ "Of these, %2$d require an accessory. Find the inverter model to see which "
+#~ "batteries it supports and which control modules it needs. Each entry "
+#~ "links to its source. The meter and backup requirements and grid-code "
+#~ "certificates are listed separately for the models they cover."
+#~ msgstr ""
+#~ "Die Herstellerunterlagen belegen %1$d Kombinationen aus Wechselrichtern "
+#~ "und Speichern. Bei %2$d davon ist Zubehör erforderlich. Unter Ihrem "
+#~ "Wechselrichtermodell sehen Sie, welche Speicher passen und welche "
+#~ "Steuermodule benötigt werden. Jeder Eintrag verweist auf die zugehörigen "
+#~ "Unterlagen. Angaben zu Zählern, Ersatzstrom und Netzanschlusszertifikaten "
+#~ "finden Sie in eigenen Tabellen, jeweils nach Modell aufgeschlüsselt."
 
 #~ msgid "Partially documented"
 #~ msgstr "Teilweise dokumentiert"
