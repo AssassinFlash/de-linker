@@ -267,7 +267,8 @@
 @media (max-width: 1023px) {
 	#linker-faq-page { --ll-sticky: calc(var(--ll-tab-h) + 57px); }
 	#linker-faq-page .linker-library-hero { padding-top: 28px; }
-	#linker-faq-page .linker-library-layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 8px; }
+	#linker-faq-page .linker-library-layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 8px; padding-inline: 0; }
+	#linker-faq-page .linker-library-main { padding-inline: var(--ll-pad); }
 	#linker-faq-page .linker-library-rail { display: none; }
 	#linker-faq-page .linker-library-chips { display: block; position: sticky; top: calc(var(--ll-header-h) + var(--ll-tab-h) - 2px); z-index: 36; margin-inline: calc(var(--ll-pad) * -1); background: rgba(241, 244, 243, 0.9); border-bottom: 1px solid var(--ll-line); -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2); }
 	/* The rail folds into a horizontal scroller here and the scrollbar is
