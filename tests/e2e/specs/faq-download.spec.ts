@@ -482,23 +482,15 @@ test.describe('the FAQ + document library', () => {
 					'[data-library-results] [data-library-page="next"]'
 				);
 				await expect(next).toBeEnabled();
-				const firstTitle = await results
-					.first()
-					.locator('.linker-library-doc-title')
-					.innerText();
+				const download = results.first().locator('.linker-library-dl');
+				const firstUrl = await download.getAttribute('href');
+				expect(firstUrl).toBeTruthy();
 				await next.click();
 				await expect(
 					page.locator('[data-library-results] [aria-current="page"]')
 				).toHaveText('2');
-				expect(
-					await results
-						.first()
-						.locator('.linker-library-doc-title')
-						.innerText()
-				).not.toBe(firstTitle);
-				await expect(
-					results.first().locator('.linker-library-dl')
-				).toBeFocused();
+				await expect(download).not.toHaveAttribute('href', firstUrl!);
+				await expect(download).toBeFocused();
 				await page.locator('[data-library-clear]').click();
 				await expect(input).toHaveValue('');
 				await expect(
