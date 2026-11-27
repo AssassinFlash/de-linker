@@ -307,11 +307,14 @@ final class LlmsTxt {
 			$en = PageUrls::twin( $id, 'en' );
 			$de = PageUrls::twin( $id, 'de' );
 			if ( isset( $published[ $en ], $published[ $de ] ) ) {
-				$rows[]      = self::post_pair( $en, $de );
+				$entry       = self::post_pair( $en, $de );
 				$seen[ $en ] = true;
 				$seen[ $de ] = true;
 			} else {
-				$rows[] = self::link( get_the_title( $id ), (string) get_permalink( $id ) );
+				$entry = self::link( get_the_title( $id ), (string) get_permalink( $id ) );
+			}
+			if ( false === stripos( $entry, 'EcoFlow' ) ) {
+				$rows[] = $entry;
 			}
 		}
 		return $rows;

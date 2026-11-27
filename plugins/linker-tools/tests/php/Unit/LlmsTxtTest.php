@@ -40,6 +40,7 @@ final class LlmsTxtTest extends TestCase {
 		$names  = array(
 			4101 => 'Solutions',
 			4102 => 'Lösungen',
+			4103 => 'EcoFlow and European storage',
 			1101 => 'ESA One',
 			1102 => 'ESA Eins',
 			1103 => 'ESA Two',
@@ -49,6 +50,7 @@ final class LlmsTxtTest extends TestCase {
 		$routes = array(
 			4101 => '/solution/',
 			4102 => '/de/loesung/',
+			4103 => '/ecoflow-and-european-storage/',
 			1101 => '/product/esa-one/',
 			1102 => '/de/produkt/esa-eins/',
 			1103 => '/product/esa-two/',
@@ -71,7 +73,7 @@ final class LlmsTxtTest extends TestCase {
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
 		WP_Mock::userFunction( 'wc_get_product_visibility_term_ids' )->andReturn( array( 'exclude-from-catalog' => 12 ) );
-		WP_Mock::userFunction( 'get_posts' )->andReturnUsing( static fn( $args ) => 'post' === $args['post_type'] ? array( 4101, 4102 ) : array( 1101, 1102, 1103, 1104, 1105, 1106 ) );
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing( static fn( $args ) => 'post' === $args['post_type'] ? array( 4101, 4102, 4103 ) : array( 1101, 1102, 1103, 1104, 1105, 1106 ) );
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
 		WP_Mock::userFunction( 'get_post_status' )->andReturnUsing( static fn( int $id ) => 1105 === $id ? 'draft' : 'publish' );
 		WP_Mock::userFunction( 'has_filter' )->andReturn( false );
