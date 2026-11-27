@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Tests\Integration;
 
 use Linker\Commerce\Products\EngineeringReference;
+use Linker\Commerce\Products\Publication\CompatibilityClaims;
 use Linker\Tools\LlmsTxt;
 use PHPUnit\Framework\TestCase;
 
@@ -42,6 +43,11 @@ final class LlmsFullDocumentTest extends TestCase {
 			self::assertStringNotContainsString( 'not_released', $text );
 			self::assertStringContainsString( '## Verified Inverter & Battery Compatibility', $text );
 			self::assertStringContainsString( '## Meter, Backup & Parallel Controller Rules', $text );
+			update_post_meta( $fixtures[0]->get_id(), CompatibilityClaims::META_KEY, array( 'malformed' => true ) );
+			$text = LlmsTxt::full_document( untrailingslashit( (string) get_option( 'home' ) ) );
+			self::assertStringContainsString( '| Public test inverter |', $text );
+			self::assertStringContainsString( 'Compatibility declarations are currently unavailable.', $text );
+			self::assertStringContainsString( 'Accessory requirements are currently unavailable.', $text );
 		} finally {
 			foreach ( $fixtures as $product ) {
 				$product->delete( true );

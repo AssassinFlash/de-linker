@@ -70,6 +70,34 @@ final class AgentMarkdownTest extends TestCase {
 		$this->assertSame( $clean, $markdown->mcp_card( $clean ) );
 	}
 
+	/** Both planner URLs use the live guide, including its GFM sizing table. */
+	public function test_planner_guide_replaces_stored_page_brief(): void {
+		if ( ! class_exists( \Linker\Tools\Planner\Application::class ) ) {
+			require_once dirname( __DIR__, 5 ) . '/linker-tools/includes/Planner/Application.php';
+		}
+		WP_Mock::userFunction( 'get_permalink' )->andReturnUsing( static fn( $post ) => 'https://linker.test/' . $post->post_name . '/' );
+		WP_Mock::userFunction( 'esc_url_raw', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'get_the_title' )->andReturn( 'Systems &amp; storage' );
+		WP_Mock::userFunction( 'get_post_modified_time' )->andReturn( '2026-11-27T00:00:00Z' );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'esc_html__', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'get_page_by_path' )->andReturn( null );
+		WP_Mock::userFunction( 'strip_shortcodes', array( 'return_arg' => 0 ) );
+		foreach ( array( 'solution-configurator', 'loesungskonfigurator' ) as $slug ) {
+			$post = new \WP_Post(
+				(object) array(
+					'post_type' => 'page',
+					'post_name' => $slug,
+				)
+			);
+			$text = ( new AgentMarkdown() )->markdown_body( 'superseded wrapper', $post );
+			$this->assertStringStartsWith( "# Systems & storage\n\n> URL: https://linker.test/" . $slug . '/', $text );
+			$this->assertStringContainsString( '| Project segment | Typical sizing range |', $text );
+			$this->assertStringContainsString( '| Utility-scale storage |', $text );
+			$this->assertStringNotContainsString( 'superseded wrapper', $text );
+		}
+	}
+
 	/** Preserve engineering tables, links and definitions while omitting UI and shortcodes. */
 	public function test_semantic_content(): void {
 		WP_Mock::userFunction( 'strip_shortcodes', array( 'return_arg' => 0 ) );
