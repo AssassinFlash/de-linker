@@ -8,6 +8,7 @@
 namespace Linker\Commerce\Migrate\T3Pages;
 
 use Linker\Commerce\Mail\NativeTransaction;
+use Linker\I18n\Translation\Fields;
 use Linker\I18n\Translation\State;
 use Linker\I18n\Translation\Translator;
 use RuntimeException;
@@ -30,11 +31,12 @@ const SHARED = array( 'home-journal.css', 'capability-cards.css', 'app-details.c
 /**
  * Capture the exact original page body and the reviewed translation fields.
  *
- * @return array<int,array{content:string,meta:array<string,array<mixed>>}>
+ * @return array<int,array{content:string,fields:array<string,string>,meta:array<string,array<mixed>>}>
  * @throws RuntimeException When the expected published language pair is missing.
  */
 function snapshot(): array {
-	$rows = array();
+	$rows   = array();
+	$fields = new Fields();
 	foreach ( PAIRS as $en => $de ) {
 		if ( (int) pll_get_post( $en, 'de' ) !== $de || 'en' !== pll_get_post_language( $en ) ) {
 			throw new RuntimeException( 'The marketing page translation pairing has changed.' );
@@ -48,13 +50,33 @@ function snapshot(): array {
 			foreach ( $en === $id ? array( State::STATUS, State::NOTE ) : array( State::SOURCE_HASH, State::UNITS ) as $key ) {
 				$meta[ $key ] = get_post_meta( $id, $key, false );
 			}
+			$text = $fields->of_post( $post, $de === $id );
+			unset( $text['post_content'] );
 			$rows[ $id ] = array(
+				'fields'  => array_map( static fn ( array $field ): string => $field[0], $text ),
 				'content' => $post->post_content,
 				'meta'    => $meta,
 			);
 		}
 	}
 	return $rows;
+}
+
+/**
+ * Check the other translation inputs before writing page bodies or their translation state.
+ *
+ * @param array<int,array{content:string,fields:array<string,string>,meta:array<string,array<mixed>>}> $before Original page snapshot.
+ * @return array<int,array{content:string,fields:array<string,string>,meta:array<string,array<mixed>>}>
+ * @throws RuntimeException When a title, excerpt or SEO text changed.
+ */
+function checked_snapshot( array $before ): array {
+	$current = snapshot();
+	foreach ( $current as $id => $row ) {
+		if ( $row['fields'] !== $before[ $id ]['fields'] ) {
+			throw new RuntimeException( 'Translation fields changed since snapshot: ' . esc_html( (string) $id ) );
+		}
+	}
+	return $current;
 }
 
 /**
@@ -227,13 +249,13 @@ function write_body( int $id, string $content ): void {
 /**
  * Publish a pair together and adopt the reviewed German body.
  *
- * @param array<int,array{content:string,meta:array<string,array<mixed>>}> $before Original page snapshot.
- * @param Translator                                                       $translator Reviewed translation writer.
+ * @param array<int,array{content:string,fields:array<string,string>,meta:array<string,array<mixed>>}> $before Original page snapshot.
+ * @param Translator                                                                                   $translator Reviewed translation writer.
  * @throws RuntimeException When a marketing page changed independently.
  */
 function apply( array $before, Translator $translator ): int {
 	$count   = 0;
-	$current = snapshot();
+	$current = checked_snapshot( $before );
 	foreach ( PAIRS as $en => $de ) {
 		$writes = array();
 		foreach ( array( $en, $de ) as $id ) {
@@ -249,12 +271,16 @@ function apply( array $before, Translator $translator ): int {
 		if ( ! $writes ) {
 			continue;
 		}
+		if ( $current[ $en ]['meta'] !== $before[ $en ]['meta'] || $current[ $de ]['meta'] !== $before[ $de ]['meta'] ) {
+			throw new RuntimeException( 'Translation state changed since snapshot: ' . esc_html( (string) $en ) );
+		}
+		$synced = array( State::SYNCED ) === $before[ $en ]['meta'][ State::STATUS ];
 		NativeTransaction::run(
-			static function () use ( $writes, $en, $translator ): void {
+			static function () use ( $writes, $en, $translator, $synced ): void {
 				foreach ( $writes as $id => $body ) {
 					write_body( $id, $body );
 				}
-				if ( State::SYNCED !== $translator->adopt_current( State::POST, $en ) || ! $translator->current( State::POST, $en ) ) {
+				if ( $synced && ( State::SYNCED !== $translator->adopt_current( State::POST, $en ) || ! $translator->current( State::POST, $en ) ) ) {
 					throw new RuntimeException( 'Cannot adopt the reviewed marketing page translation.' );
 				}
 			}
@@ -267,14 +293,14 @@ function apply( array $before, Translator $translator ): int {
 /**
  * Restore both original bodies and their recorded translation metadata.
  *
- * @param array<int,array{content:string,meta:array<string,array<mixed>>}> $before Original page snapshot.
+ * @param array<int,array{content:string,fields:array<string,string>,meta:array<string,array<mixed>>}> $before Original page snapshot.
  * @throws RuntimeException When subsequent edits need to be preserved.
  */
 function restore( array $before ): int {
 	$count   = 0;
-	$current = snapshot();
+	$current = checked_snapshot( $before );
 	foreach ( PAIRS as $en => $de ) {
-		if ( $current[ $en ] === $before[ $en ] && $current[ $de ] === $before[ $de ] ) {
+		if ( $current[ $en ]['content'] === $before[ $en ]['content'] && $current[ $de ]['content'] === $before[ $de ]['content'] ) {
 			continue;
 		}
 		foreach ( array( $en, $de ) as $id ) {
@@ -282,11 +308,19 @@ function restore( array $before ): int {
 				throw new RuntimeException( 'Marketing page changed after publication: ' . esc_html( (string) $id ) );
 			}
 		}
+		$synced = array( State::SYNCED ) === $before[ $en ]['meta'][ State::STATUS ];
+		if ( $synced && $current[ $en ]['meta'] !== $before[ $en ]['meta'] ) {
+			throw new RuntimeException( 'Translation status changed after publication: ' . esc_html( (string) $en ) );
+		}
 		NativeTransaction::run(
-			static function () use ( $before, $current, $en, $de, &$count ): void {
+			static function () use ( $before, $current, $en, $de, $synced, &$count ): void {
 				foreach ( array( $en, $de ) as $id ) {
 					if ( $current[ $id ]['content'] !== $before[ $id ]['content'] ) {
 						write_body( $id, $before[ $id ]['content'] );
+					}
+					++$count;
+					if ( ! $synced || $de !== $id ) {
+						continue;
 					}
 					foreach ( $before[ $id ]['meta'] as $key => $values ) {
 						delete_post_meta( $id, $key );
@@ -294,7 +328,6 @@ function restore( array $before ): int {
 							add_post_meta( $id, $key, wp_slash( $value ) );
 						}
 					}
-					++$count;
 				}
 			}
 		);
