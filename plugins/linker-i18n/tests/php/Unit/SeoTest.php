@@ -116,44 +116,43 @@ final class SeoTest extends TestCase {
 		);
 	}
 
-	/** All effective noindex decisions suppress language alternates. */
-	public function test_no_hreflang_on_excluded_documents(): void {
-		$flags  = array();
-		$object = null;
+	/**
+	 * All effective noindex decisions suppress language alternates.
+	 *
+	 * @dataProvider excluded_documents
+	 * @param string $reason Active exclusion.
+	 */
+	public function test_no_hreflang_on_excluded_documents( string $reason ): void {
 		foreach ( array( 'is_search', 'is_404', 'is_attachment', 'seopress_titles_noindex_bypass' ) as $flag ) {
-			WP_Mock::userFunction( $flag )->andReturnUsing(
-				static function () use ( &$flags, $flag ): bool {
-					return ! empty( $flags[ $flag ] );
-				}
-			);
+			WP_Mock::userFunction( $flag )->andReturn( $flag === $reason );
 		}
-		WP_Mock::userFunction( 'get_queried_object' )->andReturnUsing(
-			static function () use ( &$object ) {
-				return $object;
-			}
-		);
-		$seo   = new Seo();
-		$links = array(
-			'en' => '/english/',
-			'de' => '/de/deutsch/',
-		);
-		foreach ( array( 'is_404', 'is_attachment', 'seopress_titles_noindex_bypass' ) as $flag ) {
-			$flags = array( $flag => true );
-			$this->assertSame( array(), $seo->hreflangs( $links ), $flag );
+		$object = null;
+		if ( 'post' === $reason ) {
+			$object = PolylangDouble::post( 7 );
+			WP_Mock::userFunction( 'get_post_meta' )->with( 7, '_seopress_robots_index', true )->andReturn( 'yes' );
+		} elseif ( 'term' === $reason ) {
+			$object = PolylangDouble::term( 8 );
+			WP_Mock::userFunction( 'get_term_meta' )->with( 8, '_seopress_robots_index', true )->andReturn( 'yes' );
 		}
-		$flags              = array();
-		$_GET['replytocom'] = '1';
+		WP_Mock::userFunction( 'get_queried_object' )->andReturn( $object );
+		$before = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Preserve the test request.
 		try {
-			$this->assertSame( array(), $seo->hreflangs( $links ) );
+			if ( 'replytocom' === $reason ) {
+				$_GET['replytocom'] = '1';
+			}
+			$this->assertSame( array(), ( new Seo() )->hreflangs( array( 'en' => '/english/' ) ) );
 		} finally {
-			unset( $_GET['replytocom'] );
+			$_GET = $before;
 		}
-		$object = PolylangDouble::post( 7 );
-		WP_Mock::userFunction( 'get_post_meta' )->with( 7, '_seopress_robots_index', true )->andReturn( 'yes' );
-		$this->assertSame( array(), $seo->hreflangs( $links ) );
-		$object = PolylangDouble::term( 8 );
-		WP_Mock::userFunction( 'get_term_meta' )->with( 8, '_seopress_robots_index', true )->andReturn( 'yes' );
-		$this->assertSame( array(), $seo->hreflangs( $links ) );
+	}
+
+	/**
+	 * Public URLs that already carry noindex.
+	 *
+	 * @return list<array{string}>
+	 */
+	public function excluded_documents(): array {
+		return array( array( 'is_404' ), array( 'is_attachment' ), array( 'seopress_titles_noindex_bypass' ), array( 'replytocom' ), array( 'post' ), array( 'term' ) );
 	}
 
 	/**

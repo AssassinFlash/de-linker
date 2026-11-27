@@ -19,36 +19,36 @@ use WP_Mock;
  * @covers \Linker\Commerce\Storefront\CrawlHygiene
  */
 final class CrawlHygieneTest extends TestCase {
-	/** Product and comment feeds retire, while the blog RSS remains readable. */
-	public function test_feed_responses(): void {
-		$kind = 'none';
-		foreach ( array( 'is_feed', 'is_comment_feed', 'is_post_type_archive', 'is_tax', 'is_singular' ) as $flag ) {
-			WP_Mock::userFunction( $flag )->andReturnUsing(
-				static function ( $type = null ) use ( &$kind, $flag ): bool {
-					return match ( $flag ) {
-						'is_feed'              => 'none' !== $kind,
-						'is_comment_feed'      => 'comments' === $kind,
-						'is_post_type_archive' => 'archive' === $kind && 'product' === $type,
-						'is_tax'               => 'term' === $kind && array( 'product_cat', 'product_brand' ) === $type,
-						default                => 'single' === $kind && 'product' === $type,
-					};
-				}
-			);
-		}
+	/**
+	 * Product and comment feeds retire, while blog RSS remains readable.
+	 *
+	 * @dataProvider feed_requests
+	 * @param string $kind Request type.
+	 */
+	public function test_feed_responses( string $kind ): void {
+		WP_Mock::userFunction( 'is_feed' )->andReturn( 'none' !== $kind );
+		WP_Mock::userFunction( 'is_comment_feed' )->andReturn( 'comments' === $kind );
+		WP_Mock::userFunction( 'is_post_type_archive' )->with( 'product' )->andReturn( 'archive' === $kind );
+		WP_Mock::userFunction( 'is_tax' )->with( array( 'product_cat', 'product_brand' ) )->andReturn( 'term' === $kind );
+		WP_Mock::userFunction( 'is_singular' )->with( 'product' )->andReturn( 'single' === $kind );
 		$policy = new CrawlHygiene();
-		self::assertSame( array(), $policy->headers( array() ) );
-		$kind = 'blog';
-		self::assertSame( array( 'X-Robots-Tag' => 'noindex, follow' ), $policy->headers( array() ) );
-		$gone = new \RuntimeException( 'Gone' );
-		WP_Mock::userFunction( 'status_header' )->with( 410 )->times( 4 )->andThrow( $gone );
-		foreach ( array( 'comments', 'archive', 'term', 'single' ) as $kind ) {
-			try {
-				$policy->headers( array() );
-				self::fail( $kind . ' should return 410' );
-			} catch ( \RuntimeException $error ) {
-				self::assertSame( $gone, $error );
-			}
+		if ( in_array( $kind, array( 'none', 'blog' ), true ) ) {
+			self::assertSame( 'blog' === $kind ? array( 'X-Robots-Tag' => 'noindex, follow' ) : array(), $policy->headers( array() ) );
+			return;
 		}
+		WP_Mock::userFunction( 'status_header' )->with( 410 )->once()->andThrow( new \RuntimeException( 'Gone' ) );
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'Gone' );
+		$policy->headers( array() );
+	}
+
+	/**
+	 * Native WordPress feed contexts.
+	 *
+	 * @return list<array{string}>
+	 */
+	public function feed_requests(): array {
+		return array( array( 'none' ), array( 'blog' ), array( 'comments' ), array( 'archive' ), array( 'term' ), array( 'single' ) );
 	}
 
 	/** Only publicly viewable published parents receive an attachment redirect. */
