@@ -218,7 +218,9 @@ final class LlmsTxt {
 			$series           = Materials::english_acf( $id )['product_series'] ?? '';
 			$label            = implode( ' · ', array_unique( array_filter( array( $brand, is_string( $series ) ? trim( $series ) : '' ) ) ) );
 			$facts            = SelectionFacts::for_product( $id );
-			$ratings          = array_filter( array( self::power( $facts ), self::energy( $facts ) ) );
+			$figures          = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
+			$figures          = is_string( $figures ) ? json_decode( $figures, true ) : $figures;
+			$ratings          = array_filter( array( self::power( $facts, is_array( $figures ) ? $figures : array() ), self::energy( $facts ) ) );
 			$rating           = $ratings ? ' · ' . implode( ' · ', $ratings ) : '';
 			$rows[ $label ][] = isset( $set[ $de ] ) ? self::post_pair( $id, $de, $rating ) : self::link( get_the_title( $id ), (string) get_permalink( $id ) ) . $rating;
 		}
@@ -333,10 +335,9 @@ final class LlmsTxt {
 			$id           = $product['product_id'];
 			$names[ $id ] = '' !== $product['model'] ? $product['model'] : $product['title'];
 			$locales      = $product['locale_product_ids'];
-			$facts        = SelectionFacts::for_product( $id );
+			$figures      = Publication::figures_in_manifest( $id, $manifest );
+			$facts        = SelectionFacts::from_figures( $id, $figures );
 			$material     = Materials::material_for_product( $id );
-			$figures      = get_post_meta( $id, '_tv_b2b_figures', true );
-			$figures      = is_string( $figures ) ? json_decode( $figures, true ) : $figures;
 			$downloads    = array();
 			foreach ( $product['documents'] as $key ) {
 				$downloads[] = $documents[ $key ];
@@ -348,7 +349,7 @@ final class LlmsTxt {
 					$material['identity']['manufacturer_part_number'] ?? '',
 					str_replace( '_', ' ', $facts->device_class ),
 					$facts->application,
-					self::power( $facts ),
+					self::power( $facts, $figures ),
 					self::energy( $facts ),
 					'unknown' === $facts->phase ? '' : (string) $facts->phase,
 					(string) ( $figures['ip_rating']['value'] ?? '' ),
@@ -422,15 +423,20 @@ final class LlmsTxt {
 	}
 
 	/**
-	 * Keep real and apparent power in their source units.
+	 * Keep real and apparent power and the conditions on switchgear ratings.
 	 *
-	 * @param SelectionFactSet $facts Published selection facts.
+	 * @param SelectionFactSet    $facts Published selection facts.
+	 * @param array<string,mixed> $figures Current model figures.
 	 */
-	private static function power( SelectionFactSet $facts ): string {
+	private static function power( SelectionFactSet $facts, array $figures ): string {
 		if ( is_float( $facts->ac_power_kw ) ) {
 			return $facts->ac_power_kw . ' kW';
 		}
-		return null === $facts->ac_apparent_kva ? '' : $facts->ac_apparent_kva . ' kVA';
+		if ( null !== $facts->ac_apparent_kva ) {
+			return $facts->ac_apparent_kva . ' kVA';
+		}
+		$rated = $figures['rated_power_kw'] ?? array();
+		return isset( $rated['value'], $rated['citation'] ) && 'kW' === ( $rated['unit'] ?? '' ) ? $rated['value'] . ' kW' : '';
 	}
 
 	/**
