@@ -235,7 +235,7 @@ export function ContactCard( {
 		);
 		if ( result.ok ) {
 			window.linkerTrack?.( 'generate_lead', {
-				lead_surface: 'contact',
+				lead_surface: 'genie_contact',
 			} );
 			setSentTo( result.email );
 			setReceipt( result.receipt );

@@ -140,6 +140,10 @@ export function startHero(
 				trigger.setAttribute( 'aria-expanded', String( expanded ) )
 			);
 			if ( expanded ) {
+				win.linkerTrack?.( 'genie_open', {
+					surface: 'hero',
+					page_type: options.config.page.type,
+				} );
 				prompt!.placeholder = __( 'Ask a follow-up…', 'linker-tools' );
 				mount();
 				requestAnimationFrame( fitHeroToViewport );

@@ -696,6 +696,17 @@ export function App( { config }: { config: GenieConfig } ) {
 		store,
 	} );
 	const standalone = config.surface === 'workspace';
+	const panelOpen = standalone || open;
+	const wasOpen = useRef( false );
+	useEffect( () => {
+		if ( panelOpen && ! wasOpen.current ) {
+			window.linkerTrack?.( 'genie_open', {
+				surface: standalone ? 'workspace' : 'floating',
+				page_type: pageRef.current.type,
+			} );
+		}
+		wasOpen.current = panelOpen;
+	}, [ panelOpen, standalone ] );
 
 	const readHistory = useCallback(
 		async ( epoch: number, lease: DraftLease | null ) => {

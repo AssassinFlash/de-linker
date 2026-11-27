@@ -78,20 +78,33 @@ test('a first or rejected visit leaves the Google script inert', async () => {
 	}
 });
 
-test('conversion events send only the approved fields and page language after permission', () => {
+test('only consented Genie funnel events send their approved fields and language', () => {
 	const window = page('<html lang="de-DE">' + held);
-	const params = { lead_surface: 'inquiry', email: 'someone@example.invalid', message: 'private note' };
-	window.linkerTrack('generate_lead', params);
-	assert.equal(window.calls.filter(call => call[0] === 'event').length, 0);
+	const events = [
+		['genie_open', { surface: 'floating', page_type: 'faq' }],
+		['genie_ask', { surface: 'floating', page_type: 'faq' }],
+		['generate_lead', { lead_surface: 'genie_inquiry' }],
+		['generate_lead', { lead_surface: 'genie_contact' }],
+		['generate_lead', { lead_surface: 'inquiry' }],
+	];
+	function send() {
+		for (const [name, params] of events) {
+			window.linkerTrack(name, { ...params, email: 'someone@example.invalid', message: 'private note', search_term: 'private question' });
+		}
+		window.linkerTrack('someone@example.invalid', {});
+	}
+	const measured = () => JSON.parse(JSON.stringify(window.calls.filter(call => call[0] === 'event')));
+	send();
+	consent(window, { statistics: 'deny' });
+	send();
+	assert.deepEqual(measured(), []);
 	consent(window, { statistics: 'allow' });
-	window.linkerTrack('generate_lead', params);
-	window.linkerTrack('someone@example.invalid', params);
-	assert.deepEqual(JSON.parse(JSON.stringify(window.calls.filter(call => call[0] === 'event'))), [
-		['event', 'generate_lead', {page_lang: 'de', lead_surface: 'inquiry'}]
-	]);
-	consent(window, {statistics: 'deny'});
-	window.linkerTrack('configurator_start');
-	assert.equal(window.calls.filter(call => call[0] === 'event').length, 1);
+	send();
+	const approved = events.map(([name, params]) => ['event', name, { page_lang: 'de', ...params }]);
+	assert.deepEqual(measured(), approved);
+	consent(window, { statistics: 'deny' });
+	send();
+	assert.deepEqual(measured(), approved);
 });
 
 test('GA attribution preserves campaign tags and excludes private receipt, search and referral values', () => {

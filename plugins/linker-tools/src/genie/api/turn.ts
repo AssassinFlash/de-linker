@@ -649,6 +649,7 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 								request.surface === 'helper'
 									? 'floating'
 									: request.surface,
+							page_type: page.type,
 						} );
 					}
 					return fetcher( ...args );

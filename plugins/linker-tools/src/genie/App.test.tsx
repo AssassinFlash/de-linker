@@ -162,6 +162,7 @@ beforeEach( () => {
 } );
 
 afterEach( () => {
+	delete window.linkerTrack;
 	sessionStorage.clear();
 	resetTurnLane();
 } );
@@ -1982,6 +1983,47 @@ test( 'an answer carries the answer label and a question does not', async () => 
 	).toBeNull();
 } );
 
+test( 'the floating helper counts each visible opening on the FAQ page', async () => {
+	const track = vi.fn();
+	window.linkerTrack = track;
+	await renderOwned(
+		<App config={ { ...config(), page: { type: 'faq' } } } />
+	);
+	expect( track ).not.toHaveBeenCalled();
+
+	const open = () =>
+		act( () => {
+			window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) );
+		} );
+	open();
+	open();
+	const event = [ 'genie_open', { surface: 'floating', page_type: 'faq' } ];
+	expect( track.mock.calls ).toEqual( [ event ] );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
+	open();
+	expect( track.mock.calls ).toEqual( [ event, event ] );
+} );
+
+test( 'the standalone conversation counts its visible mount once', async () => {
+	const track = vi.fn();
+	window.linkerTrack = track;
+	await renderOwned(
+		<App
+			config={ {
+				...config(),
+				surface: 'workspace',
+				page: { type: 'other' },
+			} }
+		/>
+	);
+	act( () => {
+		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) );
+	} );
+	expect( track.mock.calls ).toEqual( [
+		[ 'genie_open', { surface: 'workspace', page_type: 'other' } ],
+	] );
+} );
+
 test( 'the ready handshake opens once and Close/reopen reports the same state', async () => {
 	vi.mocked( readThread ).mockResolvedValue( {
 		messages: [],
@@ -2276,7 +2318,7 @@ test( 'the dock footer carries the site links, locale-aware', async () => {
 	fireEvent.click( screen.getByText( 'Help & privacy' ) );
 	expect(
 		screen.getByRole( 'link', { name: 'FAQ & Downloads' } )
-	).toHaveAttribute( 'href', '/de/faq-download/' );
+	).toHaveAttribute( 'href', '/de/faq-dokumente/' );
 	expect(
 		screen.getByRole( 'link', { name: 'Contact Linker' } )
 	).toHaveAttribute( 'href', '/de/kontakt/' );
