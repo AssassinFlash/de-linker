@@ -58,6 +58,8 @@ final class SocialCardsTest extends TestCase {
 		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( false );
 		WP_Mock::userFunction( 'is_singular' )->with( 'product' )->andReturn( true );
 		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 20 ) );
+		WP_Mock::userFunction( 'get_the_title' )->with( 20 )->andReturn( 'Inverter (5 kW)' );
+		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( 'strip_tags' );
 		WP_Mock::userFunction( 'get_post_thumbnail_id' )->with( 20 )->andReturn( 21 );
 		WP_Mock::userFunction( 'wp_get_attachment_image_src' )->with( 21, 'full' )->andReturn( array( 'https://example.org/inverter.webp', 900, 900, false ) );
 		WP_Mock::userFunction( 'get_post_meta' )->with( 21, '_wp_attachment_image_alt', true )->andReturn( 'Inverter' );
@@ -68,6 +70,54 @@ final class SocialCardsTest extends TestCase {
 		$this->assertStringContainsString( 'property="og:image" content="https://example.org/inverter.webp"', $tags );
 		$this->assertStringContainsString( 'property="og:image:width" content="900"', $tags );
 		$this->assertSame( '<meta name="twitter:image" content="https://example.org/inverter.webp">', $cards->twitter_image( '' ) );
+	}
+
+	/** A dedicated series photograph must describe the model whose card is shared. */
+	public function test_dedicated_product_alt_names_the_current_model(): void {
+		WP_Mock::userFunction( 'is_home' )->andReturn( false );
+		WP_Mock::userFunction( 'is_category' )->andReturn( false );
+		WP_Mock::userFunction( 'is_singular' )->andReturnUsing( static fn ( string $type ): bool => 'product' === $type );
+		WP_Mock::userFunction( 'get_queried_object_id' )->andReturn( 80 );
+		WP_Mock::userFunction( 'get_post_thumbnail_id' )->with( 80 )->andReturn( 100 );
+		WP_Mock::userFunction( 'get_the_title' )->andReturn( 'GoodWe GW80K-ETR-G10 (80 kW)' );
+		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( 'strip_tags' );
+		WP_Mock::userFunction( 'esc_attr' )->andReturnArg( 0 );
+		$html = ( new SocialCards() )->open_graph( '<meta property="og:image" content="https://linker.test/etr.webp"><meta property="og:image:alt" content="Shared 125 kW inverter">' );
+		$this->assertStringContainsString( 'content="GoodWe GW80K-ETR-G10 (80 kW)"', $html );
+		$this->assertStringNotContainsString( '125 kW', $html );
+	}
+
+	/** A German share card displays the article's own translated cover caption. */
+	public function test_dedicated_blog_uses_its_localized_post_cover_description(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/CoverAlt.php';
+		WP_Mock::userFunction( 'is_home' )->andReturn( false );
+		WP_Mock::userFunction( 'is_category' )->andReturn( false );
+		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( true );
+		WP_Mock::userFunction( 'get_queried_object_id' )->andReturn( 80 );
+		WP_Mock::userFunction( 'get_post_thumbnail_id' )->with( 80 )->andReturn( 100 );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 80, '_linker_i18n_cover_alt_display', true )->andReturn( 'Speicher im Technikraum' );
+		WP_Mock::userFunction( 'esc_attr' )->andReturnArg( 0 );
+		$html = ( new SocialCards() )->open_graph( '<meta property="og:image" content="/cover.webp"><meta property="og:image:alt" content="Unrelated cover">' );
+		$this->assertStringContainsString( 'content="Speicher im Technikraum"', $html );
+		$this->assertStringNotContainsString( 'Unrelated cover', $html );
+	}
+
+	/** A native social creator tag belongs only to a journal entry written by Chester. */
+	public function test_creator_uses_the_queried_posts_own_author(): void {
+		$chester                = new \WP_User();
+		$chester->user_nicename = 'chester-john';
+		$team                   = new \WP_User();
+		$team->user_nicename    = 'linker-team';
+		$post                   = new \WP_Post( (object) array( 'post_author' => '12' ) );
+		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( true, true, false );
+		WP_Mock::userFunction( 'get_queried_object_id' )->andReturn( 55 );
+		WP_Mock::userFunction( 'get_post' )->with( 55 )->andReturn( $post );
+		WP_Mock::userFunction( 'get_userdata' )->with( 12 )->andReturn( $chester, $team );
+		$cards = new SocialCards();
+		$this->assertSame(
+			array( '<meta name="twitter:creator" content="@chester_linker">', '', '' ),
+			array( $cards->creator(), $cards->creator(), $cards->creator() )
+		);
 	}
 
 	/** A dedicated landscape card is preserved, and the internal SEOPress URL filter keeps its type. */

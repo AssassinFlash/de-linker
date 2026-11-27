@@ -45,7 +45,8 @@ final class CompatibilityMatrixPageTest extends TestCase {
 				'name'         => $model,
 				'url'          => 'https://linker.test/product/' . $id,
 				'application'  => 5 === $id ? 'commercial' : 'home',
-				'series'       => $model,
+				'brand'        => 1 === $id ? 'SAJ' : 'GoodWe',
+				'series'       => 1 === $id ? 'SAJ H2' : 'GoodWe BAT-C',
 				'rating'       => '',
 				'category'     => '',
 				'certificates' => array(),
@@ -131,6 +132,9 @@ final class CompatibilityMatrixPageTest extends TestCase {
 		$this->assertSame( 5.0, $xpath->evaluate( 'count(//nav[@class="lk-matrix-anchors"]/a[starts-with(@href,"https://linker.test/inverter-battery-compatibility/#")])' ) );
 		$this->assertStringNotContainsString( 'Battery B', (string) $xpath->evaluate( 'string(//section[@id="residential-pairings"])' ) );
 		$this->assertStringContainsString( 'Battery B', (string) $xpath->evaluate( 'string(//section[@id="not-released-boundaries"])' ) );
+		$this->assertStringContainsString( 'SAJ H2 × GoodWe BAT-C', $html );
+		$this->assertStringNotContainsString( 'GoodWe GoodWe', $html );
+		$this->assertStringNotContainsString( 'SAJ SAJ', $html );
 		$this->assertStringContainsString( 'Controller', (string) $xpath->evaluate( 'string(//section[@id="residential-pairings"])' ) );
 		$this->assertSame( $url . '#page=7', $xpath->evaluate( 'string(//section[@id="residential-pairings"]//a[@target="_blank"]/@href)' ) );
 		$this->assertStringContainsString( 'EN 50549', (string) $xpath->evaluate( 'string(//section[@id="grid-certificates"])' ) );

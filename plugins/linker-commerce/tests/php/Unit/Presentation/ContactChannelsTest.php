@@ -37,6 +37,7 @@ final class ContactChannelsTest extends TestCase {
 				'https://de.trustpilot.com/review/de-linker.com',
 				'https://www.northdata.de/Linker%20Technology%20GmbH,%20Barleben/Amtsgericht%20Stendal%20HRB%2033824',
 				'https://www.11880.com/branchenbuch/barleben/250424085B114309018/linker-technology-gmbh.html',
+				'https://www.hotfrog.de/company/AaIcwgYnceK8KVPjsAyONQ/linker-technology-gmbh/barleben/electrical-supplies-services',
 			),
 			ContactChannels::company_same_as()
 		);
@@ -56,7 +57,7 @@ final class ContactChannelsTest extends TestCase {
 		$profiles = ContactChannels::chester_same_as();
 		$this->assertSame(
 			array(
-				'https://www.linkedin.com/in/chester-john-linker/',
+				'https://www.linkedin.com/in/johnchestersr/',
 				'https://www.youtube.com/@chesterjohn.linker',
 				'https://x.com/chester_linker',
 				'https://www.facebook.com/chesterjohn.linker/',

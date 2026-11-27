@@ -28,6 +28,8 @@ function linker_site_guards_headers(): void {
 	header( 'X-Frame-Options: SAMEORIGIN' );
 	header( 'X-Content-Type-Options: nosniff' );
 	header( 'Referrer-Policy: strict-origin-when-cross-origin' );
+	header( 'Permissions-Policy: camera=(), microphone=(self), geolocation=(), payment=()' );
+	header_remove( 'X-Powered-By' );
 }
 add_action( 'send_headers', 'linker_site_guards_headers', 1 );
 

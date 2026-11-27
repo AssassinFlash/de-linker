@@ -83,7 +83,8 @@ final class CompatibilityMatrixPage {
 				'name'         => trim( $item['brand'] . ' ' . $item['model'] ),
 				'url'          => get_permalink( $id ),
 				'application'  => $facts->application,
-				'series'       => $item['brand'] . ' ' . ( Materials::english_acf( $source )['product_series'] ?? $item['model'] ),
+				'brand'        => $item['brand'],
+				'series'       => Materials::english_acf( $source )['product_series'] ?? $item['model'],
 				'rating'       => implode( ' · ', $ratings ),
 				'category'     => is_array( $categories ) ? implode( ', ', wp_list_pluck( $categories, 'name' ) ) : '',
 				'certificates' => $certificates,
@@ -134,7 +135,7 @@ final class CompatibilityMatrixPage {
 			$inverter = $products[ $i ];
 			$battery  = $products[ $b ];
 			if ( 'not_released' === $pair['verdict'] ) {
-				$group = $inverter['series'] . ' × ' . $battery['series'];
+				$group = self::series_label( $inverter['brand'], $inverter['series'] ) . ' × ' . self::series_label( $battery['brand'], $battery['series'] );
 				$boundaries[ $group ][ $inverter['name'] ][ $battery['name'] ] = true;
 				continue;
 			}
@@ -240,6 +241,24 @@ final class CompatibilityMatrixPage {
 			$html .= '</section>';
 		}
 		return $html . self::destinations() . '</div>';
+	}
+
+	/**
+	 * Display the manufacturer's series name once.
+	 *
+	 * @param string $brand Manufacturer.
+	 * @param string $series Series or model name from Woo.
+	 */
+	private static function series_label( string $brand, string $series ): string {
+		$brand  = trim( $brand );
+		$series = trim( $series );
+		if ( '' === $series ) {
+			return $brand;
+		}
+		if ( '' === $brand || 0 === strcasecmp( $brand, $series ) || 0 === strncasecmp( $series, $brand . ' ', strlen( $brand ) + 1 ) ) {
+			return $series;
+		}
+		return $brand . ' ' . $series;
 	}
 
 	/** Planning and contact destinations, including when the reference is unavailable. */

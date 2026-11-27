@@ -22,6 +22,17 @@ use WP_Post;
  * @covers \Linker\Commerce\Presentation\Templates
  */
 final class TemplatesTest extends TestCase {
+	/** Navigation controls leave the first document heading to the page. */
+	public function test_bilingual_headers_use_labels_and_shared_icon_shapes(): void {
+		foreach ( array( 'header.html', 'de/header.html' ) as $file ) {
+			$html = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/partials/' . $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Read the versioned template.
+			$this->assertDoesNotMatchRegularExpression( '/<h[1-6]\b/i', $html );
+			$this->assertStringContainsString( '<p id="tv-search-title">', $html );
+			$this->assertSame( 1, substr_count( $html, 'id="tv-ic-chevron"' ) );
+			$this->assertSame( 10, substr_count( $html, 'href="#tv-ic-chevron"' ) );
+		}
+	}
+
 
 	/** Both language exports draw their footer layout from the WindPress volume. */
 	public function test_both_footers_use_the_compiled_stylesheet(): void {

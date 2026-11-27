@@ -1,0 +1,80 @@
+
+/* Detail layer shared by the six reviewed pages. Page compositions stay in their own sheets. */
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-track]{min-width:0}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-card]:nth-child(n){border:1px solid #e1e8e1;padding:24px;border-radius:22px;min-height:0;align-items:start}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-card]::before{display:none}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-card] .app-card-icon{grid-column:1;grid-row:1;display:grid;place-items:center;width:48px;height:48px;padding:10px;margin:0;background:#fff;border:0;border-radius:50%;color:#0c7f73}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-card] .app-card-icon svg{display:block;width:28px;height:28px}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-card] .lk-trust-val{grid-column:1/-1;grid-row:2;max-width:none;margin:0;font-size:21px;font-weight:600;line-height:1.35;letter-spacing:-.02em}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-card] .lk-trust-lbl{grid-column:1/-1;grid-row:3;margin:0;font-size:13px;line-height:1.8;color:#5e716a}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) .capability-controls button{width:44px;height:44px;touch-action:manipulation}
+#home-a .home-trust{padding:30px 0;border-color:#e1e8e1;background:#fff}
+#home-a [data-capability-card]>div{display:contents}
+#home-a [data-capability-card] .home-trust-kicker{grid-column:2;grid-row:1;align-self:center;margin:0;font-size:10px;letter-spacing:.06em;color:#0c7f73}
+#home-a [data-capability-card] h2{grid-column:1/-1;grid-row:2;margin:0;font-size:21px;font-weight:600;line-height:1.35;letter-spacing:-.02em}
+#home-a [data-capability-card] p:last-child{grid-column:1/-1;grid-row:3;margin:0;font-size:13px;line-height:1.8}
+#installer-journal .lk-trust-strip,#tv-solutions-developers-v1 .lk-trust-strip{padding:30px 0;border-color:#e1e8e1}
+#service-redesign [data-capability-card] .lk-trust-val{font-size:18px}
+#service-redesign [data-capability-card]{gap:17px 14px}
+/* A photographic chapter card introduces the FAQ, with the original questions beside it. */
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-layout{display:grid;grid-template-columns:minmax(0,.42fr) minmax(0,.58fr);align-items:start;gap:48px}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene{position:relative;top:auto;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:0;isolation:isolate;overflow:hidden;min-height:510px;max-width:none;margin:0;padding:34px 30px;border-radius:22px;background:#15352f;color:#fff}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-photo{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:center;opacity:1}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(9,36,30,.02) 0%,rgba(9,36,30,.2) 25%,rgba(9,36,30,.88) 67%,#09241e 100%)}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene :is(.eyebrow,.lk-eyebrow){margin:0 0 17px;color:#bbdfc4;font-size:10px;line-height:1.6;letter-spacing:.1em}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene h2{margin:0;max-width:none;font-family:var(--proto-font-sans);font-size:30px;font-weight:600;line-height:1.3;letter-spacing:-.025em;color:#fff;text-wrap:balance}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene :is(p,.lk-subtext){margin:18px 0 0;max-width:none;font-size:13px;line-height:1.8;color:#d5e4db}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-list{max-width:none;min-width:0}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq summary{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 0;font-size:15px;line-height:1.6;list-style:none;cursor:pointer}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq summary::after{display:none}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq summary::-webkit-details-marker{display:none}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-disclosure{position:relative;display:block;flex:0 0 36px;align-self:center;width:36px;height:36px;margin:0;border:1px solid #c8d8cb;border-radius:50%;background:#fff;color:#0c7f73;transform:none}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-disclosure::before,:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-disclosure::after{content:'';position:absolute;top:50%;left:50%;width:12px;height:2px;border:0;background:currentColor;transform:translate(-50%,-50%)}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-disclosure::after{transform:translate(-50%,-50%) rotate(90deg)}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq details[open] .app-disclosure{background:#0c7f73;border-color:#0c7f73;color:#fff;transform:none}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq details[open] .app-disclosure::after{display:none}
+#about-journal #faq summary{display:grid;grid-template-columns:26px minmax(0,1fr) 36px;align-items:center}
+#about-journal #faq .faq-no{align-self:start;padding-top:4px}
+#tv-solutions-developers-v1 .epc-faq-answer .app-disclosure{display:none}
+#tv-solutions-developers-v1 .epc-faq-topics button{align-items:center;min-height:52px;padding:14px;border-radius:16px;background:#edf1ed;border-color:#dce4dc}
+#tv-solutions-developers-v1 .epc-faq-topics button[aria-selected="true"]{background:#0c7f73;color:#fff;border-color:#0c7f73}
+/* Touch controls, grouped selectors and inset surfaces use the same softer language. */
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) :is(.lk-btn-primary,.lk-btn-secondary,.lk-btn-teal,.lk-btn-outline,.lk-sp-btn-main,.lk-btn-intake-primary,.lk-btn-intake-secondary,.button,.home-btn){min-height:44px;border-radius:12px;touch-action:manipulation}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) :is(.lk-desk-tab-btn,.home-stages-tab,.ss-stage-tab,.sol-scale-tabs button,.lk-tool-switcher button,.lk-lc-tab){min-height:44px;border-radius:12px;touch-action:manipulation}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) button:focus-visible,:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) summary:focus-visible{outline:2px solid #0c7f73;outline-offset:4px}
+#home-a :is(.home-cta-titleplate,.home-cta-action){border-radius:22px}
+#home-a .home-deliv{padding:20px;border:1px solid #d8e2d9;border-radius:18px;background:#edf1ed}
+#home-a .hero-capsules{justify-content:center;align-items:center}
+#home-a .hero-capsule{flex:0 1 auto;width:fit-content;max-width:100%;min-height:44px;border-radius:999px;justify-content:center}
+#about-journal .c-proof p{padding:18px;border:1px solid #d8e2d9;border-radius:18px;background:rgba(255,255,255,.55)}
+#about-journal .c-case-paper{border-radius:18px;border:1px solid #dfe5da}
+#about-journal .c-thesis-cta{border-radius:20px}
+#about-journal .chapter-tabs{gap:8px;padding:8px;border:1px solid #dce4dc;border-radius:18px;background:#edf1ed}
+#about-journal .chapter-tab{min-height:54px;border:0;border-radius:12px;padding:16px;color:#5e716a;touch-action:manipulation}
+#about-journal .chapter-tab:first-child{padding-left:16px}
+#about-journal .chapter-tab.selected{background:#0c7f73;color:#fff;box-shadow:0 2px 4px rgba(12,127,115,.12)}
+#about-journal .chapter-tab.selected span{color:inherit}
+#service-redesign :is(.lk-pair-media,.lk-story-card,.lk-cta-card){border-radius:18px;overflow:hidden}
+#installer-journal :is(.ij-tool-media,.lk-story-card){border-radius:18px;overflow:hidden}
+#tv-solutions-developers-v1 :is(.lk-desk-workbench-card,.lk-intake-card,.lk-story-card){border-radius:20px}
+@media(max-width:1000px){
+ :is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-track]{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:min(310px,calc(100% - 48px));gap:16px}
+ :is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) [data-capability-card]:nth-child(n){padding:23px}
+ :is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-layout{gap:30px;grid-template-columns:1fr}
+ :is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene{min-height:420px;padding:30px 26px}
+ :is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene h2{font-size:29px}
+ #about-journal .chapter-tab b{font-size:10px;letter-spacing:.04em;line-height:1.5}
+}
+@media(max-width:600px){
+ #home-a .home-trust,#installer-journal .lk-trust-strip,#tv-solutions-developers-v1 .lk-trust-strip{padding:26px 0}
+ :is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene{min-height:420px;padding:29px 24px}
+ :is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq .app-faq-scene h2{font-size:28px}
+ :is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq summary{font-size:14px;gap:13px}
+ #about-journal .c-proof p{padding:15px}
+}
+/* Suppress legacy text glyphs; disclosure geometry is supplied by the circle above. */
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq details summary::after,:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) #faq details[open] summary::after{content:none;display:none!important}
+:is(#home-a,#tv-solution-v1,#service-redesign,#about-journal,#installer-journal,#tv-solutions-developers-v1) :is(.lk-testi-arrow-btn,.sol-table-scroll){min-width:44px;min-height:44px;display:grid;place-items:center;touch-action:manipulation}
+/* Keep card descriptions aligned when one title wraps to a second line. */
+#home-a [data-capability-card] h2{min-height:57px}
+:is(#tv-solution-v1,#service-redesign,#installer-journal,#tv-solutions-developers-v1) [data-capability-card] .lk-trust-val{min-height:57px}

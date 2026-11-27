@@ -62,10 +62,25 @@ final class Module {
 		( new CompatibilityMatrixPage() )->register();
 		$this->account->register();
 		$this->blog->register();
+		add_filter( 'lc_modify_header_content', array( $this, 'home_header_menu' ) );
 		add_filter( 'wp_preload_resources', array( $this, 'preload_resources' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'trim_woo_assets' ), 31 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_account_scripts' ) );
+	}
+
+	/**
+	 * Size the Home navigation as its markup arrives, before the hero is painted.
+	 *
+	 * @param string $header Rendered LiveCanvas header.
+	 */
+	public function home_header_menu( string $header ): string {
+		if ( ! is_front_page() || ! did_action( 'wp_head' ) ) {
+			return $header;
+		}
+		ob_start();
+		wp_scripts()->do_items( array( 'linker-header-menu' ), 1 );
+		return $header . (string) ob_get_clean();
 	}
 
 	/**
@@ -75,8 +90,9 @@ final class Module {
 	 * @return array<int,array<string,string>>
 	 */
 	public function preload_resources( array $resources ): array {
-		$base = plugins_url( 'assets/fonts/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
-		foreach ( array( 400, 600 ) as $weight ) {
+		$base    = plugins_url( 'assets/fonts/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+		$weights = is_front_page() ? array( 400, 500, 600, 700 ) : array( 400, 600 );
+		foreach ( $weights as $weight ) {
 			$resources[] = array(
 				'href'        => $base . 'plus-jakarta-sans-' . $weight . '.woff2',
 				'as'          => 'font',

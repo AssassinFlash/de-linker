@@ -91,25 +91,19 @@ final class GermanTitlesTest extends TestCase {
 
 		$this->assertSame( 'Eine andere Beschreibung.', $titles->shop_description( 'Eine andere Beschreibung.' ) );
 	}
-	/**
-	 * The German post owns its translated cover text even with a shared attachment.
-	 */
-	public function test_social_image_uses_the_german_post_cover(): void {
+	/** Product and journal descriptions come from the photographed model or owned post cover. */
+	public function test_social_image_preserves_the_resolved_product_or_blog_description(): void {
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
-		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( true );
-		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 85 ) );
-		WP_Mock::userFunction( 'get_post_meta' )->with( 85, \Linker\I18n\CoverAlt::DISPLAY, true )->andReturn( 'Speicher im Technikraum' );
-		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn( $s ) => $s ) );
+		WP_Mock::userFunction( 'is_singular' )->with( 'page' )->andReturn( false );
 		$titles = new GermanTitles( new Languages() );
-		$input  = '<meta property="og:image" content="https://example.org/cover.jpg"><meta property="og:image:alt" content="Battery in the utility room">';
-		$this->assertSame( str_replace( 'Battery in the utility room', 'Speicher im Technikraum', $input ), $titles->social_image_alt( $input ) );
+		$html   = '<meta property="og:image" content="/media/et.webp"><meta property="og:image:alt" content="GoodWe GW50K-ET-10 — 50 kW, dreiphasig, Wechselrichter">';
+		$this->assertSame( $html, $titles->social_image_alt( $html ) );
 	}
 
-	/** Native product images get the German product name if there was no alt tag. */
-	public function test_social_image_adds_german_product_title(): void {
+	/** An independent page image uses its German page title. */
+	public function test_social_image_adds_german_page_title(): void {
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
-		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( false );
-		WP_Mock::userFunction( 'is_singular' )->with( array( 'product', 'page' ) )->andReturn( true );
+		WP_Mock::userFunction( 'is_singular' )->with( 'page' )->andReturn( true );
 		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 27 ) );
 		WP_Mock::userFunction( 'get_the_title' )->with( 27 )->andReturn( 'Gewerbespeicher' );
 		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn( $s ) => $s ) );

@@ -59,6 +59,7 @@ final class BlogShortcodesTest extends TestCase {
 	 */
 	public function test_register_adds_the_blog_shortcodes(): void {
 		$codes = new BlogShortcodes();
+		WP_Mock::userFunction( 'add_shortcode' )->with( 'linker_blog_cover_image', array( $codes, 'cover_image' ) )->once();
 		WP_Mock::userFunction(
 			'add_shortcode',
 			array(
@@ -98,6 +99,27 @@ final class BlogShortcodesTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** The featured article's translated alt and exact image dimensions reach the journal hero. */
+	public function test_cover_uses_the_explicit_loop_post_and_reviewed_german_alt(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/CoverAlt.php';
+		WP_Mock::userFunction( 'shortcode_atts' )->andReturnUsing( 'array_replace' );
+		WP_Mock::userFunction( 'get_post_thumbnail_id' )->with( 12 )->andReturn( 90 );
+		WP_Mock::userFunction( 'wp_get_attachment_image_src' )->with( 90, 'large' )->andReturn( array( 'https://linker.test/cover.webp', 960, 540, true ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_srcset' )->andReturn( 'https://linker.test/cover.webp 960w' );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 12, '_linker_i18n_cover_alt_display', true )->andReturn( 'Gewerbespeicher im Technikraum' );
+		$html = ( new BlogShortcodes() )->cover_image(
+			array(
+				'post'          => '12',
+				'size'          => 'large',
+				'eager'         => '1',
+				'fetchpriority' => 'high',
+			)
+		);
+		$this->assertStringContainsString( 'width="960" height="540" alt="Gewerbespeicher im Technikraum"', $html );
+		$this->assertStringContainsString( 'loading="eager"', $html );
+		$this->assertStringContainsString( 'fetchpriority="high"', $html );
+	}
+
 	/** Only Chester's articles link the byline to his profile card. */
 	public function test_only_chesters_byline_links_to_the_author_card(): void {
 		$post              = $this->post( 551, 'System design', 'system-design' );
@@ -134,7 +156,7 @@ final class BlogShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'add_query_arg' )->andReturn( 'https://example.org/contact/?article_contact=1' );
 		$html = ( new BlogShortcodes() )->author();
 		$this->assertStringContainsString( 'class="reader-author-socials"', $html );
-		$this->assertStringContainsString( 'linkedin.com/in/chester-john-linker/', $html );
+		$this->assertStringContainsString( 'linkedin.com/in/johnchestersr/', $html );
 		$this->assertStringContainsString( 'youtube.com/@chesterjohn.linker', $html );
 		$this->assertStringContainsString( 'x.com/chester_linker', $html );
 	}
@@ -375,10 +397,10 @@ final class BlogShortcodesTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction(
-			'wp_get_attachment_image_url',
+			'wp_get_attachment_image_src',
 			array(
 				'args'   => array( 700, 'medium_large' ),
-				'return' => 'https://linker.test/up/card.jpg',
+				'return' => array( 'https://linker.test/up/card.jpg', 600, 400, false ),
 			)
 		);
 		WP_Mock::userFunction(
@@ -394,7 +416,7 @@ final class BlogShortcodesTest extends TestCase {
 		$this->assertStringContainsString( '<article class="lc-block"><a href="https://linker.test/installer-checklist/" class="tv-blog-single-related-card">', $html );
 		$this->assertStringContainsString( '<div class="tv-blog-single-related-img">', $html );
 		$this->assertStringContainsString(
-			'<img src="https://linker.test/up/card.jpg" srcset="https://linker.test/up/card-300x200.jpg 300w, https://linker.test/up/card.jpg 600w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" alt="">',
+			'<img src="https://linker.test/up/card.jpg" srcset="https://linker.test/up/card-300x200.jpg 300w, https://linker.test/up/card.jpg 600w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" alt="" width="600" height="400" decoding="async">',
 			$html
 		);
 		$this->assertStringContainsString( '<time datetime="2026-05-29T00:00:00+00:00">May 29, 2026</time>', $html );

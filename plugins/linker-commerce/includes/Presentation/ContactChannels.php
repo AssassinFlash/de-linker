@@ -20,7 +20,8 @@ final class ContactChannels {
 	public const DIRECTORY_TRUSTPILOT   = 'https://de.trustpilot.com/review/de-linker.com';
 	public const DIRECTORY_NORTHDATA    = 'https://www.northdata.de/Linker%20Technology%20GmbH,%20Barleben/Amtsgericht%20Stendal%20HRB%2033824';
 	public const DIRECTORY_11880        = 'https://www.11880.com/branchenbuch/barleben/250424085B114309018/linker-technology-gmbh.html';
-	public const CHESTER_LINKEDIN       = 'https://www.linkedin.com/in/chester-john-linker/';
+	public const DIRECTORY_HOTFROG      = 'https://www.hotfrog.de/company/AaIcwgYnceK8KVPjsAyONQ/linker-technology-gmbh/barleben/electrical-supplies-services';
+	public const CHESTER_LINKEDIN       = 'https://www.linkedin.com/in/johnchestersr/';
 	public const CHESTER_YOUTUBE        = 'https://www.youtube.com/@chesterjohn.linker';
 	public const CHESTER_X              = 'https://x.com/chester_linker';
 	public const CHESTER_FACEBOOK       = 'https://www.facebook.com/chesterjohn.linker/';
@@ -48,6 +49,7 @@ final class ContactChannels {
 			self::DIRECTORY_TRUSTPILOT,
 			self::DIRECTORY_NORTHDATA,
 			self::DIRECTORY_11880,
+			self::DIRECTORY_HOTFROG,
 		);
 	}
 

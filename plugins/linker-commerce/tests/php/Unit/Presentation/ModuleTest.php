@@ -35,6 +35,17 @@ use WP_Mock\Matcher\AnyInstance;
  */
 final class ModuleTest extends TestCase {
 
+	/** Home draws the hero title and button in additional font weights on its first paint. */
+	public function test_home_preloads_the_first_paint_font_weights(): void {
+		WP_Mock::userFunction( 'plugins_url' )->andReturn( '/fonts/' );
+		WP_Mock::userFunction( 'is_front_page' )->andReturn( true );
+		WP_Mock::userFunction( 'is_product' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_get_upload_dir' )->andReturn( array( 'basedir' => __DIR__ ) );
+		$resources = ( new Module( new Shortcodes(), new LoginGate(), new WindPress() ) )->preload_resources( array() );
+		$fonts     = array_map( 'basename', array_column( $resources, 'href' ) );
+		$this->assertSame( array( 'plus-jakarta-sans-400.woff2', 'plus-jakarta-sans-500.woff2', 'plus-jakarta-sans-600.woff2', 'plus-jakarta-sans-700.woff2' ), $fonts );
+	}
+
 	/**
 	 * Only the rendered main picture participates in responsive image preloading.
 	 *
@@ -134,7 +145,7 @@ final class ModuleTest extends TestCase {
 		// Data shortcodes across the product, checkout, comparison,
 		// library, account and blog families, including the product's configurator
 		// entry and the FAQ section's scoped rows.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 79 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 81 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $blog, 'empty_search_title' ), 60 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $blog, 'redirect_chester_archive' ), -1 );
@@ -179,6 +190,7 @@ final class ModuleTest extends TestCase {
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $blog, 'enqueue_author_dialog' ) );
+		WP_Mock::expectFilterAdded( 'lc_modify_header_content', array( $module, 'home_header_menu' ) );
 		WP_Mock::expectFilterAdded( 'wp_preload_resources', array( $module, 'preload_resources' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'trim_woo_assets' ), 31 );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.before', WindPressPageStyles::class, 'before_cache' );
@@ -186,15 +198,17 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.before', WindPressPageStyles::class, 'before_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.after', WindPressPageStyles::class, 'after_cache' );
 		$cards = new AnyInstance( SocialCards::class );
+		WP_Mock::expectFilterAdded( 'seopress_social_twitter_card_site', '__return_empty_string' );
 		foreach ( array(
 			'seopress_social_og_type'              => 'open_graph_type',
 			'site_icon_meta_tags'                  => 'site_icons',
 			'seopress_social_twitter_card_summary' => 'summary',
 			'seopress_social_og_thumb'             => 'open_graph',
 			'seopress_social_twitter_card_thumb'   => 'twitter_image',
+			'seopress_social_twitter_card_creator' => 'creator',
 		) as $hook => $method ) {
 			// @phpstan-ignore argument.type (WP_Mock matches array callbacks with AnyInstance.)
-			WP_Mock::expectFilterAdded( $hook, array( $cards, $method ), 10, 'summary' === $method ? 0 : 1 );
+			WP_Mock::expectFilterAdded( $hook, array( $cards, $method ), 10, in_array( $method, array( 'summary', 'creator' ), true ) ? 0 : 1 );
 		}
 		$module->register();
 		self::assertSame( array_fill_keys( array_column( $family_hooks, 1 ), 1 ), $registered );

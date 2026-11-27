@@ -17,6 +17,7 @@ use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Storefront\ProductImageAlt;
 use Linker\Commerce\Storefront\ProductFamilies;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\SolutionProducts;
@@ -625,8 +626,9 @@ final class ProductShortcodes {
 	 *
 	 * @param int                      $product_id The visible model.
 	 * @param array<string,mixed>|null $family Family members in archive order.
+	 * @param int                      $index Position in the archive grid.
 	 */
-	private function render_card( int $product_id, ?array $family ): string {
+	private function render_card( int $product_id, ?array $family, int $index = 4 ): string {
 		$card = $this->views->card_fields( $product_id );
 		if ( array() === $card ) {
 			return '';
@@ -662,7 +664,8 @@ final class ProductShortcodes {
 			$image = wp_get_attachment_image_src( (int) $image_id, 'medium' );
 			if ( $image ) {
 				$srcset = wp_get_attachment_image_srcset( (int) $image_id, 'medium' );
-				$html  .= '<img data-card-image src="' . esc_url( $image[0] ) . '" width="' . (int) $image[1] . '" height="' . (int) $image[2] . '" alt="' . esc_attr( (string) $card['title'] ) . '" loading="lazy" sizes="auto, (max-width: 760px) 70vw, 240px"'
+				$html  .= '<img data-card-image src="' . esc_url( $image[0] ) . '" width="' . (int) $image[1] . '" height="' . (int) $image[2] . '" alt="' . esc_attr( (string) $card['title'] ) . '" decoding="async" loading="' . ( $index < 4 ? 'eager' : 'lazy' ) . '" sizes="' . ( $index < 4 ? '' : 'auto, ' ) . '(max-width: 760px) 70vw, 240px"'
+					. ( 0 === $index ? ' fetchpriority="high"' : '' )
 					. ( $srcset ? ' srcset="' . esc_attr( $srcset ) . '"' : '' ) . '>';
 			}
 		}
@@ -1146,7 +1149,8 @@ final class ProductShortcodes {
 				. '<p class="tv-empty-state">' . esc_html__( 'Product photography for this model is in preparation.', 'linker-commerce' ) . '</p>'
 				. '</div></div>';
 		}
-		$html .= '<button type="button" class="pdp-gallery-main-wrap" aria-label="' . esc_attr( sprintf( /* translators: %s: product name. */ __( 'Enlarge the product image: %s', 'linker-commerce' ), (string) $view['title'] ) ) . '" data-pdp-image data-pdp-main data-src="' . esc_url( self::image_url( $ids[0] ) ) . '" data-caption="' . esc_attr( self::image_note( (string) $view['intro'] ) ) . '">'
+		$main_alt = ProductImageAlt::main( (int) $view['id'], (string) $view['title'] );
+		$html    .= '<button type="button" class="pdp-gallery-main-wrap" aria-label="' . esc_attr( sprintf( /* translators: %s: product name. */ __( 'Enlarge the product image: %s', 'linker-commerce' ), (string) $view['title'] ) ) . '" data-pdp-image data-pdp-main data-src="' . esc_url( self::image_url( $ids[0] ) ) . '" data-caption="' . esc_attr( self::image_note( (string) $view['intro'] ) ) . '">'
 			. self::image_tag(
 				$ids[0],
 				'full',
@@ -1155,7 +1159,7 @@ final class ProductShortcodes {
 					'fetchpriority' => 'high',
 					'loading'       => 'eager',
 					'decoding'      => 'async',
-					'alt'           => (string) $view['title'],
+					'alt'           => $main_alt,
 					// The main picture is the largest image on a product page and
 					// the box it fills is fixed by the gallery layout, so a
 					// responsive candidate list is stated from the measured box
@@ -1176,7 +1180,7 @@ final class ProductShortcodes {
 					$ids[1],
 					'full',
 					array(
-						'alt'     => '',
+						'alt'     => sprintf( /* translators: %s: product image description. */ __( '%s — alternate product view', 'linker-commerce' ), $main_alt ),
 						'loading' => 'lazy',
 					)
 				) . '</button>';
@@ -1741,8 +1745,8 @@ final class ProductShortcodes {
 		unset( $atts );
 		$page = $this->family_page();
 		$html = '';
-		foreach ( $page->rows as $row ) {
-			$html .= $this->render_card( $row['lead'], $row );
+		foreach ( array_values( $page->rows ) as $index => $row ) {
+			$html .= $this->render_card( $row['lead'], $row, $index );
 		}
 		return $html;
 	}

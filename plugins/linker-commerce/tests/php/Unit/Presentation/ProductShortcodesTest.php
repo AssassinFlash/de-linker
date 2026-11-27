@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Presentation\FamilyPage;
 use Linker\Commerce\Presentation\LanguageLinks;
 use Linker\Commerce\Presentation\ProductShortcodes;
 use Linker\Commerce\Storefront\ProductFilters;
@@ -1612,6 +1613,32 @@ final class ProductShortcodesTest extends TestCase {
 		return new ProductShortcodes( new ProductFilters(), $this->published_document_view() );
 	}
 
+	/** Only the first archive row is eager, and only the first picture takes high priority. */
+	public function test_archive_images_follow_their_position_in_the_family_grid(): void {
+		WP_Mock::userFunction( 'pll_get_post' )->andReturnUsing( static fn( int $id, string $lang ): int => 'en' === $lang ? $id : 0 );
+		WP_Mock::userFunction( 'get_permalink' )->andReturn( 'https://linker.test/product/switch/' );
+		$shortcodes = $this->pdp( true );
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'no' ) );
+		$rows = array_fill(
+			0,
+			5,
+			array(
+				'lead' => self::PDP,
+				'ids'  => array( self::PDP ),
+			)
+		);
+		$page = new FamilyPage( $rows, 1, 5 );
+		( new \ReflectionProperty( ProductShortcodes::class, 'family_page' ) )->setValue( $shortcodes, $page );
+		$html = $shortcodes->products_families();
+		preg_match_all( '/<img data-card-image[^>]*>/', $html, $images );
+		$this->assertCount( 5, $images[0] );
+		foreach ( $images[0] as $index => $tag ) {
+			$this->assertSame( $index < 4, str_contains( $tag, 'loading="eager"' ) );
+			$this->assertSame( 0 === $index, str_contains( $tag, 'fetchpriority="high"' ) );
+			$this->assertSame( $index >= 4, str_contains( $tag, 'sizes="auto, ' ) );
+		}
+	}
+
 	/** A single-product model is not prefixed with a fact, unlike a family picker. */
 	public function test_single_product_card_model_uses_only_the_model(): void {
 		WP_Mock::userFunction(
@@ -1790,6 +1817,7 @@ final class ProductShortcodesTest extends TestCase {
 
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-main"(?=[^>]*fetchpriority="high")(?=[^>]*loading="eager")(?=[^>]*decoding="async")/', $pair );
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-main"[^>]*alt="GoodWe GW60K-STS-G10"(?![^>]*loading="lazy")/', $pair );
+		$this->assertStringContainsString( 'alt="GoodWe GW60K-STS-G10 — alternate product view"', $pair );
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-secondary"[^>]*data-src="http:\/\/linker\.test\/uploads\/image-6504\.png"[^>]*>\s*<img[^>]*loading="lazy"/', $pair );
 		$this->assertSame( 3, substr_count( $thumb, 'data-pdp-thumb' ) );
 		$this->assertSame( 3, substr_count( $thumb, 'loading="lazy"' ) );

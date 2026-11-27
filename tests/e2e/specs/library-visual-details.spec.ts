@@ -543,7 +543,14 @@ for (const locale of ['en', 'de'] as const) {
 			await expect
 				.poll(async () => (await focusGeometry(page)).inReader)
 				.toBe(true);
-			const card = page.locator('#linker-library-answers-ecoflow');
+			const cardId = await page
+				.locator('[data-library-card][data-library-kind="answer"]')
+				.filter({
+					has: page.locator('[data-library-page="next"]:enabled'),
+				})
+				.first()
+				.getAttribute('id');
+			const card = page.locator(`#${cardId}`);
 			await card.locator('[data-library-page="next"]').click();
 			await expect(
 				card
@@ -553,6 +560,7 @@ for (const locale of ['en', 'de'] as const) {
 			await expect
 				.poll(async () => (await focusGeometry(page)).inReader)
 				.toBe(true);
+			await card.getByRole('button', { name: /^\d+$/ }).last().click();
 			await expect(
 				card.locator('[data-library-page="next"]')
 			).toBeDisabled();
@@ -574,10 +582,7 @@ for (const locale of ['en', 'de'] as const) {
 	}
 }
 
-for (const [faq, reference] of [
-	['/faq-download/', 'invoice or order reference'],
-	['/de/faq-dokumente/', 'Rechnungs- oder Bestellreferenz'],
-] as const) {
+for (const faq of ['/faq-download/', '/de/faq-dokumente/']) {
 	test(`warranty contact includes the FAQ the visitor read: ${faq}`, async ({
 		page,
 	}) => {
@@ -585,7 +590,7 @@ for (const [faq, reference] of [
 		await page.goto(source);
 		const answer = page
 			.locator('details.linker-library-qa')
-			.filter({ hasText: reference });
+			.filter({ has: page.locator('a[href*="intent=support"]') });
 		await answer.locator('summary').click();
 		await answer.getByRole('link').click();
 		await expect(page.locator('select[name="intent"]')).toHaveValue(

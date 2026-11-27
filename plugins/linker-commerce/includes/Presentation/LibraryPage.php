@@ -76,16 +76,6 @@ final class LibraryPage {
 	private const MARK_LENGTH = 2;
 
 	/**
-	 * The type tile's file icon.
-	 */
-	private const FILE_ICON = '<svg class="linker-library-icon" width="18" height="18" aria-hidden="true"><use href="#library-file"/></svg>';
-
-	/**
-	 * The download link's arrow.
-	 */
-	private const DOWNLOAD_ICON = '<svg class="linker-library-icon" width="14" height="14" aria-hidden="true"><use href="#library-download"/></svg>';
-
-	/**
 	 * The register the fragments list.
 	 *
 	 * @var DocumentLibrary
@@ -385,8 +375,7 @@ final class LibraryPage {
 	public function documents( $atts = array() ): string {
 		unset( $atts );
 		$model = $this->model();
-		$out   = '<svg hidden aria-hidden="true" width="0" height="0"><symbol id="library-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v6h6"/></symbol><symbol id="library-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>';
-		$out  .= '<div class="linker-library-filters" data-library-filters hidden role="group" aria-label="' . esc_attr( (string) __( 'Document type', 'linker-commerce' ) ) . '">';
+		$out   = '<div class="linker-library-filters" data-library-filters hidden role="group" aria-label="' . esc_attr( (string) __( 'Document type', 'linker-commerce' ) ) . '">';
 		$out  .= '<button type="button" class="linker-library-chip" data-library-type="all" aria-pressed="true">' . esc_html( (string) __( 'All', 'linker-commerce' ) ) . ' <span class="linker-library-n">' . esc_html( (string) $model['document_total'] ) . '</span></button>';
 		foreach ( $model['types'] as $type ) {
 			$out .= '<button type="button" class="linker-library-chip" data-library-type="' . esc_attr( $type['type'] ) . '" aria-pressed="false">' . esc_html( $type['label'] ) . ' <span class="linker-library-n">' . esc_html( (string) $type['count'] ) . '</span></button>';
@@ -532,15 +521,15 @@ final class LibraryPage {
 			// `has-src` is what hides the tile's icon while the page image is
 			// there; a reader without the script sees the image, and the
 			// script's error path takes the class back off.
-			$out .= '<span class="linker-library-thumb has-src" aria-hidden="true"><img src="' . esc_url( $document['thumb']['src'] ) . '" alt="" width="' . esc_attr( (string) $document['thumb']['width'] ) . '" height="' . esc_attr( (string) $document['thumb']['height'] ) . '" loading="lazy" decoding="async">' . self::FILE_ICON . '</span>';
+			$out .= '<span class="linker-library-thumb has-src" aria-hidden="true"><img src="' . esc_url( $document['thumb']['src'] ) . '" alt="" width="' . esc_attr( (string) $document['thumb']['width'] ) . '" height="' . esc_attr( (string) $document['thumb']['height'] ) . '" loading="lazy" decoding="async"></span>';
 		} else {
-			$out .= '<span class="linker-library-thumb is-type is-' . esc_attr( $document['type'] ) . '" aria-hidden="true">' . self::FILE_ICON . '</span>';
+			$out .= '<span class="linker-library-thumb is-type is-' . esc_attr( $document['type'] ) . '" aria-hidden="true"></span>';
 		}
 		$out .= '<span class="linker-library-doc-lead"><span class="linker-library-badge is-' . esc_attr( $document['type'] ) . '">' . esc_html( $document['type_label'] ) . '</span>';
 		$out .= '<span class="linker-library-lang"><span aria-hidden="true">' . esc_html( $document['language'] ) . '</span><span class="linker-library-sr">' . esc_html( $document['language_label'] ) . '</span></span>';
 		$out .= '<span class="linker-library-doc-title">' . esc_html( $document['title'] ) . '</span></span>';
 		$out .= '<p class="linker-library-doc-meta"><span class="linker-library-doc-covers">' . esc_html( $document['covers'] ) . '</span></p>';
-		$out .= '<a class="linker-library-dl" data-doc-kind="' . esc_attr( $document['type'] ) . '" data-doc-brand="' . esc_attr( $brand ) . '" href="' . esc_url( $document['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) __( 'Download', 'linker-commerce' ) ) . '<span class="linker-library-sr"> ' . esc_html( $document['title'] ) . '</span>' . self::DOWNLOAD_ICON . '</a>';
+		$out .= '<a class="linker-library-dl" data-doc-kind="' . esc_attr( $document['type'] ) . '" data-doc-brand="' . esc_attr( $brand ) . '" href="' . esc_url( $document['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) __( 'Download', 'linker-commerce' ) ) . '<span class="linker-library-sr"> ' . esc_html( $document['title'] ) . '</span></a>';
 		$out .= '</li>';
 
 		return $out;
