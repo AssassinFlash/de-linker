@@ -74,6 +74,11 @@ final class PageUrls {
 		return home_url( $path );
 	}
 
+	/** Canonical site origin for entities shared by both languages. */
+	public static function root(): string {
+		return trailingslashit( (string) get_option( 'home' ) );
+	}
+
 	/**
 	 * The current language's address of one of the site's own pages, and the
 	 * language's home when the page does not exist. The one entry point for

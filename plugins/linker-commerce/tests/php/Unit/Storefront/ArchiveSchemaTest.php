@@ -46,6 +46,10 @@ final class ArchiveSchemaTest extends TestCase {
 			'wc_get_page_permalink',
 			array( 'return' => self::SHOP )
 		);
+		WP_Mock::userFunction( 'is_tax' )->with( 'product_brand' )->andReturn( false )->byDefault();
+		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( 'https://de-linker.com/' );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( 'strip_tags' );
 		WP_Mock::passthruFunction( '__' );
 		WP_Mock::passthruFunction( '_x' );
 	}
@@ -78,11 +82,7 @@ final class ArchiveSchemaTest extends TestCase {
 		$this->assertSame( self::SHOP, $data['url'] );
 		$this->assertSame( 'Search products or filter by category and project requirements.', $data['description'] );
 		$this->assertSame(
-			array(
-				'@type' => 'WebSite',
-				'name'  => 'Linker',
-				'url'   => 'https://de-linker.com/',
-			),
+			array( '@id' => 'https://de-linker.com/#website' ),
 			$data['isPartOf']
 		);
 		$this->assertConditionsMet();
@@ -119,6 +119,41 @@ final class ArchiveSchemaTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** Public brand archives identify the manufacturer, with no schema for a withdrawn brand. */
+	public function test_brand_schema_follows_index_and_public_products(): void {
+		$term = new WP_Term(
+			(object) array(
+				'name'     => 'GoodWe',
+				'taxonomy' => 'product_brand',
+			)
+		);
+		WP_Mock::userFunction( 'is_tax' )->with( 'product_brand' )->andReturn( true );
+		WP_Mock::userFunction( 'have_posts' )->andReturn( true );
+		WP_Mock::userFunction( 'seopress_titles_noindex_bypass' )->andReturn( '' );
+		WP_Mock::userFunction( 'get_queried_object' )->andReturn( $term );
+		WP_Mock::userFunction( 'get_term_link' )->with( $term )->andReturn( 'https://de-linker.com/brand/goodwe/' );
+		$schema = new ArchiveSchema();
+		$node   = $schema->collection();
+		$this->assertSame(
+			array(
+				'@type' => 'Brand',
+				'name'  => 'GoodWe',
+			),
+			$node['about']
+		);
+		$this->assertStringContainsString( 'GoodWe', $node['description'] );
+		$this->assertSame( array( 'Home', 'Products', 'GoodWe' ), array_column( $schema->breadcrumb()['itemListElement'], 'name' ) );
+	}
+
+	/** Empty archive pages cannot contribute a manufacturer collection or trail. */
+	public function test_empty_brand_schema_is_absent(): void {
+		WP_Mock::userFunction( 'is_tax' )->with( 'product_brand' )->andReturn( true );
+		WP_Mock::userFunction( 'have_posts' )->andReturn( false );
+		$schema = new ArchiveSchema();
+		$this->assertSame( array(), $schema->collection() );
+		$this->assertSame( array(), $schema->breadcrumb() );
+	}
+
 	/**
 	 * A category archive: the term's own name and link, as its H1 uses them,
 	 * and the same breadcrumb with a third item.
@@ -126,10 +161,11 @@ final class ArchiveSchemaTest extends TestCase {
 	public function test_a_category_carries_the_terms_own_facts(): void {
 		$term = new WP_Term(
 			(object) array(
-				'name'     => 'Wechselrichter',
-				'taxonomy' => 'product_cat',
-				'slug'     => 'wechselrichter',
-				'term_id'  => 31,
+				'name'        => 'Wechselrichter',
+				'taxonomy'    => 'product_cat',
+				'description' => 'Hybrid &amp; storage',
+				'slug'        => 'wechselrichter',
+				'term_id'     => 31,
 			)
 		);
 		$this->on_category( $term, 'https://de-linker.com/de/produkt-kategorie/wechselrichter/' );
@@ -138,6 +174,7 @@ final class ArchiveSchemaTest extends TestCase {
 		$data = $schema->collection();
 
 		$this->assertSame( 'Wechselrichter', $data['name'] );
+		$this->assertSame( 'Hybrid & storage', $data['description'] );
 		$this->assertSame( 'https://de-linker.com/de/produkt-kategorie/wechselrichter/', $data['url'] );
 
 		$items = $schema->breadcrumb()['itemListElement'];
@@ -154,7 +191,7 @@ final class ArchiveSchemaTest extends TestCase {
 	public function test_an_indexable_blog_category_carries_its_own_archive_schema(): void {
 		$term = new WP_Term(
 			(object) array(
-				'name'     => 'Überwachung & Energiemanagement',
+				'name'     => 'Überwachung &amp; Energiemanagement',
 				'taxonomy' => 'category',
 				'slug'     => 'ueberwachung-energiemanagement',
 				'term_id'  => 44,
@@ -171,7 +208,9 @@ final class ArchiveSchemaTest extends TestCase {
 		WP_Mock::userFunction( 'seopress_titles_noindex_bypass', array( 'return' => '' ) );
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
 		WP_Mock::userFunction( 'pll_home_url', array( 'return' => 'https://de-linker.com/de/' ) );
-		WP_Mock::userFunction( 'get_posts', array( 'return' => array( $blog ) ) );
+		WP_Mock::userFunction( 'get_option' )->with( 'page_for_posts' )->andReturn( 14 );
+		WP_Mock::userFunction( 'pll_get_post' )->with( 14, 'de' )->andReturn( 6915 );
+		WP_Mock::userFunction( 'get_the_title' )->with( 6915 )->andReturn( $blog->post_title );
 		WP_Mock::userFunction(
 			'get_permalink',
 			array(
@@ -187,7 +226,8 @@ final class ArchiveSchemaTest extends TestCase {
 		$this->assertSame( 'CollectionPage', $page['@type'] );
 		$this->assertSame( 'Überwachung & Energiemanagement', $page['name'] );
 		$this->assertSame( 'https://de-linker.com/de/kategorie/ueberwachung-energiemanagement/', $page['url'] );
-		$this->assertSame( 'https://de-linker.com/de/', $page['isPartOf']['url'] );
+		$this->assertSame( 'https://de-linker.com/de/#website', $page['isPartOf']['@id'] );
+		$this->assertSame( 'https://de-linker.com/#organization', $page['publisher']['@id'] );
 		$this->assertSame(
 			array(
 				'https://de-linker.com/de/',
@@ -250,8 +290,9 @@ final class ArchiveSchemaTest extends TestCase {
 	public function test_a_name_with_a_angle_bracket_is_escaped(): void {
 		$term = new WP_Term(
 			(object) array(
-				'name'     => 'Wechselrichter <3',
-				'taxonomy' => 'product_cat',
+				'name'        => 'Wechselrichter <3',
+				'taxonomy'    => 'product_cat',
+				'description' => 'Hybrid &amp; storage',
 			)
 		);
 		$this->on_category( $term, 'https://de-linker.com/de/produkt-kategorie/wechselrichter/' );

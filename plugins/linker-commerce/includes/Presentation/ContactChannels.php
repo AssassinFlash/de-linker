@@ -11,19 +11,26 @@ namespace Linker\Commerce\Presentation;
 
 /** The two public desks and their click-to-chat link. */
 final class ContactChannels {
-	public const OFFICIAL_YOUTUBE  = 'https://www.youtube.com/@linkerenergystorage';
-	public const OFFICIAL_FACEBOOK = 'https://www.facebook.com/profile.php?id=61596580037537';
-	public const CHESTER_LINKEDIN  = 'https://www.linkedin.com/in/chester-john-linker/';
-	public const CHESTER_YOUTUBE   = 'https://www.youtube.com/@chesterjohn.linker';
-	public const CHESTER_X         = 'https://x.com/chester_linker';
-	public const CHESTER_FACEBOOK  = 'https://www.facebook.com/chesterjohn.linker/';
-	public const CHESTER_INSTAGRAM = 'https://www.instagram.com/chesterjohn.linker/';
-	public const CHESTER_TIKTOK    = 'https://www.tiktok.com/@chesterjohn.linker';
-	public const CHESTER_REDDIT    = 'https://www.reddit.com/user/Beginning-Ship8918/';
-	public const DIRECT_EMAIL      = 'chester@de-linker.com';
-	public const GERMANY_PHONE     = '+49 174 4276991';
-	public const DIRECT_PHONE      = '+86 133 1289 2178';
-	public const WHATSAPP_BASE     = 'https://wa.me/8613312892178';
+	public const OFFICIAL_YOUTUBE       = 'https://www.youtube.com/@linkerenergystorage';
+	public const OFFICIAL_FACEBOOK      = 'https://www.facebook.com/profile.php?id=61596580037537';
+	public const DIRECTORY_EUROPAGES    = 'https://www.europages.de/de/firma/linker-technology-gmbh-22436516';
+	public const DIRECTORY_WLW          = 'https://www.wlw.de/de/firma/linker-technology-gmbh-22436518';
+	public const DIRECTORY_PROVENEXPERT = 'https://www.provenexpert.com/de-de/linker-technology-gmbh/';
+	public const DIRECTORY_MARKTPLATZ   = 'https://www.marktplatz-mittelstand.de/barleben/linker-technology-gmbh-aYGE9H.html';
+	public const DIRECTORY_TRUSTPILOT   = 'https://de.trustpilot.com/review/de-linker.com';
+	public const DIRECTORY_NORTHDATA    = 'https://www.northdata.de/Linker%20Technology%20GmbH,%20Barleben/Amtsgericht%20Stendal%20HRB%2033824';
+	public const DIRECTORY_11880        = 'https://www.11880.com/branchenbuch/barleben/250424085B114309018/linker-technology-gmbh.html';
+	public const CHESTER_LINKEDIN       = 'https://www.linkedin.com/in/chester-john-linker/';
+	public const CHESTER_YOUTUBE        = 'https://www.youtube.com/@chesterjohn.linker';
+	public const CHESTER_X              = 'https://x.com/chester_linker';
+	public const CHESTER_FACEBOOK       = 'https://www.facebook.com/chesterjohn.linker/';
+	public const CHESTER_INSTAGRAM      = 'https://www.instagram.com/chesterjohn.linker/';
+	public const CHESTER_TIKTOK         = 'https://www.tiktok.com/@chesterjohn.linker';
+
+	public const DIRECT_EMAIL  = 'chester@de-linker.com';
+	public const GERMANY_PHONE = '+49 174 4276991';
+	public const DIRECT_PHONE  = '+86 133 1289 2178';
+	public const WHATSAPP_BASE = 'https://wa.me/8613312892178';
 
 	/**
 	 * Official profiles for the company and publisher.
@@ -31,7 +38,17 @@ final class ContactChannels {
 	 * @return list<string>
 	 */
 	public static function company_same_as(): array {
-		return array( self::OFFICIAL_YOUTUBE, self::OFFICIAL_FACEBOOK );
+		return array(
+			self::OFFICIAL_YOUTUBE,
+			self::OFFICIAL_FACEBOOK,
+			self::DIRECTORY_EUROPAGES,
+			self::DIRECTORY_WLW,
+			self::DIRECTORY_PROVENEXPERT,
+			self::DIRECTORY_MARKTPLATZ,
+			self::DIRECTORY_TRUSTPILOT,
+			self::DIRECTORY_NORTHDATA,
+			self::DIRECTORY_11880,
+		);
 	}
 
 	/**
@@ -40,7 +57,7 @@ final class ContactChannels {
 	 * @return list<string>
 	 */
 	public static function chester_same_as(): array {
-		return array( self::CHESTER_LINKEDIN, self::CHESTER_YOUTUBE, self::CHESTER_X, self::CHESTER_FACEBOOK, self::CHESTER_INSTAGRAM, self::CHESTER_TIKTOK, self::CHESTER_REDDIT );
+		return array( self::CHESTER_LINKEDIN, self::CHESTER_YOUTUBE, self::CHESTER_X, self::CHESTER_FACEBOOK, self::CHESTER_INSTAGRAM, self::CHESTER_TIKTOK );
 	}
 
 	/**

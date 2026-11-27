@@ -123,6 +123,8 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 
 	if ( ! class_exists( 'WP_Term' ) ) {
 		class WP_Term {
+
+			public $description = '';
 			public $term_id  = 0;
 			public $name     = '';
 			public $slug     = '';
@@ -149,6 +151,7 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 		public $ID          = 0;
 		public $post_type   = 'post';
 		public $post_author = '0';
+		public $post_parent = 0;
 		public $post_title  = '';
 		public $post_status  = 'publish';
 		public $post_password = '';

@@ -110,6 +110,8 @@ final class PluginTest extends TestCase {
 		// AnyInstance matches the object the registration constructs.
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( ProductFilters::class ), 'normalize_query' ), 0 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( new AnyInstance( ProductFilters::class ), 'filter' ), 99 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'woocommerce_structured_data_type_for_page', array( new AnyInstance( PageSchema::class ), 'strip_online_store_type' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'woocommerce_structured_data_online_store', '__return_false' );
 		WP_Mock::expectFilterAdded( 'seopress_schemas_website', array( new AnyInstance( PageSchema::class ), 'website' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_schemas_auto_article_json', array( new AnyInstance( PageSchema::class ), 'article_schema' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_pro_get_json_data_author', array( new AnyInstance( PageSchema::class ), 'author_schema' ), 10, 2 ); // @phpstan-ignore argument.type
