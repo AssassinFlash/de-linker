@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Products\Publication;
 use WP_Post;
 
 /**
@@ -862,6 +863,9 @@ final class Templates {
 		foreach ( self::PAGES as $slug => $page ) {
 			list( , , $page_slug, $language ) = $page;
 			$id                               = $this->page_id( $page_slug, $language );
+			if ( 'linker-faq' === $slug && $id > 0 ) {
+				update_option( Publication::LIBRARY_PAGE_OPTION, $id, true );
+			}
 			if ( 0 === $id || get_post_meta( $id, 'lc_use_template_of_slug', true ) === $slug ) {
 				continue;
 			}

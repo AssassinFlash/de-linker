@@ -890,6 +890,7 @@ final class TemplatesTest extends TestCase {
 	 * different templates.
 	 */
 	public function test_tool_pages_get_their_template_choice(): void {
+		WP_Mock::userFunction( 'update_option' )->with( 'linker_document_library_page_id', 932, true )->once();
 		$assigned = array();
 		$pages    = array(
 			array(

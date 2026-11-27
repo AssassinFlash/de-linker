@@ -224,8 +224,13 @@ final class DocumentAccess {
 				return trailingslashit( $url );
 			}
 		}
-		$page = get_page_by_path( 'faq-download' );
-		$url  = $page instanceof \WP_Post ? get_permalink( $page ) : false;
+		$library_id = (int) get_option( Publication::LIBRARY_PAGE_OPTION );
+		if ( $library_id > 0 && 'page' === get_post_type( $library_id ) && 'publish' === get_post_status( $library_id ) && 'linker-faq' === get_post_meta( $library_id, 'lc_use_template_of_slug', true ) ) {
+			$url = get_permalink( $library_id );
+		} else {
+			$page = get_page_by_path( 'faq-download' );
+			$url  = $page instanceof \WP_Post && 'publish' === $page->post_status ? get_permalink( $page ) : false;
+		}
 		return is_string( $url ) && preg_match( '~^https?://~i', $url ) ? trailingslashit( $url ) : PageUrls::root() . 'faq-download/';
 	}
 }
