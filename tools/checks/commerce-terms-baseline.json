@@ -150,22 +150,6 @@
         "count": 1,
         "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
       }
-    ],
-    "db:page:842:for-epc": [
-      {
-        "term": "dispatch*",
-        "string": "SCADA & GRID DISPATCH",
-        "count": 1,
-        "justification": "energy dispatch: the grid setpoint control an EPC's SCADA system performs, not a shipment"
-      }
-    ],
-    "db:page:6867:fuer-epc": [
-      {
-        "term": "dispatch*",
-        "string": "SCADA & NETZ-DISPATCH",
-        "count": 1,
-        "justification": "energy dispatch: German twin of the SCADA badge above, same meaning"
-      }
     ]
   }
 }
