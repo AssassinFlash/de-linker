@@ -29,7 +29,9 @@ final class LlmsFullDocumentTest extends TestCase {
 				$product->set_status( 'Draft test inverter' === $name ? 'draft' : 'publish' );
 				$product->save();
 				$fixtures[] = $product;
-				pll_set_post_language( $product->get_id(), 'en' );
+				if ( function_exists( 'pll_set_post_language' ) ) {
+					pll_set_post_language( $product->get_id(), 'en' );
+				}
 			}
 			update_post_meta( $fixtures[2]->get_id(), EngineeringReference::ROLE_META_KEY, EngineeringReference::CABLE );
 			$text = LlmsTxt::full_document( untrailingslashit( (string) get_option( 'home' ) ) );
