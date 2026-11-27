@@ -30,6 +30,7 @@ parameters:
 		# Native inquiry tests exercise Planner identity, transport and project deletion.
 		- ../linker-tools/includes/Planner
 	scanFiles:
+		- ../../tools/php/litespeed-stubs.php
 		- ../linker-tools/includes/Protection/Resources.php
 		- ../linker-tools/includes/Protection/EnginePublication.php
 		# Native designed-page predicate, supplied by installed LiveCanvas at runtime.
