@@ -214,6 +214,7 @@ final class PageSchemaTest extends TestCase {
 		WP_Mock::userFunction( 'is_singular' )->andReturn( false );
 		WP_Mock::userFunction( 'is_page' )->andReturnUsing( static fn( $set ) => in_array( $slug, (array) $set, true ) );
 		WP_Mock::userFunction( 'get_post_meta' )->andReturn( 'Page description' );
+		WP_Mock::userFunction( 'rest_url' )->with( 'linker/v1/engineering-feed' )->andReturn( $root . 'wp-json/linker/v1/engineering-feed' );
 		WP_Mock::userFunction( 'plugins_url' )->andReturn( $root . 'assets/chester-john.webp' );
 		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( 'json_encode' );
 		WP_Mock::userFunction( '_x' )->andReturn( 'Home' );
@@ -244,6 +245,12 @@ final class PageSchemaTest extends TestCase {
 		$this->assertContains( $type, (array) $nodes[0]['@type'] );
 		$this->assertSame( $root . '#organization', $nodes[0]['publisher']['@id'] );
 		$this->assertSame( $home . '#website', $nodes[0]['isPartOf']['@id'] );
+		if ( str_contains( $slug, 'kompatibilitaet' ) || str_contains( $slug, 'compatibility' ) ) {
+			$this->assertSame( $lang, $nodes[0]['inLanguage'] );
+			$this->assertSame( 'Dataset', $nodes[0]['mainEntity']['@type'] );
+			$this->assertSame( $url . '#dataset', $nodes[0]['mainEntity']['@id'] );
+			$this->assertSame( $root . 'wp-json/linker/v1/engineering-feed', $nodes[0]['mainEntity']['distribution'][0]['contentUrl'] );
+		}
 	}
 
 	/**
@@ -253,6 +260,8 @@ final class PageSchemaTest extends TestCase {
 	 */
 	public static function page_graphs(): array {
 		$cases = array(
+			array( 'inverter-battery-compatibility', 'en', 'WebPage', 2 ),
+			array( 'wechselrichter-speicher-kompatibilitaet', 'de', 'WebPage', 2 ),
 			array( 'contact', 'en', '', 2 ),
 			array( 'kontakt', 'de', 'ContactPage', 2 ),
 			array( 'about', 'en', '', 2 ),
