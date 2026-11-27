@@ -543,7 +543,14 @@ for (const locale of ['en', 'de'] as const) {
 			await expect
 				.poll(async () => (await focusGeometry(page)).inReader)
 				.toBe(true);
-			const card = page.locator('#linker-library-answers-ecoflow');
+			const cardId = await page
+				.locator('[data-library-card][data-library-kind="answer"]')
+				.filter({
+					has: page.locator('[data-library-page="next"]:enabled'),
+				})
+				.first()
+				.getAttribute('id');
+			const card = page.locator(`#${cardId}`);
 			await card.locator('[data-library-page="next"]').click();
 			await expect(
 				card
@@ -553,6 +560,7 @@ for (const locale of ['en', 'de'] as const) {
 			await expect
 				.poll(async () => (await focusGeometry(page)).inReader)
 				.toBe(true);
+			await card.getByRole('button', { name: /^\d+$/ }).last().click();
 			await expect(
 				card.locator('[data-library-page="next"]')
 			).toBeDisabled();

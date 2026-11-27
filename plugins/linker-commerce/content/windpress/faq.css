@@ -86,7 +86,7 @@
 #linker-faq-page .linker-library-contact:hover { color: var(--ll-accent); }
 
 #linker-faq-page .linker-library-hero .linker-genie-chip {
-	margin: 10px 4px 0;
+	margin: 12px 4px 0;
 	max-width: calc(100% - 8px);
 	min-height: 44px;
 	white-space: normal;
