@@ -1,4 +1,4 @@
-"""Warm the four public sitemaps after a LiteSpeed purge and read the cache back."""
+"""Warm the six public sitemaps after a LiteSpeed purge and read the cache back."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 from xml.etree.ElementTree import fromstring
 
-SITEMAPS = ("page", "product", "product_cat", "post")
+SITEMAPS = ("page", "product", "product_cat", "product_brand", "category", "post")
 DYNAMIC = (
     "/contact/",
     "/de/kontakt/",
@@ -25,7 +25,7 @@ RETIRED = {"/solution-draft/": "/cart/", "/de/solution-draft/": "/de/loesungsent
 
 def get(url: str, *, xml: bool = False) -> tuple[dict[str, str | int], bytes]:
     request = Request(
-        url, headers={"User-Agent": "Mozilla/5.0 (compatible; Linker cache warmup)"}
+        url, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
     )
     try:
         response = urlopen(request, timeout=45)

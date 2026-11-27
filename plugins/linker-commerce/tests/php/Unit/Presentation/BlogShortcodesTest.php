@@ -134,7 +134,7 @@ final class BlogShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'add_query_arg' )->andReturn( 'https://example.org/contact/?article_contact=1' );
 		$html = ( new BlogShortcodes() )->author();
 		$this->assertStringContainsString( 'class="reader-author-socials"', $html );
-		$this->assertStringContainsString( 'linkedin.com/in/chester-john-linker/', $html );
+		$this->assertStringContainsString( 'linkedin.com/in/johnchestersr/', $html );
 		$this->assertStringContainsString( 'youtube.com/@chesterjohn.linker', $html );
 		$this->assertStringContainsString( 'x.com/chester_linker', $html );
 	}
