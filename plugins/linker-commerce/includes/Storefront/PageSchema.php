@@ -153,7 +153,7 @@ final class PageSchema {
 	public function organization( array $node ): array {
 		unset( $node['taxID'] );
 		$social = get_option( 'seopress_social_option_name', array() );
-		$logo   = $node['logo'] ?? ( $social['seopress_social_knowledge_img'] ?? '' );
+		$logo   = $social['seopress_social_knowledge_img'] ?? ( $node['logo'] ?? '' );
 		if ( is_string( $logo ) && '' !== $logo ) {
 			$metadata     = wp_get_attachment_metadata( attachment_url_to_postid( $logo ) );
 			$node['logo'] = array(

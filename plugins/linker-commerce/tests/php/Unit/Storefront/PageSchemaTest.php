@@ -42,6 +42,7 @@ final class PageSchemaTest extends TestCase {
 		WP_Mock::userFunction( 'trailingslashit', array( 'return_arg' => 0 ) );
 		$node = ( new PageSchema() )->organization(
 			array(
+				'logo'  => '%%social_knowledge_image%%',
 				'@id'   => 'https://example.org/de/#organization',
 				'taxID' => 'DE367367711',
 			)
