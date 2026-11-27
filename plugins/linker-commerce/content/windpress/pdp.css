@@ -67,7 +67,7 @@
 #tv-storefront-pdp .pdp-thumb:focus-visible,
 #tv-storefront-pdp .pdp-section-link:focus-visible,
 #tv-storefront-pdp .pdp-doc:focus-visible,
-#tv-storefront-pdp .pdp-pairing:focus-visible {
+#tv-storefront-pdp .pdp-pairing-link:focus-visible {
 	outline-offset: -3px;
 }
 
@@ -1267,73 +1267,57 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 	object-fit: contain;
 }
 
-/* Owner's 2026-10-18 visual correction: two reading columns, larger product
-   images and quiet source text. Existing PDP spacing/type tokens keep this
-   section part of the page; compatibility source text stays secondary. */
-#tv-storefront-pdp .pdp-pairings {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	column-gap: 40px;
-	margin-top: 32px;
-	border-top: 1px solid var(--pdp-line);
-}
-
-#tv-storefront-pdp .pdp-pairing {
-	display: grid;
-	grid-template-columns: 120px minmax(0, 1fr) 20px;
-	align-items: center;
-	gap: 24px;
-	min-width: 0;
-	padding: 28px 0;
-	border-bottom: 1px solid var(--pdp-line);
+#tv-storefront-pdp .pdp-pairings-table-wrap {
+	max-width: 100%;
+	margin-top: 24px;
+	overflow-x: auto;
+	border: 1px solid var(--pdp-line);
+	border-radius: var(--proto-radius-card);
 	background: var(--pdp-paper);
 }
 
-#tv-storefront-pdp .pdp-pairing::after {
-	content: "→";
-	align-self: start;
-	color: var(--pdp-teal-dark);
-	font-size: 20px;
-	line-height: 1.4;
+#tv-storefront-pdp .pdp-pairings-table {
+	width: 100%;
+	min-width: 40rem;
+	border-collapse: collapse;
+	font-size: 14px;
+	line-height: 1.5;
 }
 
-#tv-storefront-pdp .pdp-pairing:hover .pdp-pairing-name {
+#tv-storefront-pdp .pdp-pairings-table :is(th, td) {
+	padding: 14px 16px;
+	text-align: start;
+	vertical-align: top;
+	border-bottom: 1px solid var(--pdp-line);
+}
+
+#tv-storefront-pdp .pdp-pairings-table thead {
+	background: var(--proto-paper-mist);
+}
+
+#tv-storefront-pdp .pdp-pairing-link,
+#tv-storefront-pdp .pdp-pairing-accessory,
+#tv-storefront-pdp .pdp-matrix-link {
 	color: var(--pdp-teal-dark);
 	text-decoration: underline;
-	text-underline-offset: 4px;
+	text-underline-offset: 3px;
 }
 
-#tv-storefront-pdp .pdp-pairing img {
-	width: 120px;
-	height: 144px;
-	object-fit: contain;
-}
-
-#tv-storefront-pdp .pdp-pairing-copy {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	min-width: 0;
-}
-
-#tv-storefront-pdp .pdp-pairing-name {
-	font-size: 18px;
-	font-weight: 600;
-	line-height: 1.45;
+#tv-storefront-pdp .pdp-pairing-accessory,
+#tv-storefront-pdp .pdp-pairing-sku {
+	display: block;
+	margin-top: 4px;
 }
 
 #tv-storefront-pdp .pdp-pairing-sku {
 	color: var(--pdp-muted);
-	font-size: 11px;
-	line-height: 1.5;
-	overflow-wrap: anywhere;
+	font-size: 12px;
+	font-weight: 400;
 }
 
-#tv-storefront-pdp .pdp-pairing-chips .pdp-doc-meta {
-	margin-top: 4px;
-	color: var(--pdp-teal-dark);
-	font-size: 12px;
-	line-height: 1.6;
+#tv-storefront-pdp .pdp-matrix-link {
+	display: inline-block;
+	margin-block-start: 16px;
 }
 
 #tv-storefront-pdp .pdp-pairing-footnote {
@@ -1504,9 +1488,6 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
    floating glass action pill).
    ================================================================ */
 @media (max-width: 1023px) {
-	#tv-storefront-pdp .pdp-pairings {
-		grid-template-columns: minmax(0, 1fr);
-	}
 
 	#tv-storefront-pdp .pdp-layout {
 		grid-template-columns: minmax(0, 1fr);
@@ -1968,24 +1949,9 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 		overflow-wrap: anywhere;
 	}
 
-	#tv-storefront-pdp .pdp-pairings {
-		grid-template-columns: minmax(0, 1fr);
-	}
 
-	#tv-storefront-pdp .pdp-pairing {
-		grid-template-columns: 84px minmax(0, 1fr) 16px;
-		gap: 16px;
-		padding-block: 24px;
-	}
 
-	#tv-storefront-pdp .pdp-pairing img {
-		width: 84px;
-		height: 112px;
-	}
 
-	#tv-storefront-pdp .pdp-pairing-name {
-		font-size: 15px;
-	}
 
 	/* The phone action bar: the floating glass pill. */
 	#tv-storefront-pdp .pdp-mobile-action {

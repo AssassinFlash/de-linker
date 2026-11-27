@@ -30,7 +30,7 @@ final class ProductSchemaTest extends TestCase {
 		WP_Mock::userFunction( 'get_the_ID', array( 'return' => self::PRODUCT ) );
 		WP_Mock::userFunction( 'wc_get_product', array( 'return' => $product ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return_in_order' => array( 'Authored title', '' ) ) );
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$this->assertSame( 'Authored title', $schema->title( 'Authored title' ) );
 		$title = $product->get_name() . ' | Linker';
 		$this->assertSame( $title, $schema->title( $title ) );
@@ -39,11 +39,37 @@ final class ProductSchemaTest extends TestCase {
 
 	private const PRODUCT = 6521;
 
+	/** Public Woo record used by the structured data consumer. */
+	private function schema(): ProductSchema {
+		return new ProductSchema(
+			array(
+				'source_revision' => 'product-schema-test',
+				'products'        => array(
+					array(
+						'product_id'           => self::PRODUCT,
+						'published_locale_ids' => array( self::PRODUCT ),
+						'locale_product_ids'   => array( 'en' => self::PRODUCT ),
+						'model'                => 'GW5.1-BAT-D-G21',
+						'brand'                => 'GoodWe',
+					),
+				),
+				'documents'       => array(),
+			)
+		);
+	}
+
 	/**
 	 * JSON encoding is the real one; everything else the class touches is mocked per test.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'has_filter' )->andReturn( false );
+		WP_Mock::userFunction( 'get_post_meta' )->with( self::PRODUCT, '_tv_legacy_acf_json', true )->andReturn( '' );
+		WP_Mock::userFunction( 'get_post_meta' )->with( self::PRODUCT, '_tv_b2b_figures', true )->andReturn( '' );
+		WP_Mock::userFunction( 'get_post_meta' )->with( self::PRODUCT, \Linker\Commerce\Products\Publication\CompatibilityClaims::META_KEY, true )->andReturn( '' );
+		WP_Mock::userFunction( 'get_the_terms' )->with( self::PRODUCT, 'pa_application' )->andReturn( false );
+		WP_Mock::userFunction( 'get_the_terms' )->with( self::PRODUCT, 'pa_phase' )->andReturn( false );
+
 		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction(
 			'wp_json_encode',
@@ -59,7 +85,7 @@ final class ProductSchemaTest extends TestCase {
 	 * The hook the block is printed on.
 	 */
 	public function test_register_adds_the_block_to_the_head(): void {
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		WP_Mock::expectActionAdded( 'wp_head', array( $schema, 'print_block' ) );
 		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $schema, 'title' ), 45 );
 		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( $schema, 'description' ), 45 );
@@ -101,7 +127,7 @@ final class ProductSchemaTest extends TestCase {
 				'return' => $stored,
 			)
 		);
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$value  = $schema->description( 'Project notes for GoodWe GW5.1-BAT-D-G21.' );
 		if ( $generated ) {
 			$this->assertSame( $schema->data( $product )['description'], $value );
@@ -129,11 +155,17 @@ final class ProductSchemaTest extends TestCase {
 	 * gives it. The values are the ones the live page carries today.
 	 */
 	public function test_the_block_carries_the_products_own_facts(): void {
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$data   = $schema->data( $this->product() );
 
 		$this->assertSame( 'https://schema.org', $data['@context'] );
 		$this->assertSame( 'Product', $data['@type'] );
+		$this->assertSame( 'https://de-linker.com/product/gw51/#product', $data['@id'] );
+		$this->assertSame( array( '@id' => 'https://de-linker.com/product/gw51/#webpage' ), $data['mainEntityOfPage'] );
+		$this->assertSame( 'GW5.1-BAT-D-G21', $data['mpn'] );
+		$this->assertSame( 'en', $data['inLanguage'] );
+		$this->assertArrayNotHasKey( 'gtin', $data );
+
 		$this->assertSame( 'GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)', $data['name'] );
 		$this->assertSame( 'https://de-linker.com/product/gw51/', $data['url'] );
 		$this->assertSame( 'DLK-GOODWE-GW51BATDG21', $data['sku'] );
@@ -163,7 +195,7 @@ final class ProductSchemaTest extends TestCase {
 	 * anonymous visitors, so a price in it would leak what the gate hides.
 	 */
 	public function test_the_block_never_carries_a_price(): void {
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$json   = $schema->encoded( $this->product() );
 
 		foreach ( array( '"price"', 'priceCurrency', 'listPrice', 'lowPrice', 'Net price', '€' ) as $forbidden ) {
@@ -178,7 +210,7 @@ final class ProductSchemaTest extends TestCase {
 	 * claim that the value is nothing; an absent key is no claim at all.
 	 */
 	public function test_a_missing_fact_is_left_out_rather_than_emptied(): void {
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$data   = $schema->data( $this->product( sku: '', model: array(), image: 0, category: array() ) );
 
 		$this->assertArrayNotHasKey( 'sku', $data );
@@ -195,7 +227,7 @@ final class ProductSchemaTest extends TestCase {
 	 * somebody else's inverter.
 	 */
 	public function test_a_product_without_a_brand_says_nothing_about_a_brand(): void {
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$data   = $schema->data( $this->product( brand: array() ) );
 
 		$this->assertArrayNotHasKey( 'brand', $data );
@@ -208,7 +240,7 @@ final class ProductSchemaTest extends TestCase {
 	 * link on that page does.
 	 */
 	public function test_the_url_is_the_permalink_of_the_page_that_prints_the_block(): void {
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$data   = $schema->data( $this->product( permalink: 'https://de-linker.com/de/produkt/gw51/' ) );
 
 		$this->assertSame( 'https://de-linker.com/de/produkt/gw51/', $data['url'] );
@@ -220,7 +252,7 @@ final class ProductSchemaTest extends TestCase {
 	 * spill the block onto the page as text.
 	 */
 	public function test_a_less_than_sign_cannot_end_the_script_element(): void {
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$json   = $schema->encoded( $this->product( name: 'Inverter &lt;/script&gt;&lt;b&gt;x' ) );
 
 		// The name reaches the block HTML-decoded and tag-stripped, as the
@@ -236,7 +268,7 @@ final class ProductSchemaTest extends TestCase {
 	 * encoder escapes for itself and the heading above the block is decoded.
 	 */
 	public function test_the_name_is_the_decoded_one_the_page_prints(): void {
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 		$data   = $schema->data( $this->product( name: 'C&amp;I inverter &lt;GW&gt;' ) );
 
 		$this->assertSame( 'C&I inverter <GW>', $data['name'] );
@@ -254,7 +286,7 @@ final class ProductSchemaTest extends TestCase {
 				'return' => false,
 			)
 		);
-		$schema = new ProductSchema();
+		$schema = $this->schema();
 
 		ob_start();
 		$schema->print_block();
@@ -269,6 +301,7 @@ final class ProductSchemaTest extends TestCase {
 	 * structured-data reader looks for.
 	 */
 	public function test_a_product_page_prints_one_block(): void {
+		WP_Mock::expectAction( 'litespeed_tag_add', 'PT.product' );
 		WP_Mock::userFunction(
 			'is_singular',
 			array(
@@ -287,7 +320,7 @@ final class ProductSchemaTest extends TestCase {
 		);
 
 		ob_start();
-		( new ProductSchema() )->print_block();
+		( $this->schema() )->print_block();
 		$printed = (string) ob_get_clean();
 
 		$this->assertSame( 1, substr_count( $printed, 'type="application/ld+json"' ) );
@@ -318,7 +351,7 @@ final class ProductSchemaTest extends TestCase {
 		);
 
 		ob_start();
-		( new ProductSchema() )->print_block();
+		( $this->schema() )->print_block();
 		$printed = (string) ob_get_clean();
 
 		$this->assertSame( '', $printed );
@@ -358,7 +391,11 @@ final class ProductSchemaTest extends TestCase {
 				array(
 					'args'   => array( self::PRODUCT, $taxonomy ),
 					'return' => array() === $names ? false : array_map(
-						static fn( string $term ) => (object) array( 'name' => $term ),
+						static fn( string $term ) => (object) array(
+							'name'    => $term,
+							'slug'    => 'home-storage',
+							'term_id' => 42,
+						),
 						array_values( $names )
 					),
 				)

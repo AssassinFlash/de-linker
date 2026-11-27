@@ -268,6 +268,18 @@ final class PageSchema {
 		$home  = PageUrls::home();
 		$trail = array();
 		if ( is_singular( 'product' ) ) {
+			$this->print_node(
+				array(
+					'@type'      => 'WebPage',
+					'@id'        => $url . '#webpage',
+					'url'        => $url,
+					'name'       => $title,
+					'inLanguage' => self::is_german() ? 'de' : 'en',
+					'isPartOf'   => array( '@id' => $home . '#website' ),
+					'publisher'  => array( '@id' => self::organization_id() ),
+					'mainEntity' => array( '@id' => $url . '#product' ),
+				)
+			);
 			$trail = ProductView::crumbs( $post->ID );
 		} elseif ( is_singular( 'post' ) ) {
 			$trail = array(
