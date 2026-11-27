@@ -244,6 +244,67 @@ function media_apply( array $snapshot ): void {
 }
 
 /**
+ * A restored gallery can release its copy only if no other post adopted it.
+ *
+ * @param int $id Migration-owned WebP attachment ID.
+ */
+function media_in_use( int $id ): bool {
+	global $wpdb;
+	if ( wp_get_post_parent_id( $id ) ) {
+		return true;
+	}
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- One-time rollback checks the native media consumers, including unpublished work.
+	$references = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT meta_key, meta_value FROM {$wpdb->postmeta}
+			WHERE meta_key IN ('_thumbnail_id', '_product_image_gallery', '_tv_legacy_acf_json', '_linker_de_acf_json')
+			AND meta_value LIKE %s",
+			'%' . $id . '%'
+		)
+	);
+	foreach ( $references as $reference ) {
+		$value = maybe_unserialize( $reference->meta_value );
+		if ( media_rebind( $reference->meta_key, $value, array( $id => 0 ) ) !== $value ) {
+			return true;
+		}
+	}
+	if ( $wpdb->get_var( $wpdb->prepare( "SELECT term_id FROM {$wpdb->termmeta} WHERE meta_key = 'thumbnail_id' AND meta_value = %s LIMIT 1", (string) $id ) ) ) {
+		return true;
+	}
+	$image = (string) get_attached_file( $id );
+	$stem  = pathinfo( $image, PATHINFO_FILENAME );
+	$texts = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT post_content FROM {$wpdb->posts} WHERE post_content LIKE %s OR post_content LIKE %s",
+			'%' . $wpdb->esc_like( $stem ) . '%',
+			'%' . $id . '%'
+		)
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
+	$metadata = wp_get_attachment_metadata( $id );
+	$files    = array_merge( array( basename( $image ) ), wp_list_pluck( $metadata['sizes'] ?? array(), 'file' ) );
+	foreach ( $texts as $text ) {
+		foreach ( $files as $file ) {
+			if ( str_contains( $text, $file ) ) {
+				return true;
+			}
+		}
+		if ( preg_match( '/\bwp-image-' . $id . '\b|<!-- wp:image\s+\{[^}]*"id"\s*:\s*' . $id . '\b/', $text ) ) {
+			return true;
+		}
+		if ( has_shortcode( $text, 'gallery' ) && preg_match_all( '/' . get_shortcode_regex( array( 'gallery' ) ) . '/s', $text, $matches ) ) {
+			foreach ( $matches[3] as $attributes ) {
+				$gallery = shortcode_parse_atts( $attributes );
+				if ( in_array( $id, wp_parse_id_list( $gallery['ids'] ?? $gallery['include'] ?? array() ), true ) ) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+/**
  * Restore original galleries and delete only this rollout's generated attachments.
  *
  * @param array<string,array<int,mixed>> $snapshot Original gallery state.
@@ -259,7 +320,7 @@ function media_restore( array $snapshot ): void {
 	}
 	media_write_fields( $snapshot['products'], $map, true );
 	foreach ( $map as $id => $derivative ) {
-		if ( ! $snapshot['sources'][ $id ]['existing'] && ! wp_delete_attachment( $derivative, true ) ) {
+		if ( ! $snapshot['sources'][ $id ]['existing'] && ! media_in_use( $derivative ) && ! wp_delete_attachment( $derivative, true ) ) {
 			throw new RuntimeException( 'Cannot remove a generated WebP attachment.' );
 		}
 	}
