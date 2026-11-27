@@ -102,9 +102,10 @@ final class WindPressPageStyles {
 		$handle = 'linker-volume-' . $name;
 		$styles = wp_styles();
 		$asset  = $styles->registered[ $handle ] ?? null;
-		if ( null === $asset ) {
+		if ( null === $asset || ! is_string( $asset->src ) ) {
 			return '';
 		}
+		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- This repeats the already-enqueued, versioned sheet at its original position in the page cascade.
 		return '<link rel="stylesheet" href="' . esc_url( $styles->_css_href( $asset->src, $asset->ver, $handle ) ) . '">';
 	}
 
