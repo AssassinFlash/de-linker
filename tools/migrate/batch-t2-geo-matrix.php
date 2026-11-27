@@ -84,15 +84,16 @@ function read_file( string $path ): string {
 function edge_rules( string $original ): string {
 	$anchor = '# END NON_LSCACHE';
 	$end    = strpos( $original, '# BEGIN WordPress' );
-	if ( str_contains( $original, EDGE ) ) {
+	$newline = str_contains( $original, "\r\n" ) ? "\r\n" : "\n";
+	$block   = $newline . $newline . str_replace( "\n", $newline, EDGE );
+	$pos     = strpos( $original, $anchor );
+	if ( false !== $pos && false !== $end && str_starts_with( substr( $original, $pos, $end - $pos ), $anchor . $block ) && 2 === substr_count( $original, 'Linker markdown negotiation' ) ) {
 		return $original;
 	}
-	$pos = strpos( $original, $anchor );
 	if ( false === $pos || false === $end || $pos >= $end || 1 !== substr_count( $original, $anchor ) || str_contains( $original, 'Linker markdown negotiation' ) ) {
 		throw new RuntimeException( 'Unexpected managed blocks in .htaccess.' );
 	}
-	$newline = str_contains( $original, "\r\n" ) ? "\r\n" : "\n";
-	return substr_replace( $original, $newline . $newline . str_replace( "\n", $newline, EDGE ), $pos + strlen( $anchor ), 0 );
+	return substr_replace( $original, $block, $pos + strlen( $anchor ), 0 );
 }
 
 function install_edge( string $body, int $mode ): void {
@@ -253,7 +254,7 @@ function published( array $pages ): bool {
 		WP_CLI::success( '0 changes. Bilingual matrix and edge rules already match.' );
 		return;
 	}
-	if ( ! $ready && $applying && $current['pages'] !== $before['pages'] ) {
+	if ( ! $ready && ( $applying ? $current['pages'] !== $before['pages'] : ! published( $current['pages'] ) ) ) {
 		WP_CLI::error( 'Matrix pages changed after the snapshot.' );
 	}
 	pause_post_translation();

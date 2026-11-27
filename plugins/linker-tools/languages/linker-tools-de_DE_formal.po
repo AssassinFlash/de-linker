@@ -17479,8 +17479,8 @@ msgstr "Netzanschluss und Angebot"
 msgid "Germany, Austria, Switzerland and other European markets"
 msgstr "Deutschland, Österreich, die Schweiz und weitere europäische Märkte"
 
-msgid "Find model-specific evidence for VDE-AR-N 4105, VDE-AR-N 4110, TOR Erzeuger and EN 50549."
-msgstr "Hier finden Sie modellbezogene Nachweise zu VDE-AR-N 4105, VDE-AR-N 4110, TOR Erzeuger und EN 50549."
+msgid "Open the VDE-AR-N 4105, VDE-AR-N 4110 or EN 50549 certificate for the model. For Austria, ask for the applicable TOR Erzeuger document."
+msgstr "Öffnen Sie das zum Modell gehörende Zertifikat für VDE-AR-N 4105, VDE-AR-N 4110 oder EN 50549. Fragen Sie für Österreich nach dem passenden Nachweis zu TOR Erzeuger."
 
 msgid "Inverter and battery compatibility"
 msgstr "Kompatibilität von Wechselrichtern und Speichern"

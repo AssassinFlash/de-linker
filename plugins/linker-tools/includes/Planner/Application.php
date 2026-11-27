@@ -473,7 +473,7 @@ final class Application {
 			array(
 				esc_html__( 'Grid connection and quotation', 'linker-tools' ),
 				esc_html__( 'Germany, Austria, Switzerland and other European markets', 'linker-tools' ),
-				esc_html__( 'Find model-specific evidence for VDE-AR-N 4105, VDE-AR-N 4110, TOR Erzeuger and EN 50549.', 'linker-tools' ),
+				esc_html__( 'Open the VDE-AR-N 4105, VDE-AR-N 4110 or EN 50549 certificate for the model. For Austria, ask for the applicable TOR Erzeuger document.', 'linker-tools' ),
 			),
 		);
 		$html = '<section class="sc-static-guide"><h2>' . esc_html__( 'How the Linker Solution Configurator works', 'linker-tools' ) . '</h2>'
