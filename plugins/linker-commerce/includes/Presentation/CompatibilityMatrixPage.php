@@ -37,7 +37,7 @@ final class CompatibilityMatrixPage {
 				'class' => '',
 				'label' => __( 'Compatibility matrix', 'linker-commerce' ),
 			),
-			$atts
+			is_array( $atts ) ? $atts : array()
 		);
 		return '<a class="' . esc_attr( $atts['class'] ) . '" href="' . esc_url( $url ) . '">' . esc_html( $atts['label'] ) . '</a>';
 	}
