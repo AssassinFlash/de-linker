@@ -116,6 +116,8 @@ final class SiteGuardsSmokeTest extends TestCase {
 			'max-age=31536000; includeSubDomains',
 			$response['headers']['strict-transport-security'] ?? ''
 		);
+		self::assertSame( 'camera=(), microphone=(self), geolocation=(), payment=()', $response['headers']['permissions-policy'] ?? '' );
+		self::assertArrayNotHasKey( 'x-powered-by', $response['headers'] );
 		self::assertSame( 'SAMEORIGIN', $response['headers']['x-frame-options'] ?? '' );
 		self::assertSame( 'nosniff', $response['headers']['x-content-type-options'] ?? '' );
 		self::assertSame(

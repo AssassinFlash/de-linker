@@ -38,6 +38,11 @@ final class RevisionTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->current_faq_product( 12, array() );
+		WP_Mock::userFunction( 'get_permalink' )->andReturnUsing( static fn( int $id ): string => "https://de-linker.com/product/model-$id/" )->byDefault();
+		WP_Mock::userFunction( 'get_the_terms' )->andReturn( array() )->byDefault();
+		WP_Mock::userFunction( 'get_page_by_path' )->andReturn( null )->byDefault();
+		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( 'https://de-linker.com' )->byDefault();
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnUsing( static fn( string $value ): string => rtrim( $value, '/' ) . '/' )->byDefault();
 	}
 
 	/**
@@ -49,6 +54,66 @@ final class RevisionTest extends TestCase {
 		$this->assertIsArray( $file );
 		WP_Mock::userFunction( '_prime_post_caches' )->once()->with( array( 12 ), true, true );
 		$this->assertTrue( Publication::allows_document( $file ) );
+	}
+
+	/** A single source product identifies full, HEAD and partial public downloads. */
+	public function test_single_product_canonical_and_inline_name_follow_the_authorized_bytes(): void {
+		$file = DocumentFiles::resolve( 'https://de-linker.com/wp-content/uploads/2026/manual.pdf' );
+		self::assertNotNull( $file );
+		foreach ( array( array( 'GET', '', 200 ), array( 'HEAD', '', 200 ), array( 'GET', 'bytes=0-9', 206 ) ) as list( $method, $range, $status ) ) {
+			$response = ( new DocumentAccess() )->response( $file, $method, $range );
+			self::assertSame( $status, $response['status'] );
+			self::assertSame( '<https://de-linker.com/product/model-12/>; rel="canonical"', $response['headers']['Link'] ?? null );
+			self::assertSame( 'inline; filename="manual.pdf"', $response['headers']['Content-Disposition'] ?? null );
+		}
+		$response = ( new DocumentAccess() )->response( $file, 'GET', 'bytes=9999999-' );
+		self::assertSame( 416, $response['status'] );
+		self::assertArrayNotHasKey( 'Link', $response['headers'] );
+		self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
+	}
+
+	/** A shared same-series manual uses its lowest sales ID; another series goes to the library. */
+	public function test_shared_pdf_canonical_follows_its_current_published_sales_owners(): void {
+		$file = DocumentFiles::resolve( 'https://de-linker.com/wp-content/uploads/2026/manual.pdf' );
+		self::assertNotNull( $file );
+		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 13, 12 ) );
+		WP_Mock::userFunction( 'get_post_type' )->with( 13 )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturn( 'publish' );
+		$role = '';
+		WP_Mock::userFunction( 'get_post_meta' )->with( 13, \Mockery::type( 'string' ), true )->andReturnUsing(
+			function ( int $id, string $key ) use ( &$role ): mixed {
+				return \Linker\Commerce\Products\EngineeringReference::ROLE_META_KEY === $key ? $role : ( $this->current_faq_meta[ $key ] ?? '' );
+			}
+		);
+		$series = array(
+			12 => 'H2',
+			13 => 'H2',
+		);
+		WP_Mock::userFunction( 'get_the_terms' )->andReturnUsing(
+			static function ( int $id, string $taxonomy ) use ( &$series ): array {
+				return array( (object) array( 'name' => 'pa_series' === $taxonomy ? $series[ $id ] : 'SAJ' ) );
+			}
+		);
+		$access = new DocumentAccess();
+		self::assertSame(
+			array(
+				'allowed'   => true,
+				'owner_ids' => array( 12, 13 ),
+			),
+			Publication::authorize_document( $file )
+		);
+		self::assertSame( '<https://de-linker.com/product/model-12/>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
+		$series[13] = 'HS2';
+		self::assertSame( '<https://de-linker.com/faq-download/>; rel="canonical"', $access->response( $file, 'GET' )['headers']['Link'] );
+		$role = \Linker\Commerce\Products\EngineeringReference::CABLE;
+		self::assertSame(
+			array(
+				'allowed'   => true,
+				'owner_ids' => array( 12 ),
+			),
+			Publication::authorize_document( $file )
+		);
+		self::assertSame( '<https://de-linker.com/product/model-12/>; rel="canonical"', $access->response( $file, 'GET' )['headers']['Link'] );
 	}
 
 	/** Legacy downloads from multiple published products share one attachment batch per fresh access check. */

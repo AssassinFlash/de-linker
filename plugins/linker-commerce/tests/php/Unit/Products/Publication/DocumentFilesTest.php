@@ -259,6 +259,8 @@ final class DocumentFilesTest extends TestCase {
 		$file     = DocumentFiles::resolve( rtrim( home_url(), '/' ) . '/wp-content/uploads/2026/manual.pdf' );
 		$response = ( new DocumentAccess() )->response( $file, 'GET' );
 		self::assertSame( 503, $response['status'] );
+		self::assertArrayNotHasKey( 'Link', $response['headers'] );
+		self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
 		self::assertSame( 0, $response['length'] );
 	}
 
@@ -270,6 +272,8 @@ final class DocumentFilesTest extends TestCase {
 		foreach ( array( str_repeat( '0', 64 ), 'invalid' ) as $sha ) {
 			$response = $access->response( $file, 'GET', '', $sha );
 			self::assertSame( 410, $response['status'] );
+			self::assertArrayNotHasKey( 'Link', $response['headers'] );
+			self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
 			self::assertSame( 0, $response['length'] );
 		}
 		\WP_Mock::userFunction( 'wp_cache_supports' )->with( 'flush_runtime' )->andReturn( false );

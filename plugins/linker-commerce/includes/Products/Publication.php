@@ -393,10 +393,20 @@ final class Publication {
 	 * @param array<string,string> $file The caller's resolved hosted PDF.
 	 */
 	public static function allows_document( array $file ): bool {
+		return null !== self::authorize_document( $file );
+	}
+
+	/**
+	 * Identify the current sales products behind this authorized public file.
+	 *
+	 * @param array<string,string> $file Resolved hosted PDF.
+	 * @return array{allowed:true,owner_ids:list<int>}|null
+	 */
+	public static function authorize_document( array $file ): ?array {
 		self::refresh_runtime();
 		DocumentFiles::begin_read();
 		try {
-			return self::document_in_current_read( $file );
+			return self::document_authorization_in_current_read( $file );
 		} finally {
 			DocumentFiles::end_read();
 		}
@@ -406,8 +416,9 @@ final class Publication {
 	 * Preserve manifest association order and alias permission for this PDF.
 	 *
 	 * @param array<string,string> $file The caller's resolved hosted PDF.
+	 * @return array{allowed:true,owner_ids:list<int>}|null
 	 */
-	private static function document_in_current_read( array $file ): bool {
+	private static function document_authorization_in_current_read( array $file ): ?array {
 		$target     = DocumentFiles::id( $file['url'] );
 		$rows       = array();
 		$candidates = array();
@@ -443,7 +454,7 @@ final class Publication {
 					continue;
 				}
 				$identity = DocumentFiles::id( (string) ( $row['url'] ?? '' ) );
-				$rows[]   = array( $identity, $row );
+				$rows[]   = array( $id, $identity, $row );
 				if ( $identity === $target ) {
 					$candidates[ $identity ] = true;
 				}
@@ -454,28 +465,54 @@ final class Publication {
 				}
 			}
 		}
-		$seen        = array();
+		$allowed     = array();
+		$owners      = array();
 		$permissions = array();
-		foreach ( $rows as [ $identity, $row ] ) {
-			if ( ! isset( $candidates[ $identity ] ) || isset( $seen[ $identity ] ) ) {
+		foreach ( $rows as [ $id, $identity, $row ] ) {
+			if ( ! isset( $candidates[ $identity ] ) || false === ( $allowed[ $identity ] ?? null ) ) {
 				continue;
 			}
 			$primary = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
 			if ( null === $primary || ! self::attachment_allows( $primary['url'], $permissions ) ) {
 				continue;
 			}
-			$seen[ $identity ] = true;
-			if ( $primary['url'] === $file['url'] && $primary['blob_sha256'] === $file['blob_sha256'] ) {
-				return true;
+			// Only the first public record for a primary URL determines its aliases.
+			$allowed[ $identity ] ??= self::document_matches( $file, $primary, $row, $target, $permissions );
+			if ( $allowed[ $identity ] && ! EngineeringReference::is_reference( $id ) ) {
+				$owners[ $id ] = true;
 			}
-			foreach ( (array) ( $row['aliases'] ?? array() ) as $url ) {
-				if ( ! is_string( $url ) || DocumentFiles::id( $url ) !== $target ) {
-					continue;
-				}
-				$alias = DocumentFiles::resolve( $url );
-				if ( null !== $alias && $alias['url'] === $file['url'] && $alias['blob_sha256'] === $primary['blob_sha256'] && $alias['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $alias['url'], $permissions ) ) {
-					return true;
-				}
+		}
+		if ( ! in_array( true, $allowed, true ) ) {
+			return null;
+		}
+		$ids = array_keys( $owners );
+		sort( $ids, SORT_NUMERIC );
+		return array(
+			'allowed'   => true,
+			'owner_ids' => $ids,
+		);
+	}
+
+	/**
+	 * Match the requested bytes against the primary file or one of its published aliases.
+	 *
+	 * @param array<string,string> $file Requested file.
+	 * @param array<string,string> $primary Primary document.
+	 * @param array<string,mixed>  $row First authorized primary record.
+	 * @param string               $target Requested document identity.
+	 * @param array<string,bool>   $permissions Attachment permissions within this read.
+	 */
+	private static function document_matches( array $file, array $primary, array $row, string $target, array &$permissions ): bool {
+		if ( $primary['url'] === $file['url'] && $primary['blob_sha256'] === $file['blob_sha256'] ) {
+			return true;
+		}
+		foreach ( (array) ( $row['aliases'] ?? array() ) as $url ) {
+			if ( ! is_string( $url ) || DocumentFiles::id( $url ) !== $target ) {
+				continue;
+			}
+			$alias = DocumentFiles::resolve( $url );
+			if ( null !== $alias && $alias['url'] === $file['url'] && $alias['blob_sha256'] === $primary['blob_sha256'] && $alias['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $alias['url'], $permissions ) ) {
+				return true;
 			}
 		}
 		return false;

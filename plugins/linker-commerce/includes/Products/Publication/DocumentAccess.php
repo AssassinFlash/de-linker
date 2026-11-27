@@ -9,6 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Products\Publication;
 
+use Linker\Commerce\Abilities\ProductText;
+use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
 
 /** No redirect back to a static URL, and no public cache of an allowed result. */
@@ -66,7 +69,7 @@ final class DocumentAccess {
 		header( 'X-LiteSpeed-Cache-Control: no-cache,no-store' );
 		header( 'X-Content-Type-Options: nosniff' );
 		foreach ( $response['headers'] as $name => $content ) {
-			header( $name . ': ' . $content );
+			header( $name . ': ' . $content, 'Link' !== $name );
 		}
 		if ( $response['length'] > 0 && 'HEAD' !== $method && null !== $file ) {
 			$stream = fopen( $file['path'], 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- authorized local PDF byte stream.
@@ -123,11 +126,11 @@ final class DocumentAccess {
 			return $denied;
 		}
 		try {
-			$allowed = Publication::allows_document( $file );
+			$authorization = Publication::authorize_document( $file );
 		} catch ( \RuntimeException $error ) {
 			return array_replace( $denied, array( 'status' => 503 ) );
 		}
-		if ( ! $allowed ) {
+		if ( null === $authorization ) {
 			return $denied;
 		}
 		$size    = (int) filesize( $file['path'] );
@@ -172,13 +175,48 @@ final class DocumentAccess {
 			$status                   = 206;
 			$headers['Content-Range'] = 'bytes ' . $start . '-' . $end . '/' . $size;
 		}
-		$length                    = $end - $start + 1;
-		$headers['Content-Length'] = (string) $length;
+		$name                           = preg_replace( '/[^A-Za-z0-9._-]+/', '-', pathinfo( $file['path'], PATHINFO_FILENAME ) );
+		$name                           = trim( (string) $name, '.-' );
+		$headers['Content-Disposition'] = 'inline; filename="' . ( '' !== $name ? $name : 'document' ) . '.pdf"';
+		$headers['Link']                = '<' . self::canonical_url( $authorization['owner_ids'] ) . '>; rel="canonical"';
+		$length                         = $end - $start + 1;
+		$headers['Content-Length']      = (string) $length;
 		return array(
 			'status'  => $status,
 			'headers' => $headers,
 			'start'   => $start,
 			'length'  => $length,
 		);
+	}
+
+	/**
+	 * A shared manual points to its first published model only within one manufacturer's series.
+	 *
+	 * @param int[] $ids Sorted sales product IDs from this authorization.
+	 */
+	private static function canonical_url( array $ids ): string {
+		$lead = $ids[0] ?? 0;
+		if ( count( $ids ) > 1 ) {
+			$series = null;
+			foreach ( $ids as $id ) {
+				$brand = ProductText::term_name( $id, 'pa_brand' ) ?? '';
+				$name  = ProductText::term_name( $id, 'pa_series' ) ?? trim( (string) ( Materials::english_acf( $id )['product_series'] ?? '' ) );
+				$key   = array( strtolower( $brand ), strtolower( $name ) );
+				if ( '' === $brand || '' === $name || 0 === strcasecmp( $brand, $name ) || ( null !== $series && $key !== $series ) ) {
+					$lead = 0;
+					break;
+				}
+				$series = $key;
+			}
+		}
+		if ( $lead ) {
+			$url = get_permalink( $lead );
+			if ( is_string( $url ) && preg_match( '~^https?://~i', $url ) ) {
+				return trailingslashit( $url );
+			}
+		}
+		$page = get_page_by_path( 'faq-download' );
+		$url  = $page instanceof \WP_Post ? get_permalink( $page ) : false;
+		return is_string( $url ) && preg_match( '~^https?://~i', $url ) ? trailingslashit( $url ) : PageUrls::root() . 'faq-download/';
 	}
 }
