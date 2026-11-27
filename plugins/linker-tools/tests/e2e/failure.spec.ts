@@ -25,6 +25,8 @@ const DONE =
 
 const STORY = '/iframe.html?id=genie-app--english&viewMode=story';
 
+test.use( { reducedMotion: 'reduce' } );
+
 type Mode = 'cut' | 'down' | 'ok' | 'hang';
 
 interface TurnBody {

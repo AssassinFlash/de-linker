@@ -3,12 +3,10 @@
 
 import argparse
 import json
-import sys
+import runpy
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "tools" / "faq"))
-from generate import markdown
 
 
 def main() -> None:
@@ -16,14 +14,25 @@ def main() -> None:
     parser.add_argument("--catalog", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    markdown = runpy.run_path(str(ROOT / "tools/faq/generate.py"))["markdown"]
     prefix = "GOODWE_CATALOG="
-    receipts = [line[len(prefix):] for line in args.catalog.read_text().splitlines()
-                if line.startswith(prefix)]
+    receipts = [
+        line[len(prefix) :]
+        for line in args.catalog.read_text().splitlines()
+        if line.startswith(prefix)
+    ]
     if len(receipts) != 1:
         parser.error("expected one GOODWE_CATALOG= record")
     catalog = json.loads(receipts[0])
     files = []
-    for model in ("lx-c101-10", "lx-c138-10", "lx-c156-10", "gw50k-et-10", "gw100k-ht", "gw120k-ht"):
+    for model in (
+        "lx-c101-10",
+        "lx-c138-10",
+        "lx-c156-10",
+        "gw50k-et-10",
+        "gw100k-ht",
+        "gw120k-ht",
+    ):
         slug = f"goodwe-{model}"
         product = json.loads((ROOT / "docs" / "faq" / f"{slug}.json").read_text())
         mapped = catalog["products"][product["sku"]]
@@ -40,7 +49,9 @@ def main() -> None:
         parser.error("the output directory contains other products")
     for product in files:
         base = args.output / product["slug"]
-        base.with_suffix(".json").write_text(json.dumps(product, ensure_ascii=False, indent=2) + "\n")
+        base.with_suffix(".json").write_text(
+            json.dumps(product, ensure_ascii=False, indent=2) + "\n"
+        )
         base.with_suffix(".md").write_text(markdown(product, product["items"]))
 
 
