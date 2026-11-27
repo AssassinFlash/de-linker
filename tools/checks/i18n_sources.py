@@ -14,6 +14,7 @@ QUOTED = re.compile(r"(['\"`])((?:\\.|(?!\1).)*?)\1", re.DOTALL)
 CODE_TOKEN = re.compile(r"/\*.*?\*/|//[^\n]*|" + QUOTED.pattern, re.DOTALL)
 PHP_CODE_TOKEN = re.compile(r"/\*.*?\*/|//[^\n]*|#[^\n]*|" + QUOTED.pattern, re.DOTALL)
 ARGUMENT_TOKEN = re.compile(CODE_TOKEN.pattern + r"|[()[\]{},]", re.DOTALL)
+ARGUMENT_SEPARATOR = re.compile(r"\s*,\s*")
 GETTEXT_CALL = re.compile(
     r"\b(?:__|_e|_x|_ex|_n|_nx|_n_noop|_nx_noop|"
     r"esc_html__|esc_attr__|esc_html_e|esc_attr_e|esc_html_x|esc_attr_x)"
@@ -125,11 +126,17 @@ def gettext_domain(source: str, start: int) -> str | None:
 
 
 def gettext_strings(
-    source: str, *, php: bool = False, domain: str | None = None
+    source: str,
+    *,
+    php: bool = False,
+    domain: str | None = None,
+    include_plural: bool = False,
 ) -> list[tuple[str, int]]:
     """Message literals in gettext calls, excluding comments and technical values."""
     found: list[tuple[str, int]] = []
-    starts = {call.end() for call in GETTEXT_CALL.finditer(source)}
+    starts = {
+        call.end(): call[0].startswith("_n") for call in GETTEXT_CALL.finditer(source)
+    }
     tokens = PHP_CODE_TOKEN if php else CODE_TOKEN
     for token in tokens.finditer(source):
         if token[1] is None:
@@ -140,13 +147,19 @@ def gettext_strings(
                 offset = source.count("\n", 0, token.start())
                 found.extend(
                     (value, line + offset)
-                    for value, line in gettext_strings(token[2], domain=domain)
+                    for value, line in gettext_strings(
+                        token[2], domain=domain, include_plural=include_plural
+                    )
                 )
             continue
         if domain is not None and gettext_domain(source, token.start()) != domain:
             continue
         value = quoted_strings(token[0])[0][0]
         found.append((value, source.count("\n", 0, token.start()) + 1))
+        if include_plural and starts[token.start()]:
+            separator = ARGUMENT_SEPARATOR.match(source, token.end())
+            if separator:
+                starts[separator.end()] = False
     return found
 
 

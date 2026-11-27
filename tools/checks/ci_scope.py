@@ -96,6 +96,7 @@ CONTROL_INPUTS = (
     # so no earlier proof survives a change to them.
     "tools/checks/i18n_sources.py",
     "tools/checks/commerce-terms.py",
+    "tools/checks/warehouse-stock-claims.py",
     "tools/checks/commerce-terms.txt",
     "tools/checks/commerce-terms-baseline.json",
     ".gitattributes",
@@ -108,6 +109,7 @@ CONTROL_INPUTS = (
 CONTENT_TESTS = (
     "tools/checks/test_i18n_sources.py",
     "tools/checks/test_commerce_terms.py",
+    "tools/checks/test_warehouse_stock_claims.py",
 )
 
 # Docs are inputs only where a current check actually opens them. Reports and
@@ -564,6 +566,7 @@ def module_inputs(module):
             "tools/checks/",
             "tools/local/",
             "apps/planner/src/",
+            "themes/",
         )
     if lane in {"js", "build"}:
         name = module.split(":", 1)[1]
