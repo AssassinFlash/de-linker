@@ -159,13 +159,7 @@ final class GermanTitles {
 			$alt = 'Linker Journal – Technische Leitfäden zu PV- und Batteriespeichersystemen von Chester John';
 		} elseif ( str_contains( $html, '/og-linker-default-1200x630.jpg' ) ) {
 			$alt = 'Linker Technology GmbH – Batteriespeichersysteme für Wohngebäude, Gewerbe und Industrie aus Barleben, Deutschland';
-		} elseif ( is_singular( 'post' ) ) {
-			$id  = get_queried_object_id();
-			$alt = (string) get_post_meta( $id, CoverAlt::DISPLAY, true );
-			if ( '' === $alt ) {
-				$alt = wp_strip_all_tags( get_the_title( $id ) );
-			}
-		} elseif ( is_singular( array( 'product', 'page' ) ) ) {
+		} elseif ( is_singular( 'page' ) ) {
 			$alt = wp_strip_all_tags( get_the_title( get_queried_object_id() ) );
 		} else {
 			return $html;

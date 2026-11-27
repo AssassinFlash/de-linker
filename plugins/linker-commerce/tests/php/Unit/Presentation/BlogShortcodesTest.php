@@ -99,6 +99,27 @@ final class BlogShortcodesTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** The featured article's translated alt and exact image dimensions reach the journal hero. */
+	public function test_cover_uses_the_explicit_loop_post_and_reviewed_german_alt(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/CoverAlt.php';
+		WP_Mock::userFunction( 'shortcode_atts' )->andReturnUsing( 'array_replace' );
+		WP_Mock::userFunction( 'get_post_thumbnail_id' )->with( 12 )->andReturn( 90 );
+		WP_Mock::userFunction( 'wp_get_attachment_image_src' )->with( 90, 'large' )->andReturn( array( 'https://linker.test/cover.webp', 960, 540, true ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_srcset' )->andReturn( 'https://linker.test/cover.webp 960w' );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 12, '_linker_i18n_cover_alt_display', true )->andReturn( 'Gewerbespeicher im Technikraum' );
+		$html = ( new BlogShortcodes() )->cover_image(
+			array(
+				'post'          => '12',
+				'size'          => 'large',
+				'eager'         => '1',
+				'fetchpriority' => 'high',
+			)
+		);
+		$this->assertStringContainsString( 'width="960" height="540" alt="Gewerbespeicher im Technikraum"', $html );
+		$this->assertStringContainsString( 'loading="eager"', $html );
+		$this->assertStringContainsString( 'fetchpriority="high"', $html );
+	}
+
 	/** Only Chester's articles link the byline to his profile card. */
 	public function test_only_chesters_byline_links_to_the_author_card(): void {
 		$post              = $this->post( 551, 'System design', 'system-design' );

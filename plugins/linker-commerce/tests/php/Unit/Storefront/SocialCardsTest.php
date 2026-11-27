@@ -87,6 +87,39 @@ final class SocialCardsTest extends TestCase {
 		$this->assertStringNotContainsString( '125 kW', $html );
 	}
 
+	/** A German share card displays the article's own translated cover caption. */
+	public function test_dedicated_blog_uses_its_localized_post_cover_description(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/CoverAlt.php';
+		WP_Mock::userFunction( 'is_home' )->andReturn( false );
+		WP_Mock::userFunction( 'is_category' )->andReturn( false );
+		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( true );
+		WP_Mock::userFunction( 'get_queried_object_id' )->andReturn( 80 );
+		WP_Mock::userFunction( 'get_post_thumbnail_id' )->with( 80 )->andReturn( 100 );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 80, '_linker_i18n_cover_alt_display', true )->andReturn( 'Speicher im Technikraum' );
+		WP_Mock::userFunction( 'esc_attr' )->andReturnArg( 0 );
+		$html = ( new SocialCards() )->open_graph( '<meta property="og:image" content="/cover.webp"><meta property="og:image:alt" content="Unrelated cover">' );
+		$this->assertStringContainsString( 'content="Speicher im Technikraum"', $html );
+		$this->assertStringNotContainsString( 'Unrelated cover', $html );
+	}
+
+	/** A native social creator tag belongs only to a journal entry written by Chester. */
+	public function test_creator_uses_the_queried_posts_own_author(): void {
+		$chester                = new \WP_User();
+		$chester->user_nicename = 'chester-john';
+		$team                   = new \WP_User();
+		$team->user_nicename    = 'linker-team';
+		$post                   = new \WP_Post( (object) array( 'post_author' => '12' ) );
+		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( true, true, false );
+		WP_Mock::userFunction( 'get_queried_object_id' )->andReturn( 55 );
+		WP_Mock::userFunction( 'get_post' )->with( 55 )->andReturn( $post );
+		WP_Mock::userFunction( 'get_userdata' )->with( 12 )->andReturn( $chester, $team );
+		$cards = new SocialCards();
+		$this->assertSame(
+			array( '<meta name="twitter:creator" content="@chester_linker">', '', '' ),
+			array( $cards->creator(), $cards->creator(), $cards->creator() )
+		);
+	}
+
 	/** A dedicated landscape card is preserved, and the internal SEOPress URL filter keeps its type. */
 	public function test_dedicated_landscape_card_and_raw_urls(): void {
 		WP_Mock::userFunction( 'is_home', array( 'return' => false ) );

@@ -134,7 +134,7 @@ final class ModuleTest extends TestCase {
 		// Data shortcodes across the product, checkout, comparison,
 		// library, account and blog families, including the product's configurator
 		// entry and the FAQ section's scoped rows.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 79 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 80 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $blog, 'empty_search_title' ), 60 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $blog, 'redirect_chester_archive' ), -1 );
@@ -186,15 +186,17 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.before', WindPressPageStyles::class, 'before_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.after', WindPressPageStyles::class, 'after_cache' );
 		$cards = new AnyInstance( SocialCards::class );
+		WP_Mock::expectFilterAdded( 'seopress_social_twitter_card_site', '__return_empty_string' );
 		foreach ( array(
 			'seopress_social_og_type'              => 'open_graph_type',
 			'site_icon_meta_tags'                  => 'site_icons',
 			'seopress_social_twitter_card_summary' => 'summary',
 			'seopress_social_og_thumb'             => 'open_graph',
 			'seopress_social_twitter_card_thumb'   => 'twitter_image',
+			'seopress_social_twitter_card_creator' => 'creator',
 		) as $hook => $method ) {
 			// @phpstan-ignore argument.type (WP_Mock matches array callbacks with AnyInstance.)
-			WP_Mock::expectFilterAdded( $hook, array( $cards, $method ), 10, 'summary' === $method ? 0 : 1 );
+			WP_Mock::expectFilterAdded( $hook, array( $cards, $method ), 10, in_array( $method, array( 'summary', 'creator' ), true ) ? 0 : 1 );
 		}
 		$module->register();
 		self::assertSame( array_fill_keys( array_column( $family_hooks, 1 ), 1 ), $registered );
