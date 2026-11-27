@@ -56,7 +56,7 @@ REVISIONS = {
             ),
             (
                 "Follow the documented power-up sequence: battery breaker first, then inverter DC, then AC grid, then PV. Configure the battery type, verify SOC and voltage readings, and run a charge/discharge test before customer handover.",
-                "Use the startup instructions for the installed inverter, battery and accessories. The switching order varies by system. Once the system is running, configure the battery as specified, check its state of charge and voltage readings, and test charging and discharging before handover.",
+                "Use the startup instructions for the installed inverter, battery and accessories. The switching sequence varies by system. Once the system is running, configure the battery as specified, check its state of charge and voltage readings, and test charging and discharging before handover.",
             ),
         ),
         (
@@ -193,7 +193,7 @@ REVISIONS = {
             ),
             (
                 "The battery management system monitors real-time load and triggers discharge when demand approaches a pre-set threshold. For a 500 kW-peak facility capped at 350 kW with a 150 kW / 300 kWh battery, annual demand charge savings can reach tens of thousands of euros.",
-                "A site controller can use grid import measurements to dispatch the battery. For example, if grid import would stay at 500 kW for a full 15-minute interval, holding it at 350 kW takes 150 kW of battery output and 37.5 kWh delivered during that interval. A system rated at 150 kW / 300 kWh must be able to deliver the full 150 kW at that point and have enough usable energy after allowing for losses. Longer or repeated peaks need more energy before the battery can recharge.\r\n\r\nIf the tariff charges for the highest 15-minute average and the billed peak across the whole period falls from 500 to 350 kW, the reduction in the demand charge at the same rate is 150 kW multiplied by the tariff’s price per kW for that period. Compare the measured load profile with and without battery dispatch to estimate the reduction.",
+                "A site controller can use grid import measurements to control battery charging and discharging. For example, if grid import would stay at 500 kW for a full 15-minute interval, holding it at 350 kW takes 150 kW of battery output and 37.5 kWh delivered during that interval. A system rated at 150 kW / 300 kWh must be able to deliver the full 150 kW at that point and have enough usable energy after allowing for losses. Longer or repeated peaks need more energy before the battery can recharge.\r\n\r\nIf the tariff charges for the highest 15-minute average and the billed peak across the whole period falls from 500 to 350 kW, the reduction in the demand charge at the same rate is 150 kW multiplied by the tariff’s price per kW for that period. Compare the measured load profile with and without battery operation to estimate the reduction.",
             ),
             (
                 "Size the battery to sustain these loads for the required autonomy period, typically 2-4 hours.",

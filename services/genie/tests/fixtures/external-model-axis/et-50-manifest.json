@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "source_revision": "et-50",
+  "model_identity_revision": "fixture-identity-1",
+  "products": [
+    {
+      "product_id": 1945,
+      "model": "GW50K-ET-10",
+      "product_revision": "fc81b59886334e5ac45806fd825f434e3b7451606a54ede194dcb37e4d17ad52",
+      "published_locale_ids": [
+        1945,
+        6812
+      ],
+      "ready": {
+        "knowledge": false,
+        "engineering": true
+      },
+      "documents": [
+        "doc-03a8f0a9e0bf9e2a54d5c61319f17b6ab058c0f64b7a98153353ca1abe1f9eee",
+        "doc-0e7e63ae887624e67176e70e0b9ed20a5bea6647a462f2c1531ee78dfd46fc00",
+        "doc-2843f871631cec99966fd124657ea391d33b01776dc7704e36a15bb80cca1482"
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-03a8f0a9e0bf9e2a54d5c61319f17b6ab058c0f64b7a98153353ca1abe1f9eee",
+      "document_revision": "b71002b819560747f4db87b93c0ff56ef68d8ca768e0ac1dc5787ac369d7cc77",
+      "blob_sha256": "d4dea0be60dc736a139ead31cdc687a38c0f392859994e008d3ef3a5e1b1bcbe",
+      "product_ids": [
+        1945
+      ],
+      "title": "GoodWe ET50 Serie 40–50 kW Datenblatt V1.1 (EMEA, DE)",
+      "type": "datasheet",
+      "lang": "de",
+      "url": "https://site.test/GW_ET40-50kW_Datasheet_EMEA-DE.pdf"
+    },
+    {
+      "document_id": "doc-0e7e63ae887624e67176e70e0b9ed20a5bea6647a462f2c1531ee78dfd46fc00",
+      "document_revision": "46c4404ee4c268caf5742fb77dd8fe1ba343fb78cdb4637ea235a64ed8a5fd36",
+      "blob_sha256": "22c0b75575dc400a85bfc1fef0ae85dacbf112d86d5aa04ac1f60eab1a5e6d4f",
+      "product_ids": [
+        1945
+      ],
+      "title": "GoodWe ET Series 25–50 kW Datasheet V2.1 (EN)",
+      "type": "datasheet",
+      "lang": "en",
+      "url": "https://site.test/GW_ET-25-50kW_Datasheet-EN-20251022-V2.1.pdf"
+    },
+    {
+      "document_id": "doc-2843f871631cec99966fd124657ea391d33b01776dc7704e36a15bb80cca1482",
+      "document_revision": "f763415a723fddb919d3ada7dd58542dbcbcf442b2b977b4a8def58d67e0938b",
+      "blob_sha256": "4534dd428973160226c57c7e14d364b6f6dbf30bfe1e9761f45e05917cbcedd0",
+      "product_ids": [
+        1945
+      ],
+      "title": "GoodWe ET50 Series 40–50 kW Datasheet V1.1 (EMEA, EN)",
+      "type": "datasheet",
+      "lang": "en",
+      "url": "https://site.test/delinker-goodwe_et4050-datasheet.pdf"
+    }
+  ]
+}

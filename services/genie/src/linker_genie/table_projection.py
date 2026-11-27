@@ -111,10 +111,26 @@ class SourceCell(TypedDict):
     word_wraps: NotRequired[list[SourceWordWrap]]
 
 
-TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9./-]*")
+TOKEN = re.compile(r"LX C[0-9]+-[0-9]+(?![A-Za-z0-9./-])|[A-Za-z0-9][A-Za-z0-9./-]*")
 # The physical warranty fixture has a 16-letter stem and one final glyph.
 # Half that observed stem length keeps short words and units out of scope.
 MIN_WRAPPED_STEM = 8
+
+
+def footnote_text(raw: str) -> str:
+    """Docling can insert a bell after the note marker in a German datasheet."""
+    return re.sub(r"^(\*\d+: )\x07", r"\1", raw)
+
+
+def pdf_footnote_pattern(raw: str, sha: str) -> str:
+    """The German Lynx C original wraps control-prefixed Docling notes on page 2."""
+    display = footnote_text(raw)
+    if (
+        display == raw
+        or sha != "2f4cff9fa8fc2d27e4711bc3a2417f82f59b280ebcff5f8176c6886af0b6bbc1"
+    ):
+        return re.escape(raw)
+    return re.escape(display).replace(r"\ ", r"(?: | ?\r\n ?)")
 
 
 def _box(value: object) -> bool:
@@ -446,8 +462,14 @@ def _external_axis(value: object) -> ExternalAxis | None:
             or not _box(native.get("bbox"))
             or not isinstance(pdf, dict)
             or not _pdf_span(pdf)
-            or pdf.get("text") != quote
-            or pdf["char_end"] - pdf["char_start"] != len(quote)
+            or (
+                pdf["text"] != quote
+                and re.fullmatch(
+                    pdf_footnote_pattern(quote, pdf["source_sha256"]), pdf["text"]
+                )
+                is None
+            )
+            or pdf["char_end"] - pdf["char_start"] != len(pdf["text"])
             or "fragments" in pdf
             or not (
                 0 <= native["bbox"][0] < native["bbox"][2] <= pdf["page_size"][0]
@@ -565,6 +587,10 @@ def cell_at(cells: Sequence[SourceCell], row: int, col: int) -> SourceCell | Non
 
 
 def _axis_labels(text: str) -> list[str]:
+    # Preserve a source-qualified model as the literal, non-interchangeable
+    # column label. The physical span must include the same suffix.
+    if re.fullmatch(r"GW\d+K-ET-10\*\d+", text):
+        return [text]
     tokens = TOKEN.findall(text)
     labels = [
         token
@@ -982,6 +1008,14 @@ def row_cells(
         # parenthetical qualifier. An orphan qualifier is not a complete fact.
         or re.match(r"^\((?:integrated|optional)\)(?:\s*;|\s*$)", value["text"], re.I)
         is not None
+        or (
+            re.search(
+                r"\b(?:W\s*[×x*]\s*H\s*[×x*]\s*D|B\s*[×x*]\s*H\s*[×x*]\s*T)\b",
+                label["text"],
+                re.I,
+            )
+            and len(re.findall(r"(?<=\d)\s*[×x*]\s*(?=\d)", value["text"])) < 2
+        )
         # The native ESA battery table has a multi-column value whose first
         # word was lost by the parser. Keep only its independent model cells.
         or (
@@ -1160,9 +1194,15 @@ def row_footnotes(
     if label is None or value is None:
         return None
     context = row_context(cells, row)
-    original = " ".join(
-        [*(context[1:2] if context else ()), label["text"], value["text"]]
-    )
+    section = context[1] if context else ""
+    # These source sections spell out their STS requirement inline. It is
+    # rendered with the row; the asterisk does not refer to a separate note.
+    if section in {
+        "AC Output Data (Back-up)*requires additional STS box",
+        "AC Ausgangsdaten (Notstrom)*erfordert eine zusätzliche STS-Box",
+    }:
+        section = section.replace("*", " ")
+    original = " ".join([section, label["text"], value["text"]])
     markers = [
         match.group().replace(" ", "")
         for match in re.finditer(r"[*†‡]\s*\d*", original)
@@ -1197,6 +1237,7 @@ def render_projection(
     if (
         axis is None
         or not 1 <= column <= len(axis)
+        or "*" in axis[column - 1]
         or not rows
         or any(
             type(row) is not int
@@ -1233,7 +1274,7 @@ def render_projection(
         lines.append("| " + " | ".join(pair) + " |")
         previous_context = context
     for note in notes.values():
-        lines.append(f"{note['text']} (p. {note['pdf_span']['page']})")
+        lines.append(f"{footnote_text(note['text'])} (p. {note['pdf_span']['page']})")
     return "\n".join(lines)
 
 
@@ -1298,10 +1339,16 @@ def safe_rows(
 def _row_text_is_safe(text: str, own: str, labels: Sequence[str]) -> bool:
     """A row's full text names no other model and no unresolved model code."""
     known = {label.casefold() for label in labels if label}
+    # The manufacturer's capacity-test note gives a charge/discharge C-rate.
+    rated_text = re.sub(r"\b\d+\.\d+C(?= charge & discharge\b)", "", text)
     if any(
         label != own and model_pattern(label).search(text) for label in known
     ) or unknown_models(
-        text, {own}, model_shapes(known), section=True, families=family_labels(known)
+        rated_text,
+        {own},
+        model_shapes(known),
+        section=True,
+        families=family_labels(known),
     ):
         return False
     return True
@@ -2206,7 +2253,7 @@ def render_single_model(
         lines.append("| " + " | ".join(pair) + " |")
         previous_context = context
     for note in notes.values():
-        lines.append(f"{note['text']} (p. {note['pdf_span']['page']})")
+        lines.append(f"{footnote_text(note['text'])} (p. {note['pdf_span']['page']})")
     return "\n".join(lines)
 
 

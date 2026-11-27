@@ -84,8 +84,11 @@ from linker_genie.facts import (
     RELEASED_VERDICTS,
     Fact,
     TurnFacts,
+    checked_backup_refs,
+    checked_condition_refs,
     pairing_card_sets,
     pairing_entries,
+    single_released_check,
     stock_rows,
 )
 from linker_genie.figures import (
@@ -335,6 +338,22 @@ def check(
     failures.extend(_extreme(output, facts))
     failures.extend(_handoff_only_when_out_of_scope(output, route))
     if route is not None:
+        if route.name == "pairing":
+            text = "\n".join(
+                block.text for block in output.blocks if isinstance(block, TextBlock)
+            )
+            for ref in checked_backup_refs(facts, route):
+                if f"{{fact:{ref}}}" not in text:
+                    failures.append(
+                        f"Use the inverter backup condition {{fact:{ref}}} with its source."
+                    )
+            for ref in (
+                checked_condition_refs(facts) if single_released_check(facts) else ()
+            ):
+                if f"{{fact:{ref}}}" not in text and facts.facts[ref].value not in text:
+                    failures.append(
+                        f"Use the checked pairing condition {{fact:{ref}}}."
+                    )
         failures.extend(_route(output, facts, route))
         failures.extend(_named_models(output, facts, route))
         failures.extend(_stock(output, facts, route))

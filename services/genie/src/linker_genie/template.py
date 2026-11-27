@@ -65,15 +65,20 @@ from __future__ import annotations
 import re
 from itertools import zip_longest
 
+from linker_genie.datasheet_parameter import datasheet_parameter_answer
 from linker_genie.facts import (
     RELEASED_VERDICTS,
     Fact,
     TurnFacts,
+    checked_backup_refs,
+    checked_condition_refs,
     pairing_card_sets,
+    single_released_check,
     stock_rows,
 )
 from linker_genie.failure import FailureClass
 from linker_genie.figures import chunk_of, is_code
+from linker_genie.grid_certificates import grid_certificate_listing
 from linker_genie.hydrate import PLACEHOLDER, hydrate
 from linker_genie.manual_evidence import clearance_question as clearance_question
 from linker_genie.prefill import BACKUP_CHOICES
@@ -376,20 +381,6 @@ def _pair_document_refs(facts: TurnFacts) -> list[str]:
     return [fact_id for _, fact_id in sorted(found)]
 
 
-def _pair_condition_refs(facts: TurnFacts) -> list[str]:
-    """Condition facts of the pair check, in the tool's order.
-
-    `compat.condition.0` is that check. `compat.condition.3612.0` is a battery
-    on a search-products pairing row and is a different answer.
-    """
-    found: list[tuple[int, str]] = []
-    for fact_id in facts.facts:
-        head, _, tail = fact_id.rpartition(".")
-        if head == "compat.condition" and tail.isdigit():
-            found.append((int(tail), fact_id))
-    return [fact_id for _, fact_id in sorted(found)]
-
-
 def _released_pair(facts: TurnFacts, language: Locale) -> TurnOutput | None:
     """The released pair's own conditions, when the model phrased none.
 
@@ -445,27 +436,56 @@ def _released_pair(facts: TurnFacts, language: Locale) -> TurnOutput | None:
     return TurnOutput(language=language, blocks=blocks)
 
 
-def _not_released_fallback(facts: TurnFacts, language: Locale) -> TurnOutput | None:
-    """The check's own conditions, when the pair is not released.
-
-    This runs only after grounding failed twice. The sentences are the
-    contract facts (`compat.condition.N`) the tool returned this turn, the
-    same placeholders the prompt asks the model to write; the service adds no
-    sentence of its own. A released set in the same turn stays on the card
-    path. No condition fact means no sentence is invented. The pair itself is
-    not shown as cards. Documents the check returned stay the next step.
-    """
+def _checked_pair_fallback(
+    facts: TurnFacts, language: Locale, route: Route | None
+) -> TurnOutput | None:
+    """Use the exact pair check's conditions and documents in their original order."""
     verdict = facts.facts.get("compat.verdict")
-    if verdict is None or verdict.value != "not_released":
+    if verdict is None:
         return None
-    if pairing_card_sets(facts):
+    backup = checked_backup_refs(facts, route)
+    ids: list[int] = []
+    if verdict.value == "not_released" or (backup and verdict.value == "unknown"):
+        if pairing_card_sets(facts):
+            return None
+    elif (
+        route is not None
+        and route.name == "pairing"
+        and verdict.value in RELEASED_VERDICTS
+    ):
+        checked = single_released_check(facts)
+        if not checked:
+            return None
+        ids = checked
+    else:
         return None
-    conditions = _pair_condition_refs(facts)
-    if not conditions:
+    conditions = checked_condition_refs(facts)
+    if not conditions and not backup:
         return None
-    text = " ".join(f"{{fact:{fact_id}}}" for fact_id in conditions)
-    blocks: list[Block] = [TextBlock(text=text)]
+    sections = [f"{{fact:{ref}}}" for ref in conditions]
+    if backup:
+        if ids:
+            verdict_text = (
+                "The manufacturer lists this inverter and battery as compatible.",
+                "Der Hersteller gibt diese Kombination aus Wechselrichter und Batterie frei.",
+            )
+        elif verdict.value == "not_released":
+            verdict_text = (
+                "The manufacturer has not released this inverter and battery combination.",
+                "Der Hersteller hat diese Kombination aus Wechselrichter und Batterie nicht freigegeben.",
+            )
+        else:
+            verdict_text = (
+                "Compatibility for this inverter and battery is unconfirmed.",
+                "Die Kompatibilität dieses Wechselrichters mit dieser Batterie ist unbestätigt.",
+            )
+        sections.insert(0, verdict_text[language == "de"])
+        sections.extend(f"{{fact:{ref}}}" for ref in backup)
+    text = "\n\n".join(sections)
+    blocks: list[Block] = [TextBlock(text=text, refs=[str(pid) for pid in ids])]
     blocks.extend(DocumentBlock(ref=ref) for ref in _pair_document_refs(facts))
+    if ids:
+        blocks.append(CardsBlock(product_ids=ids))
     return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
 
 
@@ -598,6 +618,39 @@ def prepared_answer(
     page_product_id: int | None = None,
 ) -> TurnOutput | None:
     """Return an unhydrated answer when the native result determines it completely."""
+    if route.name == "requirements":
+        lookup = route.calls[0]
+        pid, kind = lookup.arguments["product_id"], lookup.arguments["requirement_kind"]
+        for receipt in facts.tool_calls:
+            if not (
+                receipt.get("ok")
+                and receipt["name"] == lookup.ability
+                and receipt["arguments"] == lookup.arguments
+                and receipt["result"].get("product_id") == pid
+                and receipt["result"].get("model")
+                and "requirements" in receipt["result"]
+            ):
+                continue
+            model = receipt["result"]["model"]
+            refs = [
+                ref
+                for ref in facts.supporting_documents
+                if ref.startswith(f"p{pid}.requirement.{kind}.")
+            ]
+            if not refs:
+                return None
+            text = f"**{model}**\n\n" + "\n\n".join(f"{{fact:{ref}}}" for ref in refs)
+            return TurnOutput(
+                language=language, blocks=[TextBlock(text=text, refs=[str(pid), *refs])]
+            )
+        return None
+    if route.name == "documents":
+        certificates = grid_certificate_listing(facts, route, question, language)
+        if certificates is not None:
+            return certificates
+        parameter = datasheet_parameter_answer(facts, route, question, language)
+        if parameter is not None:
+            return parameter
     if route.name == "documents" and clearance_question(question):
         return _prepared_cabinet_installation(
             facts, route, language, question, page_product_id
@@ -887,6 +940,62 @@ def _warranty_period_fallback(
     ).ok:
         return None
     return hydrate(draft, facts, language)
+
+
+def _warranty_document_fallback(
+    facts: TurnFacts, language: Locale, route: Route, question: str
+) -> TurnOutput | None:
+    """Link the named product's current policy when its period is unverified."""
+    from linker_genie.source_models import model_pattern
+
+    if not _warranty_period_question(question) or len(route.named_models) != 1:
+        return None
+    name = route.named_models[0]
+    if (
+        not name.searched_known
+        or name.is_conflict
+        or len(name.product_ids) != 1
+        or not model_pattern(name.code).search(question)
+    ):
+        return None
+    pid = name.product_ids[0]
+    product = next(
+        (
+            c["result"]
+            for c in facts.tool_calls
+            if c.get("name") == "linker/get-product"
+            and c.get("ok")
+            and c["result"].get("product_id") == pid
+            and str(c["result"].get("model", "")).casefold() == name.code.casefold()
+        ),
+        None,
+    )
+    if product is None:
+        return None
+    refs = [
+        ref
+        for ref, doc in facts.documents.items()
+        if ref.startswith(f"p{pid}.document.")
+        and doc.evidence
+        and doc.warranty_language == language
+    ]
+    if refs:
+        text = (
+            f"Prüfen Sie in den verlinkten Garantiebedingungen, welche Garantiedauer und welcher Fristbeginn für das Modell {name.code} gelten. "
+            "Berücksichtigen Sie dabei Herstellungsdatum und Installationsort Ihres Geräts."
+            if language == "de"
+            else f"Consult the linked manufacturer warranty to verify the period and start date for your {name.code}. "
+            "Use the unit’s manufacture date and installation location to find the relevant terms."
+        )
+    else:
+        text = (
+            f"Die Garantiedauer und der Beginn der Frist für {name.code} lassen sich anhand der vorliegenden Unterlagen nicht bestätigen."
+            if language == "de"
+            else f"The available documents do not confirm the applicable warranty period or start date for the {name.code}."
+        )
+    blocks: list[Block] = [TextBlock(text=text, refs=[str(pid), *refs])]
+    blocks.extend(DocumentBlock(ref=ref) for ref in refs)
+    return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
 
 
 def _no_released_inverter(facts: TurnFacts, product_id: int) -> bool:
@@ -1291,12 +1400,9 @@ def fallback(
         shaped = _shape_fallback(route, language)
         if shaped is not None:
             return shaped
-    # A not_released pair has no released cards to dump. The check's conditions
-    # are the answer, also when the model cited a ref outside this turn: the
-    # answer is assembled from tool facts, not from the model's failed draft.
-    refused = _not_released_fallback(facts, language)
-    if refused is not None:
-        return refused
+    checked = _checked_pair_fallback(facts, language, route)
+    if checked is not None:
+        return checked
     # A released pair the model could not phrase still has its own evidence:
     # the conditions search-products returned for that pairing. The generic
     # catalogue sentence below names the products and drops every condition,
@@ -1349,6 +1455,9 @@ def fallback(
         )
         if warranty is not None:
             return warranty
+        policy = _warranty_document_fallback(facts, language, route, question)
+        if policy is not None:
+            return policy
         if (
             _warranty_period_question(question)
             and not facts.technical_chunks

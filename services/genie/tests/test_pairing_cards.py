@@ -969,6 +969,62 @@ def _pair_facts(verdict: str, product_ids: list[int]) -> TurnFacts:
     return gathered
 
 
+@pytest.mark.parametrize("lang", ["en", "de"])
+def test_exact_released_pair_fallback_keeps_its_conditions_and_source(
+    lang: Locale,
+) -> None:
+    ids = [1949, 1945]
+    conditions = [
+        {
+            "en": "One cabinet supplies 42.24 kW at 100 A.",
+            "de": "Ein Schrank liefert 42,24 kW bei 100 A.",
+        },
+        {
+            "en": "BMS version 25600 or later is required.",
+            "de": "BMS-Version 25600 oder höher ist erforderlich.",
+        },
+    ]
+    payload = {
+        "verdict": "released",
+        "conditions": conditions,
+        "documents": [{"url": "https://site.test/compat.pdf", "page": 6}],
+    }
+    facts = collect("linker/check-compatibility", payload, lang)
+    facts.tool_calls.append(
+        {
+            "name": "linker/check-compatibility",
+            "arguments": {"product_ids": ids},
+            "result": payload,
+        }
+    )
+    facts.product_ids.update(ids)
+    from linker_genie.ground import check
+
+    partial = _answer(lang, "{fact:compat.condition.0}", ids)
+    partial.blocks.append(DocumentBlock(ref="compat.document.0"))
+    assert "compat.condition.1" in check(partial, facts, Route("pairing")).reason
+    complete = _answer(lang, "{fact:compat.condition.0} {fact:compat.condition.1}", ids)
+    complete.blocks.append(DocumentBlock(ref="compat.document.0"))
+    assert check(complete, facts, Route("pairing")).ok
+    from linker_genie.schema import HandoffBlock
+    from linker_genie.template import fallback
+
+    mixed = fallback(facts, lang, Route("documents"), invented_citation=True)
+    assert isinstance(mixed.blocks[0], HandoffBlock)
+
+    draft = _answer(lang, "LX C101-10 / GW50K-ET-10", ids, refs=[])
+    result = run(
+        _request(lang), lambda *_: (draft, TurnFacts()), Route("pairing"), facts
+    )
+    assert result.fallback
+    assert all(condition[lang] in _text(result.output).text for condition in conditions)
+    assert _card_ids(result.output) == ids
+    assert any(
+        isinstance(b, DocumentBlock) and b.url == "https://site.test/compat.pdf#page=6"
+        for b in result.output.blocks
+    )
+
+
 @pytest.mark.parametrize(
     ("lang", "condition"),
     [

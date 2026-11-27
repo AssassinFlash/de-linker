@@ -49,6 +49,7 @@ from linker_genie.lexicon import Match, Vocabulary
 from linker_genie.nameplate import Identified, card, identify, with_known_brand
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.route import (
+    DOCUMENTS_HINT,
     Call,
     Route,
     Subject,
@@ -469,7 +470,7 @@ class Understander:
         # A catalog-wide recommendation or a pairing can discover products that
         # were not named. A model lookup and a technical comparison use the
         # resolved subject, including a current page the question refers to.
-        scoped = route.name in ("documents", "compare") or (
+        scoped = route.name in ("documents", "requirements", "compare") or (
             route.name == "products"
             and any(model.product_ids for model in route.named_models)
             and (
@@ -496,6 +497,24 @@ class Understander:
         if isinstance(search, knowledge.KnowledgeSearch) and permission is not None:
             search = partial(search.search, snapshot=permission)
         _run_calls(prepared, request, client, search, self._pages, clock)
+        if route.name == "requirements" and not any(
+            fact.source == "product-requirement"
+            for fact in prepared.facts.facts.values()
+        ):
+            lookup = Call(
+                knowledge.NAME,
+                {"query": message, "lang": language, "product_ids": list(subject.ids)},
+            )
+            prepared.route = replace(
+                route,
+                name="documents",
+                calls=(*route.calls, lookup),
+                hint=DOCUMENTS_HINT + " " + route.hint,
+            )
+            prepared.log.update(prepared.route.as_log())
+            _run_calls(
+                prepared, request, client, search, self._pages, clock, calls=(lookup,)
+            )
         # PDF parts rows are saved for list continuation. They do not provide
         # a manual's technical facts on a later, unrelated question.
         historical = [
@@ -779,6 +798,8 @@ def _run_calls(
     search: knowledge.Search = knowledge.SEARCH,
     pages: page.Reader = no_pages,
     clock: timing.Timing | None = None,
+    *,
+    calls: tuple[Call, ...] | None = None,
 ) -> None:
     """Run the route's calls side by side; results and facts keep the route's order.
 
@@ -835,14 +856,13 @@ def _run_calls(
             )
             return arguments, payload, gathered
 
-    calls = prepared.route.calls
+    calls = prepared.route.calls if calls is None else calls
     if not calls:
-        prepared.facts = merge([])
         return
     with timing.phase(clock, timing.CALLS):
         with ThreadPoolExecutor(max_workers=len(calls)) as pool:
             futures = [pool.submit(one, call) for call in calls]
-    parts: list[TurnFacts] = []
+    parts: list[TurnFacts] = [prepared.facts]
     failures: list[dict[str, str]] = []
     for call, future in zip(calls, futures, strict=True):
         try:
@@ -876,4 +896,4 @@ def _run_calls(
         )
     prepared.facts = merge(parts)
     if failures:
-        prepared.log["call_failures"] = failures
+        prepared.log.setdefault("call_failures", []).extend(failures)

@@ -609,7 +609,7 @@ def terms_text(
     return text, annotations
 
 
-def _purpose_is(document: Mapping[str, Any], purpose: str) -> bool:
+def policy_document_is(document: Mapping[str, Any], purpose: str) -> bool:
     # Keep the established role-first precedence. A generic/dedicated role is
     # not overridden by the type while validating a new conditional grant.
     label = str(document.get("role", "")).strip() or str(document.get("type", ""))
@@ -699,7 +699,7 @@ def valid_warranty_scope(
         document = documents.get(evidence.get("document_id", ""))
         if (
             document is None
-            or not _purpose_is(document, purpose)
+            or not policy_document_is(document, purpose)
             or document.get("document_revision") != evidence.get("document_revision")
             or document.get("blob_sha256") != evidence.get("blob_sha256")
             or pid not in document.get("product_ids", [])

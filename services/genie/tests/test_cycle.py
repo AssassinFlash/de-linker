@@ -127,6 +127,33 @@ def test_seal_preserves_a_qualified_figure_and_numbers_in_its_original_condition
     ]
 
 
+def test_incomplete_temperature_tolerance_retries_with_the_source_condition() -> None:
+    condition = "*1: 0.2C charge and discharge at +25 ±2°C."
+    facts = _qualified_table("138.24 kWh", condition)
+    request = TurnRequest(
+        conversation_id="energy",
+        messages=[
+            TurnMessage(
+                role="user",
+                content="What is the usable energy under the test conditions?",
+            )
+        ],
+        locale="en",
+    )
+
+    def generate(_: TurnRequest, retry: str | None) -> tuple[TurnOutput, TurnFacts]:
+        text = "The usable energy is {fact:sample-p2.n1}."
+        if retry is None:
+            text += " The ambient temperature is ± °C."
+        return TurnOutput(language="en", blocks=[TextBlock(text=text)]), facts
+
+    result = run(request, generate, Route("documents"))
+    assert result.grounded and result.attempts == 2
+    first = result.output.blocks[0]
+    assert isinstance(first, TextBlock)
+    assert "± °C" not in first.text and "+25 ±2°C" in first.text
+
+
 def test_seal_protects_the_qualified_occurrence_not_an_equal_other_fact() -> None:
     qualified = _qualified_table("5", "*6: This synthetic condition applies.")
     other = collect(

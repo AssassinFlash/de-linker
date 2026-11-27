@@ -28,6 +28,7 @@ from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
 from linker_genie.table_projection import (
     cells_digest,
+    model_axis,
     projection_id,
     render_projection,
     unqualified_table_columns,
@@ -38,6 +39,8 @@ SHA = "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08"
 ETR_SHA = "76df70ea8474531fb1f1d168b6faf3262cf2242358be9ba9d17b5f2fb5e75afd"
 ETR_DE_SHA = "8ced72d8cec02f6b69f82f42097c8a206ed3a5bf298b52178849f74292090b81"
 ESA_DE_SHA = "ce3e2552a6a21ff8b78988006f344619776c7cf01796cf172338040119569f9a"
+LYNX_C_SHA = "18175dc8771980aaf2c16ae2baeac2363416df81adf8b7c67bb54d21acbca6bf"
+LYNX_C_DE_SHA = "2f4cff9fa8fc2d27e4711bc3a2417f82f59b280ebcff5f8176c6886af0b6bbc1"
 
 
 def source() -> tuple[dict[str, Any], list[Chunk]]:
@@ -64,6 +67,12 @@ def source() -> tuple[dict[str, Any], list[Chunk]]:
 def etr_source(lang: Literal["en", "de"] = "en") -> tuple[dict[str, Any], list[Chunk]]:
     sha = ETR_DE_SHA if lang == "de" else ETR_SHA
     manifest_file = "etr-de-manifest.json" if lang == "de" else "etr-manifest.json"
+    return datasheet_source(sha, manifest_file, lang)
+
+
+def datasheet_source(
+    sha: str, manifest_file: str, lang: Literal["en", "de"]
+) -> tuple[dict[str, Any], list[Chunk]]:
     manifest = json.loads((FIXTURES / manifest_file).read_text())
     manifest["model_identity_revision"] = "fixture-identity-1"
     document = DoclingDocument.model_validate_json(
@@ -73,7 +82,7 @@ def etr_source(lang: Literal["en", "de"] = "en") -> tuple[dict[str, Any], list[C
     pages = enrich_model_axes(pages, FIXTURES / f"{sha}.pdf")
     meta = DocumentMeta(
         sha,
-        manifest["documents"][0]["title"],
+        next(d["title"] for d in manifest["documents"] if d["blob_sha256"] == sha),
         "",
         ("GoodWe",),
         tuple(p["model"] for p in manifest["products"]),
@@ -107,6 +116,127 @@ def selected(
     manifest: dict[str, Any], chunks: list[Chunk]
 ) -> tuple[list[Chunk], dict[str, ScopeProof]]:
     return compile_publication(chunks, manifest, authority(manifest), Words())
+
+
+@pytest.mark.parametrize(
+    ("sha", "lang", "field", "conditions", "qualification", "protection"),
+    [
+        (
+            LYNX_C_SHA,
+            "en",
+            "Usable Energy",
+            "100% DOD, 0.2C charge & discharge",
+            "different Inverter.",
+            "Ingress Protection Rating",
+        ),
+        (
+            LYNX_C_DE_SHA,
+            "de",
+            "Nutzbare Energie",
+            "100% DOD, 0.2 C Laden und Entladen",
+            "Wechselrichtern variieren.",
+            "Schutzklasse gegen Eindringen",
+        ),
+    ],
+)
+def test_lynx_c_projects_each_published_capacity_with_its_test_conditions(
+    sha: str,
+    lang: Literal["en", "de"],
+    field: str,
+    conditions: str,
+    qualification: str,
+    protection: str,
+) -> None:
+    manifest, original = datasheet_source(sha, "lynx-c-manifest.json", lang)
+    compiler = authority(manifest, extra_models={"LX C120-10": "unavailable"})
+    compiled, proofs = compile_publication(original, manifest, compiler, Words())
+    for chunk in compiled:
+        if chunk.id in proofs:
+            assert "LX C120-10" not in chunk.text and "119.81" not in chunk.text
+    capacities = {1949: "101.38", 1951: "138.24", 1952: "156.67"}
+    for pid, capacity in capacities.items():
+        rows = [
+            chunk.text
+            for chunk in compiled
+            if chunk.id in proofs
+            and proofs[chunk.id]["product_ids"] == [pid]
+            and proofs[chunk.id]["basis"] == "table_projection"
+        ]
+        capacity_rows = [text for text in rows if f"{field} (kWh)" in text]
+        assert len(capacity_rows) == 1
+        assert f"| {field} (kWh) *1 | {capacity} |" in capacity_rows[0]
+        assert conditions in capacity_rows[0] and qualification in capacity_rows[0]
+        assert "\x07" not in capacity_rows[0]
+        text = "\n".join(rows)
+        assert f"| {protection} | IP21 |" in text
+        assert "| 1650 × 730 |" not in text
+        assert "119.81" not in text and "LX C120-10" not in text
+        assert all(other not in text for key, other in capacities.items() if key != pid)
+
+
+@pytest.mark.parametrize(
+    ("sha", "lang", "trackers", "power", "backup"),
+    [
+        (
+            "4534dd428973160226c57c7e14d364b6f6dbf30bfe1e9761f45e05917cbcedd0",
+            "en",
+            "Number of MPP Trackers",
+            "Max. Charging Power (W)",
+            "",
+        ),
+        (
+            "22c0b75575dc400a85bfc1fef0ae85dacbf112d86d5aa04ac1f60eab1a5e6d4f",
+            "en",
+            "Number of MPP Trackers",
+            "Max. Charging Power (W)",
+            "AC Output Data (Back-up)*requires additional STS box",
+        ),
+        (
+            "d4dea0be60dc736a139ead31cdc687a38c0f392859994e008d3ef3a5e1b1bcbe",
+            "de",
+            "Anzahl der MPPTs",
+            "Max. Ladeleistung (W)",
+            "AC Ausgangsdaten (Notstrom)*erfordert eine zusätzliche STS-Box",
+        ),
+    ],
+)
+def test_et_50_datasheets_keep_independent_values_and_model_conditions(
+    sha: str,
+    lang: Literal["en", "de"],
+    trackers: str,
+    power: str,
+    backup: str,
+) -> None:
+    manifest, native = datasheet_source(sha, "et-50-manifest.json", lang)
+    cells = next(c.source_cells for c in native if c.page == 2 and c.source_cells)
+    models = model_axis(cells)
+    assert models is not None and models[-2:] == ["GW40K-ET-10", "GW50K-ET-10"]
+    if len(models) == 4:
+        assert models[:2] == ["GW25K-ET-10*6", "GW30K-ET-10*6"]
+        assert any("*6: Only available in SEA, MENA" in chunk.text for chunk in native)
+        row = next(c["row_start"] for c in cells if c["text"] == power)
+        assert render_projection(cells, 1, [row]) is None
+        assert render_projection(cells, 2, [row]) is None
+    compiled, proofs = selected(manifest, native)
+    grants = [
+        c
+        for c in compiled
+        if c.id in proofs and proofs[c.id]["basis"] == "table_projection"
+    ]
+    assert grants and all(
+        c.page == 2 and proofs[c.id]["product_ids"] == [1945] for c in grants
+    )
+    text = "\n".join(c.text for c in grants)
+    assert f"| {power} | 55000 |" in text and f"| {trackers} | 4 |" in text
+    assert "| 42 / 32 / 42 / 32 |" in text
+    assert all(
+        term not in text for term in ("44000", "GW25K-", "GW30K-", "GW40K-", "*6")
+    )
+    if backup:
+        assert backup in text
+        assert "| 50000 |" in text[text.index(backup) :]
+    else:
+        assert "AC Output Data" not in text and "50000" not in text
 
 
 def test_orphaned_qualifier_does_not_become_a_projected_fact() -> None:

@@ -57,6 +57,8 @@ final class GetProductTest extends TestCase {
 		$this->assertContains( 'facts', $schema['required'] );
 		$this->assertContains( 'documents', $schema['required'] );
 		$this->assertContains( 'faq', $schema['required'] );
+		$this->assertArrayHasKey( 'requirements', $schema['properties'] );
+		$this->assertSame( array(), $result['requirements'] );
 	}
 
 	/**

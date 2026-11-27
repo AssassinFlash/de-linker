@@ -352,6 +352,7 @@ RouteName = Literal[
     "parts",
     "products",
     "documents",
+    "requirements",
     "pairing",
     "compare",
     "sizing",
@@ -950,7 +951,110 @@ def _plan_turn(
             hint=EXTREME_HINT,
             reasons=tuple(reasons),
         )
-    if intent == "sizing":
+    backup_question = _TRANSFER_SWITCH.search(message) or (
+        _BACKUP_MODE.search(message) and _BACKUP_COMPONENT.search(message)
+    )
+    backup_calls: tuple[Call, ...] = ()
+    backup_pair: tuple[Call, ...] = ()
+    if backup_question and len(written) >= 2 and not brand_conflict:
+        inverters = [
+            pid for pid in subject.ids if subject.device_class.get(pid) in _INVERTERS
+        ]
+        # A short code or an explicitly offered alternative can be absent from
+        # the catalogue even when the other two model names were resolved.
+        known = {normalize(code) for code in subject.catalog_models}
+        prefixes = _catalog_shapes(subject)
+        alternatives = list(unknown_codes)
+        for token in _PAIR_EQUIPMENT_CODE.finditer(message):
+            code = token.group()
+            normalized = normalize(code)
+            if (
+                not any(ch.isdigit() for ch in code)
+                or normalized in known
+                or any(normalized in normalize(model.value) for model in written)
+            ):
+                continue
+            if _catalog_shaped(code, prefixes) or re.search(
+                r"\b(?:or|oder)\s+$", message[: token.start()], re.I
+            ):
+                alternatives.append(code)
+        if len(subject.ids) > 2 or len(inverters) > 1 or alternatives:
+            models = ", ".join(
+                dict.fromkeys([*(m.value for m in written), *alternatives])
+            )
+            answer = (
+                f"Sie haben {models} genannt. Für welchen Wechselrichter und welche Batterie soll ich die Kompatibilität und den Ersatzstrombetrieb prüfen?"
+                if lang == "de"
+                else f"You mentioned {models}. Which inverter and battery should I check for compatibility and backup?"
+            )
+            return Route(
+                "clarify",
+                no_cards=True,
+                no_handoff=True,
+                answer=answer,
+                reasons=tuple(reasons),
+            )
+        if len(inverters) == 1 and any(
+            subject.device_class.get(pid) in _BATTERIES for pid in subject.ids
+        ):
+            backup_pair = (
+                Call("linker/check-compatibility", {"product_ids": list(subject.ids)}),
+            )
+            backup_calls = (
+                Call(
+                    "linker/get-product",
+                    {
+                        "product_id": inverters[0],
+                        "lang": lang,
+                        "requirement_kind": "backup",
+                    },
+                ),
+            )
+            if _catalog_request(
+                message,
+                matches,
+                _PAIRING_WORDS
+                | _BACKUP_REQUEST_WORDS
+                | {"please", "bitte", "bms", "sts"},
+            ):
+                return Route(
+                    "pairing",
+                    (*backup_pair, *backup_calls),
+                    no_handoff=True,
+                    hint="Answer the exact pairing from its check. " + _BACKUP_HINT,
+                    reasons=tuple(reasons),
+                )
+    accessory_documents = False
+    if len(subject.ids) == 1 and not unknown_codes and not brand_conflict:
+        pid = subject.ids[0]
+        device = subject.device_class.get(pid)
+        accessory_documents = device == "accessories" and bool(
+            backup_question
+            or (
+                _INVERTER_WORD.search(message)
+                and (intent == "pairing_compatibility" or _PAIRING_CUE.search(message))
+            )
+        )
+        if device in _INVERTERS and backup_question:
+            backup_calls = (
+                Call(
+                    "linker/get-product",
+                    {"product_id": pid, "lang": lang, "requirement_kind": "backup"},
+                ),
+            )
+            if _catalog_request(message, matches, _BACKUP_REQUEST_WORDS):
+                return Route(
+                    "requirements",
+                    backup_calls,
+                    no_handoff=True,
+                    hint=_BACKUP_HINT,
+                    reasons=tuple(reasons),
+                )
+    if intent == "sizing" or (
+        backup_calls
+        and _SIZE_WORD.search(message)
+        and re.search(r"\b(?:siz(?:e|ing)|dimensionier\w*|ausleg\w*)\b", message, re.I)
+    ):
         return Route(
             "sizing",
             (
@@ -960,6 +1064,8 @@ def _plan_turn(
                     "linker/size-hint",
                     stated_size_hint((*earlier, message)),
                 ),
+                *backup_pair,
+                *backup_calls,
             ),
             action="open_configurator",
             no_cards=True,
@@ -972,7 +1078,8 @@ def _plan_turn(
                 "plz the customer stated in the conversation, and leaves out "
                 "every field they did not state). No product cards. Call "
                 "size-hint with an empty object."
-            ),
+            )
+            + (" " + _BACKUP_HINT if backup_calls else ""),
             reasons=tuple(reasons),
         )
     # An unmatched short body, or a suffix with no product word, is a question.
@@ -984,9 +1091,15 @@ def _plan_turn(
     family = _family_hint(matches)
     calls, notes = _search_plan(matches, lang, subject, message)
     reasons.extend(_note_reasons(notes))
-    pairing_question = intent == "pairing_compatibility" or (
-        bool(subject.ids) and bool(_PAIRING_CUE.search(message))
+    pairing_question = (
+        bool(backup_pair)
+        or intent == "pairing_compatibility"
+        or (bool(subject.ids) and bool(_PAIRING_CUE.search(message)))
     )
+    if backup_calls and not backup_pair:
+        pairing_question = pairing_question and bool(
+            _BATTERY_WORD.search(message) or _STORAGE_WORD.search(message)
+        )
     if pairing_question and len(subject.ids) == 1 and notes:
         known_codes = {normalize(note.code) for note in notes}
         # A second model explicitly attached to an equipment name also needs its
@@ -1080,7 +1193,9 @@ def _plan_turn(
             comparison_calls = [
                 compare,
                 *(
-                    Call("linker/get-product", {"product_id": pid, "lang": lang})
+                    backup_calls[0]
+                    if backup_calls and pid == backup_calls[0].arguments["product_id"]
+                    else Call("linker/get-product", {"product_id": pid, "lang": lang})
                     for pid in ids
                 ),
             ]
@@ -1091,6 +1206,8 @@ def _plan_turn(
                         _knowledge_input(message, matches, subject, lang),
                     )
                 )
+            if len(comparison_calls) < MAX_TOOL_CALLS:
+                comparison_calls.extend(backup_pair)
             return Route(
                 "compare",
                 tuple(comparison_calls),
@@ -1104,21 +1221,25 @@ def _plan_turn(
             )
         return Route(
             "compare",
-            (compare,),
+            (compare, *backup_pair, *backup_calls),
             no_handoff=True,
-            hint="The comparison is fetched; answer with a compare block.",
+            hint="The comparison is fetched; answer with a compare block."
+            + (" " + _BACKUP_HINT if backup_calls else ""),
             reasons=tuple(reasons),
         )
     asks_clearance = clearance_question(message)
+    engineering_question = _BACKUP_MODE.sub(" ", message) if backup_pair else message
     pairing_detail = (
         pairing_question
         and bool(subject.ids)
-        and (asks_clearance or _ENGINEERING_DETAIL.search(message))
+        and (asks_clearance or _ENGINEERING_DETAIL.search(engineering_question))
     )
     if (
         intent == "documents_specs"
         or (asks_clearance and subject.ids)
         or pairing_detail
+        or accessory_documents
+        or (backup_calls and not pairing_question)
     ):
         # Known products are fetched with get-product; a code with no product
         # id is searched. Either call counts as searched. What does not fit
@@ -1128,6 +1249,16 @@ def _plan_turn(
             calls, notes, message, matches, subject, lang
         )
         hint = DOCUMENTS_HINT
+        if backup_calls:
+            doc_calls = tuple(
+                backup_calls[0]
+                if call.ability == "linker/get-product"
+                and call.arguments["product_id"]
+                == backup_calls[0].arguments["product_id"]
+                else call
+                for call in doc_calls
+            )
+            hint += " " + _BACKUP_HINT
         if pairing_question and (pairing := _pairing(subject, lang)):
             hint += SERIES_PAIRING_HINT
             doc_calls, notes = _limit_route_calls(
@@ -1147,11 +1278,12 @@ def _plan_turn(
         if pairing is not None:
             return Route(
                 "pairing",
-                (pairing,),
+                (pairing, *backup_calls),
                 no_handoff=True,
                 catalog_only=not earlier
                 and _catalog_request(message, matches, _PAIRING_WORDS),
-                hint="The pairing result is fetched; answer from it.",
+                hint="The pairing result is fetched; answer from it."
+                + (" " + _BACKUP_HINT if backup_calls else ""),
                 reasons=tuple(reasons),
             )
     brands = list(dict.fromkeys(m.value for m in matches if m.kind == "brand"))
@@ -1788,9 +1920,36 @@ _ENGINEERING_DETAIL = re.compile(
     re.I,
 )
 
+_BACKUP_HINT = (
+    "Use the inverter's published backup requirements with their full conditions and sources. "
+    "Use the product FAQ and manufacturer documents for any outstanding information."
+)
+_TRANSFER_SWITCH = re.compile(
+    r"\b(?:transfer switch(?:es)?|umschalter|umschaltschrank|umschalteinrichtung)\b",
+    re.I,
+)
+_BACKUP_MODE = re.compile(r"\b(?:back[- ]?up|ersatzstrom\w*|notstrom\w*)\b", re.I)
+_BACKUP_COMPONENT = re.compile(
+    r"\b(?:accessor(?:y|ies)|equipment|hardware|software\w*|firmware\w*|switch(?:gear)?|sts|zubehör)\b",
+    re.I,
+)
+_BACKUP_REQUEST_WORDS = frozenset(
+    "which what is are a an the do does my this i need needs require requires required for "
+    "to operate operation with and of on in backup back up power inverter transfer static switch "
+    "cabinet accessory accessories equipment hardware software firmware version minimum at least "
+    "welche welcher welches welchen was ist sind der die das den dem ein eine einen einem ich mein "
+    "braucht brauche benötigt benötige erforderlich für zum zur im mit und ab mindestens "
+    "wechselrichter umschalter umschaltschrank umschalteinrichtung ersatzstrom ersatzstrombetrieb "
+    "notstrom notstrombetrieb zubehör software firmware softwareversion firmwareversion version".split()
+)
+
+
 _PAIRING_CUE = re.compile(
     r"\b(?:combin(?:e|ing)|compatib\w*|kompatib\w*|kombinier\w*|funktionier\w*|work(?:s)? with|fit(?:s)? (?:with|my)|pair(?:ed)? with)\b",
     re.I,
+)
+_PAIR_EQUIPMENT_CODE = re.compile(
+    r"(?<![\w./-])[A-Za-z][A-Za-z0-9.]*(?:-[A-Za-z0-9.]+)+(?![\w./-])"
 )
 _EQUIPMENT_PREFIX = re.compile(
     r"(?i:\b(?:inverter|battery|wechselrichter|batterie)\b)(?:[ -]+[A-Z\d][A-Z\d.-]*)*\s+$"
@@ -1813,7 +1972,9 @@ def _catalog_request(message: str, matches: list[Match], words: frozenset[str]) 
     for match in matches:
         if match.kind in ("brand", "model", "series"):
             remaining = re.sub(
-                r"(?<!\w)" + re.escape(match.words.casefold()) + r"(?!\w)",
+                r"(?<!\w)"
+                + re.escape(" ".join(_words(match.words.casefold())))
+                + r"(?!\w)",
                 " ",
                 remaining,
             )
@@ -3002,7 +3163,9 @@ def with_page(
         added.append(Call(READ_PAGE, {}))
     else:
         return route
-    room = MAX_TOOL_CALLS - (DOCUMENTS_SPARE if route.name == "documents" else 0)
+    room = MAX_TOOL_CALLS - (
+        DOCUMENTS_SPARE if route.name in ("documents", "requirements") else 0
+    )
     ordered = [*route.calls, *(call for call in added if call not in route.calls)]
     planning_call = next(
         (call for call in ordered if call.ability == planning_tool.NAME), None

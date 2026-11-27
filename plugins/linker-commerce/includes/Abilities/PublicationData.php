@@ -10,6 +10,7 @@ namespace Linker\Commerce\Abilities;
 
 use Linker\Commerce\Products\Compatibility;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\Publication\CompatibilityClaims;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Products\SelectionFactSet;
 
@@ -170,6 +171,38 @@ final class PublicationData {
 			$this->pair_manifest = $manifest;
 		}
 		return $this->pairs;
+	}
+
+	/**
+	 * The requested inverter's documented equipment conditions, with their original scope.
+	 *
+	 * @param int                 $id Published product ID.
+	 * @param string              $kind Requested requirement kind.
+	 * @param array<string,mixed> $manifest Current snapshot.
+	 * @return list<array<string,mixed>>
+	 */
+	public function requirements( int $id, string $kind, array $manifest ): array {
+		$owner       = Publication::canonical_id( $id );
+		$declaration = CompatibilityClaims::projection( $manifest['products'], $manifest['documents'], include_evidence: true );
+		$titles      = array_column( $manifest['documents'], 'title', 'document_id' );
+		$models      = array_column( $manifest['products'], 'model', 'product_id' );
+		$rows        = array();
+		foreach ( $declaration['requirements'] ?? array() as $row ) {
+			if ( $row['inverter_product_id'] !== $owner || $row['kind'] !== $kind ) {
+				continue;
+			}
+			foreach ( $row['documents'] as &$document ) {
+				$document['title'] = $titles[ $document['document_id'] ];
+				unset( $document['blob_sha256'] );
+			}
+			unset( $document );
+			foreach ( $row['accessories'] as &$part ) {
+				$part['model'] = $models[ $part['product_id'] ];
+			}
+			unset( $part, $row['inverter'] );
+			$rows[] = $row;
+		}
+		return $rows;
 	}
 
 	/**
