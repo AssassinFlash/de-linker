@@ -155,6 +155,7 @@ final class DocumentAccess {
 					array(
 						'status'  => 416,
 						'headers' => array(
+							'Accept-Ranges'  => 'bytes',
 							'Content-Range'  => 'bytes */' . $size,
 							'Content-Length' => '0',
 						),
@@ -173,6 +174,7 @@ final class DocumentAccess {
 					array(
 						'status'  => 416,
 						'headers' => array(
+							'Accept-Ranges'  => 'bytes',
 							'Content-Range'  => 'bytes */' . $size,
 							'Content-Length' => '0',
 						),

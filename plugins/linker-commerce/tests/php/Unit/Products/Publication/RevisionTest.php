@@ -66,10 +66,13 @@ final class RevisionTest extends TestCase {
 			self::assertSame( '<https://de-linker.com/product/model-12/>; rel="canonical"', $response['headers']['Link'] ?? null );
 			self::assertSame( 'inline; filename="manual.pdf"', $response['headers']['Content-Disposition'] ?? null );
 		}
-		$response = ( new DocumentAccess() )->response( $file, 'GET', 'bytes=9999999-' );
-		self::assertSame( 416, $response['status'] );
-		self::assertArrayNotHasKey( 'Link', $response['headers'] );
-		self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
+		foreach ( array( 'bytes=9999999-', 'bytes=-' ) as $invalid_range ) {
+			$response = ( new DocumentAccess() )->response( $file, 'GET', $invalid_range );
+			self::assertSame( 416, $response['status'] );
+			self::assertSame( 'bytes', $response['headers']['Accept-Ranges'] ?? null );
+			self::assertArrayNotHasKey( 'Link', $response['headers'] );
+			self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
+		}
 	}
 
 	/** A shared same-series manual uses its lowest sales ID; another series goes to the library. */

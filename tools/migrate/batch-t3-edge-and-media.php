@@ -135,10 +135,11 @@ function query_list( $stored ): array {
  * Ask the installed plugin to regenerate its cache-key rules.
  *
  * @param string[] $parameters Desired parameters.
+ * @param bool     $regenerate Rebuild the managed block if a previous rules write was interrupted.
  * @throws RuntimeException If LiteSpeed did not commit the setting.
  */
-function set_query_list( array $parameters ): void {
-	if ( query_list( get_option( 'litespeed.conf.cache-drop_qs' ) ) === $parameters ) {
+function set_query_list( array $parameters, bool $regenerate ): void {
+	if ( ! $regenerate && query_list( get_option( 'litespeed.conf.cache-drop_qs' ) ) === $parameters ) {
 		return;
 	}
 	\LiteSpeed\Conf::cls()->update_confs( array( 'cache-drop_qs' => $parameters ) );
@@ -201,18 +202,19 @@ function pause_translation(): void {
  * @throws RuntimeException When the directory or contact cannot be restored.
  */
 function security_file( array $before, bool $apply ): void {
-	$path   = ABSPATH . '.well-known/security.txt';
-	$source = bytes( WP_PLUGIN_DIR . '/linker-commerce/assets/well-known/security.txt' );
-	$body   = $apply ? $source : $before['security'];
+	$path    = ABSPATH . '.well-known/security.txt';
+	$source  = bytes( WP_PLUGIN_DIR . '/linker-commerce/assets/well-known/security.txt' );
+	$body    = $apply ? $source : $before['security'];
+	$current = is_file( $path ) ? bytes( $path ) : null;
+	if ( $current !== $before['security'] && $current !== $source ) {
+		throw new RuntimeException( 'The security contact changed after the snapshot.' );
+	}
 	if ( null !== $body ) {
 		if ( ! wp_mkdir_p( dirname( $path ) ) ) {
 			throw new RuntimeException( 'Cannot create the security contact directory.' );
 		}
 		install_file( $path, $body, $apply ? 0644 : $before['security_mode'] );
 	} elseif ( is_file( $path ) ) {
-		if ( bytes( $path ) !== $source ) {
-			throw new RuntimeException( 'The security contact changed after publication.' );
-		}
 		wp_delete_file( $path );
 	}
 	if ( ! $apply && ! $before['well_known'] && is_dir( dirname( $path ) ) && array( '.', '..' ) === scandir( dirname( $path ) ) ) {
@@ -243,7 +245,7 @@ function security_file( array $before, bool $apply ): void {
 	if ( $original !== $current && $desired !== $current ) {
 		WP_CLI::error( 'The cache-key settings changed after the snapshot.' );
 	}
-	set_query_list( $apply ? $desired : $original );
+	set_query_list( $apply ? $desired : $original, $apply && ! preg_match( '/^CacheKeyModify -qs:srsltid\s*$/m', $published ) );
 	$generated = bytes( $file );
 	if ( $apply && ! preg_match( '/^CacheKeyModify -qs:srsltid\s*$/m', $generated ) ) {
 		WP_CLI::error( 'The native LiteSpeed cache-key rule is missing.' );
