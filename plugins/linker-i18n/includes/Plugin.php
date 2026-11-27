@@ -120,6 +120,8 @@ final class Plugin {
 		add_filter( 'seopress_titles_title', array( $german_titles, 'title' ), 40 );
 		add_filter( 'pre_get_document_title', array( $german_titles, 'title' ), 40 );
 		add_filter( 'seopress_titles_desc', array( $german_titles, 'shop_description' ), 40 );
+		add_filter( 'seopress_social_og_title', array( $german_titles, 'shop_social_title' ), 40 );
+		add_filter( 'seopress_social_twitter_card_title', array( $german_titles, 'shop_social_title' ), 40 );
 		add_filter( 'seopress_social_og_desc', array( $german_titles, 'shop_social_description' ), 40 );
 		add_filter( 'seopress_social_twitter_card_desc', array( $german_titles, 'shop_social_description' ), 40 );
 		add_filter( 'seopress_titles_canonical', array( $german_titles, 'canonical' ), 40 );
@@ -146,7 +148,7 @@ final class Plugin {
 		add_filter( 'old_slug_redirect_post_id', array( $german_urls, 'old_post' ) );
 		add_filter( 'old_slug_redirect_url', array( $german_urls, 'old_url' ) );
 		add_filter( 'linker_tools_retired_url', array( $german_urls, 'retired_url' ), 10, 2 );
-		add_filter( 'pll_rel_hreflang_attributes', array( $seo, 'hreflangs' ) );
+		add_filter( 'pll_rel_hreflang_attributes', array( $seo, 'hreflangs' ), 99 );
 		add_filter( 'do_redirect_guess_404_permalink', array( $seo, 'guess_404' ) );
 		add_filter( 'seopress_titles_title', array( $seo, 'not_found_title' ) );
 		add_filter( 'seopress_titles_noindex_bypass', array( $seo, 'twin_noindex' ) );

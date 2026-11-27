@@ -81,6 +81,9 @@ final class SeoTest extends TestCase {
 	 */
 	public function test_x_default_is_english(): void {
 		WP_Mock::userFunction( 'is_search', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_attachment', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => null ) );
 		$this->assertSame(
 			array(
 				'en'        => 'http://example.test/product/x/',
@@ -111,6 +114,45 @@ final class SeoTest extends TestCase {
 				)
 			)
 		);
+	}
+
+	/**
+	 * All effective noindex decisions suppress language alternates.
+	 *
+	 * @dataProvider excluded_documents
+	 * @param string $reason Active exclusion.
+	 */
+	public function test_no_hreflang_on_excluded_documents( string $reason ): void {
+		foreach ( array( 'is_search', 'is_404', 'is_attachment', 'seopress_titles_noindex_bypass' ) as $flag ) {
+			WP_Mock::userFunction( $flag )->andReturn( $flag === $reason );
+		}
+		$object = null;
+		if ( 'post' === $reason ) {
+			$object = PolylangDouble::post( 7 );
+			WP_Mock::userFunction( 'get_post_meta' )->with( 7, '_seopress_robots_index', true )->andReturn( 'yes' );
+		} elseif ( 'term' === $reason ) {
+			$object = PolylangDouble::term( 8 );
+			WP_Mock::userFunction( 'get_term_meta' )->with( 8, '_seopress_robots_index', true )->andReturn( 'yes' );
+		}
+		WP_Mock::userFunction( 'get_queried_object' )->andReturn( $object );
+		$before = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Preserve the test request.
+		try {
+			if ( 'replytocom' === $reason ) {
+				$_GET['replytocom'] = '1';
+			}
+			$this->assertSame( array(), ( new Seo() )->hreflangs( array( 'en' => '/english/' ) ) );
+		} finally {
+			$_GET = $before;
+		}
+	}
+
+	/**
+	 * Public URLs that already carry noindex.
+	 *
+	 * @return list<array{string}>
+	 */
+	public function excluded_documents(): array {
+		return array( array( 'is_404' ), array( 'is_attachment' ), array( 'seopress_titles_noindex_bypass' ), array( 'replytocom' ), array( 'post' ), array( 'term' ) );
 	}
 
 	/**

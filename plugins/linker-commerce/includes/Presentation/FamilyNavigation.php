@@ -29,9 +29,12 @@ final class FamilyNavigation {
 
 	/** Register native redirect and SEO extension points. */
 	public function register(): void {
-		add_action( 'template_redirect', array( $this, 'redirect' ), 1 );
+		add_action( 'template_redirect', array( $this, 'redirect' ), 0 );
 		add_filter( 'seopress_titles_noindex_bypass', array( $this, 'noindex' ) );
 		add_filter( 'seopress_titles_canonical', array( $this, 'canonical' ) );
+		add_filter( 'seopress_titles_canonical_on_noindex', array( $this, 'canonical_on_noindex' ), 20 );
+		add_filter( 'seopress_titles_title', array( $this, 'paged_title' ), 50 );
+		add_filter( 'pre_get_document_title', array( $this, 'paged_title' ), 50 );
 		add_filter( 'pll_rel_hreflang_attributes', array( $this, 'hreflangs' ), 20 );
 	}
 
@@ -85,6 +88,36 @@ final class FamilyNavigation {
 		}
 		$paged = $options->getPagedNoIndex();
 		return empty( $paged ) ? $noindex : $paged;
+	}
+
+	/**
+	 * Keep the self-canonical on later family pages even when SEOPress excludes them.
+	 *
+	 * @param bool $allow Existing canonical policy.
+	 */
+	public function canonical_on_noindex( bool $allow ): bool {
+		return $allow || ( $this->active() && ( $this->page )()->current > 1 );
+	}
+
+	/**
+	 * Put the localized page number before the site-name suffix.
+	 *
+	 * @param string $title Expanded document title.
+	 */
+	public function paged_title( string $title ): string {
+		if ( '' === $title || ! $this->active() ) {
+			return $title;
+		}
+		$current = ( $this->page )()->current;
+		if ( $current < 2 ) {
+			return $title;
+		}
+		/* translators: %d: product archive page number. */
+		$label = ' – ' . sprintf( __( 'Page %d', 'linker-commerce' ), $current );
+		$site  = ' | ' . get_bloginfo( 'name' );
+		$end   = str_ends_with( $title, $site ) ? $site : '';
+		$base  = '' === $end ? $title : substr( $title, 0, -strlen( $end ) );
+		return str_ends_with( $base, $label ) ? $title : $base . $label . $end;
 	}
 
 	/**

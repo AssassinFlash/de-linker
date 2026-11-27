@@ -95,10 +95,12 @@ final class Plugin {
 		$this->filters->register();
 		$this->search_scope->register();
 		$this->contact->register();
+		( new Storefront\CrawlHygiene() )->register();
 		( new Storefront\PageIndexing() )->register();
 		( new Storefront\PageSchema() )->register();
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
+		( new Storefront\SitemapSync() )->register();
 		( new Consent\BasicMode() )->register();
 		( new Presentation\BlockStyles() )->register();
 		( new Products\Publication\Module() )->register();

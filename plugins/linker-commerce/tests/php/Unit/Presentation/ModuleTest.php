@@ -153,9 +153,12 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_head', array( $library, 'print_schema' ) );
 		$families     = new AnyInstance( FamilyNavigation::class );
 		$family_hooks = array(
-			array( 'action', 'template_redirect', 'redirect', 1 ),
+			array( 'action', 'template_redirect', 'redirect', 0 ),
 			array( 'filter', 'seopress_titles_noindex_bypass', 'noindex', 10 ),
 			array( 'filter', 'seopress_titles_canonical', 'canonical', 10 ),
+			array( 'filter', 'seopress_titles_canonical_on_noindex', 'canonical_on_noindex', 20 ),
+			array( 'filter', 'seopress_titles_title', 'paged_title', 50 ),
+			array( 'filter', 'pre_get_document_title', 'paged_title', 50 ),
 			array( 'filter', 'pll_rel_hreflang_attributes', 'hreflangs', 20 ),
 		);
 		$registered   = array_fill_keys( array_column( $family_hooks, 1 ), 0 );
@@ -184,6 +187,8 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.after', WindPressPageStyles::class, 'after_cache' );
 		$cards = new AnyInstance( SocialCards::class );
 		foreach ( array(
+			'seopress_social_og_type'              => 'open_graph_type',
+			'site_icon_meta_tags'                  => 'site_icons',
 			'seopress_social_twitter_card_summary' => 'summary',
 			'seopress_social_og_thumb'             => 'open_graph',
 			'seopress_social_twitter_card_thumb'   => 'twitter_image',

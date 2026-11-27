@@ -156,6 +156,10 @@ final class PageIndexingTest extends TestCase {
 			array( '/products/', '', false ),
 			array( '/products/', 'product-page=2', false ),
 			array( '/products/', 'brand=goodwe', true ),
+			array( '/products/', 'orderby=price', true ),
+			array( '/products/', 'filter_brand=goodwe', true ),
+			array( '/products/', 'query_type_brand=and', true ),
+			array( '/de/produkte/', 'product-page=2&orderby=price', true ),
 			array( '/de/produkte/', 'product-page=2&brand=goodwe', true ),
 			array( '/product-category/inverters/', 'kw_min=10&sort=power-desc', true ),
 			array( '/compare-products/', '', false ),
@@ -181,5 +185,25 @@ final class PageIndexingTest extends TestCase {
 			'shop'    => array( 14, false, false ),
 			'content' => array( 15, false, true ),
 		);
+	}
+	/** Only brands that have products on this archive get a discovery description. */
+	public function test_brand_description_uses_the_visible_manufacturer(): void {
+		$term = new \WP_Term(
+			(object) array(
+				'taxonomy' => 'product_brand',
+				'name'     => 'Test &amp; Co.',
+			)
+		);
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
+		WP_Mock::userFunction( 'is_page', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_tax', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_main_query', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'have_posts' )->andReturn( true, false );
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return_arg' => 0 ) );
+		$indexing = new PageIndexing();
+		$this->assertStringContainsString( 'Test & Co.', $indexing->description( '' ) );
+		$this->assertSame( '', $indexing->description( '' ) );
 	}
 }

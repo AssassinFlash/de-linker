@@ -76,10 +76,14 @@ final class PlannerIndexingTest extends TestCase {
 			$this->assertTrue( $policy->canonical( false ) );
 			$this->assertSame( array(), $policy->hreflangs( array( 'en' => 'public' ) ) );
 
-			$_GET = array(
-				'step'       => 'roof',
-				'utm_source' => 'fixture',
-			);
+			foreach ( array( 'view', 'energy_view', 'projects', 'brief', 'step', 'retry_revision', 'linker_inquiry_retry', 'application', 'goal', 'scope', 'product_id', 'compare', 'guided', 'project_search' ) as $key ) {
+				$_GET = array( $key => 'fixture' );
+				$this->assertSame( 'noindex, nofollow, nosnippet', $policy->headers( array() )['X-Robots-Tag'], $key );
+				$this->assertSame( '1', $policy->noindex( '' ) );
+				$this->assertTrue( $policy->canonical( false ) );
+				$this->assertSame( array(), $policy->hreflangs( array( 'en' => 'public' ) ) );
+			}
+			$_GET = array( 'utm_source' => 'fixture' );
 			$this->assertSame( array( 'Cache-Control' => 'existing' ), $policy->headers( array( 'Cache-Control' => 'existing' ) ) );
 			$this->assertSame( array( 'index' => true ), $policy->robots( array( 'index' => true ) ) );
 			$this->assertSame( '', $policy->noindex( '' ) );

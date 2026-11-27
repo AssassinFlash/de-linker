@@ -18,6 +18,8 @@ use WP_Post;
 final class PageSchema {
 	/** Register the public metadata hooks. */
 	public function register(): void {
+		add_filter( 'woocommerce_structured_data_type_for_page', array( $this, 'strip_online_store_type' ) );
+		add_filter( 'woocommerce_structured_data_online_store', '__return_false' );
 		add_filter( 'seopress_schemas_website', array( $this, 'website' ) );
 		add_filter( 'seopress_get_json_data_organization', array( $this, 'organization' ) );
 		add_filter( 'seopress_schemas_auto_article_json', array( $this, 'article_schema' ) );
@@ -28,17 +30,45 @@ final class PageSchema {
 	}
 
 	/**
+	 * Woo's retail return policy does not describe the inquiry site.
+	 *
+	 * @param string[] $types Woo schema types for the current page.
+	 * @return list<string>
+	 */
+	public function strip_online_store_type( array $types ): array {
+		return array_values( array_diff( $types, array( 'onlinestore' ) ) );
+	}
+
+	/** Canonical publisher across all languages. */
+	private static function organization_id(): string {
+		return PageUrls::root() . '#organization';
+	}
+
+	/** Canonical author across all languages. */
+	private static function chester_id(): string {
+		return PageUrls::root() . '#chester-john';
+	}
+
+	/**
 	 * Use the journal or homepage's public language for the site's identity.
 	 *
 	 * @param array<string,mixed> $node SEOPress website node.
 	 * @return array<string,mixed>
 	 */
 	public function website( array $node ): array {
-		$node['url']         = PageUrls::home();
-		$node['description'] = self::is_german()
+		$node['url']           = PageUrls::home();
+		$node['description']   = self::site_description();
+		$node['alternateName'] = 'Linker Technology GmbH';
+		$node['inLanguage']    = self::is_german() ? 'de' : 'en';
+		$node['publisher']     = array( '@id' => self::organization_id() );
+		return $node;
+	}
+
+	/** Public site description in the current language. */
+	private static function site_description(): string {
+		return self::is_german()
 			? 'PV- und Batteriespeichersysteme für Wohngebäude, Gewerbe und Industrie mit dokumentierter Kompatibilität und technischer Unterstützung in Europa.'
 			: 'Residential and C&I solar and battery storage systems with documented compatibility and technical support for installers and EPCs across Europe.';
-		return $node;
 	}
 
 	/**
@@ -63,11 +93,12 @@ final class PageSchema {
 	 * @return array<string,mixed>
 	 */
 	public function article_schema( array $node ): array {
+		$node['inLanguage'] ??= self::is_german() ? 'de' : 'en';
 		if ( isset( $node['author'] ) && is_array( $node['author'] ) ) {
 			$node['author'] = $this->author_schema( $node['author'] );
 		}
 		if ( isset( $node['publisher'] ) && is_array( $node['publisher'] ) ) {
-			$node['publisher']['@id']    = PageUrls::home() . '#organization';
+			$node['publisher']['@id']    = self::organization_id();
 			$node['publisher']['sameAs'] = ContactChannels::company_same_as();
 		}
 		return $node;
@@ -92,22 +123,23 @@ final class PageSchema {
 			return $node;
 		}
 		$about = PageUrls::page( 'about' );
-		$home  = PageUrls::home();
 		return array_merge(
 			$node,
 			array(
-				'@type'    => 'Person',
-				'@id'      => $about . '#chester-john',
-				'name'     => 'Chester John',
-				'url'      => $about,
-				'jobTitle' => self::is_german() ? 'Spezialist für Speicherlösungen' : 'Storage Solutions Specialist',
-				'worksFor' => array(
+				'@type'      => 'Person',
+				'@id'        => self::chester_id(),
+				'name'       => 'Chester John',
+				'url'        => $about,
+				'image'      => plugins_url( 'assets/chester-john.webp', dirname( __DIR__, 2 ) . '/linker-commerce.php' ),
+				'knowsAbout' => array( 'Battery Energy Storage Systems (BESS)', 'Inverter-Battery Pairing', 'Commercial and Industrial Energy Storage', 'VDE-AR-N 4105', 'PV System Sizing' ),
+				'jobTitle'   => self::is_german() ? 'Spezialist für Speicherlösungen' : 'Storage Solutions Specialist',
+				'worksFor'   => array(
 					'@type' => 'Organization',
-					'@id'   => $home . '#organization',
+					'@id'   => self::organization_id(),
 					'name'  => 'Linker Technology GmbH',
-					'url'   => $home,
+					'url'   => PageUrls::root(),
 				),
-				'sameAs'   => ContactChannels::chester_same_as(),
+				'sameAs'     => ContactChannels::chester_same_as(),
 			)
 		);
 	}
@@ -119,33 +151,57 @@ final class PageSchema {
 	 * @return array<string,mixed>
 	 */
 	public function organization( array $node ): array {
-		$node    = $this->website( $node );
+		unset( $node['taxID'] );
+		$social = get_option( 'seopress_social_option_name', array() );
+		$logo   = $social['seopress_social_knowledge_img'] ?? ( $node['logo'] ?? '' );
+		if ( is_string( $logo ) && '' !== $logo ) {
+			$metadata     = wp_get_attachment_metadata( attachment_url_to_postid( $logo ) );
+			$node['logo'] = array(
+				'@type' => 'ImageObject',
+				'url'   => $logo,
+			);
+			if ( ! empty( $metadata['width'] ) && ! empty( $metadata['height'] ) ) {
+				$node['logo']['width']  = $metadata['width'];
+				$node['logo']['height'] = $metadata['height'];
+			} elseif ( str_ends_with( $logo, '/2026/07/linker-logo-full.png' ) ) {
+				$node['logo']['width']  = 717;
+				$node['logo']['height'] = 354;
+			}
+		}
 		$sales   = ( new Options() )->team_mailbox();
 		$germany = str_replace( ' ', '-', ContactChannels::GERMANY_PHONE );
 		$direct  = str_replace( ' ', '-', ContactChannels::DIRECT_PHONE );
 		return array_merge(
 			$node,
 			array(
-				'name'         => 'Linker',
-				'legalName'    => 'Linker Technology GmbH',
-				'sameAs'       => ContactChannels::company_same_as(),
-				'vatID'        => 'DE367367711',
-				'taxID'        => 'DE367367711',
-				'identifier'   => array(
-					'@type' => 'PropertyValue',
-					'name'  => 'Handelsregister',
-					'value' => 'Amtsgericht Stendal HRB 33824',
+				'@id'           => self::organization_id(),
+				'url'           => PageUrls::root(),
+				'name'          => 'Linker',
+				'description'   => self::site_description(),
+				'alternateName' => array( 'Linker Technology GmbH', 'de-linker.com' ),
+				'foundingDate'  => '2024-01-24',
+				'areaServed'    => array( 'DE', 'AT', 'CH', 'EU' ),
+				'knowsAbout'    => array( 'Battery Energy Storage Systems (BESS)', 'Hybrid Solar Inverters', 'Residential Battery Storage', 'Commercial and Industrial Energy Storage', 'Utility-Scale Battery Storage', 'LFP Battery Technology', 'VDE-AR-N 4105', 'VDE-AR-N 4110' ),
+				'legalName'     => 'Linker Technology GmbH',
+				'sameAs'        => ContactChannels::company_same_as(),
+				'vatID'         => 'DE367367711',
+				'identifier'    => array(
+					'@type'      => 'PropertyValue',
+					'name'       => 'Handelsregister',
+					'propertyID' => 'DE-HRB',
+					'value'      => 'Amtsgericht Stendal HRB 33824',
 				),
-				'address'      => array(
+				'address'       => array(
 					'@type'           => 'PostalAddress',
 					'streetAddress'   => 'Steinfeldstraße 3',
 					'postalCode'      => '39179',
 					'addressLocality' => 'Barleben',
+					'addressRegion'   => 'Sachsen-Anhalt',
 					'addressCountry'  => 'DE',
 				),
-				'email'        => $sales,
-				'telephone'    => $germany,
-				'contactPoint' => array(
+				'email'         => $sales,
+				'telephone'     => $germany,
+				'contactPoint'  => array(
 					array(
 						'@type'             => 'ContactPoint',
 						'contactType'       => 'sales',
@@ -168,19 +224,26 @@ final class PageSchema {
 	}
 
 	/**
-	 * Connect the existing English AboutPage schema to the identified publisher.
+	 * Connect the English AboutPage and ContactPage schemas to the identified publisher.
 	 *
 	 * @param string $html A resolved SEOPress automatic custom schema.
 	 */
 	public function about_publisher( string $html ): string {
-		if ( ! is_page( 'about' ) || ! preg_match( '~^\s*<script\b[^>]*>(.*?)</script>\s*$~is', $html, $script ) ) {
+		if ( ! is_page( array( 'about', 'contact' ) ) || ! preg_match( '~^\s*<script\b[^>]*>(.*?)</script>\s*$~is', $html, $script ) ) {
 			return $html;
 		}
-		$node = json_decode( $script[1], true );
-		if ( ! is_array( $node ) || ! in_array( 'AboutPage', (array) ( $node['@type'] ?? array() ), true ) ) {
+		$node  = json_decode( $script[1], true );
+		$types = (array) ( $node['@type'] ?? array() );
+		if ( is_page( 'about' ) && in_array( 'AboutPage', $types, true ) ) {
+			$node['about']    = array( '@id' => self::organization_id() );
+			$node['mentions'] = array( array( '@id' => self::chester_id() ) );
+		} elseif ( is_page( 'contact' ) && in_array( 'ContactPage', $types, true ) ) {
+			$node['mainEntity'] = array( '@id' => self::organization_id() );
+		} else {
 			return $html;
 		}
-		$node['about'] = array( '@id' => PageUrls::home() . '#organization' );
+		$node['isPartOf']  = array( '@id' => PageUrls::home() . '#website' );
+		$node['publisher'] = array( '@id' => self::organization_id() );
 		return '<script type="application/ld+json">' . wp_json_encode( $node, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "</script>\n";
 	}
 
@@ -188,12 +251,7 @@ final class PageSchema {
 	public function print_organization(): void {
 		if ( ! is_front_page() ) {
 			$this->print_node(
-				$this->organization(
-					array(
-						'@type' => 'Organization',
-						'@id'   => PageUrls::home() . '#organization',
-					)
-				)
+				$this->organization( array( '@type' => 'Organization' ) )
 			);
 		}
 	}
@@ -233,6 +291,7 @@ final class PageSchema {
 					'name'                => $title,
 					'url'                 => $url,
 					'applicationCategory' => 'BusinessApplication',
+					'provider'            => array( '@id' => self::organization_id() ),
 					'operatingSystem'     => 'Web',
 				)
 			);
@@ -246,7 +305,7 @@ final class PageSchema {
 					'url'   => $url,
 				),
 			);
-		} elseif ( is_page( array( 'compare-products', 'produkte-vergleichen', 'solution', 'loesung', 'residential-storage', 'heimspeicher', 'commercial-storage', 'gewerbespeicher', 'utility-storage', 'grossspeicher', 'about', 'ueber-uns', 'services-support', 'kundendienst', 'for-installer', 'fuer-installateur', 'for-epc', 'fuer-epc' ) ) ) {
+		} elseif ( is_page( array( 'compare-products', 'produkte-vergleichen', 'solution', 'loesung', 'residential-storage', 'heimspeicher', 'commercial-storage', 'gewerbespeicher', 'utility-storage', 'grossspeicher', 'about', 'ueber-uns', 'services-support', 'kundendienst', 'capability', 'leistungsfaehigkeit', 'imprint', 'impressum', 'privacy-policy', 'datenschutz', 'terms-of-sale', 'verkaufsbedingungen', 'refund-returns', 'rueckgabe-erstattung', 'for-installer', 'fuer-installateur', 'for-epc', 'fuer-epc' ) ) ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Match the public comparison selection policy, including empty query values.
 			if ( in_array( $post->post_name, array( 'compare-products', 'produkte-vergleichen' ), true ) && ( isset( $_GET['ids'] ) || isset( $_GET['capped'] ) ) ) {
 				return;
@@ -265,14 +324,26 @@ final class PageSchema {
 				default                           => '',
 			};
 			$node = array(
+				'isPartOf'    => array( '@id' => $home . '#website' ),
+				'publisher'   => array( '@id' => self::organization_id() ),
 				'@type'       => 'ueber-uns' === $post->post_name ? array( 'AboutPage', 'WebPage' ) : 'WebPage',
 				'@id'         => $url . '#webpage',
 				'name'        => $title,
 				'url'         => $url,
 				'description' => (string) get_post_meta( $post->ID, '_seopress_titles_desc', true ),
 			);
+			if ( in_array( $post->post_name, array( 'about', 'ueber-uns' ), true ) ) {
+				$this->print_node( $this->author_schema( array( 'name' => 'Chester John' ) ) );
+			}
+			if ( in_array( $post->post_name, array( 'capability', 'leistungsfaehigkeit' ), true ) ) {
+				$trail[] = array(
+					'label' => (string) get_the_title( $post->post_parent ),
+					'url'   => PageUrls::page( 'about' ),
+				);
+			}
 			if ( 'ueber-uns' === $post->post_name ) {
-				$node['about'] = array( '@id' => $home . '#organization' );
+				$node['mentions'] = array( array( '@id' => self::chester_id() ) );
+				$node['about']    = array( '@id' => self::organization_id() );
 			}
 			if ( '' !== $type ) {
 				$hub     = in_array( $post->post_name, array( 'solution', 'loesung' ), true );
@@ -292,7 +363,7 @@ final class PageSchema {
 					'name'        => $title,
 					'url'         => $url,
 					'description' => $node['description'],
-					'provider'    => array( '@id' => $home . '#organization' ),
+					'provider'    => array( '@id' => self::organization_id() ),
 					'areaServed'  => 'EU',
 					'serviceType' => $type,
 				);
@@ -325,24 +396,36 @@ final class PageSchema {
 			if ( 'about' !== $post->post_name ) {
 				$this->print_node( $node );
 			}
-		} elseif ( is_page( array( 'kontakt', 'faq-dokumente' ) ) && 'de' === pll_current_language() ) {
-			$contact = is_page( 'kontakt' );
-			$site    = array(
-				'@type' => 'WebSite',
-				'name'  => get_bloginfo( 'name' ),
-				'url'   => $home,
-			);
-			$node    = array(
-				'@type'       => array( $contact ? 'ContactPage' : 'CollectionPage', 'WebPage' ),
-				'name'        => $title,
-				'url'         => $url,
-				'description' => (string) get_post_meta( $post->ID, '_seopress_titles_desc', true ),
-				'isPartOf'    => $site,
-			);
+		} elseif ( is_page( array( 'contact', 'kontakt', 'faq-dokumente' ) ) ) {
+			$contact = 'faq-dokumente' !== $post->post_name;
 			if ( $contact ) {
-				$node['mainEntity'] = array( '@id' => $home . '#organization' );
+				$trail = array(
+					array(
+						'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
+						'url'   => $home,
+					),
+					array(
+						'label' => $title,
+						'url'   => $url,
+					),
+				);
 			}
-			$this->print_node( $node );
+			// The English contact page uses the SEOPress custom ContactPage.
+			if ( 'contact' !== $post->post_name ) {
+				$node = array(
+					'@type'       => array( $contact ? 'ContactPage' : 'CollectionPage', 'WebPage' ),
+					'@id'         => $url . '#webpage',
+					'name'        => $title,
+					'url'         => $url,
+					'description' => (string) get_post_meta( $post->ID, '_seopress_titles_desc', true ),
+					'isPartOf'    => array( '@id' => $home . '#website' ),
+					'publisher'   => array( '@id' => self::organization_id() ),
+				);
+				if ( $contact ) {
+					$node['mainEntity'] = array( '@id' => self::organization_id() );
+				}
+				$this->print_node( $node );
+			}
 		}
 		if ( $trail ) {
 			$items = array();

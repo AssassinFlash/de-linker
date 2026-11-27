@@ -39,6 +39,9 @@ final class PageIndexing {
 			return __( 'Compare hybrid inverters, battery storage systems and accessories side by side by AC power, usable capacity, phase and manufacturer datasheets.', 'linker-commerce' );
 		}
 		$term = get_queried_object();
+		if ( $term instanceof \WP_Term && 'product_brand' === $term->taxonomy && ! $this->empty_brand_archive() ) {
+			return self::brand_description( $term->name );
+		}
 		if ( ! $term instanceof \WP_Term || 'category' !== $term->taxonomy ) {
 			return $existing;
 		}
@@ -47,6 +50,16 @@ final class PageIndexing {
 		}
 		/* translators: %s: translated blog category name. */
 		return sprintf( __( 'Explore %s in the Linker journal. Read practical guidance on solar and storage projects for installers.', 'linker-commerce' ), wp_strip_all_tags( $term->name ) );
+	}
+
+	/**
+	 * Describe the models listed on the manufacturer's public archive.
+	 *
+	 * @param string $name WooCommerce brand name.
+	 */
+	public static function brand_description( string $name ): string {
+		/* translators: %s: manufacturer brand name. */
+		return sprintf( __( 'Browse %s models and datasheets for your next solar or storage project. Linker supports installers and EPCs across Europe.', 'linker-commerce' ), html_entity_decode( wp_strip_all_tags( $name ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
 	}
 
 	/**
@@ -150,8 +163,9 @@ final class PageIndexing {
 		if ( array_intersect( array( 'ids', 'capped' ), $keys ) && ComparePage::is_comparison_page() ) {
 			return true;
 		}
-		$facets = array( 'application', 'anwendung', 'brand', 'phase', 'power', 'kw_min', 'kw_max', 'kwh_min', 'kwh_max', 'sort', 'q' );
-		return array() !== array_intersect( $facets, $keys ) && function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) && is_main_query() && ! is_404();
+		$facets   = array( 'application', 'anwendung', 'brand', 'phase', 'power', 'kw_min', 'kw_max', 'kwh_min', 'kwh_max', 'sort', 'q', 'orderby' );
+		$filtered = array() !== array_intersect( $facets, $keys ) || (bool) preg_grep( '/^(?:filter_|query_type_)/', $keys );
+		return $filtered && function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) && is_main_query() && ! is_404();
 	}
 
 	/** Preserve empty brand landing pages for people following their old URLs. */

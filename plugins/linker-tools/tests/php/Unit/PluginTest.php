@@ -105,6 +105,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'admin_menu', array( $quality_page, 'menu' ) );
 		// Priority 1: the retired addresses answer ahead of WordPress's own
 		// canonical redirects (Redirects::register()).
+		WP_Mock::expectActionAdded( 'template_redirect', array( $redirects, 'normalize_case' ), -5 );
 		WP_Mock::expectActionAdded( 'template_redirect', WP_Mock\Functions::type( 'Closure' ), 1 );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $chrome, 'assets' ) );
 		WP_Mock::expectActionAdded( 'init', array( $retention, 'schedule' ) );

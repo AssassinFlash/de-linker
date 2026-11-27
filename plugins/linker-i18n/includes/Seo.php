@@ -28,7 +28,18 @@ final class Seo {
 	 * @return array<string, string>
 	 */
 	public function hreflangs( array $hreflangs ): array {
-		if ( is_search() ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Presence identifies a reply link, not a form submission.
+		if ( ! $hreflangs || is_search() || is_404() || is_attachment() || isset( $_GET['replytocom'] ) ) {
+			return array();
+		}
+		if ( function_exists( 'seopress_titles_noindex_bypass' ) && seopress_titles_noindex_bypass() ) {
+			return array();
+		}
+		$object = get_queried_object();
+		if ( $object instanceof \WP_Post && ( 'yes' === get_post_meta( $object->ID, '_seopress_robots_index', true ) || $this->source_says_noindex() ) ) {
+			return array();
+		}
+		if ( $object instanceof \WP_Term && 'yes' === get_term_meta( $object->term_id, '_seopress_robots_index', true ) ) {
 			return array();
 		}
 		if ( isset( $hreflangs[ Languages::SOURCE ] ) && ! isset( $hreflangs['x-default'] ) ) {

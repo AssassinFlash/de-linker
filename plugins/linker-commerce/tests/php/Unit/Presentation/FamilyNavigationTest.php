@@ -175,6 +175,21 @@ final class FamilyNavigationTest extends TestCase {
 		self::assertSame( array( 'en' => '/products/' ), $this->navigation()->hreflangs( array( 'en' => '/products/' ) ) );
 	}
 
+	/** Page numbers use the current language and are added only once. */
+	public function test_later_page_title_and_default_canonical(): void {
+		WP_Mock::userFunction( 'get_bloginfo' )->with( 'name' )->andReturn( 'Linker' );
+		$nav                  = $this->navigation();
+		$_GET['product-page'] = '2';
+		self::assertTrue( $nav->canonical_on_noindex( false ) );
+		$title = 'Systems – Page 2 | Linker';
+		self::assertSame( $title, $nav->paged_title( 'Systems | Linker' ) );
+		self::assertSame( $title, $nav->paged_title( $title ) );
+		self::assertSame( '', $nav->paged_title( '' ) );
+		$_GET = array();
+		self::assertSame( 'Systems | Linker', $nav->paged_title( 'Systems | Linker' ) );
+		self::assertFalse( $nav->canonical_on_noindex( false ) );
+	}
+
 	/** SEOPress applies the same filter to its explicit custom-term element. */
 	public function test_native_custom_term_canonical_remains_authoritative(): void {
 		$_GET['product-page'] = '2';

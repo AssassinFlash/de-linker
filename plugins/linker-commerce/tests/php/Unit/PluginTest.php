@@ -110,6 +110,8 @@ final class PluginTest extends TestCase {
 		// AnyInstance matches the object the registration constructs.
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( ProductFilters::class ), 'normalize_query' ), 0 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( new AnyInstance( ProductFilters::class ), 'filter' ), 99 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'woocommerce_structured_data_type_for_page', array( new AnyInstance( PageSchema::class ), 'strip_online_store_type' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'woocommerce_structured_data_online_store', '__return_false' );
 		WP_Mock::expectFilterAdded( 'seopress_schemas_website', array( new AnyInstance( PageSchema::class ), 'website' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_schemas_auto_article_json', array( new AnyInstance( PageSchema::class ), 'article_schema' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_pro_get_json_data_author', array( new AnyInstance( PageSchema::class ), 'author_schema' ), 10, 2 ); // @phpstan-ignore argument.type
@@ -120,10 +122,24 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_titles_noindex_bypass', array( new AnyInstance( PageIndexing::class ), 'noindex' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_robots_attrs', array( new AnyInstance( PageIndexing::class ), 'robots' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_robots', array( new AnyInstance( PageIndexing::class ), 'native_robots' ) ); // @phpstan-ignore argument.type
+		$crawl = new AnyInstance( \Linker\Commerce\Storefront\CrawlHygiene::class );
+		WP_Mock::expectFilterAdded( 'wp_headers', array( $crawl, 'headers' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'template_redirect', array( $crawl, 'respond' ), 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_headers', array( new AnyInstance( PageIndexing::class ), 'headers' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'pll_rel_hreflang_attributes', array( new AnyInstance( PageIndexing::class ), 'alternates' ), 50 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_canonical_on_noindex', array( new AnyInstance( PageIndexing::class ), 'canonical' ), 50 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_canonical', array( new AnyInstance( PageIndexing::class ), 'canonical_tag' ), 20 ); // @phpstan-ignore argument.type
+		$sync = new AnyInstance( \Linker\Commerce\Storefront\SitemapSync::class );
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_term_single_url', array( $sync, 'brand_urls' ), 20, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_url', array( $sync, 'brand_xml' ), 20, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_cache_duration', array( $sync, 'cache_duration' ) ); // @phpstan-ignore argument.type
+		foreach ( array( 'save_post', 'deleted_post' ) as $hook ) {
+			WP_Mock::expectActionAdded( $hook, array( $sync, 'post_changed' ), 10, 2 ); // @phpstan-ignore argument.type
+		}
+		WP_Mock::expectActionAdded( 'transition_post_status', array( $sync, 'transition' ), 10, 3 ); // @phpstan-ignore argument.type
+		foreach ( array( 'woocommerce_new_product', 'woocommerce_update_product' ) as $hook ) {
+			WP_Mock::expectActionAdded( $hook, array( $sync, 'product_changed' ), 10, 0 ); // @phpstan-ignore argument.type
+		}
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_url', array( new AnyInstance( PageIndexing::class ), 'sitemap' ), 20, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( new AnyInstance( ProductSchema::class ), 'description' ), 45 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( new AnyInstance( ProductSchema::class ), 'title' ), 45 ); // @phpstan-ignore argument.type

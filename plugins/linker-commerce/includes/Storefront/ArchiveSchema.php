@@ -77,20 +77,7 @@ final class ArchiveSchema {
 	 */
 	public function blog_category_collection(): array {
 		$target = $this->blog_category_target();
-		if ( null === $target ) {
-			return array();
-		}
-		return array(
-			'@context' => 'https://schema.org',
-			'@type'    => 'CollectionPage',
-			'name'     => $target['name'],
-			'url'      => $target['url'],
-			'isPartOf' => array(
-				'@type' => 'WebSite',
-				'name'  => (string) get_bloginfo( 'name' ),
-				'url'   => PageUrls::home(),
-			),
-		);
+		return null === $target ? array() : $this->collection_node( $target );
 	}
 
 	/**
@@ -103,7 +90,7 @@ final class ArchiveSchema {
 		if ( null === $target ) {
 			return array();
 		}
-		$items = array(
+		$items    = array(
 			array(
 				'@type'    => 'ListItem',
 				'position' => 1,
@@ -111,22 +98,18 @@ final class ArchiveSchema {
 				'item'     => PageUrls::home(),
 			),
 		);
-		$posts = get_posts(
-			array(
-				'post_type'      => 'page',
-				'name'           => 'blog',
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-				'no_found_rows'  => true,
-			)
-		);
-		$blog  = $posts[0] ?? null;
-		if ( $blog instanceof \WP_Post ) {
+		$blog_id  = (int) get_option( 'page_for_posts' );
+		$language = function_exists( 'pll_current_language' ) ? pll_current_language() : false;
+		if ( $blog_id && is_string( $language ) && function_exists( 'pll_get_post' ) ) {
+			$blog_id = (int) pll_get_post( $blog_id, $language );
+		}
+		$blog_url = $blog_id ? get_permalink( $blog_id ) : PageUrls::translated( 'blog' );
+		if ( $blog_url ) {
 			$items[] = array(
 				'@type'    => 'ListItem',
 				'position' => 2,
-				'name'     => (string) $blog->post_title,
-				'item'     => (string) get_permalink( $blog->ID ),
+				'name'     => $blog_id ? html_entity_decode( get_the_title( $blog_id ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) : 'Blog',
+				'item'     => $blog_url,
 			);
 		}
 		$items[] = array(
@@ -153,17 +136,37 @@ final class ArchiveSchema {
 		if ( null === $target ) {
 			return array();
 		}
+		$node = $this->collection_node( $target );
+		$term = $target['term'];
+		if ( $term && 'product_brand' === $term->taxonomy ) {
+			$node['about']       = array(
+				'@type' => 'Brand',
+				'name'  => $target['name'],
+			);
+			$node['description'] = PageIndexing::brand_description( $target['name'] );
+		} else {
+			$description         = $term ? trim( wp_strip_all_tags( (string) $term->description ) ) : '';
+			$node['description'] = '' !== $description ? html_entity_decode( $description, ENT_QUOTES | ENT_HTML5, 'UTF-8' )
+				: __( 'Search products or filter by category and project requirements.', 'linker-commerce' );
+		}
+		return $node;
+	}
+
+	/**
+	 * Public archive identity and its localized WebSite.
+	 *
+	 * @param array{name:string,url:string,term:\WP_Term|null} $target Queried archive.
+	 * @return array<string,mixed>
+	 */
+	private function collection_node( array $target ): array {
 		return array(
-			'@context'    => 'https://schema.org',
-			'@type'       => 'CollectionPage',
-			'name'        => $target['name'],
-			'url'         => $target['url'],
-			'description' => (string) __( 'Search products or filter by category and project requirements.', 'linker-commerce' ),
-			'isPartOf'    => array(
-				'@type' => 'WebSite',
-				'name'  => (string) get_bloginfo( 'name' ),
-				'url'   => PageUrls::home(),
-			),
+			'@context'  => 'https://schema.org',
+			'@type'     => 'CollectionPage',
+			'@id'       => $target['url'] . '#collectionpage',
+			'name'      => $target['name'],
+			'url'       => $target['url'],
+			'isPartOf'  => array( '@id' => PageUrls::home() . '#website' ),
+			'publisher' => array( '@id' => PageUrls::root() . '#organization' ),
 		);
 	}
 
@@ -245,7 +248,7 @@ final class ArchiveSchema {
 			return null;
 		}
 		return array(
-			'name' => (string) $term->name,
+			'name' => html_entity_decode( (string) $term->name, ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
 			'url'  => $link,
 			'term' => $term,
 		);
@@ -257,13 +260,17 @@ final class ArchiveSchema {
 	 * @return array{name: string, url: string, term: \WP_Term|null}|null
 	 */
 	private function target(): ?array {
-		if ( function_exists( 'is_product_category' ) && is_product_category() ) {
+		$brand = is_tax( 'product_brand' );
+		if ( $brand && ( ! have_posts() || ( function_exists( 'seopress_titles_noindex_bypass' ) && seopress_titles_noindex_bypass() ) ) ) {
+			return null;
+		}
+		if ( $brand || ( function_exists( 'is_product_category' ) && is_product_category() ) ) {
 			$term = get_queried_object();
 			if ( $term instanceof \WP_Term ) {
 				$link = get_term_link( $term );
 				if ( is_string( $link ) && '' !== $link ) {
 					return array(
-						'name' => (string) $term->name,
+						'name' => html_entity_decode( (string) $term->name, ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
 						'url'  => $link,
 						'term' => $term,
 					);

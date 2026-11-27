@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-11-26T16:41:41+00:00\n"
+"POT-Creation-Date: 2026-11-27T11:34:01+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -272,12 +272,12 @@ msgstr ""
 msgid "Product ID."
 msgstr "Produkt-ID."
 
-#: includes/Abilities/GetProduct.php:71
+#: includes/Abilities/GetProduct.php:75
 #: includes/Products/ProductSearchController.php:178
 msgid "Selection facts of the product."
 msgstr "Auswahlfakten des Produkts."
 
-#: includes/Abilities/GetProduct.php:75
+#: includes/Abilities/GetProduct.php:79
 msgid "Cited figure entries as stored."
 msgstr ""
 
@@ -3082,7 +3082,7 @@ msgstr "Vergleichstabelle der Produkte"
 #: includes/Presentation/ProductShortcodes.php:206
 #: includes/Presentation/ProductShortcodes.php:210
 #: includes/Presentation/ProductShortcodes.php:1889
-#: includes/Storefront/ArchiveSchema.php:299
+#: includes/Storefront/ArchiveSchema.php:306
 #: includes/Storefront/ProductView.php:734
 #: templates/myaccount/linker-saved-solutions.php:29
 #: templates/myaccount/linker-saved-solutions.php:41
@@ -3130,29 +3130,35 @@ msgstr "Nein"
 msgid "Yes"
 msgstr "Ja"
 
-#: includes/Presentation/ContactChannels.php:64
+#: includes/Presentation/ContactChannels.php:81
 msgid "Linker Energy Storage on YouTube"
 msgstr "Linker Energy Storage auf YouTube"
 
-#: includes/Presentation/ContactChannels.php:65
+#: includes/Presentation/ContactChannels.php:82
 msgid "Linker Energy Storage on Facebook"
 msgstr "Linker Energy Storage auf Facebook"
 
-#: includes/Presentation/ContactChannels.php:68
+#: includes/Presentation/ContactChannels.php:85
 msgid "Chester John on LinkedIn"
 msgstr "Chester John auf LinkedIn"
 
-#: includes/Presentation/ContactChannels.php:69
+#: includes/Presentation/ContactChannels.php:86
 msgid "Chester John on YouTube"
 msgstr "Chester John auf YouTube"
 
-#: includes/Presentation/ContactChannels.php:70
+#: includes/Presentation/ContactChannels.php:87
 msgid "Chester John on X"
 msgstr "Chester John auf X"
 
-#: includes/Presentation/ContactChannels.php:118
+#: includes/Presentation/ContactChannels.php:135
 msgid "Hello Linker team, I would like to discuss a solar storage inquiry."
 msgstr "Guten Tag Linker-Team, ich habe eine Anfrage zu einem Speichersystem."
+
+#. translators: %d: product archive page number.
+#: includes/Presentation/FamilyNavigation.php:116
+#, php-format
+msgid "Page %d"
+msgstr "Seite %d"
 
 #: includes/Presentation/LanguageLinks.php:55
 #: includes/Presentation/LibraryPage.php:599
@@ -3359,17 +3365,18 @@ msgid "Our reason:"
 msgstr "Unser Grund:"
 
 #: includes/Presentation/ProductShortcodes.php:198
-#: includes/Storefront/ArchiveSchema.php:110
-#: includes/Storefront/ArchiveSchema.php:185
-#: includes/Storefront/PageSchema.php:217
-#: includes/Storefront/PageSchema.php:241
-#: includes/Storefront/PageSchema.php:256
+#: includes/Storefront/ArchiveSchema.php:97
+#: includes/Storefront/ArchiveSchema.php:188
+#: includes/Storefront/PageSchema.php:275
+#: includes/Storefront/PageSchema.php:300
+#: includes/Storefront/PageSchema.php:315
+#: includes/Storefront/PageSchema.php:404
 msgctxt "breadcrumb"
 msgid "Home"
 msgstr "Startseite"
 
 #: includes/Presentation/ProductShortcodes.php:213
-#: includes/Storefront/ArchiveSchema.php:161
+#: includes/Storefront/ArchiveSchema.php:150
 msgid "Search products or filter by category and project requirements."
 msgstr ""
 "Suchen Sie Produkte oder filtern Sie nach Kategorie und Projektanforderungen."
@@ -5950,7 +5957,7 @@ msgstr ""
 "Vergleichen Sie Hybrid-Wechselrichter, Batteriespeicher und Zubehör direkt "
 "nach AC-Leistung, nutzbarer Kapazität, Phasenanzahl und Datenblatt."
 
-#: includes/Storefront/PageIndexing.php:46
+#: includes/Storefront/PageIndexing.php:49
 msgid ""
 "Read about monitoring solar and storage systems, using meter data and "
 "managing energy flows. Find practical guidance for installers working on "
@@ -5960,7 +5967,7 @@ msgstr ""
 "und Energieflüsse im Betrieb auswerten. Mit Beiträgen für die Praxis."
 
 #. translators: %s: translated blog category name.
-#: includes/Storefront/PageIndexing.php:49
+#: includes/Storefront/PageIndexing.php:52
 #, php-format
 msgid ""
 "Explore %s in the Linker journal. Read practical guidance on solar and "
@@ -5969,23 +5976,33 @@ msgstr ""
 "Lesen Sie im Linker-Blog Beiträge zum Thema %s. Hier finden Sie Hinweise für "
 "die Planung und den Betrieb von PV- und Speichersystemen."
 
-#: includes/Storefront/PageSchema.php:261
+#. translators: %s: manufacturer brand name.
+#: includes/Storefront/PageIndexing.php:62
+#, php-format
+msgid ""
+"Browse %s models and datasheets for your next solar or storage project. "
+"Linker supports installers and EPCs across Europe."
+msgstr ""
+"Finden Sie Modelle und Datenblätter von %s für Ihr nächstes Solar- oder "
+"Speicherprojekt. Linker unterstützt Installateure und EPCs in ganz Europa."
+
+#: includes/Storefront/PageSchema.php:320
 msgid "Solar and battery storage solutions"
 msgstr "Solar- und Batteriespeicherlösungen"
 
-#: includes/Storefront/PageSchema.php:262
+#: includes/Storefront/PageSchema.php:321
 msgid "Residential Solar Battery Storage"
 msgstr "Heimspeicher"
 
-#: includes/Storefront/PageSchema.php:263
+#: includes/Storefront/PageSchema.php:322
 msgid "Commercial & Industrial Battery Storage"
 msgstr "Gewerbespeicher (C&I)"
 
-#: includes/Storefront/PageSchema.php:264
+#: includes/Storefront/PageSchema.php:323
 msgid "Utility-Scale Battery Energy Storage Systems"
 msgstr "Batteriegroßspeicher"
 
-#: includes/Storefront/PageSchema.php:280
+#: includes/Storefront/PageSchema.php:351
 msgid "Solutions"
 msgstr "Lösungen"
 
