@@ -17427,3 +17427,66 @@ msgstr "Während Ihr PDF erstellt wird, können Sie unten Ihre Anfrage ausfülle
 #: ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js:1
 msgid "Preparing your workspace…"
 msgstr "Arbeitsbereich wird vorbereitet…"
+
+msgid "How the Linker Solution Configurator works"
+msgstr "So funktioniert der Linker Lösungskonfigurator"
+
+msgid "Start with the PV capacity you know or describe the system you want to build. For an existing installation, compare keeping the inverter with replacing it. If you have a roof plan, draw the usable area and mark obstacles that cast shade. You can also work from the site figures alone."
+msgstr "Beginnen Sie mit der bekannten PV-Leistung oder beschreiben Sie Ihre geplante Anlage. Bei einer Nachrüstung können Sie vergleichen, ob der vorhandene Wechselrichter bleibt oder ersetzt wird. Liegt ein Dachplan vor, zeichnen Sie die nutzbare Fläche ein und markieren Sie Hindernisse, die Schatten werfen. Auch mit den bekannten Anlagendaten allein können Sie weiterplanen."
+
+msgid "Compare the inverter and high-voltage battery together. Open the manufacturer document to check the model, required control module and conditions for backup operation. Select a system to prepare a parts list and a PDF for your client. You can send the same selection to Linker Technology GmbH in Barleben, Germany, for a quotation."
+msgstr "Vergleichen Sie Wechselrichter und Hochvoltspeicher als Kombination. Im Herstellerdokument finden Sie das genaue Modell, das erforderliche Steuermodul und die Bedingungen für den Ersatzstrombetrieb. Wählen Sie ein System, um eine Stückliste und ein PDF für Ihren Kunden zu erstellen. Für ein Angebot können Sie dieselbe Auswahl an die Linker Technology GmbH in Barleben senden."
+
+msgid "Project segment"
+msgstr "Projektbereich"
+
+msgid "Typical sizing range"
+msgstr "Typische Anlagengröße"
+
+msgid "Manufacturers and planning outputs"
+msgstr "Hersteller und Planungsergebnisse"
+
+msgid "Residential hybrid storage"
+msgstr "Hybridspeicher für Wohngebäude"
+
+msgid "3–30 kW inverters · 5–40 kWh storage"
+msgstr "3–30 kW Wechselrichterleistung · 5–40 kWh Speicher"
+
+msgid "GoodWe and SAJ. Compare battery combinations and check the backup switch."
+msgstr "GoodWe und SAJ. Vergleichen Sie Speicherkombinationen und prüfen Sie den Ersatzstromschalter."
+
+msgid "Commercial and industrial storage"
+msgstr "Gewerbe- und Industriespeicher"
+
+msgid "25–125 kW inverters or PCS · 60–500+ kWh storage"
+msgstr "25–125 kW Wechselrichter- oder PCS-Leistung · 60–500+ kWh Speicher"
+
+msgid "GoodWe, SAJ and Pylontech. Review peak demand, metering and transfer switches."
+msgstr "GoodWe, SAJ und Pylontech. Prüfen Sie Lastspitzen, Zähler und Umschalteinrichtungen."
+
+msgid "Utility-scale storage"
+msgstr "Großspeicher"
+
+msgid "Multiple cabinets · 200 kWh to MWh-scale projects"
+msgstr "Mehrere Speicherschränke · 200 kWh bis in den MWh-Bereich"
+
+msgid "Review the site layout, power requirements and project documentation with the engineering team."
+msgstr "Stimmen Sie Aufstellung, Leistungsbedarf und Projektunterlagen mit dem Planungsteam ab."
+
+msgid "Grid connection and quotation"
+msgstr "Netzanschluss und Angebot"
+
+msgid "Germany, Austria, Switzerland and other European markets"
+msgstr "Deutschland, Österreich, die Schweiz und weitere europäische Märkte"
+
+msgid "Find model-specific evidence for VDE-AR-N 4105, VDE-AR-N 4110, TOR Erzeuger and EN 50549."
+msgstr "Hier finden Sie modellbezogene Nachweise zu VDE-AR-N 4105, VDE-AR-N 4110, TOR Erzeuger und EN 50549."
+
+msgid "Inverter and battery compatibility"
+msgstr "Kompatibilität von Wechselrichtern und Speichern"
+
+msgid "Products"
+msgstr "Produkte"
+
+msgid "FAQ and documents"
+msgstr "FAQ und Dokumente"

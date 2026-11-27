@@ -818,3 +818,19 @@ body:has([data-linker-planner]) .linker-genie-peek { display: none; }
     background-image: none;
   }
 }
+
+.sc-static-guide {
+  box-sizing: border-box;
+  width: min(100% - 2rem, 1160px);
+  margin: clamp(2rem, 5vw, 4rem) auto;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--proto-color-line);
+  background: var(--proto-neutral-50);
+}
+.sc-static-guide h2 { margin: 0 0 1rem; }
+.sc-static-guide p { max-width: 78ch; margin: .75rem 0; }
+.sc-static-guide-table-wrap { max-width: 100%; overflow-x: auto; margin: 1.5rem 0; }
+.sc-static-guide table { width: 100%; border-collapse: collapse; }
+.sc-static-guide th, .sc-static-guide td { padding: .75rem; text-align: start; vertical-align: top; border-bottom: 1px solid var(--proto-color-line); }
+.sc-static-guide-links { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; }
+.sc-static-guide-links a { text-decoration: underline; text-underline-offset: .2em; }

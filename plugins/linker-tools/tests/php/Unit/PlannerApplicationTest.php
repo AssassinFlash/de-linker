@@ -153,6 +153,10 @@ final class PlannerApplicationTest extends TestCase {
 		$html = $app->mount();
 		$this->assertSame( $expect_private, defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE );
 		$this->assertSame( 1, substr_count( $html, '<h1>Solution Configurator</h1>' ) );
+		$this->assertMatchesRegularExpression( '~</section><section class="sc-static-guide">~', $html );
+		$this->assertSame( 1, preg_match( '~<section class="sc-static-guide">(.*?)</section>~s', $html, $guide ) );
+		$this->assertGreaterThanOrEqual( 150, str_word_count( html_entity_decode( (string) preg_replace( '/<[^>]+>/', ' ', $guide[1] ) ) ) );
+		$this->assertSame( 4, substr_count( $guide[1], '<th scope="row">' ) );
 		$this->assertSame( 1, preg_match( '/data-planner-config="([^"]+)"/', $html, $matches ) );
 		$config = json_decode( html_entity_decode( $matches[1] ?? throw new \RuntimeException( 'Native planner configuration was not rendered.' ), ENT_QUOTES ), true );
 		$this->assertSame( $base . 'build/planner/' . $scene, $config['scene_module_url'] );

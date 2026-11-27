@@ -449,6 +449,55 @@ final class Application {
 			esc_html__( 'Solution Configurator', 'linker-tools' ),
 			esc_html__( 'A project can start with the information already available. Roof drawing is optional.', 'linker-tools' ),
 			$signed_in || $this->has_workspace_session() ? '<p role="status">' . esc_html__( 'Opening your workspace…', 'linker-tools' ) . '</p>' : ''
-		) . $runtime . $entry;
+		) . $this->static_guide() . $runtime . $entry;
+	}
+
+	/** Planning information available alongside the interactive workbench. */
+	private function static_guide(): string {
+		$rows = array(
+			array(
+				esc_html__( 'Residential hybrid storage', 'linker-tools' ),
+				esc_html__( '3–30 kW inverters · 5–40 kWh storage', 'linker-tools' ),
+				esc_html__( 'GoodWe and SAJ. Compare battery combinations and check the backup switch.', 'linker-tools' ),
+			),
+			array(
+				esc_html__( 'Commercial and industrial storage', 'linker-tools' ),
+				esc_html__( '25–125 kW inverters or PCS · 60–500+ kWh storage', 'linker-tools' ),
+				esc_html__( 'GoodWe, SAJ and Pylontech. Review peak demand, metering and transfer switches.', 'linker-tools' ),
+			),
+			array(
+				esc_html__( 'Utility-scale storage', 'linker-tools' ),
+				esc_html__( 'Multiple cabinets · 200 kWh to MWh-scale projects', 'linker-tools' ),
+				esc_html__( 'Review the site layout, power requirements and project documentation with the engineering team.', 'linker-tools' ),
+			),
+			array(
+				esc_html__( 'Grid connection and quotation', 'linker-tools' ),
+				esc_html__( 'Germany, Austria, Switzerland and other European markets', 'linker-tools' ),
+				esc_html__( 'Find model-specific evidence for VDE-AR-N 4105, VDE-AR-N 4110, TOR Erzeuger and EN 50549.', 'linker-tools' ),
+			),
+		);
+		$html = '<section class="sc-static-guide"><h2>' . esc_html__( 'How the Linker Solution Configurator works', 'linker-tools' ) . '</h2>'
+			. '<p>' . esc_html__( 'Start with the PV capacity you know or describe the system you want to build. For an existing installation, compare keeping the inverter with replacing it. If you have a roof plan, draw the usable area and mark obstacles that cast shade. You can also work from the site figures alone.', 'linker-tools' ) . '</p>'
+			. '<p>' . esc_html__( 'Compare the inverter and high-voltage battery together. Open the manufacturer document to check the model, required control module and conditions for backup operation. Select a system to prepare a parts list and a PDF for your client. You can send the same selection to Linker Technology GmbH in Barleben, Germany, for a quotation.', 'linker-tools' ) . '</p>'
+			. '<div class="sc-static-guide-table-wrap"><table><thead><tr><th scope="col">' . esc_html__( 'Project segment', 'linker-tools' ) . '</th><th scope="col">' . esc_html__( 'Typical sizing range', 'linker-tools' ) . '</th><th scope="col">' . esc_html__( 'Manufacturers and planning outputs', 'linker-tools' ) . '</th></tr></thead><tbody>';
+		foreach ( $rows as list( $segment, $range, $output ) ) {
+			$html .= '<tr><th scope="row">' . $segment . '</th><td>' . $range . '</td><td>' . $output . '</td></tr>';
+		}
+		$html .= '</tbody></table></div>';
+		if ( class_exists( PageUrls::class ) ) {
+			$links = array();
+			foreach ( array(
+				'inverter-battery-compatibility' => esc_html__( 'Inverter and battery compatibility', 'linker-tools' ),
+				'products'                       => esc_html__( 'Products', 'linker-tools' ),
+				'faq-download'                   => esc_html__( 'FAQ and documents', 'linker-tools' ),
+			) as $slug => $label ) {
+				$url = PageUrls::translated( $slug );
+				if ( '' !== $url ) {
+					$links[] = '<a href="' . esc_url( $url ) . '">' . $label . '</a>';
+				}
+			}
+			$html .= '<div class="sc-static-guide-links">' . implode( '', $links ) . '</div>';
+		}
+		return $html . '</section>';
 	}
 }
