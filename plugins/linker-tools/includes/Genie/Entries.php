@@ -819,7 +819,21 @@ JS,
 				array( __( 'Ask Genie', 'linker-tools' ), 'category' ),
 			),
 			'faq'      => array(
-				array( __( 'Ask Genie', 'linker-tools' ), 'faq' ),
+				array(
+					__( 'Datasheet & manual by model', 'linker-tools' ),
+					'faq',
+					'ask' => __( 'Find the datasheet and installation manual for an inverter or battery model', 'linker-tools' ),
+				),
+				array(
+					__( 'VDE-AR-N 4105 / 4110 certificates', 'linker-tools' ),
+					'faq',
+					'ask' => __( 'Which models have VDE-AR-N 4105 or VDE-AR-N 4110 grid certificates?', 'linker-tools' ),
+				),
+				array(
+					__( 'Inverter & HV battery pairing', 'linker-tools' ),
+					'faq',
+					'ask' => __( 'Which high-voltage batteries are compatible with my hybrid inverter and capacity ratio?', 'linker-tools' ),
+				),
 			),
 			'product'  => array(
 				array(
@@ -963,13 +977,7 @@ JS,
 						__( 'Summarize this page', 'linker-tools' ),
 					);
 			case 'faq':
-				// The FAQ and documents page: its documents, and the pairing
-				// question the compatibility data answers (its FAQ answers are
-				// site copy, not a source of facts: AGENTS.md 2026-10-09).
-				return array(
-					__( 'Is there a datasheet for my model?', 'linker-tools' ),
-					__( 'Which batteries work with my inverter?', 'linker-tools' ),
-				);
+				return array_column( $this->chips_for()['faq'], 'ask' );
 			case 'solution':
 				// The hub, About and the audience pages; the solutions themselves
 				// carry the card's questions above.

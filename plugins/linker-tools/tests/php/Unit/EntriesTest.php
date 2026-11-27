@@ -285,7 +285,7 @@ final class EntriesTest extends TestCase {
 			'marketing page'   => array( 'about', 'Summarize this page' ),
 			'blog post'        => array( 'post', 'Summarize this post' ),
 			'blog index'       => array( 'blog', 'Which of these posts cover hybrid inverters?' ),
-			'faq'              => array( 'faq', 'Is there a datasheet for my model?' ),
+			'faq'              => array( 'faq', 'Find the datasheet and installation manual for an inverter or battery model' ),
 			'solution draft'   => array( 'cart', 'Check my draft' ),
 			'account'          => array( 'account', 'Where is my quotation?' ),
 			'other'            => array( 'contact', 'Which model fits my project?' ),
@@ -623,8 +623,11 @@ JS
 		$this->assertSame( 3, substr_count( $html, 'data-page-type="product"' ) );
 
 		$html = ( new Entries( '/plugin/linker-tools.php' ) )->chips_shortcode( array( 'page_type' => 'faq' ) );
-		$this->assertStringContainsString( 'data-page-type="faq">Ask Genie</button>', $html );
-		$this->assertStringNotContainsString( 'data-ask-message', $html );
+		$this->assertSame( 3, substr_count( $html, 'class="linker-genie-chip"' ) );
+		$this->assertSame( 3, substr_count( $html, 'data-page-type="faq"' ) );
+		$this->assertStringContainsString( 'data-ask-message="Find the datasheet and installation manual for an inverter or battery model"', $html );
+		$this->assertStringContainsString( 'data-ask-message="Which models have VDE-AR-N 4105 or VDE-AR-N 4110 grid certificates?"', $html );
+		$this->assertStringContainsString( 'data-ask-message="Which high-voltage batteries are compatible with my hybrid inverter and capacity ratio?"', $html );
 
 		// No attribute: the current query decides.
 		$this->frontend( 'en', array( 'type' => 'category' ) );

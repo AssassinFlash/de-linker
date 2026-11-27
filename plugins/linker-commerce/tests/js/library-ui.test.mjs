@@ -722,6 +722,7 @@ test('an empty result offers Genie, and clearing restores the tabs', () => {
  assert.ok(empty);
  const ask = empty.querySelector('.linker-library-genie');
  assert.equal(ask.textContent, 'Ask Genie');
+ assert.equal(ask.getAttribute('data-ask-message'), 'zzzz');
  assert.ok(ask.matches('a[data-linker-genie-open][data-page-type=faq]'));
  assert.equal(new URL(ask.href).pathname, '/genie/');
  doc.querySelector('[data-library-clear]').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
@@ -729,6 +730,34 @@ test('an empty result offers Genie, and clearing restores the tabs', () => {
  assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, false);
  assert.equal(doc.querySelector('#linker-library-result-count').textContent, '28 on file');
  assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '25');
+});
+
+test('Genie recognizes installer questions in both languages and leaves models searchable', () => {
+ for (const question of ['How are quotations processed?', 'Gibt es ein Datenblatt', 'Können Sie helfen?']) {
+  assert.equal(library.isQuestion(question), true);
+ }
+ for (const model of ['H2-10K-T3', 'chint', 'SAJ CB2-100.3-HV5']) {
+  assert.equal(library.isQuestion(model), false);
+ }
+});
+
+test('a matching question offers Genie alongside the result and Enter hands over the original text', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const input = doc.querySelector('.linker-library-q');
+ const received = [];
+ dom.window.addEventListener('linker-genie-ask', (event) => received.push(event.detail));
+ for (const query of ['How are quotations processed?', 'VDE-4110-Prüfbericht-XYZ', 'chint']) {
+  input.value = query;
+  input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+  if (query.startsWith('How')) {
+   assert.ok(doc.querySelector('[data-library-results] .linker-library-hit'));
+   assert.equal(doc.querySelector('.linker-library-ask-bar .linker-library-genie').dataset.askMessage, query);
+  }
+  input.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true}));
+ }
+ assert.deepEqual(received.map(({message}) => message), ['How are quotations processed?', 'VDE-4110-Prüfbericht-XYZ']);
+ assert.ok(received.every(({opener}) => opener === input));
 });
 
 test('the suggestions list questions and documents, and a click outside closes them', () => {

@@ -90,6 +90,70 @@ test.describe('the FAQ + document library', () => {
 	for (const locale of ['en', 'de'] as Locale[]) {
 		const strings = STRINGS[locale];
 
+		for (const width of [1440, 390]) {
+			test(`${locale} ${width}: the FAQ opens Genie with the selected question`, async ({
+				page,
+			}) => {
+				await page.setViewportSize({
+					width,
+					height: width === 390 ? 844 : 900,
+				});
+				await page.route(
+					'**/wp-json/linker-ai/v1/genie/turn/start',
+					(route) =>
+						route.fulfill({
+							json: {
+								conversation_id: 1,
+								stream: 'event: done\ndata: {"ok":true}\n\n',
+							},
+						})
+				);
+				await open(page, locale);
+				const reject = page.locator('[data-cky-tag="reject-button"]');
+				if (await reject.isVisible()) {
+					await reject.click();
+				}
+
+				const chips = page.locator(
+					'.linker-library-hero .linker-genie-chip'
+				);
+				await expect(chips).toHaveCount(3);
+				const input = page.locator('#linker-library-q');
+				await expect(input).toBeInViewport();
+				expect(
+					await page.evaluate(
+						() =>
+							document.documentElement.scrollWidth -
+							window.innerWidth
+					)
+				).toBeLessThanOrEqual(0);
+
+				const query = 'VDE-4110-Prüfbericht-XYZ';
+				await input.fill(query);
+				await expect(
+					page.locator('.linker-library-empty .linker-library-genie')
+				).toHaveAttribute('data-ask-message', query);
+				await input.fill('');
+				const expected =
+					locale === 'de'
+						? 'Für welche Modelle liegen Netzanschlusszertifikate nach VDE-AR-N 4105 oder VDE-AR-N 4110 vor?'
+						: 'Which models have VDE-AR-N 4105 or VDE-AR-N 4110 grid certificates?';
+				const firstTurn = page.waitForRequest(
+					(request) =>
+						request.method() === 'POST' &&
+						new URL(request.url()).pathname.endsWith(
+							'/genie/turn/start'
+						)
+				);
+				await chips.nth(1).click();
+				await expect(page.locator('.linker-genie-panel')).toBeVisible();
+				expect((await firstTurn).postDataJSON()).toMatchObject({
+					page: { type: 'faq' },
+					messages: [{ role: 'user', content: expected }],
+				});
+			});
+		}
+
 		test(`${locale}: the tab bar switches panels and writes the URL`, async ({
 			page,
 		}) => {
@@ -418,23 +482,15 @@ test.describe('the FAQ + document library', () => {
 					'[data-library-results] [data-library-page="next"]'
 				);
 				await expect(next).toBeEnabled();
-				const firstTitle = await results
-					.first()
-					.locator('.linker-library-doc-title')
-					.innerText();
+				const download = results.first().locator('.linker-library-dl');
+				const firstUrl = await download.getAttribute('href');
+				expect(firstUrl).toBeTruthy();
 				await next.click();
 				await expect(
 					page.locator('[data-library-results] [aria-current="page"]')
 				).toHaveText('2');
-				expect(
-					await results
-						.first()
-						.locator('.linker-library-doc-title')
-						.innerText()
-				).not.toBe(firstTitle);
-				await expect(
-					results.first().locator('.linker-library-dl')
-				).toBeFocused();
+				await expect(download).not.toHaveAttribute('href', firstUrl!);
+				await expect(download).toBeFocused();
 				await page.locator('[data-library-clear]').click();
 				await expect(input).toHaveValue('');
 				await expect(

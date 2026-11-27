@@ -66,6 +66,7 @@ function card( fetcher: typeof fetch, reason: ContactReason = 'asked' ) {
 }
 
 afterEach( () => {
+	delete window.linkerTrack;
 	delete window.linkerTurnstile;
 } );
 
@@ -139,6 +140,8 @@ test( 'an anonymous contact submits its widget answer with the native request', 
 } );
 
 test( 'a guest leaves an address and reads the one-business-day promise', async () => {
+	const track = vi.fn();
+	window.linkerTrack = track;
 	const { calls, fetcher } = route(
 		{
 			started: '100',
@@ -156,6 +159,7 @@ test( 'a guest leaves an address and reads the one-business-day promise', async 
 		)
 	).toBeTruthy();
 	const field = await screen.findByLabelText( 'Your email address' );
+	expect( track ).not.toHaveBeenCalled();
 	fireEvent.change( field, { target: { value: ' maria@example.test ' } } );
 	fireEvent.click(
 		screen.getByLabelText(
@@ -171,6 +175,9 @@ test( 'a guest leaves an address and reads the one-business-day promise', async 
 	);
 	fireEvent.click( screen.getByRole( 'button', { name: 'Contact me' } ) );
 	await screen.findByText( 'Your request is with the Linker team' );
+	expect( track.mock.calls ).toEqual( [
+		[ 'generate_lead', { lead_surface: 'genie_contact' } ],
+	] );
 	expect(
 		screen.getByText(
 			'The team replies to maria@example.test within one business day.'
@@ -265,6 +272,8 @@ test.each( [
 ] )(
 	'a refusal (%s) says why and keeps the form',
 	async ( code, status, text ) => {
+		const track = vi.fn();
+		window.linkerTrack = track;
 		const { fetcher } = route(
 			{
 				started: '100',
@@ -297,5 +306,6 @@ test.each( [
 		expect(
 			screen.getByRole( 'button', { name: 'Contact me' } )
 		).toBeTruthy();
+		expect( track ).not.toHaveBeenCalled();
 	}
 );

@@ -8,7 +8,7 @@
  * External dependencies
  */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { expect, test, vi } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 
 /**
  * Internal dependencies
@@ -55,6 +55,10 @@ const SENT: SentInquiry = {
 	email: 'maria@example.test',
 	url: 'https://de-linker.test/checkout/order-received/123/?key=abc',
 };
+
+afterEach( () => {
+	delete window.linkerTrack;
+} );
 
 test( 'the quotation stage names the document once it has been issued', () => {
 	const inquiry = { ...SENT, status: 'quotation-issued' };
@@ -167,9 +171,12 @@ test( 'the card shows every line it will send and the one-business-day promise',
 } );
 
 test( 'a guest fills name, address and consent, and the send carries the card', async () => {
+	const track = vi.fn();
+	window.linkerTrack = track;
 	const { calls, fetcher } = route( [ state() ] );
 	const { onSent } = card( fetcher );
 	await guestDetails();
+	expect( track ).not.toHaveBeenCalled();
 	fireEvent.click( screen.getByRole( 'button', { name: 'Send inquiry' } ) );
 	expect(
 		await screen.findByText( 'Inquiry #123 · Inquiry received' )
@@ -179,6 +186,9 @@ test( 'a guest fills name, address and consent, and the send carries the card', 
 		screen.getByText( 'The team replies within one business day.' )
 	).toBeTruthy();
 	expect( onSent ).toHaveBeenCalledWith( SENT );
+	expect( track.mock.calls ).toEqual( [
+		[ 'generate_lead', { lead_surface: 'genie_inquiry' } ],
+	] );
 	const post = calls.find( ( call ) => 'POST' === call.method );
 	expect( post?.body ).toEqual( {
 		source: '7:2',
@@ -258,6 +268,8 @@ test( 'an empty draft sends nothing and names the inquiry page', async () => {
 } );
 
 test( 'the card refuses a send without a name, an address or consent', async () => {
+	const track = vi.fn();
+	window.linkerTrack = track;
 	const { calls, fetcher } = route( [ state() ] );
 	card( fetcher );
 	await screen.findByText( 'SAJ H2-10K-T3' );
@@ -282,6 +294,7 @@ test( 'the card refuses a send without a name, an address or consent', async () 
 		)
 	).toBeTruthy();
 	expect( calls.some( ( call ) => 'POST' === call.method ) ).toBe( false );
+	expect( track ).not.toHaveBeenCalled();
 } );
 
 test( 'a draft that changed is shown again and the send is refused once', async () => {

@@ -180,9 +180,23 @@ beforeEach( () => {
 } );
 
 afterEach( () => {
+	delete window.linkerTrack;
 	controllers.forEach( ( stop ) => stop() );
 	sessionStorage.clear();
 	document.body.innerHTML = '';
+} );
+
+test( 'the home hero counts its first visible expansion once', async () => {
+	const track = vi.fn();
+	window.linkerTrack = track;
+	const { hero } = await start( session().session );
+	expect( track ).not.toHaveBeenCalled();
+	const capsule = hero.querySelector( '.hero-capsule' )!;
+	await act( async () => fireEvent.click( capsule ) );
+	await act( async () => fireEvent.click( capsule ) );
+	expect( track.mock.calls ).toEqual( [
+		[ 'genie_open', { surface: 'hero', page_type: 'home' } ],
+	] );
 } );
 
 test( 'the homepage stays closed until the visitor opens a saved question', async () => {

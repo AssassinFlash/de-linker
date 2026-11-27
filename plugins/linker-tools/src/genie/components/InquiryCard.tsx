@@ -317,7 +317,7 @@ export function InquiryCard( {
 		);
 		if ( result.ok ) {
 			window.linkerTrack?.( 'generate_lead', {
-				lead_surface: 'inquiry',
+				lead_surface: 'genie_inquiry',
 			} );
 			setSent( result.inquiry );
 			setPhase( 'ready' );

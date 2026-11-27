@@ -64,7 +64,7 @@ export function HelperFooter( {
 					<nav className="linker-genie-app__links">
 						<a
 							href={
-								german ? '/de/faq-download/' : '/faq-download/'
+								german ? '/de/faq-dokumente/' : '/faq-download/'
 							}
 						>
 							{ __( 'FAQ & Downloads', 'linker-tools' ) }

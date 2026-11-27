@@ -23,12 +23,12 @@ test( 'a change of conversation owner before dispatch sends no question', async 
 } );
 
 test.each( [
-	[ 'helper', 'floating' ],
-	[ 'workspace', 'workspace' ],
-	[ 'hero', 'hero' ],
+	[ 'helper', 'floating', 'faq' ],
+	[ 'workspace', 'workspace', 'other' ],
+	[ 'hero', 'hero', 'home' ],
 ] as const )(
-	'a question sent from %s reports only the %s surface',
-	async ( surface, expected ) => {
+	'a question sent from %s reports the %s surface and %s page',
+	async ( surface, expected, type ) => {
 		const track = vi.fn();
 		window.linkerTrack = track;
 		try {
@@ -41,7 +41,7 @@ test.each( [
 					turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 					nonce: 'wp',
 					locale: 'en',
-					page: { type: 'other' },
+					page: { type },
 					messages: [
 						{ role: 'user', content: 'private@example.invalid' },
 					],
@@ -50,7 +50,7 @@ test.each( [
 			).rejects.toThrow();
 			expect( fetcher ).toHaveBeenCalledTimes( 1 );
 			expect( track.mock.calls ).toEqual( [
-				[ 'genie_ask', { surface: expected } ],
+				[ 'genie_ask', { surface: expected, page_type: type } ],
 			] );
 		} finally {
 			delete window.linkerTrack;

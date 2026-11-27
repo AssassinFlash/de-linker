@@ -17,7 +17,7 @@ for ( const german of [ false, true ] ) {
 			screen.getByRole( 'link', { name: 'FAQ & Downloads' } )
 		).toHaveAttribute(
 			'href',
-			german ? '/de/faq-download/' : '/faq-download/'
+			german ? '/de/faq-dokumente/' : '/faq-download/'
 		);
 		expect(
 			screen.getByRole( 'link', { name: 'Contact Linker' } )
