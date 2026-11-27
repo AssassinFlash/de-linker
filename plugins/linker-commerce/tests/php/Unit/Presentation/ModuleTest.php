@@ -187,6 +187,8 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.after', WindPressPageStyles::class, 'after_cache' );
 		$cards = new AnyInstance( SocialCards::class );
 		foreach ( array(
+			'seopress_social_og_type'              => 'open_graph_type',
+			'site_icon_meta_tags'                  => 'site_icons',
 			'seopress_social_twitter_card_summary' => 'summary',
 			'seopress_social_og_thumb'             => 'open_graph',
 			'seopress_social_twitter_card_thumb'   => 'twitter_image',

@@ -120,6 +120,8 @@ final class Plugin {
 		add_filter( 'seopress_titles_title', array( $german_titles, 'title' ), 40 );
 		add_filter( 'pre_get_document_title', array( $german_titles, 'title' ), 40 );
 		add_filter( 'seopress_titles_desc', array( $german_titles, 'shop_description' ), 40 );
+		add_filter( 'seopress_social_og_title', array( $german_titles, 'shop_social_title' ), 40 );
+		add_filter( 'seopress_social_twitter_card_title', array( $german_titles, 'shop_social_title' ), 40 );
 		add_filter( 'seopress_social_og_desc', array( $german_titles, 'shop_social_description' ), 40 );
 		add_filter( 'seopress_social_twitter_card_desc', array( $german_titles, 'shop_social_description' ), 40 );
 		add_filter( 'seopress_titles_canonical', array( $german_titles, 'canonical' ), 40 );

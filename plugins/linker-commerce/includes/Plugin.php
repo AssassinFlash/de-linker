@@ -100,6 +100,7 @@ final class Plugin {
 		( new Storefront\PageSchema() )->register();
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
+		( new Storefront\SitemapSync() )->register();
 		( new Consent\BasicMode() )->register();
 		( new Presentation\BlockStyles() )->register();
 		( new Products\Publication\Module() )->register();

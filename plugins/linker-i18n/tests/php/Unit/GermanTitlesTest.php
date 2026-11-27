@@ -134,4 +134,22 @@ final class GermanTitlesTest extends TestCase {
 		$html   = '<meta property="og:image" content="/og-linker-blog-1200x630.jpg"><meta property="og:image:alt" content="Linker Journal">';
 		$this->assertSame( $html, $titles->social_image_alt( $html ) );
 	}
+	/** Both social networks receive the title of the shop in the visitor's language. */
+	public function test_german_shop_shares_its_german_title(): void {
+		require_once dirname( __DIR__, 4 ) . '/linker-commerce/tests/php/Doubles/wordpress.php';
+		WP_Mock::userFunction( 'get_option', array( 'return' => true ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction( 'is_shop', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_query_var', array( 'return' => 0 ) );
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => false ) );
+		WP_Mock::userFunction( '__' )->with( 'Inverters, storage and systems', 'linker-i18n' )->andReturn( 'Wechselrichter, Speicher und Systeme' );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'get_bloginfo', array( 'return' => 'Linker' ) );
+		$titles = new GermanTitles( new Languages() );
+		foreach ( array( 'og:title', 'twitter:title' ) as $key ) {
+			$this->assertStringContainsString( 'property="' . $key . '" content="Wechselrichter, Speicher und Systeme | Linker"', $titles->shop_social_title( '<meta property="' . $key . '" content="Products | Linker">' ) );
+		}
+	}
 }

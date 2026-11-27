@@ -84,4 +84,27 @@ final class SocialCardsTest extends TestCase {
 		$this->assertSame( $url, $cards->open_graph( $url ) );
 		$this->assertSame( $url, $cards->twitter_image( $url ) );
 	}
+	/** SEOPress's object placeholder on archives is a website card. */
+	public function test_archive_type_preserves_other_card_types(): void {
+		WP_Mock::userFunction( 'is_shop', array( 'return' => true ) );
+		$cards = new SocialCards();
+		$this->assertSame( '<meta property="og:type" content="website">', $cards->open_graph_type( '<meta property="og:type" content="object">' ) );
+		$this->assertSame( '<meta property="og:type" content="product">', $cards->open_graph_type( '<meta property="og:type" content="product">' ) );
+	}
+
+	/** Icons declare the dimensions of their actual PNG resources. */
+	public function test_icons_offer_exact_raster_sizes_and_one_root_ico(): void {
+		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( 'https://linker.test' );
+		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn( $s ) => rtrim( $s, '/' ) . '/' ) );
+		WP_Mock::userFunction( 'plugins_url', array( 'return' => 'https://linker.test/plugin/assets/icons/' ) );
+		WP_Mock::userFunction( 'esc_url', array( 'return_arg' => 0 ) );
+		$tags = ( new SocialCards() )->site_icons( array( '<link rel="icon" sizes="32x32" href="old.png">', '<meta name="msapplication-TileImage" content="tile.png">' ) );
+		$html = implode( '', $tags );
+		$this->assertStringContainsString( 'https://linker.test/favicon.ico', $html );
+		$this->assertStringNotContainsString( 'old.png', $html );
+		$this->assertStringContainsString( 'tile.png', $html );
+		foreach ( array( 48, 96, 192, 180 ) as $size ) {
+			$this->assertStringContainsString( 'sizes="' . $size . 'x' . $size . '"', $html );
+		}
+	}
 }

@@ -8041,3 +8041,13 @@ msgstr ""
 #~ msgstr ""
 #~ "Zu viele fehlgeschlagene Anmeldeversuche. Bitte versuchen Sie es später "
 #~ "erneut."
+
+#. translators: %s: manufacturer brand name.
+#, php-format
+msgid "Browse %s models and datasheets for your next solar or storage project. Linker supports installers and EPCs across Europe."
+msgstr "Finden Sie Modelle und Datenblätter von %s für Ihr nächstes Solar- oder Speicherprojekt. Linker unterstützt Installateure und EPCs in ganz Europa."
+
+#. translators: %d: page number.
+#, php-format
+msgid "Page %d"
+msgstr "Seite %d"

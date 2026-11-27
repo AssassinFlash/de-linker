@@ -119,11 +119,30 @@ final class GermanTitles {
 		if ( ! $this->is_german_shop() ) {
 			return $tag;
 		}
+		return self::social_content( $tag, $this->shop_description( '' ) );
+	}
+
+	/**
+	 * Keep the shared German shop title in Open Graph and Twitter previews.
+	 *
+	 * @param string $tag SEOPress title tag.
+	 */
+	public function shop_social_title( string $tag ): string {
+		return $this->is_german_shop() ? self::social_content( $tag, $this->title( '' ) ) : $tag;
+	}
+
+	/**
+	 * Replace the value of a SEOPress social metadata tag.
+	 *
+	 * @param string $tag   Existing meta tag.
+	 * @param string $value Localized content.
+	 */
+	private static function social_content( string $tag, string $value ): string {
 		$html = new \WP_HTML_Tag_Processor( $tag );
 		if ( ! $html->next_tag( array( 'tag_name' => 'META' ) ) ) {
 			return $tag;
 		}
-		$html->set_attribute( 'content', $this->shop_description( '' ) );
+		$html->set_attribute( 'content', $value );
 		return $html->get_updated_html();
 	}
 

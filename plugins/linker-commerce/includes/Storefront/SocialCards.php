@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Presentation\PageUrls;
+
 /** SEOPress renders Open Graph before Twitter in the same page head. */
 final class SocialCards {
 
@@ -25,9 +27,41 @@ final class SocialCards {
 
 	/** Register the native SEOPress meta filters. */
 	public function register(): void {
+		add_filter( 'seopress_social_og_type', array( $this, 'open_graph_type' ) );
+		add_filter( 'site_icon_meta_tags', array( $this, 'site_icons' ) );
 		add_filter( 'seopress_social_twitter_card_summary', array( $this, 'summary' ), 10, 0 );
 		add_filter( 'seopress_social_og_thumb', array( $this, 'open_graph' ) );
 		add_filter( 'seopress_social_twitter_card_thumb', array( $this, 'twitter_image' ) );
+	}
+
+	/**
+	 * Public archives use the website card type.
+	 *
+	 * @param string $tag SEOPress Open Graph type tag.
+	 */
+	public function open_graph_type( string $tag ): string {
+		if ( ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) || is_category() ) {
+			return str_replace( 'content="object"', 'content="website"', $tag );
+		}
+		return $tag;
+	}
+
+	/**
+	 * Use the registered brand mark at the exact dimensions advertised in the head.
+	 *
+	 * @param string[] $tags Core site icon tags.
+	 * @return string[]
+	 */
+	public function site_icons( array $tags ): array {
+		$base   = plugins_url( 'assets/icons/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+		$tags   = array_values( array_filter( $tags, static fn( string $tag ): bool => ! str_contains( $tag, 'rel="icon"' ) && ! str_contains( $tag, 'rel="apple-touch-icon"' ) ) );
+		$tags[] = '<link rel="icon" href="' . esc_url( PageUrls::root() . 'favicon.ico' ) . '" sizes="any">';
+		foreach ( array( 48, 96, 192 ) as $size ) {
+			$pixels = $size . 'x' . $size;
+			$tags[] = '<link rel="icon" href="' . esc_url( $base . 'icon-' . $pixels . '.png' ) . '" type="image/png" sizes="' . $pixels . '">';
+		}
+		$tags[] = '<link rel="apple-touch-icon" href="' . esc_url( $base . 'apple-touch-icon-180x180.png' ) . '" sizes="180x180">';
+		return $tags;
 	}
 
 	/** Always request a large Twitter/X preview. */

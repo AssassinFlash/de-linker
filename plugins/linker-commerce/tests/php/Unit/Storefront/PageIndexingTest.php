@@ -186,4 +186,24 @@ final class PageIndexingTest extends TestCase {
 			'content' => array( 15, false, true ),
 		);
 	}
+	/** Only brands that have products on this archive get a discovery description. */
+	public function test_brand_description_uses_the_visible_manufacturer(): void {
+		$term = new \WP_Term(
+			(object) array(
+				'taxonomy' => 'product_brand',
+				'name'     => 'Test &amp; Co.',
+			)
+		);
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
+		WP_Mock::userFunction( 'is_page', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_tax', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_main_query', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'have_posts' )->andReturn( true, false );
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return_arg' => 0 ) );
+		$indexing = new PageIndexing();
+		$this->assertStringContainsString( 'Test & Co.', $indexing->description( '' ) );
+		$this->assertSame( '', $indexing->description( '' ) );
+	}
 }
