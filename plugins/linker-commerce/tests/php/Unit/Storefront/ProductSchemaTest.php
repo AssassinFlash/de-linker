@@ -382,6 +382,7 @@ final class ProductSchemaTest extends TestCase {
 	): WC_Product {
 		$terms = array(
 			'pa_brand'    => null === $brand ? array( 'GoodWe' ) : $brand,
+			'pa_series'   => array(),
 			'pa_model'    => null === $model ? array( 'GW5.1-BAT-D-G21' ) : $model,
 			'product_cat' => null === $category ? array( 'Home Storage' ) : $category,
 		);

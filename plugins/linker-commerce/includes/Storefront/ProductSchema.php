@@ -14,6 +14,7 @@ use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
+use Linker\Commerce\Products\SelectionFactSet;
 
 /** Public product identity and search metadata use the same WooCommerce facts. */
 final class ProductSchema {
@@ -85,7 +86,9 @@ final class ProductSchema {
 		$brand = $this->term_name( $id, 'pa_brand' );
 		$model = $this->term_name( $id, 'pa_model' );
 
-		$data = array(
+		$figures = Publication::figures_in_manifest( $source, $manifest );
+		$facts   = SelectionFacts::from_figures( $source, $figures );
+		$data    = array(
 			'@context'         => 'https://schema.org',
 			'@type'            => 'Product',
 			'@id'              => $url . '#product',
@@ -93,7 +96,7 @@ final class ProductSchema {
 			'inLanguage'       => Materials::locale(),
 			'name'             => $this->text( $product->get_name() ),
 			'url'              => $url,
-			'description'      => $this->summary( $product, $brand, $model ),
+			'description'      => $this->summary( $product, $brand, $model, $facts ),
 		);
 
 		$sku = $this->text( $product->get_sku() );
@@ -122,7 +125,14 @@ final class ProductSchema {
 			$data['image'] = $image;
 		}
 
-		$series = trim( (string) ( Materials::english_acf( $source )['product_series'] ?? '' ) );
+		$series = $this->term_name( $source, 'pa_series' );
+		if ( '' === $series ) {
+			$series = trim( (string) ( Materials::english_acf( $source )['product_series'] ?? '' ) );
+		}
+		$source_brand = $records[ $source ]['brand'];
+		if ( 0 === strcasecmp( $source_brand, $series ) ) {
+			$series = '';
+		}
 		if ( '' === $series ) {
 			$members = ProductFamilies::published_members( $source );
 			if ( count( $members ) > 1 ) {
@@ -130,7 +140,7 @@ final class ProductSchema {
 			}
 		}
 		if ( '' !== $series ) {
-			$data['inProductGroupWithID'] = PageUrls::root() . '#product-group-' . sanitize_title( $records[ $source ]['brand'] . '-' . $series );
+			$data['inProductGroupWithID'] = PageUrls::root() . '#product-group-' . sanitize_title( str_starts_with( strtolower( $series ), strtolower( $source_brand . ' ' ) ) ? $series : $source_brand . '-' . $series );
 		}
 		$material = Materials::material_for_product( $source );
 		$mpn      = $this->text( (string) ( $material['identity']['manufacturer_part_number'] ?? '' ) );
@@ -154,8 +164,7 @@ final class ProductSchema {
 			}
 			$data['subjectOf'][] = $node;
 		}
-		$figures    = Publication::figures_in_manifest( $source, $manifest );
-		$properties = $this->properties( $source, $figures, $downloads );
+		$properties = $this->properties( $source, $facts, $figures, $downloads );
 		if ( $properties ) {
 			$data['additionalProperty'] = $properties;
 		}
@@ -187,14 +196,14 @@ final class ProductSchema {
 	/** Localized public facts with numeric values kept numeric for consumers.
 	 *
 	 * @param int                               $id Canonical product ID.
+	 * @param SelectionFactSet                  $f Verified public facts.
 	 * @param array<string,array<string,mixed>> $figures Authorized technical figures.
 	 * @param array<int,array<string,mixed>>    $downloads Published document links.
 	 * @return list<array<string,mixed>> Schema.org PropertyValue nodes.
 	 */
-	private function properties( int $id, array $figures, array $downloads ): array {
-		$f      = SelectionFacts::from_figures( $id, $figures );
-		$mppt = $figures['n_mppt']['value'] ?? null;
-		$mppt = is_numeric( $mppt ) && (float) $mppt === (float) (int) $mppt ? (int) $mppt : $mppt;
+	private function properties( int $id, SelectionFactSet $f, array $figures, array $downloads ): array {
+		$mppt   = $figures['n_mppt']['value'] ?? null;
+		$mppt   = is_string( $mppt ) && ctype_digit( $mppt ) ? (int) $mppt : $mppt;
 		$values = array(
 			array( __( 'Rated AC output power', 'linker-commerce' ), $f->ac_power_kw, 'kW', 'KWT' ),
 			array( __( 'Maximum PV input power', 'linker-commerce' ), $f->pv_input_kw, 'kW', 'KWT' ),
@@ -273,17 +282,18 @@ final class ProductSchema {
 	/**
 	 * Ratings and translated category of a model whose name has no description.
 	 *
-	 * @param \WC_Product $product Localized product.
-	 * @param string      $name Published product name.
-	 * @param string      $brand Brand term.
-	 * @param string      $model Model term.
+	 * @param \WC_Product           $product Localized product.
+	 * @param string                $name Published product name.
+	 * @param string                $brand Brand term.
+	 * @param string                $model Model term.
+	 * @param SelectionFactSet|null $facts Authorized figures for the current graph.
 	 * @return list<string>
 	 */
-	private function model_details( \WC_Product $product, string $name, string $brand, string $model ): array {
+	private function model_details( \WC_Product $product, string $name, string $brand, string $model, ?SelectionFactSet $facts = null ): array {
 		if ( '' === $model || ( trim( $brand . ' ' . $model ) !== $name && $name !== $model ) ) {
 			return array();
 		}
-		$facts    = SelectionFacts::for_product( $product->get_id() );
+		$facts  ??= SelectionFacts::for_product( $product->get_id() );
 		$category = $this->term_name( $product->get_id(), 'product_cat' );
 		$details  = '' !== $category ? array( $category ) : array();
 		if ( is_float( $facts->ac_power_kw ) ) {
@@ -300,13 +310,14 @@ final class ProductSchema {
 	/**
 	 * Add the category and published rating when the Woo title is only a model.
 	 *
-	 * @param \WC_Product $product Localized product.
-	 * @param string      $brand   Manufacturer name.
-	 * @param string      $model   Model designation.
+	 * @param \WC_Product           $product Localized product.
+	 * @param string                $brand   Manufacturer name.
+	 * @param string                $model   Model designation.
+	 * @param SelectionFactSet|null $facts Authorized figures for a structured description.
 	 */
-	private function summary( \WC_Product $product, string $brand, string $model ): string {
+	private function summary( \WC_Product $product, string $brand, string $model, ?SelectionFactSet $facts = null ): string {
 		$name    = $this->text( $product->get_name() );
-		$details = $this->model_details( $product, $name, $brand, $model );
+		$details = $this->model_details( $product, $name, $brand, $model, $facts );
 		if ( $details ) {
 			$name .= ' – ' . implode( ', ', $details );
 		}

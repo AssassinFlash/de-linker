@@ -20,6 +20,60 @@ use WP_Post;
  */
 final class PageSchemaTest extends TestCase {
 
+	/** Product pages link the localized four-level trail and the product entity.
+	 *
+	 * @dataProvider product_locales
+	 * @param string $lang Language of the current product.
+	 * @param string $home_label Translated home crumb.
+	 */
+	public function test_product_page_and_breadcrumb( string $lang, string $home_label ): void {
+		$root = 'https://example.org/';
+		$home = 'de' === $lang ? $root . 'de/' : $root;
+		$url  = $home . 'model/';
+		$post = new WP_Post(
+			(object) array(
+				'ID'        => 12,
+				'post_type' => 'product',
+			)
+		);
+		WP_Mock::userFunction( 'get_queried_object' )->andReturn( $post );
+		WP_Mock::userFunction( 'get_the_title' )->andReturn( 'Model A' );
+		WP_Mock::userFunction( 'get_permalink' )->andReturn( $url );
+		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( $root );
+		WP_Mock::userFunction( 'is_singular' )->with( 'product' )->andReturn( true );
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( $lang );
+		WP_Mock::userFunction( 'pll_home_url' )->andReturn( $home );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnArg( 0 );
+		WP_Mock::userFunction( '_x' )->andReturn( $home_label );
+		WP_Mock::userFunction( '__' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'wc_get_page_permalink' )->andReturn( $home . 'products/' );
+		WP_Mock::userFunction( 'get_the_terms' )->andReturn( array( (object) array( 'name' => 'Equipment' ) ) );
+		WP_Mock::userFunction( 'get_term_link' )->andReturn( $home . 'equipment/' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn( $v, $flags ) => json_encode( $v, $flags ) );
+		ob_start();
+		( new PageSchema() )->print_blocks();
+		$html = (string) ob_get_clean();
+		preg_match_all( '#<script[^>]*>(.*?)</script>#s', $html, $matches );
+		$page = json_decode( $matches[1][0], true );
+		$this->assertSame( 'WebPage', $page['@type'] );
+		$this->assertSame( $url . '#webpage', $page['@id'] );
+		$this->assertSame( $lang, $page['inLanguage'] );
+		$this->assertSame( array( '@id' => $root . '#organization' ), $page['publisher'] );
+		$this->assertSame( array( '@id' => $url . '#product' ), $page['mainEntity'] );
+		$trail = json_decode( $matches[1][1], true )['itemListElement'];
+		$this->assertSame( array( $home_label, 'Products', 'Equipment', 'Model A' ), array_column( $trail, 'name' ) );
+		$this->assertSame( array( $home, $home . 'products/', $home . 'equipment/', $url ), array_column( $trail, 'item' ) );
+	}
+
+	/** Product graph languages.
+	 *
+	 * @return array<int,array{string,string}>
+	 */
+	public static function product_locales(): array {
+		return array( array( 'en', 'Home' ), array( 'de', 'Startseite' ) );
+	}
+
 	/** Both languages identify one publisher and preserve both public team contacts. */
 	public function test_organization_retains_the_graph_id_and_public_contacts(): void {
 		WP_Mock::userFunction( 'is_front_page', array( 'return' => false ) );

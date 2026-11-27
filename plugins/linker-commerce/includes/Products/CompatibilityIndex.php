@@ -32,19 +32,25 @@ final class CompatibilityIndex {
 		$manifest   ??= self::manifest();
 		$key          = $manifest['source_revision'];
 		if ( ! isset( $cache[ $key ] ) ) {
-			$source = EngineeringData::compatibility( $manifest ) ?? array(
-				'pairs'        => array(),
-				'requirements' => array(),
-			);
-			$public = array();
+			$source = EngineeringData::compatibility( $manifest );
+			if ( null === $source ) {
+				$cache[ $key ] = array(
+					'available'    => false,
+					'pairs'        => array(),
+					'requirements' => array(),
+				);
+				return $cache[ $key ];
+			}
+			$source['available'] = true;
+			$public              = array();
 			foreach ( $manifest['products'] as $record ) {
 				if ( empty( $record['engineering_role'] ) ) {
 					$public[ $record['product_id'] ] = true;
 				}
 			}
 			$public_ids = array_keys( $public );
-			$pairs    = array();
-			$verdicts = array();
+			$pairs      = array();
+			$verdicts   = array();
 			foreach ( $source['pairs'] as $row ) {
 				if ( ! isset( $public[ $row['inverter_product_id'] ], $public[ $row['battery_product_id'] ] ) || array_diff( array_column( $row['accessories'], 'product_id' ), $public_ids ) ) {
 					continue;
@@ -101,8 +107,8 @@ final class CompatibilityIndex {
 
 	/** Project grid standards from current downloads and the product's cited certification row.
 	 *
-	 * @param int                            $product_id Product or language twin.
-	 * @param array<int,array<string,mixed>> $downloads Authorized documents of this product.
+	 * @param int                                    $product_id Product or language twin.
+	 * @param array<int,array<string,mixed>>         $downloads Authorized documents of this product.
 	 * @param array<string,array<string,mixed>>|null $figures Authorized figures from the same manifest.
 	 * @return list<string> Verified standards.
 	 */
@@ -161,8 +167,8 @@ final class CompatibilityIndex {
 					'inverter' => $inverter,
 					'battery'  => $battery,
 				) as $kind => $id ) {
-					$target = self::item( $products[ $id ], $locale );
-					if ( $target ) {
+					$target = self::item( $products[ $id ], $locale, $manifest );
+					if ( $target && $id !== $source ) {
 						$rows['accessory_for'][ $id ] = $target + array( 'kind' => $kind );
 					}
 				}
@@ -171,7 +177,7 @@ final class CompatibilityIndex {
 				continue;
 			}
 			$id     = $source === $inverter ? $battery : $inverter;
-			$target = self::item( $products[ $id ], $locale );
+			$target = self::item( $products[ $id ], $locale, $manifest );
 			if ( ! $target ) {
 				continue;
 			}
@@ -184,8 +190,8 @@ final class CompatibilityIndex {
 			);
 			$item                        = &$rows['compatible'][ $id ];
 			foreach ( $pair['accessories'] as $part ) {
-				$accessory = self::item( $products[ $part['product_id'] ], $locale );
-				if ( $accessory ) {
+				$accessory = self::item( $products[ $part['product_id'] ], $locale, $manifest );
+				if ( $accessory && $part['product_id'] !== $source ) {
 					$item['accessories'][ $part['product_id'] . ':' . $part['per'] ] = $accessory + $part;
 				}
 			}
@@ -213,8 +219,8 @@ final class CompatibilityIndex {
 				$rows['requirements'][] = $rule;
 			}
 			if ( in_array( $source, array_column( $rule['accessories'], 'product_id' ), true ) ) {
-				$target = self::item( $products[ $owner ], $locale );
-				if ( $target ) {
+				$target = self::item( $products[ $owner ], $locale, $manifest );
+				if ( $target && $owner !== $source ) {
 					$rows['accessory_for'][ $owner ] = $target + array( 'kind' => 'inverter' );
 				}
 			}
@@ -236,15 +242,21 @@ final class CompatibilityIndex {
 	 *
 	 * @param array<string,mixed> $record Published manifest row.
 	 * @param string              $locale Storefront locale.
+	 * @param array<string,mixed> $manifest Current publication read.
 	 * @return array<string,mixed> Empty when the target has no published twin.
 	 */
-	private static function item( array $record, string $locale ): array {
+	private static function item( array $record, string $locale, array $manifest ): array {
 		$id = $record['locale_product_ids'][ $locale ] ?? 0;
 		if ( ! $id ) {
 			return array();
 		}
+		static $items = array();
+		$key          = $manifest['source_revision'] . ':' . $id;
+		if ( isset( $items[ $key ] ) ) {
+			return $items[ $key ];
+		}
 		$source = $record['product_id'];
-		$facts  = SelectionFacts::for_product( $source );
+		$facts  = SelectionFacts::from_figures( $source, Publication::figures_in_manifest( $source, $manifest ) );
 		$rating = array();
 		foreach ( array(
 			'kW'  => $facts->ac_power_kw,
@@ -254,11 +266,16 @@ final class CompatibilityIndex {
 				$rating[] = wc_format_localized_decimal( (string) $value ) . ' ' . $unit;
 			}
 		}
+		if ( ! is_float( $facts->nominal_kwh ) && null !== $facts->kwh_range ) {
+			$rating[] = Materials::de_number( $facts->kwh_range['min'] . '–' . $facts->kwh_range['max'] ) . ' kWh';
+		} elseif ( ! is_float( $facts->nominal_kwh ) && is_float( $facts->usable_kwh ) ) {
+			$rating[] = wc_format_localized_decimal( (string) $facts->usable_kwh ) . ' kWh';
+		}
 		if ( is_int( $facts->phase ) ) {
 			$rating[] = 1 === $facts->phase ? __( 'single-phase', 'linker-commerce' ) : __( 'three-phase', 'linker-commerce' );
 		}
-		$terms = get_the_terms( $id, 'product_cat' );
-		return array(
+		$terms         = get_the_terms( $id, 'product_cat' );
+		$items[ $key ] = array(
 			'canonical_id' => $source,
 			'product_id'   => $id,
 			'name'         => html_entity_decode( get_the_title( $id ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
@@ -267,5 +284,6 @@ final class CompatibilityIndex {
 			'category'     => is_array( $terms ) ? implode( ', ', wp_list_pluck( $terms, 'name' ) ) : '',
 			'rating'       => implode( ' · ', $rating ),
 		);
+		return $items[ $key ];
 	}
 }

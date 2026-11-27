@@ -1321,6 +1321,8 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 }
 
 #tv-storefront-pdp .pdp-pairing-footnote {
+	padding-inline-start: 1.5em;
+	list-style: decimal;
 	max-width: 640px;
 	margin-top: 16px;
 	color: var(--pdp-muted);

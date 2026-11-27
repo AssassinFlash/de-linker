@@ -14,7 +14,10 @@ use Linker\Commerce\Tests\Support\MocksLiveProducts;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
-/** @covers \Linker\Commerce\Products\CompatibilityIndex */
+/** Published products share a released declaration and its current evidence.
+ *
+ * @covers \Linker\Commerce\Products\CompatibilityIndex
+ */
 final class CompatibilityIndexTest extends TestCase {
 	use MocksLiveProducts;
 
@@ -33,9 +36,23 @@ final class CompatibilityIndexTest extends TestCase {
 		$this->assertArrayNotHasKey( 1832, $h2 );
 		$this->assertSame( 'released_with_accessory', $h2[2067]['verdict'] );
 		$this->assertContains( 2092, array_column( $h2[2067]['accessories'], 'product_id' ) );
-		$this->assertContains( 4107, array_column( CompatibilityIndex::for_product( 2092, $manifest )['accessory_for'], 'product_id' ) );
+		$accessory = CompatibilityIndex::for_product( 2092, $manifest );
+		$this->assertContains( 4107, array_column( $accessory['accessory_for'], 'product_id' ) );
+		$this->assertNotContains( 2092, array_column( $accessory['accessory_for'], 'product_id' ) );
+		foreach ( $accessory['compatible'] as $related ) {
+			$this->assertNotContains( 2092, array_column( $related['accessories'], 'product_id' ) );
+		}
 		$this->assertContains( 6519, array_column( CompatibilityIndex::for_product( 3556, $manifest )['compatible'], 'product_id' ) );
 		$this->assertSame( array(), CompatibilityIndex::for_product( 99999, $manifest )['compatible'] );
+		$this->assertStringContainsString( '10 kWh', $h2[2067]['rating'] );
+		$manifest['source_revision'] = 'without-battery-rating-document';
+		$manifest['documents']       = array_values( array_filter( $manifest['documents'], static fn( array $doc ): bool => ! str_ends_with( $doc['url'], '/fixture/saj_b2_hv1_hv5_datasheet_au_en.pdf' ) ) );
+		$revised                     = array_column( CompatibilityIndex::for_product( 4107, $manifest )['compatible'], null, 'product_id' );
+		$this->assertStringNotContainsString( 'kWh', $revised[2067]['rating'] );
+		$this->compatibility_fixture_claims[4107] = array( 'pairs' => 'invalid' );
+		$manifest['source_revision']              = 'invalid-declaration';
+		$this->assertFalse( CompatibilityIndex::declarations( $manifest )['available'] );
+		$this->assertSame( array(), CompatibilityIndex::for_product( 4107, $manifest )['compatible'] );
 	}
 
 
