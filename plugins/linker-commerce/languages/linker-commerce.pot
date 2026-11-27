@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-27T14:12:19+00:00\n"
+"POT-Creation-Date: 2026-11-27T14:13:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -1015,7 +1015,7 @@ msgstr ""
 
 #: includes/Contact/SelectionView.php:97
 #: includes/Presentation/ProductShortcodes.php:341
-#: includes/Storefront/ProductSchema.php:215
+#: includes/Storefront/ProductSchema.php:224
 #: includes/Storefront/ProductView.php:300
 msgid "Application"
 msgstr ""
@@ -2927,12 +2927,12 @@ msgid "Compatibility matrix"
 msgstr ""
 
 #: includes/Presentation/CompatibilityMatrixPage.php:69
-#: includes/Storefront/ProductSchema.php:209
+#: includes/Storefront/ProductSchema.php:218
 msgid "Single-phase"
 msgstr ""
 
 #: includes/Presentation/CompatibilityMatrixPage.php:69
-#: includes/Storefront/ProductSchema.php:209
+#: includes/Storefront/ProductSchema.php:218
 msgid "Three-phase"
 msgstr ""
 
@@ -3996,13 +3996,13 @@ msgstr ""
 msgid "Net price after partner sign-in"
 msgstr ""
 
-#: includes/Products/CompatibilityIndex.php:258
-#: includes/Storefront/ProductSchema.php:295
+#: includes/Products/CompatibilityIndex.php:275
+#: includes/Storefront/ProductSchema.php:305
 msgid "single-phase"
 msgstr ""
 
-#: includes/Products/CompatibilityIndex.php:258
-#: includes/Storefront/ProductSchema.php:295
+#: includes/Products/CompatibilityIndex.php:275
+#: includes/Storefront/ProductSchema.php:305
 msgid "three-phase"
 msgstr ""
 
@@ -4100,7 +4100,7 @@ msgid "Max. apparent power"
 msgstr ""
 
 #: includes/Products/Materials.php:912
-#: includes/Storefront/ProductSchema.php:203
+#: includes/Storefront/ProductSchema.php:212
 msgid "MPPT trackers"
 msgstr ""
 
@@ -4125,7 +4125,7 @@ msgid "Nominal AC voltage"
 msgstr ""
 
 #: includes/Products/Materials.php:919
-#: includes/Storefront/ProductSchema.php:212
+#: includes/Storefront/ProductSchema.php:221
 msgid "System energy range"
 msgstr ""
 
@@ -4199,7 +4199,7 @@ msgid "Communication address range"
 msgstr ""
 
 #: includes/Products/Materials.php:938
-#: includes/Storefront/ProductSchema.php:200
+#: includes/Storefront/ProductSchema.php:209
 msgid "Maximum PV input power"
 msgstr ""
 
@@ -4244,7 +4244,7 @@ msgid "Communication"
 msgstr ""
 
 #: includes/Products/Materials.php:949 includes/Products/Materials.php:950
-#: includes/Storefront/ProductSchema.php:204
+#: includes/Storefront/ProductSchema.php:213
 msgid "Ingress protection"
 msgstr ""
 
@@ -5824,63 +5824,63 @@ msgstr ""
 msgid "Over 30 kW"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:199
+#: includes/Storefront/ProductSchema.php:208
 msgid "Rated AC output power"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:201
+#: includes/Storefront/ProductSchema.php:210
 msgid "Usable battery energy"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:202
+#: includes/Storefront/ProductSchema.php:211
 msgid "Nominal battery energy"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:205
+#: includes/Storefront/ProductSchema.php:214
 msgid "Battery voltage range"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:206
+#: includes/Storefront/ProductSchema.php:215
 msgid "Grid compliance standards"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:209
+#: includes/Storefront/ProductSchema.php:218
 #: includes/Storefront/ProductView.php:304
 msgid "Grid phases"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:215
+#: includes/Storefront/ProductSchema.php:224
 msgid "Commercial & Industrial"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:215
+#: includes/Storefront/ProductSchema.php:224
 msgid "Residential"
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:314
+#: includes/Storefront/ProductSchema.php:325
 msgid ""
 "Use the manufacturer’s documents to check the technical details, then "
 "request a quotation from Linker for your installation."
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:315
+#: includes/Storefront/ProductSchema.php:326
 msgid ""
 "Check the technical details in the manufacturer’s documents and request a "
 "quotation from Linker for your project."
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:316
+#: includes/Storefront/ProductSchema.php:327
 msgid ""
 "Check the manufacturer’s documents and ask Linker for a quotation for your "
 "installation."
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:317
+#: includes/Storefront/ProductSchema.php:328
 msgid ""
 "See the manufacturer’s documents and request a project quotation from Linker."
 msgstr ""
 
-#: includes/Storefront/ProductSchema.php:318
+#: includes/Storefront/ProductSchema.php:329
 msgid "Check the manufacturer’s documents and request a quotation."
 msgstr ""
 
