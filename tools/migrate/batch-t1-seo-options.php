@@ -2,13 +2,14 @@
 /**
  * Publish the bilingual inverter descriptions, SEO settings, icon and canonical host.
  *
+ * Usage:
  * wp eval-file batch-t1-seo-options.php snapshot > before-options.json
  * wp eval-file batch-t1-seo-options.php apply|restore before-options.json
  *
  * @package Linker\Migrate
  */
 
-namespace Linker\Migrate\SeoT1;
+namespace Linker\Commerce\Migrate\SeoT1;
 
 use Linker\Commerce\Mail\NativeTransaction;
 use Linker\I18n\Jobs;
@@ -43,7 +44,11 @@ const OPTIONS = array(
 	'seopress_titles_option_name'      => array(
 		'seopress_titles_home_site_desc' => 'PV and energy storage for installers and EPCs: hybrid inverters, LFP batteries and complete storage systems from GoodWe, SAJ, Pylontech and Chint. Partner pricing and documented compatibility.',
 		'seopress_titles_tax_titles'     => array(
-			'product_brand' => array( 'title' => '%%term_title%% | %%sitetitle%%', 'description' => '', 'noindex' => '' ),
+			'product_brand' => array(
+				'title'       => '%%term_title%% | %%sitetitle%%',
+				'description' => '',
+				'noindex'     => '',
+			),
 		),
 	),
 	'seopress_xml_sitemap_option_name' => array(
@@ -57,38 +62,57 @@ const TERMS = array(
 	'de' => array( 610, 'wechselrichter', 'Ein- und dreiphasige Wechselrichter und Leistungsmodule von GoodWe und SAJ.' ),
 );
 
-/** Replace or remove a single file. Visitors see either complete version. */
+/**
+ * Replace or remove a single file. Visitors see either complete version.
+ *
+ * @param string      $path Site file path.
+ * @param string|null $body File bytes, or null to remove it.
+ * @param int         $mode Published file permissions.
+ * @throws RuntimeException When the site file cannot be installed.
+ */
 function write_file( string $path, ?string $body, int $mode ): void {
 	if ( null === $body ) {
-		if ( is_file( $path ) && ! unlink( $path ) ) {
-			throw new RuntimeException( "Cannot remove $path" );
+		wp_delete_file( $path );
+		if ( is_file( $path ) ) {
+			throw new RuntimeException( 'Cannot remove the previous site icon.' );
 		}
 		return;
 	}
 	$tmp = tempnam( dirname( $path ), '.linker-t1-' );
 	if ( false === $tmp ) {
-		throw new RuntimeException( "Cannot stage $path" );
+		throw new RuntimeException( 'Cannot stage the site file.' );
 	}
 	try {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.file_system_operations_chmod, WordPress.WP.AlternativeFunctions.rename_rename -- Stage with its final mode and atomically rename on the local WordPress filesystem.
 		if ( strlen( $body ) !== file_put_contents( $tmp, $body ) || ! chmod( $tmp, $mode ) || ! rename( $tmp, $path ) ) {
-			throw new RuntimeException( "Cannot install $path" );
+			throw new RuntimeException( 'Cannot install the staged site file.' );
 		}
 	} finally {
 		if ( is_file( $tmp ) ) {
-			unlink( $tmp );
+			wp_delete_file( $tmp );
 		}
 	}
 }
 
+/**
+ * Read the local recovery or deployment file.
+ *
+ * @param string $path Local file path.
+ * @throws RuntimeException When reading fails.
+ */
 function bytes( string $path ): string {
-	$data = file_get_contents( $path );
+	$data = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Read local file bytes for exact recovery.
 	if ( false === $data ) {
-		throw new RuntimeException( "Cannot read $path" );
+		throw new RuntimeException( 'Cannot read the local deployment or recovery file.' );
 	}
 	return $data;
 }
 
-/** Retain only settings owned by this publication. */
+/**
+ * Retain only settings owned by this publication.
+ *
+ * @return array<string,array<string,mixed>>
+ */
 function options_snapshot(): array {
 	$selected = array();
 	foreach ( OPTIONS as $name => $fields ) {
@@ -102,6 +126,7 @@ function options_snapshot(): array {
 	return $selected;
 }
 
+/** Native translator used only for recording and reading the human translation baseline. */
 function translator(): Translator {
 	$languages = new Languages();
 	$tokenizer = new HtmlTokenizer();
@@ -110,9 +135,17 @@ function translator(): Translator {
 	return new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), new State(), DeepSeekClient::from_environment( $rules ), new Validator( $rules ), new Twins( $languages, $links, new Projection( $languages ) ), $links );
 }
 
+/**
+ * Original native metadata, including missing keys, for exact category rollback.
+ *
+ * @return array<int,array<string,array<int,mixed>>>
+ */
 function translation_meta(): array {
 	$meta = array();
-	foreach ( array( TERMS['en'][0] => array( State::STATUS, State::NOTE ), TERMS['de'][0] => array( State::SOURCE_HASH, State::UNITS ) ) as $id => $keys ) {
+	foreach ( array(
+		TERMS['en'][0] => array( State::STATUS, State::NOTE ),
+		TERMS['de'][0] => array( State::SOURCE_HASH, State::UNITS ),
+	) as $id => $keys ) {
 		foreach ( $keys as $key ) {
 			$meta[ $id ][ $key ] = get_term_meta( $id, $key, false );
 		}
@@ -120,13 +153,21 @@ function translation_meta(): array {
 	return $meta;
 }
 
+/**
+ * Read this installation's bilingual pair, SEO fields and files.
+ *
+ * @return array<string,mixed>
+ * @throws RuntimeException When the configured term IDs no longer identify the expected translations.
+ */
 function snapshot(): array {
 	$terms = array();
 	$names = array();
 	foreach ( TERMS as $lang => list( $id, $slug ) ) {
-		$term = get_term( $id, 'product_cat', OBJECT, 'raw' );
-		if ( ! $term instanceof \WP_Term || $slug !== $term->slug || $lang !== pll_get_term_language( $id ) || (int) pll_get_term( TERMS['en'][0], $lang ) !== $id ) {
-			throw new RuntimeException( "Expected the published $lang inverter category." );
+		$term      = get_term( $id, 'product_cat', OBJECT, 'raw' );
+		$term_lang = pll_get_term_language( $id );
+		$twin_id   = (int) pll_get_term( TERMS['en'][0], $lang );
+		if ( ! $term instanceof \WP_Term || $slug !== $term->slug || $lang !== $term_lang || $id !== $twin_id ) {
+			throw new RuntimeException( 'Expected the native inverter category translation pair.' );
 		}
 		$terms[ $id ] = $term->description;
 		$names[ $id ] = $term->name;
@@ -140,13 +181,20 @@ function snapshot(): array {
 		'translation'   => translation_meta(),
 		'current'       => translator()->current( State::TERM, TERMS['en'][0] ),
 		'options'       => options_snapshot(),
-		'favicon'       => is_file( $icon ) ? base64_encode( bytes( $icon ) ) : null,
+		'favicon'       => is_file( $icon ) ? base64_encode( bytes( $icon ) ) : null, // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Store ICO bytes losslessly in JSON.
 		'favicon_mode'  => is_file( $icon ) ? fileperms( $icon ) & 0777 : null,
 		'htaccess'      => bytes( $file ),
 		'htaccess_mode' => fileperms( $file ) & 0777,
 	);
 }
 
+/**
+ * Compose the approved changes against the saved originals.
+ *
+ * @param array<string,mixed> $before Original snapshot.
+ * @return array<string,mixed>
+ * @throws RuntimeException When an existing host block needs manual reconciliation.
+ */
 function published( array $before ): array {
 	$after = $before;
 	foreach ( TERMS as list( $id, , $text ) ) {
@@ -157,7 +205,7 @@ function published( array $before ): array {
 			$after['options'][ $name ][ $key ] = is_array( $value ) ? $value['product_brand'] : $value;
 		}
 	}
-	$after['favicon']      = base64_encode( bytes( WP_PLUGIN_DIR . '/linker-commerce/assets/icons/favicon.ico' ) );
+	$after['favicon']      = base64_encode( bytes( WP_PLUGIN_DIR . '/linker-commerce/assets/icons/favicon.ico' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Store ICO bytes losslessly in JSON.
 	$after['favicon_mode'] = 0644;
 	if ( ! str_starts_with( $before['htaccess'], HOST_BLOCK ) ) {
 		if ( str_contains( $before['htaccess'], '# BEGIN Linker canonical host' ) || str_contains( $before['htaccess'], '# END Linker canonical host' ) ) {
@@ -181,6 +229,14 @@ function pause_term_translation(): void {
 	}
 }
 
+/**
+ * Apply the selected version, adopting or restoring the native translation state.
+ *
+ * @param array<string,mixed> $current Current owned values.
+ * @param array<string,mixed> $target Desired owned values.
+ * @param bool                $adopt   Adopt the reviewed bilingual text on publication.
+ * @throws RuntimeException When a category write or native adoption fails.
+ */
 function publish( array $current, array $target, bool $adopt ): void {
 	pause_term_translation();
 	NativeTransaction::run(
@@ -189,7 +245,7 @@ function publish( array $current, array $target, bool $adopt ): void {
 				if ( $current['terms'][ $id ] !== $text ) {
 					$result = wp_update_term( $id, 'product_cat', array( 'description' => wp_slash( $text ) ) );
 					if ( is_wp_error( $result ) ) {
-						throw new RuntimeException( $result->get_error_message() );
+						throw new RuntimeException( esc_html( $result->get_error_message() ) );
 					}
 				}
 			}
@@ -231,62 +287,68 @@ function publish( array $current, array $target, bool $adopt ): void {
 		}
 	}
 	if ( $current['favicon'] !== $target['favicon'] || $current['favicon_mode'] !== $target['favicon_mode'] ) {
-		write_file( ABSPATH . 'favicon.ico', null === $target['favicon'] ? null : base64_decode( $target['favicon'], true ), $target['favicon_mode'] ?? 0644 );
+		$icon = null === $target['favicon'] ? null : base64_decode( $target['favicon'], true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Restore saved binary ICO bytes.
+		if ( false === $icon ) {
+			throw new RuntimeException( 'The saved ICO is not valid base64.' );
+		}
+		write_file( ABSPATH . 'favicon.ico', $icon, $target['favicon_mode'] ?? 0644 );
 	}
 	if ( $current['htaccess'] !== $target['htaccess'] ) {
 		write_file( ABSPATH . '.htaccess', $target['htaccess'], $target['htaccess_mode'] );
 	}
 	foreach ( array( 'post', 'page', 'product' ) as $type ) {
-		foreach ( array_unique( array( 1000, (int) apply_filters( 'seopress_sitemaps_max_posts_per_sitemap', 1000 ) ) ) as $max ) {
+		foreach ( array_unique( array( 1000, (int) apply_filters( 'seopress_sitemaps_max_posts_per_sitemap', 1000 ) ) ) as $max ) { // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Invalidate the same page sizes as the native SEOPress sitemap index.
 			delete_transient( "seopress_sitemap_lastmod_all_{$type}_{$max}" );
 		}
 	}
 }
 
-$current = snapshot();
-$mode    = $args[0] ?? 'snapshot';
-if ( 'snapshot' === $mode ) {
-	WP_CLI::line( wp_json_encode( $current, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ) );
-	return;
-}
-if ( ! in_array( $mode, array( 'apply', 'restore' ), true ) || empty( $args[1] ) ) {
-	WP_CLI::error( 'Use snapshot, apply <snapshot.json>, or restore <snapshot.json>.' );
-}
-$before = json_decode( bytes( $args[1] ), true, 512, JSON_THROW_ON_ERROR );
-if ( $current['home'] !== $before['home'] ) {
-	WP_CLI::error( 'The snapshot belongs to a different WordPress installation.' );
-}
-$after  = published( $before );
-$target = 'apply' === $mode ? $after : $before;
-// The native translator calculates the new segment baseline from the reviewed pair.
-$matches = static function ( array $state ) use ( $mode, $target ): bool {
-	if ( 'restore' === $mode ) {
-		return $state === $target;
+( static function ( array $args ): void {
+	$current = snapshot();
+	$mode    = $args[0] ?? 'snapshot';
+	if ( 'snapshot' === $mode ) {
+		echo wp_json_encode( $current, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ) . "\n";
+		return;
 	}
-	return $state['current'] && array_diff_key( $state, array_flip( array( 'translation', 'current' ) ) ) === array_diff_key( $target, array_flip( array( 'translation', 'current' ) ) );
-};
-if ( $current['term_names'] !== $before['term_names'] || ( ! $current['current'] && $current['translation'] !== $before['translation'] ) ) {
-	WP_CLI::error( 'Inverter names or translation baseline changed since the snapshot.' );
-}
-if ( $matches( $current ) ) {
-	WP_CLI::success( 'SEO settings, bilingual copy and files already match.' );
-	return;
-}
-// Accept interrupted writes only when each owned item is still its original or approved value.
-foreach ( array( 'terms', 'options' ) as $group ) {
-	foreach ( $current[ $group ] as $key => $value ) {
-		if ( $value !== $before[ $group ][ $key ] && $value !== $after[ $group ][ $key ] ) {
-			WP_CLI::error( "The $group entry $key changed after the snapshot." );
+	if ( ! in_array( $mode, array( 'apply', 'restore' ), true ) || empty( $args[1] ) ) {
+		WP_CLI::error( 'Use snapshot, apply <snapshot.json>, or restore <snapshot.json>.' );
+	}
+	$before = json_decode( bytes( $args[1] ), true, 512, JSON_THROW_ON_ERROR );
+	if ( $current['home'] !== $before['home'] ) {
+		WP_CLI::error( 'The snapshot belongs to a different WordPress installation.' );
+	}
+	$after  = published( $before );
+	$target = 'apply' === $mode ? $after : $before;
+	// The native translator calculates the new segment baseline from the reviewed pair.
+	$matches = static function ( array $state ) use ( $mode, $target ): bool {
+		if ( 'restore' === $mode ) {
+			return $state === $target;
+		}
+		return $state['current'] && array_diff_key( $state, array_flip( array( 'translation', 'current' ) ) ) === array_diff_key( $target, array_flip( array( 'translation', 'current' ) ) );
+	};
+	if ( $current['term_names'] !== $before['term_names'] || ( ! $current['current'] && $current['translation'] !== $before['translation'] ) ) {
+		WP_CLI::error( 'Inverter names or translation baseline changed since the snapshot.' );
+	}
+	if ( $matches( $current ) ) {
+		WP_CLI::success( 'SEO settings, bilingual copy and files already match.' );
+		return;
+	}
+	// Accept interrupted writes only when each owned item is still its original or approved value.
+	foreach ( array( 'terms', 'options' ) as $group ) {
+		foreach ( $current[ $group ] as $key => $value ) {
+			if ( $value !== $before[ $group ][ $key ] && $value !== $after[ $group ][ $key ] ) {
+				WP_CLI::error( "The $group entry $key changed after the snapshot." );
+			}
 		}
 	}
-}
-foreach ( array( 'favicon', 'favicon_mode', 'htaccess', 'htaccess_mode' ) as $key ) {
-	if ( $current[ $key ] !== $before[ $key ] && $current[ $key ] !== $after[ $key ] ) {
-		WP_CLI::error( "$key changed after the snapshot." );
+	foreach ( array( 'favicon', 'favicon_mode', 'htaccess', 'htaccess_mode' ) as $key ) {
+		if ( $current[ $key ] !== $before[ $key ] && $current[ $key ] !== $after[ $key ] ) {
+			WP_CLI::error( "$key changed after the snapshot." );
+		}
 	}
-}
-publish( $current, $target, 'apply' === $mode );
-if ( ! $matches( snapshot() ) ) {
-	WP_CLI::error( 'Published settings or files differ from the requested state.' );
-}
-WP_CLI::success( 'SEO settings, bilingual copy and files verified.' );
+	publish( $current, $target, 'apply' === $mode );
+	if ( ! $matches( snapshot() ) ) {
+		WP_CLI::error( 'Published settings or files differ from the requested state.' );
+	}
+	WP_CLI::success( 'SEO settings, bilingual copy and files verified.' );
+} )( $args ?? array() );
