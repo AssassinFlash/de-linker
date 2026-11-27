@@ -63,6 +63,7 @@ const PAGES = array(
  * The matrix page template and reviewed metadata.
  *
  * @param string $language Page language.
+ * @return array<string,string>
  */
 function page_meta( string $language ): array {
 	list( , , $title, $description ) = PAGES[ $language ];
@@ -137,7 +138,11 @@ function install_edge( string $body, int $mode ): void {
 	}
 }
 
-/** Capture the page fields, Polylang pair and translation metadata we will write. */
+/**
+ * Capture the page fields, Polylang pair and translation metadata we will write.
+ *
+ * @return array<string,array<string,mixed>|null>
+ */
 function pages(): array {
 	$result = array();
 	foreach ( PAGES as $language => list( $slug ) ) {
@@ -179,42 +184,53 @@ function pause_post_translation(): void {
 }
 
 /**
- * Install the two reviewed pages and retain their IDs on every repeat.
+ * Publish one reviewed language version.
  *
- * @param array<string,mixed> $current Original language pair.
- * @throws RuntimeException When the page or its native translation cannot be saved.
+ * @param string                   $language Page language.
+ * @param array<string,mixed>|null $page Original page.
+ * @throws RuntimeException When a page cannot be saved at its intended address.
+ */
+function publish_page( string $language, ?array $page ): int {
+	list( $slug, $title ) = PAGES[ $language ];
+	if ( $page && $language !== $page['language'] ) {
+		throw new RuntimeException( 'Another language uses the matrix slug.' );
+	}
+	$post = array(
+		'post_type'    => 'page',
+		'post_name'    => $slug,
+		'post_title'   => $title,
+		'post_status'  => 'publish',
+		'post_content' => '[linker_compatibility_matrix]',
+	);
+	if ( $page ) {
+		$post['ID'] = $page['id'];
+	}
+	if ( ! $page || $title !== $page['title'] || $post['post_content'] !== $page['content'] || 'publish' !== $page['status'] ) {
+		$id = wp_insert_post( wp_slash( $post ), true );
+		if ( is_wp_error( $id ) ) {
+			throw new RuntimeException( 'Cannot publish matrix page ' . esc_html( $slug ) );
+		}
+	} else {
+		$id = $page['id'];
+	}
+	pll_set_post_language( $id, $language );
+	foreach ( page_meta( $language ) as $key => $value ) {
+		update_post_meta( $id, $key, wp_slash( $value ) );
+	}
+	return $id;
+}
+
+/**
+ * Pair the reviewed English and German versions.
+ *
+ * @param array<string,mixed> $current Current pages.
+ * @throws RuntimeException When the translation baseline cannot be saved.
  */
 function publish_pages( array $current ): void {
-	$ids = array();
-	foreach ( PAGES as $language => list( $slug, $title ) ) {
-		$page = $current[ $language ];
-		if ( $page && $language !== $page['language'] ) {
-			throw new RuntimeException( 'Another language uses the matrix slug.' );
-		}
-		$post = array(
-			'post_type'    => 'page',
-			'post_name'    => $slug,
-			'post_title'   => $title,
-			'post_status'  => 'publish',
-			'post_content' => '[linker_compatibility_matrix]',
-		);
-		if ( $page ) {
-			$post['ID'] = $page['id'];
-		}
-		if ( ! $page || $title !== $page['title'] || $post['post_content'] !== $page['content'] || 'publish' !== $page['status'] ) {
-			$id = wp_insert_post( wp_slash( $post ), true );
-			if ( is_wp_error( $id ) || ! $id ) {
-				throw new RuntimeException( 'Cannot publish matrix page ' . esc_html( $slug ) );
-			}
-		} else {
-			$id = $page['id'];
-		}
-		$ids[ $language ] = $id;
-		pll_set_post_language( $id, $language );
-		foreach ( page_meta( $language ) as $key => $value ) {
-			update_post_meta( $id, $key, wp_slash( $value ) );
-		}
-	}
+	$ids = array(
+		'en' => publish_page( 'en', $current['en'] ),
+		'de' => publish_page( 'de', $current['de'] ),
+	);
 	pll_save_post_translations( $ids );
 	$translator = translator();
 	if ( State::SYNCED !== $translator->adopt_current( State::POST, $ids['en'] ) || ! $translator->current( State::POST, $ids['en'] ) ) {
