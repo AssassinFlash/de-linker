@@ -64,9 +64,16 @@ final class DocumentAccess {
 		status_header( $response['status'] );
 		nocache_headers();
 		header( 'Cache-Control: no-store, private, max-age=0' );
-		// LiteSpeed's own control header overrides ordinary Cache-Control rules.
-		// See https://docs.litespeedtech.com/lscache/devguide/controls/#x-litespeed-cache-control.
-		header( 'X-LiteSpeed-Cache-Control: no-cache,no-store' );
+		// LiteSpeed finalizes its header when the output buffer is flushed.
+		$error_response = $response['status'] >= 400;
+		header_register_callback(
+			static function () use ( $error_response ): void {
+				header( 'X-LiteSpeed-Cache-Control: no-cache,no-store' );
+				if ( $error_response ) {
+					header_remove( 'Link' );
+				}
+			}
+		);
 		header( 'X-Content-Type-Options: nosniff' );
 		foreach ( $response['headers'] as $name => $content ) {
 			header( $name . ': ' . $content, 'Link' !== $name );
