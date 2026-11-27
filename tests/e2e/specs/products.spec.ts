@@ -653,7 +653,10 @@ test.describe('the products', () => {
 					'echo count( \\Linker\\Commerce\\Products\\Publication::faqs_for( $product->ID ) );',
 			]).trim()
 		);
-		expect(publishedRows, 'the review product has a cited FAQ').toBeGreaterThan(0);
+		expect(
+			publishedRows,
+			'the review product has a cited FAQ'
+		).toBeGreaterThan(0);
 		await page.goto(`${instance().url}${NO_CLAIM.en}`);
 		const block = await page.evaluate(() => {
 			const section = document.querySelector('.pdp-faqs')!;
@@ -666,12 +669,13 @@ test.describe('the products', () => {
 					side?.querySelector('img')?.getAttribute('src') ?? '',
 				sideBox: side?.getBoundingClientRect().width ?? 0,
 				mainBox: main?.getBoundingClientRect().width ?? 0,
-				rows:
-					section?.querySelectorAll('.pdp-disclose').length ?? 0,
+				rows: section?.querySelectorAll('.pdp-disclose').length ?? 0,
 			};
 		});
 		expect(block.exists, 'the FAQ block is on the page').toBe(true);
-		expect(block.rows, 'every authorized answer is visible').toBe(publishedRows);
+		expect(block.rows, 'every authorized answer is visible').toBe(
+			publishedRows
+		);
 		expect(block.side, 'the picture panel stands beside it').toBe(true);
 		expect(
 			block.sidePicture,
