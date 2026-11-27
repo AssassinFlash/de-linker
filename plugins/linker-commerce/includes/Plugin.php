@@ -95,6 +95,7 @@ final class Plugin {
 		$this->filters->register();
 		$this->search_scope->register();
 		$this->contact->register();
+		( new Storefront\CrawlHygiene() )->register();
 		( new Storefront\PageIndexing() )->register();
 		( new Storefront\PageSchema() )->register();
 		( new ProductSchema() )->register();

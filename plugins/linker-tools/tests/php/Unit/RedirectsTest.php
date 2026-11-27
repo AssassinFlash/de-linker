@@ -25,6 +25,40 @@ use WP_Term;
  */
 final class RedirectsTest extends TestCase {
 
+	/** Mixed-case front-end slugs preserve encoded path segments and raw query bytes. */
+	public function test_case_redirect_targets_only_public_page_paths(): void {
+		$this->wordpress();
+		$redirects = new Redirects();
+		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_doing_ajax', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( self::HOME );
+		$before = $_SERVER;
+		try {
+			$_SERVER['REQUEST_METHOD'] = 'GET';
+			$_SERVER['QUERY_STRING']   = 'Sort=Power&model=AbC%2FZ';
+			$_SERVER['REQUEST_URI']    = '/DE/Produkte/?Sort=Power&model=AbC%2FZ';
+			$this->assertSame( self::HOME . '/de/produkte/?Sort=Power&model=AbC%2FZ', $redirects->lowercase_target() );
+			$_SERVER['QUERY_STRING'] = '';
+			foreach ( array(
+				'/Products/'     => '/products/',
+				'/About'         => '/about/',
+				'/Model-%C2%A7/' => '/model-%C2%A7/',
+			) as $path => $target ) {
+				$_SERVER['REQUEST_URI'] = $path;
+				$this->assertSame( self::HOME . $target, $redirects->lowercase_target() );
+			}
+			foreach ( array( '/european-%C2%A714a/', '/wp-content/Uploads/Test.PDF', '/wp-json/Linker/V1/Test', '/.well-known/CaseSensitive', '/image/ABC.PNG' ) as $path ) {
+				$_SERVER['REQUEST_URI'] = $path;
+				$this->assertNull( $redirects->lowercase_target(), $path );
+			}
+			$_SERVER['REQUEST_METHOD'] = 'POST';
+			$_SERVER['REQUEST_URI']    = '/Products/';
+			$this->assertNull( $redirects->lowercase_target() );
+		} finally {
+			$_SERVER = $before;
+		}
+	}
+
 	/**
 	 * The site address of the test.
 	 */

@@ -72,6 +72,7 @@ final class Redirects {
 	 * guess of WordPress's.
 	 */
 	public function register(): void {
+		add_action( 'template_redirect', array( $this, 'normalize_case' ), -5 );
 		add_action(
 			'template_redirect',
 			function (): void {
@@ -84,6 +85,31 @@ final class Redirects {
 			},
 			1
 		);
+	}
+
+	/** Resolve mixed-case public paths before the native canonical redirect. */
+	public function normalize_case(): void {
+		$target = $this->lowercase_target();
+		if ( null !== $target && wp_safe_redirect( $target, 301 ) ) {
+			exit;
+		}
+	}
+
+	/** The lowercase public path. Preserve the bytes of escapes, assets and query values. */
+	public function lowercase_target(): ?string {
+		if ( ! in_array( $_SERVER['REQUEST_METHOD'] ?? 'GET', array( 'GET', 'HEAD' ), true ) || is_admin() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Fixed method comparison.
+			return null;
+		}
+		$path = $this->request_path();
+		if ( ! preg_match( '/[A-Z]/', $path ) || preg_match( '#^/(?:wp-(?:content|includes|json|admin|login\.php)(?:/|$)|\.well-known/|xmlrpc\.php/|sitemaps)|\.[a-z0-9]{1,8}/$#i', $path ) ) {
+			return null;
+		}
+		$lower = (string) preg_replace_callback( '/%[0-9a-fA-F]{2}|[A-Z]+/', static fn( array $part ): string => '%' === $part[0][0] ? $part[0] : strtolower( $part[0] ), $path );
+		if ( $lower === $path ) {
+			return null;
+		}
+		$query = $this->request_query();
+		return rtrim( (string) get_option( 'home' ), '/' ) . $lower . ( '' === $query ? '' : '?' . $query );
 	}
 
 	/**

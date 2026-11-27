@@ -81,6 +81,9 @@ final class SeoTest extends TestCase {
 	 */
 	public function test_x_default_is_english(): void {
 		WP_Mock::userFunction( 'is_search', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_attachment', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => null ) );
 		$this->assertSame(
 			array(
 				'en'        => 'http://example.test/product/x/',
@@ -111,6 +114,46 @@ final class SeoTest extends TestCase {
 				)
 			)
 		);
+	}
+
+	/** All effective noindex decisions suppress language alternates. */
+	public function test_no_hreflang_on_excluded_documents(): void {
+		$flags  = array();
+		$object = null;
+		foreach ( array( 'is_search', 'is_404', 'is_attachment', 'seopress_titles_noindex_bypass' ) as $flag ) {
+			WP_Mock::userFunction( $flag )->andReturnUsing(
+				static function () use ( &$flags, $flag ): bool {
+					return ! empty( $flags[ $flag ] );
+				}
+			);
+		}
+		WP_Mock::userFunction( 'get_queried_object' )->andReturnUsing(
+			static function () use ( &$object ) {
+				return $object;
+			}
+		);
+		$seo   = new Seo();
+		$links = array(
+			'en' => '/english/',
+			'de' => '/de/deutsch/',
+		);
+		foreach ( array( 'is_404', 'is_attachment', 'seopress_titles_noindex_bypass' ) as $flag ) {
+			$flags = array( $flag => true );
+			$this->assertSame( array(), $seo->hreflangs( $links ), $flag );
+		}
+		$flags              = array();
+		$_GET['replytocom'] = '1';
+		try {
+			$this->assertSame( array(), $seo->hreflangs( $links ) );
+		} finally {
+			unset( $_GET['replytocom'] );
+		}
+		$object = PolylangDouble::post( 7 );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 7, '_seopress_robots_index', true )->andReturn( 'yes' );
+		$this->assertSame( array(), $seo->hreflangs( $links ) );
+		$object = PolylangDouble::term( 8 );
+		WP_Mock::userFunction( 'get_term_meta' )->with( 8, '_seopress_robots_index', true )->andReturn( 'yes' );
+		$this->assertSame( array(), $seo->hreflangs( $links ) );
 	}
 
 	/**

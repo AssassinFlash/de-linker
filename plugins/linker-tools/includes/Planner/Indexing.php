@@ -12,6 +12,32 @@ namespace Linker\Tools\Planner;
 /** Native WordPress and SEOPress policy; no project content or identity is read. */
 final class Indexing {
 
+	/** Query keys which select a workspace, prefill a project or restore an action. */
+	private const STATE_KEYS = array(
+		'project',
+		'run',
+		'pv_kwp',
+		'annual_kwh',
+		'phase',
+		'backup',
+		'plz',
+		'saved_solution',
+		'view',
+		'energy_view',
+		'projects',
+		'brief',
+		'step',
+		'retry_revision',
+		'linker_inquiry_retry',
+		'application',
+		'goal',
+		'scope',
+		'product_id',
+		'compare',
+		'guided',
+		'project_search',
+	);
+
 	/** Register before WordPress sends the page headers. */
 	public function register(): void {
 		add_filter( 'wp_headers', array( $this, 'headers' ) );
@@ -107,7 +133,7 @@ final class Indexing {
 	 */
 	private function private_context(): bool {
 		$keys = array_keys( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only indexing policy uses names only, not values or authorisation.
-		if ( array() === array_intersect( $keys, array( 'project', 'run', 'pv_kwp', 'annual_kwh', 'phase', 'backup', 'plz', 'saved_solution' ) ) || is_admin() || ! is_page() ) {
+		if ( array() === array_intersect( $keys, self::STATE_KEYS ) || is_admin() || ! is_page() ) {
 			return false;
 		}
 		$post = get_queried_object();

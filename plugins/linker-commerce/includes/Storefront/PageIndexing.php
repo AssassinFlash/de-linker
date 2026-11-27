@@ -150,8 +150,9 @@ final class PageIndexing {
 		if ( array_intersect( array( 'ids', 'capped' ), $keys ) && ComparePage::is_comparison_page() ) {
 			return true;
 		}
-		$facets = array( 'application', 'anwendung', 'brand', 'phase', 'power', 'kw_min', 'kw_max', 'kwh_min', 'kwh_max', 'sort', 'q' );
-		return array() !== array_intersect( $facets, $keys ) && function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) && is_main_query() && ! is_404();
+		$facets   = array( 'application', 'anwendung', 'brand', 'phase', 'power', 'kw_min', 'kw_max', 'kwh_min', 'kwh_max', 'sort', 'q', 'orderby' );
+		$filtered = array() !== array_intersect( $facets, $keys ) || (bool) preg_grep( '/^(?:filter_|query_type_)/', $keys );
+		return $filtered && function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) && is_main_query() && ! is_404();
 	}
 
 	/** Preserve empty brand landing pages for people following their old URLs. */
