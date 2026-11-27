@@ -834,3 +834,12 @@ body:has([data-linker-planner]) .linker-genie-peek { display: none; }
 .sc-static-guide th, .sc-static-guide td { padding: .75rem; text-align: start; vertical-align: top; border-bottom: 1px solid var(--proto-color-line); }
 .sc-static-guide-links { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; }
 .sc-static-guide-links a { text-decoration: underline; text-underline-offset: .2em; }
+
+@media (375px <= width <= 700px) {
+  .sc-configurator .sc-direction-fields > .sc-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--proto-space-3);
+  }
+  .sc-direction-fields > .sc-fields > .sc-field { min-width: 0; }
+  .sc-direction-fields > .sc-fields > :first-child { grid-column: 1 / -1; }
+}
