@@ -354,7 +354,7 @@ final class PageSchema {
 					'description'      => $node['description'],
 					'inLanguage'       => $node['inLanguage'],
 					'creator'          => $node['publisher'],
-					'variableMeasured' => array( 'Inverter-Battery Compatibility', 'Required Control Modules and Accessories', 'Smart Meter and Backup Switch Rules', 'VDE-AR-N 4105', 'VDE-AR-N 4110', 'TOR Erzeuger', 'EN 50549' ),
+					'variableMeasured' => array( 'Inverter-Battery Compatibility', 'Required Control Modules and Accessories', 'Smart Meter and Backup Switch Rules', 'Grid connection standard named in the manufacturer certificate' ),
 					'distribution'     => array(
 						array(
 							'@type'          => 'DataDownload',

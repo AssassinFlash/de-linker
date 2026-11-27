@@ -249,6 +249,7 @@ final class PageSchemaTest extends TestCase {
 			$this->assertSame( $lang, $nodes[0]['inLanguage'] );
 			$this->assertSame( 'Dataset', $nodes[0]['mainEntity']['@type'] );
 			$this->assertSame( $url . '#dataset', $nodes[0]['mainEntity']['@id'] );
+			$this->assertNotContains( 'TOR Erzeuger', $nodes[0]['mainEntity']['variableMeasured'] );
 			$this->assertSame( $root . 'wp-json/linker/v1/engineering-feed', $nodes[0]['mainEntity']['distribution'][0]['contentUrl'] );
 		}
 	}
