@@ -59,19 +59,23 @@ final class LlmsTxt {
 	/**
 	 * Build the public resource directory from both languages of the active site.
 	 *
-	 * @param string $home Site root without a trailing slash.
+	 * @param string                   $home Site root without a trailing slash.
+	 * @param array<string,mixed>|null $manifest Current publication read.
 	 */
-	public static function document( string $home ): string {
-		$sections = array(
+	public static function document( string $home, ?array $manifest = null ): string {
+		$manifest ??= Publication::manifest();
+		$products   = array_filter( $manifest['products'], static fn( array $product ): bool => empty( $product['engineering_role'] ) );
+		$brands     = self::brands( array_column( $products, 'brand' ) );
+		$sections   = array(
 			'Solutions'                         => self::pages( array( 'solution', 'solution/residential-storage', 'solution/commercial-storage', 'solution/utility-storage' ) ),
 			'Machine-Readable Engineering Data' => self::endpoints( $home ),
-			'Manufacturers'                     => self::brands(),
-			'Technical journal'                 => self::journal(),
+			'Manufacturers'                     => $brands['links'],
+			'Technical journal'                 => self::journal( $brands['inactive'] ),
 			'Planning tools and documents'      => self::pages( array( 'inverter-battery-compatibility', 'solution-configurator', 'compare-products', 'faq-download', 'services-support', 'for-installer', 'for-epc', 'about', 'contact' ) ),
 			'Product categories'                => self::categories(),
-			'Product families'                  => self::product_families(),
+			'Product families'                  => self::product_families( $products, $manifest ),
 		);
-		$latest   = max( (string) get_lastpostmodified( 'gmt', 'product' ), (string) get_lastpostmodified( 'gmt', 'post' ), (string) get_lastpostmodified( 'gmt', 'page' ) );
+		$latest     = max( (string) get_lastpostmodified( 'gmt', 'product' ), (string) get_lastpostmodified( 'gmt', 'post' ), (string) get_lastpostmodified( 'gmt', 'page' ) );
 		return self::markdown( $sections, substr( $latest, 0, 10 ), $home . '/sitemaps.xml' );
 	}
 
@@ -181,49 +185,24 @@ final class LlmsTxt {
 	/**
 	 * Group every published model under its manufacturer and series.
 	 *
+	 * @param array<int,array<string,mixed>> $products Published sales equipment.
+	 * @param array<string,mixed>            $manifest Publication read shared by the directory.
 	 * @return list<string>
 	 */
-	private static function product_families(): array {
-		$visible   = wc_get_product_visibility_term_ids();
-		$ids       = get_posts(
-			array(
-				'post_type'        => 'product',
-				'post_status'      => 'publish',
-				'numberposts'      => -1,
-				'orderby'          => array(
-					'title' => 'ASC',
-					'ID'    => 'ASC',
-				),
-				'fields'           => 'ids',
-				'lang'             => '',
-				'suppress_filters' => false,
-				'tax_query'        => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- WooCommerce visibility excludes hidden engineering references.
-					array(
-						'taxonomy' => 'product_visibility',
-						'field'    => 'term_taxonomy_id',
-						'terms'    => array( $visible['exclude-from-catalog'] ),
-						'operator' => 'NOT IN',
-					),
-				),
-			)
-		);
-		$published = Publication::published_ids( array_map( 'intval', $ids ), true );
-		$set       = array_fill_keys( $published, true );
-		$english   = array_values( array_filter( $published, static fn( int $id ): bool => PageUrls::twin( $id, 'en' ) === $id ) );
-		$rows      = array();
-		foreach ( $english as $id ) {
-			$de               = PageUrls::twin( $id, 'de' );
-			$terms            = get_the_terms( $id, 'pa_brand' );
-			$brand            = is_array( $terms ) && $terms ? $terms[0]->name : '';
+	private static function product_families( array $products, array $manifest ): array {
+		$rows = array();
+		foreach ( $products as $product ) {
+			$id               = $product['product_id'];
+			$de               = $product['locale_product_ids']['de'] ?? 0;
 			$series           = Materials::english_acf( $id )['product_series'] ?? '';
-			$label            = implode( ' · ', array_unique( array_filter( array( $brand, is_string( $series ) ? trim( $series ) : '' ) ) ) );
-			$facts            = SelectionFacts::for_product( $id );
-			$figures          = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
-			$figures          = is_string( $figures ) ? json_decode( $figures, true ) : $figures;
-			$ratings          = array_filter( array( self::power( $facts, is_array( $figures ) ? $figures : array() ), self::energy( $facts ) ) );
+			$label            = implode( ' · ', array_unique( array_filter( array( $product['brand'], is_string( $series ) ? trim( $series ) : '' ) ) ) );
+			$figures          = Publication::figures_in_manifest( $id, $manifest );
+			$facts            = SelectionFacts::from_figures( $id, $figures );
+			$ratings          = array_filter( array( self::power( $facts, $figures ), self::energy( $facts ) ) );
 			$rating           = $ratings ? ' · ' . implode( ' · ', $ratings ) : '';
-			$rows[ $label ][] = isset( $set[ $de ] ) ? self::post_pair( $id, $de, $rating ) : self::link( get_the_title( $id ), (string) get_permalink( $id ) ) . $rating;
+			$rows[ $label ][] = $de ? self::post_pair( $id, $de, $rating ) : self::link( get_the_title( $id ), (string) get_permalink( $id ) ) . $rating;
 		}
+		ksort( $rows, SORT_NATURAL | SORT_FLAG_CASE );
 		$lines = array();
 		foreach ( $rows as $label => $models ) {
 			$lines[] = ( '' === $label ? '' : $label . ': ' ) . implode( ' / ', $models );
@@ -250,41 +229,54 @@ final class LlmsTxt {
 	}
 
 	/**
-	 * Manufacturer archives with a published model in the linked language.
+	 * Manufacturer archives with public equipment and names outside current supply.
 	 *
-	 * @return list<string>
+	 * @param string[] $active Public equipment manufacturers in this read.
+	 * @return array{links:list<string>,inactive:list<string>}
 	 */
-	private static function brands(): array {
-		$rows  = array();
-		$terms = get_terms(
+	private static function brands( array $active ): array {
+		$brands = array(
+			'links'    => array(),
+			'inactive' => array(),
+		);
+		$terms  = get_terms(
 			array(
 				'taxonomy'   => 'product_brand',
-				'hide_empty' => true,
+				'hide_empty' => false,
 			)
 		);
 		if ( is_wp_error( $terms ) ) {
-			return $rows;
+			return $brands;
 		}
 		$archives = new SitemapSync();
+		$active   = array_map( 'strtolower', $active );
 		foreach ( $terms as $term ) {
+			if ( ! in_array( strtolower( $term->name ), $active, true ) ) {
+				$brands['inactive'][] = $term->name;
+				$brands['inactive'][] = $term->slug;
+				continue;
+			}
 			$link = get_term_link( $term );
 			if ( is_wp_error( $link ) ) {
 				continue;
 			}
 			$entry = $archives->brand_urls( array( 'loc' => $link ), $term );
 			if ( null !== $entry ) {
-				$rows[] = self::link( $term->name, $entry['loc'] ) . ( isset( $entry['linker_brand_twin'] ) ? ' · ' . self::link( $term->name . ' (DE)', $entry['linker_brand_twin'] ) : '' );
+				$brands['links'][] = self::link( $term->name, $entry['loc'] ) . ( isset( $entry['linker_brand_twin'] ) ? ' · ' . self::link( $term->name . ' (DE)', $entry['linker_brand_twin'] ) : '' );
 			}
 		}
-		return $rows;
+		return $brands;
 	}
 
 	/**
 	 * Pair published posts, including posts with only one language.
 	 *
+	 * @param string[] $inactive Names and slugs without public equipment.
 	 * @return list<string>
 	 */
-	private static function journal(): array {
+	private static function journal( array $inactive ): array {
+		$patterns  = array_map( static fn( string $name ): string => preg_quote( $name, '/' ), array_unique( $inactive ) );
+		$pattern   = $patterns ? '/(?<![\pL\pN])(?:' . implode( '|', $patterns ) . ')(?![\pL\pN])/iu' : '';
 		$ids       = get_posts(
 			array(
 				'post_type'    => 'post',
@@ -313,7 +305,7 @@ final class LlmsTxt {
 			} else {
 				$entry = self::link( get_the_title( $id ), (string) get_permalink( $id ) );
 			}
-			if ( false === stripos( $entry, 'EcoFlow' ) ) {
+			if ( '' === $pattern || ! preg_match( $pattern, $entry ) ) {
 				$rows[] = $entry;
 			}
 		}
@@ -376,6 +368,9 @@ final class LlmsTxt {
 			'| Inverter | Battery | Verdict | Required accessory | Notes |',
 			'| --- | --- | --- | --- | --- |',
 		);
+		if ( ! $declarations['available'] ) {
+			$lines[] = "\nCompatibility declarations are currently unavailable.";
+		}
 		foreach ( $declarations['pairs'] as $pair ) {
 			$inverter = $names[ $pair['inverter_product_id'] ] ?? '';
 			$battery  = $names[ $pair['battery_product_id'] ] ?? '';
@@ -387,6 +382,9 @@ final class LlmsTxt {
 		$lines[] = "\n## Meter, Backup & Parallel Controller Rules\n";
 		$lines[] = '| Inverter | Rule type | Status | Accessories | Summary |';
 		$lines[] = '| --- | --- | --- | --- | --- |';
+		if ( ! $declarations['available'] ) {
+			$lines[] = "\nAccessory requirements are currently unavailable.";
+		}
 		foreach ( $declarations['requirements'] as $rule ) {
 			$inverter = $names[ $rule['inverter_product_id'] ] ?? '';
 			if ( '' !== $inverter ) {

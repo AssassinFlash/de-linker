@@ -40,7 +40,7 @@ final class LlmsTxtTest extends TestCase {
 		$names  = array(
 			4101 => 'Solutions',
 			4102 => 'Lösungen',
-			4103 => 'EcoFlow and European storage',
+			4103 => 'RetiredSample and European storage',
 			1101 => 'ESA One',
 			1102 => 'ESA Eins',
 			1103 => 'ESA Two',
@@ -50,7 +50,7 @@ final class LlmsTxtTest extends TestCase {
 		$routes = array(
 			4101 => '/solution/',
 			4102 => '/de/loesung/',
-			4103 => '/ecoflow-and-european-storage/',
+			4103 => '/retiredsample-and-european-storage/',
 			1101 => '/product/esa-one/',
 			1102 => '/de/produkt/esa-eins/',
 			1103 => '/product/esa-two/',
@@ -68,7 +68,14 @@ final class LlmsTxtTest extends TestCase {
 		WP_Mock::userFunction( 'pll_get_post' )->andReturnUsing( static fn( int $id, string $lang ) => $id - ( 1 - $id % 2 ) + ( 'de' === $lang ? 1 : 0 ) );
 		WP_Mock::userFunction( 'pll_get_term' )->andReturnUsing( static fn( int $id, string $lang ) => 'de' === $lang ? 2 : 1 );
 		WP_Mock::userFunction( 'is_wp_error' )->andReturn( false );
-		WP_Mock::userFunction( 'get_terms' )->andReturnUsing( static fn( $args ) => 'product_cat' === $args['taxonomy'] ? array( $en, $de ) : array() );
+		WP_Mock::userFunction( 'get_terms' )->andReturnUsing(
+			static fn( $args ) => 'product_cat' === $args['taxonomy'] ? array( $en, $de ) : array(
+				(object) array(
+					'name' => 'RetiredSample',
+					'slug' => 'retiredsample',
+				),
+			)
+		);
 		WP_Mock::userFunction( 'get_term_link' )->andReturnUsing( static fn( \stdClass $term ) => $home . ( 1 === $term->term_id ? '/product-category/inverters/' : '/de/produkt-kategorie/wechselrichter/' ) );
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
@@ -98,9 +105,30 @@ final class LlmsTxtTest extends TestCase {
 		WP_Mock::userFunction( 'sanitize_email', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'get_lastpostmodified' )->andReturnUsing( static fn( string $zone, string $type ) => 'product' === $type ? '2026-11-19 12:00:00' : '2026-11-17 09:00:00' );
 
-		$text = LlmsTxt::document( $home );
+		$products = array();
+		foreach ( array( 1101, 1103 ) as $id ) {
+			$products[] = array(
+				'product_id'           => $id,
+				'brand'                => 'GoodWe',
+				'engineering_role'     => '',
+				'published_locale_ids' => array( $id, $id + 1 ),
+				'locale_product_ids'   => array(
+					'en' => $id,
+					'de' => $id + 1,
+				),
+			);
+		}
+		$text = LlmsTxt::document(
+			$home,
+			array(
+				'products'  => $products,
+				'documents' => array(),
+			)
+		);
+		$this->assertStringNotContainsString( '112.6 kWh', $text );
+		$this->assertStringNotContainsString( 'RetiredSample', $text );
 		$this->assertSame( 1, substr_count( $text, 'GoodWe · ESA Series' ) );
-		$this->assertStringContainsString( '[ESA One](https://linker.test/product/esa-one/) · 112.6 kWh', $text );
+		$this->assertStringContainsString( '[ESA One](https://linker.test/product/esa-one/)', $text );
 		$this->assertStringContainsString( '## Technical journal', $text );
 		$this->assertStringContainsString( '## Manufacturers', $text );
 		$this->assertStringContainsString( '[ESA Two](https://linker.test/product/esa-two/)', $text );
@@ -109,7 +137,7 @@ final class LlmsTxtTest extends TestCase {
 		foreach ( \Linker\Commerce\Presentation\ContactChannels::company_same_as() as $profile ) {
 			$this->assertStringContainsString( $profile, $text );
 		}
-		$this->assertStringContainsString( '[ESA Eins](https://linker.test/de/produkt/esa-eins/) · 112,6 kWh', $text );
+		$this->assertStringContainsString( '[ESA Eins](https://linker.test/de/produkt/esa-eins/)', $text );
 		$this->assertStringContainsString( '[Lösungen](https://linker.test/de/loesung/)', $text );
 		$this->assertStringContainsString( '[Wechselrichter](https://linker.test/de/produkt-kategorie/wechselrichter/)', $text );
 		$this->assertStringContainsString( 'Last updated: 2026-11-19', $text );
