@@ -59,6 +59,7 @@ final class BlogShortcodesTest extends TestCase {
 	 */
 	public function test_register_adds_the_blog_shortcodes(): void {
 		$codes = new BlogShortcodes();
+		WP_Mock::userFunction( 'add_shortcode' )->with( 'linker_blog_cover_image', array( $codes, 'cover_image' ) )->once();
 		WP_Mock::userFunction(
 			'add_shortcode',
 			array(
@@ -375,10 +376,10 @@ final class BlogShortcodesTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction(
-			'wp_get_attachment_image_url',
+			'wp_get_attachment_image_src',
 			array(
 				'args'   => array( 700, 'medium_large' ),
-				'return' => 'https://linker.test/up/card.jpg',
+				'return' => array( 'https://linker.test/up/card.jpg', 600, 400, false ),
 			)
 		);
 		WP_Mock::userFunction(
@@ -394,7 +395,7 @@ final class BlogShortcodesTest extends TestCase {
 		$this->assertStringContainsString( '<article class="lc-block"><a href="https://linker.test/installer-checklist/" class="tv-blog-single-related-card">', $html );
 		$this->assertStringContainsString( '<div class="tv-blog-single-related-img">', $html );
 		$this->assertStringContainsString(
-			'<img src="https://linker.test/up/card.jpg" srcset="https://linker.test/up/card-300x200.jpg 300w, https://linker.test/up/card.jpg 600w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" alt="">',
+			'<img src="https://linker.test/up/card.jpg" srcset="https://linker.test/up/card-300x200.jpg 300w, https://linker.test/up/card.jpg 600w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" alt="" width="600" height="400" decoding="async">',
 			$html
 		);
 		$this->assertStringContainsString( '<time datetime="2026-05-29T00:00:00+00:00">May 29, 2026</time>', $html );

@@ -1790,6 +1790,7 @@ final class ProductShortcodesTest extends TestCase {
 
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-main"(?=[^>]*fetchpriority="high")(?=[^>]*loading="eager")(?=[^>]*decoding="async")/', $pair );
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-main"[^>]*alt="GoodWe GW60K-STS-G10"(?![^>]*loading="lazy")/', $pair );
+		$this->assertStringContainsString( 'alt="GoodWe GW60K-STS-G10 — alternate product view"', $pair );
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-secondary"[^>]*data-src="http:\/\/linker\.test\/uploads\/image-6504\.png"[^>]*>\s*<img[^>]*loading="lazy"/', $pair );
 		$this->assertSame( 3, substr_count( $thumb, 'data-pdp-thumb' ) );
 		$this->assertSame( 3, substr_count( $thumb, 'loading="lazy"' ) );

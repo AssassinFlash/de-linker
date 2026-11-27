@@ -58,6 +58,8 @@ final class SocialCardsTest extends TestCase {
 		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( false );
 		WP_Mock::userFunction( 'is_singular' )->with( 'product' )->andReturn( true );
 		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 20 ) );
+		WP_Mock::userFunction( 'get_the_title' )->with( 20 )->andReturn( 'Inverter (5 kW)' );
+		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( 'strip_tags' );
 		WP_Mock::userFunction( 'get_post_thumbnail_id' )->with( 20 )->andReturn( 21 );
 		WP_Mock::userFunction( 'wp_get_attachment_image_src' )->with( 21, 'full' )->andReturn( array( 'https://example.org/inverter.webp', 900, 900, false ) );
 		WP_Mock::userFunction( 'get_post_meta' )->with( 21, '_wp_attachment_image_alt', true )->andReturn( 'Inverter' );
@@ -68,6 +70,21 @@ final class SocialCardsTest extends TestCase {
 		$this->assertStringContainsString( 'property="og:image" content="https://example.org/inverter.webp"', $tags );
 		$this->assertStringContainsString( 'property="og:image:width" content="900"', $tags );
 		$this->assertSame( '<meta name="twitter:image" content="https://example.org/inverter.webp">', $cards->twitter_image( '' ) );
+	}
+
+	/** A dedicated series photograph must describe the model whose card is shared. */
+	public function test_dedicated_product_alt_names_the_current_model(): void {
+		WP_Mock::userFunction( 'is_home' )->andReturn( false );
+		WP_Mock::userFunction( 'is_category' )->andReturn( false );
+		WP_Mock::userFunction( 'is_singular' )->andReturnUsing( static fn ( string $type ): bool => 'product' === $type );
+		WP_Mock::userFunction( 'get_queried_object_id' )->andReturn( 80 );
+		WP_Mock::userFunction( 'get_post_thumbnail_id' )->with( 80 )->andReturn( 100 );
+		WP_Mock::userFunction( 'get_the_title' )->andReturn( 'GoodWe GW80K-ETR-G10 (80 kW)' );
+		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( 'strip_tags' );
+		WP_Mock::userFunction( 'esc_attr' )->andReturnArg( 0 );
+		$html = ( new SocialCards() )->open_graph( '<meta property="og:image" content="https://linker.test/etr.webp"><meta property="og:image:alt" content="Shared 125 kW inverter">' );
+		$this->assertStringContainsString( 'content="GoodWe GW80K-ETR-G10 (80 kW)"', $html );
+		$this->assertStringNotContainsString( '125 kW', $html );
 	}
 
 	/** A dedicated landscape card is preserved, and the internal SEOPress URL filter keeps its type. */

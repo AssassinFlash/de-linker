@@ -11,6 +11,7 @@ namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Products\SearchScope;
+use Linker\I18n\CoverAlt;
 use WP_Post;
 use WP_Term;
 use WP_User;
@@ -70,6 +71,7 @@ final class BlogShortcodes {
 		add_action( 'template_redirect', array( $this, 'redirect_chester_archive' ), -1 );
 		add_filter( 'seopress_disable_archives_redirect_url', array( $this, 'archive_destination' ) );
 		add_shortcode( 'linker_blog_post_categories', array( $this, 'post_categories' ) );
+		add_shortcode( 'linker_blog_cover_image', array( $this, 'cover_image' ) );
 		add_shortcode( 'linker_blog_related_posts', array( $this, 'related_posts' ) );
 		add_shortcode( 'linker_blog_share', array( $this, 'share' ) );
 		add_shortcode( 'linker_blog_author', array( $this, 'author' ) );
@@ -372,6 +374,49 @@ final class BlogShortcodes {
 	}
 
 	/**
+	 * Localized text for the featured image shared between language editions.
+	 *
+	 * @param int $post_id Current post.
+	 * @param int $image_id Its featured attachment.
+	 */
+	public static function cover_alt( int $post_id, int $image_id ): string {
+		$alt = trim( (string) get_post_meta( $post_id, CoverAlt::DISPLAY, true ) );
+		if ( '' === $alt ) {
+			$alt = trim( (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) );
+		}
+		return '' !== $alt ? $alt : wp_strip_all_tags( get_the_title( $post_id ) );
+	}
+
+	/**
+	 * The exact cover in the current LiveCanvas post loop.
+	 *
+	 * @param array<string,string>|string $attributes Loop item, image size and priority.
+	 */
+	public function cover_image( $attributes = array() ): string {
+		$atts     = shortcode_atts(
+			array(
+				'post'           => '',
+				'size'           => 'medium_large',
+				'sizes'          => self::CARD_IMAGE_SIZES,
+				'eager'          => '',
+				'fetchpriority'  => '',
+				'fallback_class' => 'journal-image-fallback',
+			),
+			is_array( $attributes ) ? $attributes : array()
+		);
+		$post_id  = '' !== $atts['post'] ? (int) $atts['post'] : (int) get_the_ID();
+		$image_id = (int) get_post_thumbnail_id( $post_id );
+		$src      = $image_id ? wp_get_attachment_image_src( $image_id, $atts['size'] ) : false;
+		if ( ! $src ) {
+			return '<span class="' . esc_attr( $atts['fallback_class'] ) . '" aria-hidden="true"></span>';
+		}
+		$srcset = wp_get_attachment_image_srcset( $image_id, $atts['size'] );
+		return '<img src="' . esc_url( $src[0] ) . '" width="' . (int) $src[1] . '" height="' . (int) $src[2] . '" alt="' . esc_attr( self::cover_alt( $post_id, $image_id ) ) . '" decoding="async" loading="' . ( '1' === $atts['eager'] ? 'eager' : 'lazy' ) . '"'
+			. ( $srcset ? ' srcset="' . esc_attr( $srcset ) . '" sizes="' . esc_attr( $atts['sizes'] ) . '"' : '' )
+			. ( 'high' === $atts['fetchpriority'] ? ' fetchpriority="high"' : '' ) . '>';
+	}
+
+	/**
 	 * The card's thumbnail, or the live card's fallback figure when the
 	 * article has none.
 	 *
@@ -379,20 +424,20 @@ final class BlogShortcodes {
 	 */
 	private function card_image( WP_Post $post ): string {
 		$image_id = (int) get_post_thumbnail_id( $post );
-		$src      = $image_id > 0 ? wp_get_attachment_image_url( $image_id, self::CARD_IMAGE_SIZE ) : false;
-		if ( ! \is_string( $src ) || '' === $src ) {
+		$src      = $image_id > 0 ? wp_get_attachment_image_src( $image_id, self::CARD_IMAGE_SIZE ) : false;
+		if ( ! $src ) {
 			return '<div class="tv-blog-single-img-fallback">'
 				. '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">'
 				. '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />'
 				. '</svg></div>';
 		}
 		$srcset = wp_get_attachment_image_srcset( $image_id, self::CARD_IMAGE_SIZE );
-		$html   = '<img src="' . esc_url( $src ) . '"';
+		$html   = '<img src="' . esc_url( $src[0] ) . '"';
 		if ( \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
 		}
 		// The linked card already names the article in its heading; the thumbnail is decorative.
-		$html .= ' sizes="' . esc_attr( self::CARD_IMAGE_SIZES ) . '" loading="lazy" alt="">';
+		$html .= ' sizes="' . esc_attr( self::CARD_IMAGE_SIZES ) . '" loading="lazy" alt="" width="' . (int) $src[1] . '" height="' . (int) $src[2] . '" decoding="async">';
 		return $html;
 	}
 

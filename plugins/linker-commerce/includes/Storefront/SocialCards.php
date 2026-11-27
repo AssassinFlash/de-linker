@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Storefront;
 
 use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Presentation\BlogShortcodes;
 
 /** SEOPress renders Open Graph before Twitter in the same page head. */
 final class SocialCards {
@@ -31,6 +32,8 @@ final class SocialCards {
 		add_filter( 'site_icon_meta_tags', array( $this, 'site_icons' ) );
 		add_filter( 'seopress_social_twitter_card_summary', array( $this, 'summary' ), 10, 0 );
 		add_filter( 'seopress_social_og_thumb', array( $this, 'open_graph' ) );
+		add_filter( 'seopress_social_twitter_card_site', '__return_empty_string' );
+		add_filter( 'seopress_social_twitter_card_creator', array( $this, 'creator' ), 10, 0 );
 		add_filter( 'seopress_social_twitter_card_thumb', array( $this, 'twitter_image' ) );
 	}
 
@@ -69,6 +72,16 @@ final class SocialCards {
 		return '<meta name="twitter:card" content="summary_large_image">';
 	}
 
+	/** Attribute a journal post only to its own named author. */
+	public function creator(): string {
+		if ( ! is_singular( 'post' ) ) {
+			return '';
+		}
+		$post = get_post( get_queried_object_id() );
+		$user = $post instanceof \WP_Post ? get_userdata( (int) $post->post_author ) : false;
+		return $user instanceof \WP_User && 'chester-john' === $user->user_nicename ? '<meta name="twitter:creator" content="@chester_linker">' : '';
+	}
+
 	/**
 	 * Preserve a dedicated share image or choose the artwork for this surface.
 	 *
@@ -87,15 +100,19 @@ final class SocialCards {
 			&& ! str_ends_with( $url, '/linker-social/og-linker-default.jpg' );
 		$story     = is_singular( 'post' );
 		if ( $story || is_singular( 'product' ) ) {
+			$post_id = (int) get_queried_object_id();
+			$id      = (int) get_post_thumbnail_id( $post_id );
+			$alt     = $story ? BlogShortcodes::cover_alt( $post_id, $id ) : ProductImageAlt::main( $post_id, get_the_title( $post_id ) );
 			if ( ! $dedicated ) {
 				// SEOPress's global default otherwise masks the post or product's own cover.
-				$id  = (int) get_post_thumbnail_id( get_queried_object_id() );
 				$src = $id ? wp_get_attachment_image_src( $id, 'full' ) : false;
 				if ( $src ) {
-					return $this->image_tags( $src[0], $src[1], $src[2], (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) );
+					return $this->image_tags( $src[0], $src[1], $src[2], $alt );
 				}
 				return $this->artwork( $story ? 'blog' : 'default' );
 			}
+			$html = (string) preg_replace( '/<meta property="og:image:alt" content="[^"]*"\s*\/?>\s*/i', '', $html );
+			$html = rtrim( $html ) . "\n" . '<meta property="og:image:alt" content="' . esc_attr( $alt ) . '">' . "\n";
 		} else {
 			$width  = (int) self::meta_content( $html, 'og:image:width' );
 			$height = (int) self::meta_content( $html, 'og:image:height' );
