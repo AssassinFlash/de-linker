@@ -30,6 +30,7 @@ final class ReferenceCacheTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'get_post' )->with( 340 )->andReturn( $pdf );
 		WP_Mock::userFunction( 'update_option' )->andReturn( true );
+		WP_Mock::userFunction( 'as_has_scheduled_action' )->andReturn( true );
 		WP_Mock::expectAction( 'litespeed_purge', 'PT.product' );
 		( new Module() )->metadata_changed( 1, 340, '_linker_document_public' );
 		$this->assertConditionsMet();

@@ -21,7 +21,12 @@ use WP_Mock;
  * @covers \Linker\Commerce\Presentation\CompatibilityMatrixPage
  */
 final class CompatibilityMatrixPageTest extends TestCase {
-	/** Only known releases with a published counterpart and accessory can enter either pairing table. */
+	/**
+	 * Only known releases with a published counterpart and accessory can enter either pairing table.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
 	public function test_published_declarations_and_documented_boundaries(): void {
 		$this->plain_text();
 		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( 'strip_tags' );

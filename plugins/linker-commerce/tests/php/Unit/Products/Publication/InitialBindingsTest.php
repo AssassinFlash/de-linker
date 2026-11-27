@@ -256,6 +256,7 @@ final class InitialBindingsTest extends TestCase {
 
 	/** Plain WordPress status writes queue changes but do not claim Woo's final-save boundary. */
 	public function test_status_only_wordpress_write_queues_without_initializing_bindings(): void {
+		WP_Mock::expectAction( 'litespeed_purge', 'PT.product' );
 		$queued = false;
 		WP_Mock::userFunction( 'update_option' )->with( 'linker_publication_pending', true, false )->andReturnUsing(
 			static function () use ( &$queued ): bool {
