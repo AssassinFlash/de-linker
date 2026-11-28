@@ -297,17 +297,16 @@ test.each(["result shown", "result in flight"])(
 			expect(sidebarCapacity()).toBe("13.7 kWp");
 			await click("Continue with energy use");
 			await click("Compare systems");
-			await until("accepted equipment comparison", () =>
-				page.element
-					.querySelector(".sc-system-overview")
-					?.textContent.includes("13.7 kWp"),
+			const inputPower = () =>
+				[...page.element.querySelectorAll(".sc-system-overview li")].find(
+					(li) => li.querySelector("strong")?.textContent === "PV input power",
+				);
+			await until("edited capacity in the candidate assessment", () =>
+				inputPower()?.textContent.includes("13.7 kWp"),
 			);
 			const preview = page.element.querySelector(".sc-system-overview");
 			expect(preview.textContent).toContain("Equipment preview");
-			const inputPower = [...preview.querySelectorAll("li")].find(
-				(li) => li.querySelector("strong")?.textContent === "PV input power",
-			);
-			expect(inputPower?.textContent).toContain("13.7 kWp");
+			expect(inputPower()?.textContent).toContain("13.7 kWp");
 			expect(preview.textContent).not.toContain("11.09 kWp");
 			expect(run.state).toBe("succeeded");
 			expect(run.revision).toBe(project.revision);
