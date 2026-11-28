@@ -1260,6 +1260,10 @@ final class ProductShortcodes {
 		if ( \count( $ids ) < 2 ) {
 			return '';
 		}
+		$base_alt = trim( (string) $view['title'] );
+		if ( '' === $base_alt ) {
+			$base_alt = get_the_title( (int) $view['id'] );
+		}
 		$html = '<div class="pdp-thumbs">';
 		foreach ( $ids as $index => $id ) {
 			// The live page renders the 300w candidate at `sizes="72px"`, i.e.
@@ -1272,7 +1276,7 @@ final class ProductShortcodes {
 			$medium     = wp_get_attachment_image_src( $id, 'medium' );
 			$attributes = array(
 				'class'    => 'attachment-medium size-medium',
-				'alt'      => '',
+				'alt'      => sprintf( /* translators: 1: product name, 2: view number. */ __( '%1$s — view %2$d', 'linker-commerce' ), $base_alt, $index + 1 ),
 				'sizes'    => '72px',
 				'decoding' => 'async',
 				// On phones the controls are dots and the thumbnail images are hidden.
@@ -1563,16 +1567,7 @@ final class ProductShortcodes {
 			$html .= '<header class="fit-head"><span class="fit-num">' . esc_html( sprintf( '%02d', $index + 1 ) ) . '</span>'
 				. '<div><span class="fit-kind">' . esc_html( $kind ) . '</span>'
 				. '<h3>' . esc_html( (string) $scenario['title'] ) . '</h3></div></header>';
-			// The scenario's three parts are one deck, as the live page renders
-			// them: the tab strip stays hidden and every panel shows.
-			$tabs  = array( __( 'Project', 'linker-commerce' ), __( 'Checks', 'linker-commerce' ), __( 'Linker view', 'linker-commerce' ) );
 			$html .= '<div class="pdp-info-deck pdp-project-deck pdp-all-panels">';
-			$html .= '<div class="pdp-info-tabs" role="tablist" aria-label="' . esc_attr__( 'Project information', 'linker-commerce' ) . '" hidden>';
-			foreach ( $tabs as $position => $label ) {
-				$html .= '<button type="button" id="pdp-project-' . $index . '-tab-' . $position . '" role="tab" aria-controls="pdp-project-' . $index . '-panel-' . $position . '"'
-					. ' aria-selected="' . ( 0 === $position ? 'true' : 'false' ) . '" tabindex="' . ( 0 === $position ? '0' : '-1' ) . '">' . esc_html( $label ) . '</button>';
-			}
-			$html .= '</div>';
 			$html .= '<div class="pdp-info-panel" id="pdp-project-' . $index . '-panel-0"><div class="fit-body">';
 			if ( (int) $scenario['image'] > 0 ) {
 				$html .= '<figure>' . wp_get_attachment_image( (int) $scenario['image'], 'large', false, array( 'alt' => (string) $scenario['title'] ) ) . '</figure>';

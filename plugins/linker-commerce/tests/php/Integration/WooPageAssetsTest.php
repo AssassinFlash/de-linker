@@ -71,4 +71,41 @@ final class WooPageAssetsTest extends IntegrationTestCase {
 			$this->assertSame( $uses_cart, in_array( $handle, $scripts->to_do, true ), $handle );
 		}
 	}
+
+	/**
+	 * The custom product gallery and first-touch attribution survive Woo queue resolution.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_product_gallery_and_attribution_assets(): void {
+		global $wp_query;
+		$wp_query->queried_object = new WP_Post( (object) array( 'post_type' => 'product' ) );
+		$wp_query->is_single      = true;
+		$wp_query->is_singular    = true;
+		do_action( 'wp_enqueue_scripts' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Exercise the native WordPress enqueue lifecycle.
+		$scripts = wp_scripts();
+		$scripts->all_deps( $scripts->queue );
+		$this->assertContains( 'linker-pdp-ui', $scripts->to_do );
+		foreach ( array( 'wc-zoom', 'wc-flexslider', 'wc-photoswipe', 'wc-photoswipe-ui-default', 'wc-single-product' ) as $handle ) {
+			$this->assertNotContains( $handle, $scripts->to_do );
+		}
+		$styles = wp_styles();
+		$styles->all_deps( $styles->queue );
+		foreach ( array( 'woocommerce-general', 'woocommerce-layout', 'woocommerce-smallscreen', 'brands-styles', 'photoswipe', 'photoswipe-default-skin' ) as $handle ) {
+			$this->assertNotContains( $handle, $styles->to_do );
+		}
+		$this->assertFalse( has_action( 'wp_footer', 'woocommerce_photoswipe' ) );
+
+		ob_start();
+		$scripts->do_items( array( 'wc-order-attribution' ), 1 );
+		$tags = new \WP_HTML_Tag_Processor( (string) ob_get_clean() );
+		foreach ( array( 'sourcebuster-js-js', 'wc-order-attribution-js' ) as $id ) {
+			while ( $tags->next_tag( 'script' ) && $tags->get_attribute( 'id' ) !== $id ) {
+				continue;
+			}
+			$this->assertSame( $id, $tags->get_attribute( 'id' ) );
+			$this->assertNotNull( $tags->get_attribute( 'defer' ) );
+		}
+	}
 }

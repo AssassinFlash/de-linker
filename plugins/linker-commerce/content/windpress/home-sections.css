@@ -729,16 +729,29 @@
     align-items: center;
     justify-content: center;
     background-color: var(--hero-bg, #061320);
-    background-image: var(--hero-photo, url('/wp-content/uploads/2026/09/linker-linking-value-serving-you.webp'));
-    background-size: cover;
-    background-position: var(--hero-photo-pos, center 30%);
-    background-repeat: no-repeat;
     width: 100%;
     max-width: 100%;
     margin-inline: 0;
     padding: 110px 0 90px;
     overflow: hidden;
     text-align: center;
+  }
+  .hero-cinematic:not(:has(> .lk-hero-media)) {
+    background-image: var(--hero-photo, url('/wp-content/uploads/2026/09/linker-linking-value-serving-you.webp'));
+    background-size: cover;
+    background-position: var(--hero-photo-pos, center 30%);
+    background-repeat: no-repeat;
+  }
+  .hero-cinematic > .lk-hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--hero-photo-pos, center 30%);
+    z-index: 0;
+    pointer-events: none;
+    display: block;
   }
   .hero-cinematic::before {
     content: "";

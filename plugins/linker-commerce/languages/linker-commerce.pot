@@ -3634,6 +3634,12 @@ msgstr ""
 msgid "%s — alternate product view"
 msgstr ""
 
+#. translators: 1: product name, 2: view number.
+#: includes/Presentation/ProductShortcodes.php:1279
+#, php-format
+msgid "%1$s — view %2$d"
+msgstr ""
+
 #. translators: %d: image number.
 #: includes/Presentation/ProductShortcodes.php:1285
 #, php-format
