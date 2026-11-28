@@ -816,6 +816,10 @@ final class ProductShortcodes {
 		if ( 'utility' === $scope ) {
 			$html .= '<a href="' . esc_url( PageUrls::page( 'solution-configurator' ) ) . '">' . esc_html__( 'Solution Configurator', 'linker-commerce' ) . '</a>';
 		}
+		$capability = PageUrls::translated( 'about/capability' );
+		if ( '' !== $capability ) {
+			$html .= '<a href="' . esc_url( $capability ) . '">' . esc_html__( 'See how Linker handles pre-delivery checks, certificates, and project supply from Barleben →', 'linker-commerce' ) . '</a>';
+		}
 		return $html . self::matrix_link() . '</div></section>';
 	}
 

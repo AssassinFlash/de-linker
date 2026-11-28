@@ -8392,3 +8392,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Zu viele fehlgeschlagene Anmeldeversuche. Bitte versuchen Sie es später "
 #~ "erneut."
+
+msgid "See how Linker handles pre-delivery checks, certificates, and project supply from Barleben →"
+msgstr "So begleitet Linker aus Barleben Systemprüfung, Zertifikate und Lieferung →"

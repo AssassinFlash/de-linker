@@ -170,3 +170,22 @@ def test_hreflang_indexability_is_symmetric() -> None:
             "en alternate https://de-linker.com/thank-you/ is noindex",
         )
     ]
+
+
+def test_rendered_metadata_duplicates_and_bounds() -> None:
+    from dataclasses import replace
+
+    url = "https://de-linker.com/product/example/"
+    fields = audit_module.parse_html(
+        url,
+        "<title>A &amp; B</title><meta name='description' content='Check the manufacturer’s documents'>",
+    )
+    assert fields["title"] == "A & B"
+    product = replace(page(url), title="x" * 66, description=fields["description"])
+    other = replace(page(url + "other/"), title=product.title, description="x" * 158)
+    result = audit_module.audit({url: product, other.url: other}, {})
+    kinds = [item.kind for item in result.findings]
+    assert kinds.count("duplicate-title") == 1
+    assert kinds.count("title-length") == 2
+    assert kinds.count("description-length") == 1
+    assert kinds.count("description-boilerplate") == 1
