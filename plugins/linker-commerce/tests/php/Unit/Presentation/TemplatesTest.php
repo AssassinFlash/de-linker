@@ -128,8 +128,8 @@ final class TemplatesTest extends TestCase {
 			$face = (string) file_get_contents( $paths[ $slug ] );
 			$this->assertStringContainsString( '[linker_library_faq]', $face );
 			$this->assertStringContainsString( '[linker_library_documents]', $face );
-			$this->assertStringContainsString( '[linker_library_rail]', $face );
-			$this->assertStringContainsString( '[linker_library_chips]', $face );
+			$this->assertStringContainsString( '[linker_library_toolkit]', $face );
+			$this->assertStringContainsString( '[linker_genie_chips page_type="faq"]', $face );
 			$this->assertStringContainsString( '[linker_library_config]', $face );
 			$this->assertStringContainsString( 'data-library-panel="faq"', $face );
 			$this->assertStringContainsString( 'data-library-panel="documents"', $face );

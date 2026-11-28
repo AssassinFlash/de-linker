@@ -267,7 +267,21 @@ final class ProductShortcodesTest extends TestCase {
 
 	/** Family selection and its actual page survive the shared language consumer. */
 	public function test_language_switch_keeps_family_selection_search_and_order(): void {
-		$this->page( 1038, 'http://linker.test/products/', array( 'de' => 6870 ) );
+		$this->page(
+			1038,
+			'http://linker.test/products/',
+			array(
+				'en' => 1038,
+				'de' => 6870,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'args'   => array( 1038 ),
+				'return' => get_queried_object(),
+			)
+		);
 		$this->permalink( 6870, 'http://linker.test/de/produkte/' );
 		$_GET                   = array(
 			'q'            => 'ESA',
