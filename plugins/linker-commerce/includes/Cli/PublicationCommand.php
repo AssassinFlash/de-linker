@@ -776,14 +776,16 @@ final class PublicationCommand {
 	public function install_gate(): void {
 		require_once ABSPATH . 'wp-admin/includes/misc.php';
 		require_once ABSPATH . 'wp-admin/includes/file.php';
-		if ( ! save_mod_rewrite_rules() ) {
-			\WP_CLI::error( 'Cannot install native WordPress rewrite rules.' );
+		global $wp_rewrite;
+		$file  = get_home_path() . '.htaccess';
+		$rules = $wp_rewrite->mod_rewrite_rules();
+		if ( is_multisite() || ! str_contains( $rules, 'linker_public_document=$1 [END,NC,QSA]' ) || ! insert_with_markers( $file, 'WordPress', explode( "\n", $rules ) ) ) {
+			\WP_CLI::error( 'Cannot install native WordPress document rewrite rules.' );
 		}
-		$file     = get_home_path() . '.htaccess';
-		$rules    = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- read back the installed rewrite block.
-		$gate     = is_string( $rules ) ? strpos( $rules, 'linker_public_document=' ) : false;
-		$shortcut = is_string( $rules ) ? strpos( $rules, 'REQUEST_FILENAME' ) : false;
-		if ( false === $gate || ( false !== $shortcut && $gate > $shortcut ) ) {
+		$block    = implode( "\n", extract_from_markers( $file, 'WordPress' ) );
+		$gate     = strpos( $block, 'linker_public_document=$1 [END,NC,QSA]' );
+		$shortcut = strpos( $block, 'RewriteCond %{REQUEST_FILENAME} !-f' );
+		if ( false === $gate || false === $shortcut || $gate > $shortcut ) {
 			\WP_CLI::error( 'Document gate does not precede the static-file shortcut.' );
 		}
 		( new PreparationJobs() )->changed();
