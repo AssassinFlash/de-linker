@@ -210,6 +210,8 @@ for (const locale of ['en', 'de'] as const) {
 			await dismissConsent(page);
 			const root = page.locator('#linker-faq-page');
 			const input = root.locator('#linker-library-q');
+			if (width === 390)
+				await root.locator('.lk-library-help summary').click();
 			const separation = await root.evaluate((library) => {
 				const help = library.querySelector('.linker-library-help')!;
 				const ask = library.querySelector('[data-linker-genie-open]')!;

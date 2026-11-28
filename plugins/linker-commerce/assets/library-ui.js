@@ -1383,6 +1383,12 @@
 	}
 
 	function start() {
+		var help = root.querySelector(".lk-library-help");
+		if (help && typeof scope.matchMedia === "function") {
+			var wide = scope.matchMedia("(min-width: 1000px)");
+			help.open = wide.matches;
+			wide.addEventListener("change", function () { help.open = wide.matches; });
+		}
 		state.brand = brandFromLocation();
 		if (state.q) loadIndex();
 		root.classList.add("is-enhanced");

@@ -332,7 +332,7 @@
 #linker-faq-page li[data-t] > i { font-style: normal; font-size: 12px; color: var(--ll-muted); }
 #linker-faq-page li[data-t] > p { font-size: 13px; color: var(--ll-muted); }
 #linker-faq-page li[data-t] > p > a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ll-accent-dark); text-underline-offset: 3px; }
-#linker-faq-page .linker-library-panel .linker-library-help { margin-block: 16px; }
+#linker-faq-page .lk-library-help .linker-library-help { margin: 0 0 4px; }
 #linker-faq-page .linker-library-help a,#linker-faq-page .linker-library-toc a,#linker-faq-page .linker-library-rail-label a { display: inline-flex; align-items: center; min-height: 44px; }
 @media (min-width:1200px) {
 	#linker-faq-page { --ll-container: 1512px; --ll-pad: clamp(20px,2vw,40px); }
@@ -354,3 +354,20 @@
 #linker-faq-page .linker-library-qa-head { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2px 10px; }
 #linker-faq-page .linker-library-qa-head > .linker-library-qa-product,#linker-faq-page .linker-library-qa-head > .linker-library-qa-q { grid-column: 1; }
 #linker-faq-page .linker-library-qa-head::after { grid-column: 2; grid-row: 1/-1; }
+
+#linker-faq-page .lk-library-help { margin-top: 6px; }
+#linker-faq-page .lk-library-help > summary { display: flex; align-items: center; gap: 8px; min-height: 44px; width: fit-content; list-style: none; cursor: pointer; color: var(--ll-accent-dark); font-size: 14px; font-weight: 600; }
+#linker-faq-page .lk-library-help > summary::-webkit-details-marker { display: none; }
+#linker-faq-page .lk-library-help > summary::after { content: ""; width: 7px; height: 7px; border-right: 1.5px solid; border-bottom: 1.5px solid; transform: rotate(45deg); }
+#linker-faq-page .lk-library-help[open] > summary::after { transform: rotate(225deg); }
+#linker-faq-page .lk-library-help .linker-genie-chip { margin: 8px 6px 0 0; }
+@media (min-width:1000px) {
+	#linker-faq-page .linker-library-hero-inner { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr); gap: 0 clamp(28px,4vw,72px); }
+	#linker-faq-page .linker-library-hero-inner > :not(.lk-library-help) { grid-column: 1; }
+	#linker-faq-page .lk-library-help { grid-column: 2; grid-row: 1 / span 3; align-self: start; min-height: 170px; padding-left: 24px; border-left: 1px solid var(--ll-line); margin: 0; }
+}
+@media (max-width:719px) {
+	#linker-faq-page .linker-library-hero .linker-library-searchbox { margin-bottom: 0; }
+	#linker-faq-page .lk-library-help { padding-top: 0; }
+	#linker-faq-page .lk-toolkit-band { padding-top: 24px; }
+}

@@ -115,9 +115,12 @@ test.describe('the FAQ + document library', () => {
 				}
 
 				const chips = page.locator(
-					'.linker-library-panel .linker-genie-chip'
+					'.linker-library-hero .linker-genie-chip'
 				);
 				await expect(chips).toHaveCount(3);
+				const help = page.locator('.lk-library-help');
+				if (width === 390) await help.locator('summary').click();
+				await expect(help).toHaveAttribute('open', '');
 				const input = page.locator('#linker-library-q');
 				await expect(input).toBeInViewport();
 				expect(
