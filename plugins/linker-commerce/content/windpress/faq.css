@@ -264,7 +264,7 @@
 	/* Keep the localized count out of the input row. Its existing 28px line
 	 * has the existing 8px gap above and below (28 + 8 + 8 = 44px).
 	 * The suggestion box still starts below the unchanged 52px search row. */
-	#linker-faq-page.is-enhanced .linker-library-searchbox { margin-bottom: 44px; }
+	
 	/* The filtered search is the containing block: include its 1px bottom
 	 * border so the visible outer-edge gap is the intended 8px. */
 	/* Use the existing ink on the exposed gradient; the muted token has
@@ -292,15 +292,15 @@
 #linker-faq-page { background: var(--ll-canvas); font-variant-numeric: tabular-nums; }
 #linker-faq-page .linker-library-hero { padding: clamp(26px,4vw,54px) 0 0; text-align: left; }
 #linker-faq-page .linker-library-hero::before { display: none; }
-#linker-faq-page .linker-library-title { max-width: 18em; font-size: clamp(31px,3.2vw,48px); line-height: 1.1; letter-spacing: -.045em; }
+#linker-faq-page .linker-library-title { margin-inline: 0; max-width: none; font-size: clamp(31px,3.2vw,48px); line-height: 1.1; letter-spacing: -.045em; }
 #linker-faq-page .linker-library-sub { margin: 12px 0 0; max-width: 72ch; }
 #linker-faq-page .linker-library-searchbox { margin: 22px 0 0; max-width: 700px; }
-#linker-faq-page .lk-toolkit-band { padding-block: clamp(30px,4vw,50px); }
-#linker-faq-page .lk-toolkit-intro { display: flex; justify-content: space-between; align-items: end; gap: 28px; margin-bottom: 22px; }
+#linker-faq-page .lk-toolkit-band { display: grid; grid-template-columns: minmax(0,1fr) minmax(0, min(32%, 43ch)); grid-template-areas: "heading note" "cards cards"; align-items: end; gap: 22px 28px; padding-block: clamp(30px,4vw,50px); }
+#linker-faq-page .lk-toolkit-intro { grid-area: heading; }
 #linker-faq-page .lk-toolkit-eyebrow { margin-bottom: 6px; color: var(--ll-accent-dark); font-size: 12px; font-weight: 700; letter-spacing: .085em; text-transform: uppercase; }
 #linker-faq-page .lk-toolkit-intro h2 { font-size: clamp(22px,2.1vw,32px); line-height: 1.2; letter-spacing: -.035em; text-wrap: balance; }
-#linker-faq-page .lk-toolkit-intro > p { max-width: 43ch; font-size: 13px; line-height: 1.55; color: var(--ll-muted); }
-#linker-faq-page .lk-toolkit-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
+#linker-faq-page .lk-toolkit-note { grid-area: note; max-width: 43ch; font-size: 13px; line-height: 1.55; color: var(--ll-muted); }
+#linker-faq-page .lk-toolkit-grid { grid-area: cards; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
 #linker-faq-page .lk-toolkit-card { display: flex; flex-direction: column; align-items: stretch; gap: 12px; min-width: 0; padding: 24px; background: #fff; border: 1px solid #d7dde4; border-radius: 22px; box-shadow: var(--ll-shadow); }
 #linker-faq-page .lk-toolkit-card h3 { font-size: clamp(18px,1.5vw,22px); line-height: 1.2; letter-spacing: -.03em; overflow-wrap: anywhere; }
 #linker-faq-page .lk-toolkit-card > p { color: var(--ll-muted); font-size: 14px; line-height: 1.5; }
@@ -333,11 +333,13 @@
 #linker-faq-page li[data-t] > a:nth-child(3) { font-size: 13px; color: var(--ll-muted); }
 #linker-faq-page li[data-t] > a:nth-child(3) { display: inline-flex; align-items: center; min-height: 44px; color: var(--ll-accent-dark); text-underline-offset: 3px; }
 #linker-faq-page .linker-library-help { margin-top: 16px; }
+#linker-faq-page .linker-library-panel .linker-genie-chips { margin-top: 16px; }
 #linker-faq-page .linker-library-help a,#linker-faq-page .linker-library-toc a,#linker-faq-page .linker-library-rail-label a { display: inline-flex; align-items: center; min-height: 44px; }
 @media (max-width:1199px) { #linker-faq-page .lk-toolkit-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width:719px) {
 	#linker-faq-page .lk-toolkit-grid { grid-template-columns: minmax(0,1fr); }
-	#linker-faq-page .lk-toolkit-intro { display: grid; gap: 8px; }
+	#linker-faq-page .lk-toolkit-band { grid-template-columns: minmax(0,1fr); grid-template-areas: "heading" "cards" "note"; gap: 16px; }
+	#linker-faq-page .linker-library-searchbox { margin-bottom: 32px; }
 	#linker-faq-page .lk-toolkit-card { padding: 24px; }
 	#linker-faq-page li[data-t] { grid-template-columns: minmax(0,1fr) auto; column-gap: 4px; padding: 10px 14px; }
 	#linker-faq-page li[data-t] > a:first-child { grid-column: 1/-1; }

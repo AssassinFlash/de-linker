@@ -526,9 +526,9 @@ final class LibraryPage {
 	public function toolkit(): string {
 		$cards = ToolkitRegistry::cards_for_locale( $this->german() ? 'de' : 'en' );
 		$html  = '<section class="lk-toolkit-band linker-library-wrap" id="linker-engineering-toolkit" aria-labelledby="lk-toolkit-title">';
-		$html .= '<div class="lk-toolkit-intro"><div><p class="lk-toolkit-eyebrow">' . esc_html__( 'Linker Engineering Toolkit', 'linker-commerce' ) . '</p>';
+		$html .= '<div class="lk-toolkit-intro"><p class="lk-toolkit-eyebrow">' . esc_html__( 'Linker Engineering Toolkit', 'linker-commerce' ) . '</p>';
 		$html .= '<h2 id="lk-toolkit-title">' . esc_html__( 'Direct engineering references — no form required', 'linker-commerce' ) . '</h2></div>';
-		$html .= '<p>' . esc_html__( 'Technical parameters verified as of 2026-11. Net project pricing, availability, and delivery terms apply per formal written quotation.', 'linker-commerce' ) . '</p></div><div class="lk-toolkit-grid">';
+		$html .= '<div class="lk-toolkit-grid">';
 		foreach ( $cards as $card ) {
 			$pdf    = 'pdf' === $card['format'];
 			$format = strtoupper( $card['format'] );
@@ -542,7 +542,7 @@ final class LibraryPage {
 			$html  .= '<div class="lk-file-links"><a class="lk-toolkit-cta" href="' . esc_url( $card['url'] ) . '"' . $link . '>' . esc_html( $pdf ? __( 'Download PDF', 'linker-commerce' ) : __( 'Download CSV', 'linker-commerce' ) ) . '</a>';
 			$html  .= '<a href="' . esc_url( $card['alt_url'] ) . '" hreflang="' . esc_attr( $card['alt_lang'] ) . '"' . $link . '>' . esc_html( strtoupper( $card['alt_lang'] ) . ' ' . $format ) . ' ↗</a></div></article>';
 		}
-		return $html . '</div></section>';
+		return $html . '</div><p class="lk-toolkit-note">' . esc_html__( 'Technical parameters verified as of 2026-11. Net project pricing, availability, and delivery terms apply per formal written quotation.', 'linker-commerce' ) . '</p></section>';
 	}
 
 	/**
