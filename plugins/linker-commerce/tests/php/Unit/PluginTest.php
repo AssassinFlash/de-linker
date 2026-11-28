@@ -96,6 +96,7 @@ final class PluginTest extends TestCase {
 				},
 			)
 		);
+		WP_Mock::expectActionAdded( 'rest_api_init', array( new AnyInstance( \Linker\Commerce\Contact\SessionEndpoint::class ), 'register_routes' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( ContactModule::class ), 'prepare_form_owner' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'template_redirect', array( new AnyInstance( ContactModule::class ), 'render_article_form' ), 100 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'the_content', array( new AnyInstance( ContactModule::class ), 'mount_form' ), 9 ); // @phpstan-ignore argument.type
