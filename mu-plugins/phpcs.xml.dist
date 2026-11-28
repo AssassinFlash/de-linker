@@ -3,6 +3,7 @@
 	<description>The production must-use plugins: the shared plugin rules (tools/php/phpcs.xml) with this project's prefixes.</description>
 
 	<file>linker-error-recorder.php</file>
+	<file>linker-crawler-telemetry.php</file>
 	<file>linker-engine-pin.php</file>
 	<file>linker-site-guards.php</file>
 	<file>linker-deploy-reset.php</file>
@@ -18,6 +19,7 @@
 	-->
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
 		<exclude-pattern>linker-error-recorder.php</exclude-pattern>
+		<exclude-pattern>linker-crawler-telemetry.php</exclude-pattern>
 		<exclude-pattern>linker-deploy-reset.php</exclude-pattern>
 		<exclude-pattern>linker-publication-worker-access.php</exclude-pattern>
 		<exclude-pattern>linker-inventory-access.php</exclude-pattern>

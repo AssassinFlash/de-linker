@@ -4,6 +4,7 @@ includes:
 
 parameters:
 	paths:
+		- linker-crawler-telemetry.php
 		- linker-error-recorder.php
 		- linker-engine-pin.php
 		- linker-site-guards.php
@@ -11,3 +12,6 @@ parameters:
 		- linker-publication-worker-access.php
 		- linker-inventory-access.php
 		- tests/php
+	excludePaths:
+		# The isolated hook fixture substitutes for the production WordPress stubs.
+		- tests/php/fixtures/crawler-telemetry.php
