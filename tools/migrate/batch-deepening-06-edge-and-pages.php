@@ -2,7 +2,7 @@
 /**
  * Publish or restore the bilingual WindPress pages and their public cache rules.
  *
- * wp eval-file batch-deepening-06-edge-and-pages.php apply|restore /private/backup.json
+ * Usage: wp eval-file batch-deepening-06-edge-and-pages.php apply|restore /private/backup.json
  *
  * @package Linker\Migrate
  */
@@ -24,7 +24,15 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	return;
 }
 
-const PAIRS = array( 13 => 6913, 862 => 6865, 874 => 6919, 746 => 6871, 749 => 6923, 792 => 6921, 1755 => 6917 );
+const PAIRS  = array(
+	13   => 6913,
+	862  => 6865,
+	874  => 6919,
+	746  => 6871,
+	749  => 6923,
+	792  => 6921,
+	1755 => 6917,
+);
 const STYLES = array(
 	862  => array( 'about-journal.css', 'mobile-photo-topics.css' ),
 	874  => array( 'capability-page.css' ),
@@ -73,32 +81,51 @@ Header unset Expires env=LINKER_IMMUTABLE_ASSET
 # END Linker static asset cache
 APACHE;
 
+/**
+ * Read a local preimage or exported stylesheet.
+ *
+ * @param string $path Local filename.
+ * @throws RuntimeException When the file cannot be read.
+ */
 function bytes( string $path ): string {
-	$data = file_get_contents( $path );
+	$data = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- This operation reads an exact local file.
 	if ( false === $data ) {
-		throw new RuntimeException( "Cannot read $path" );
+		throw new RuntimeException( esc_html( "Cannot read $path" ) );
 	}
 	return $data;
 }
 
-/** Stage on the target filesystem and preserve the original permissions. */
+/**
+ * Stage the complete file on the target filesystem with its original permissions.
+ *
+ * @param string $file Destination path.
+ * @param string $data Complete file contents.
+ * @param int    $mode Unix permissions.
+ * @throws RuntimeException When staging or publication fails.
+ */
 function publish_file( string $file, string $data, int $mode ): void {
 	$tmp = tempnam( dirname( $file ), '.linker-d06-' );
 	if ( false === $tmp ) {
-		throw new RuntimeException( "Cannot stage $file" );
+		throw new RuntimeException( esc_html( "Cannot stage $file" ) );
 	}
 	try {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.file_system_operations_chmod, WordPress.WP.AlternativeFunctions.rename_rename -- Same-filesystem atomic publication with the original permissions.
 		if ( strlen( $data ) !== file_put_contents( $tmp, $data ) || ! chmod( $tmp, $mode ) || ! rename( $tmp, $file ) ) {
-			throw new RuntimeException( "Cannot publish $file" );
+			throw new RuntimeException( esc_html( "Cannot publish $file" ) );
 		}
 	} finally {
 		if ( is_file( $tmp ) ) {
-			unlink( $tmp );
+			wp_delete_file( $tmp );
 		}
 	}
 }
 
-/** The WordPress rewrite block is owned by core, the planner and the Woo PDF route. */
+/**
+ * Verify that the planner and Woo PDF rules precede the WordPress static-file shortcut.
+ *
+ * @param string $text Complete rewrite file.
+ * @throws RuntimeException When required rewrite rules are missing or out of order.
+ */
 function check_edge( string $text ): void {
 	$rules = ( new Application( '' ) )->cache_rules( 'RewriteEngine On' );
 	$text  = str_replace( "\r\n", "\n", $text );
@@ -109,6 +136,12 @@ function check_edge( string $text ): void {
 	}
 }
 
+/**
+ * Insert the contact bypass before WordPress and the asset policy after it.
+ *
+ * @param string $before Original rewrite file.
+ * @throws RuntimeException When the preimage already contains ticket markers or has an ambiguous WordPress block.
+ */
 function published_edge( string $before ): string {
 	check_edge( $before );
 	if ( 1 !== substr_count( $before, '# BEGIN WordPress' ) || 1 !== substr_count( $before, '# END WordPress' ) || str_contains( $before, '# BEGIN Linker static asset cache' ) || str_contains( $before, '# BEGIN Linker contact cache bypass' ) ) {
@@ -122,6 +155,15 @@ function published_edge( string $before ): string {
 	);
 }
 
+/**
+ * Replace the homepage hero or remove byte-matched inline styles from a reviewed page.
+ *
+ * @param string $body Original page content.
+ * @param int    $en English page ID selecting the sheet composition.
+ * @param bool   $german Whether this is the German twin.
+ * @phpstan-param key-of<\Linker\Commerce\Migrate\Deepening06\PAIRS> $en
+ * @throws RuntimeException When the current content differs from its expected composition.
+ */
 function published_body( string $body, int $en, bool $german ): string {
 	if ( 13 === $en ) {
 		$section = '<section class="hero-cinematic">';
@@ -139,7 +181,7 @@ function published_body( string $body, int $en, bool $german ): string {
 		$start = 'capability-page.css' === $name ? '<style>' : '<style data-site-css="' . $name . '">';
 		$block = $start . $css . '</style>';
 		if ( 1 !== substr_count( $body, $block ) ) {
-			throw new RuntimeException( "Inline stylesheet differs from $name (page $en)." );
+			throw new RuntimeException( esc_html( "Inline stylesheet differs from $name (page $en)." ) );
 		}
 		$body = str_replace( $block, '', $body );
 	}
@@ -151,24 +193,42 @@ function published_body( string $body, int $en, bool $german ): string {
 	return $body;
 }
 
-/** Record all translation metadata, including fields registered after earlier migrations. */
+/**
+ * Capture the original page, translation inputs and native translation metadata.
+ *
+ * @param int  $id Published page ID.
+ * @param bool $german Whether this is the German twin.
+ * @return array{body:string,meta:array<string,array<mixed>>,fields:array<string,array{string,bool}>}
+ * @throws RuntimeException When the page is missing.
+ */
 function page_state( int $id, bool $german ): array {
 	$post = get_post( $id );
 	if ( ! $post instanceof \WP_Post || 'page' !== $post->post_type || 'publish' !== $post->post_status ) {
-		throw new RuntimeException( "Expected published page $id." );
+		throw new RuntimeException( esc_html( "Expected published page $id." ) );
 	}
 	$meta = array();
 	foreach ( array_keys( get_post_meta( $id ) ) as $key ) {
-		if ( str_starts_with( $key, '_linker_i18n_' ) ) {
+		if ( is_string( $key ) && str_starts_with( $key, '_linker_i18n_' ) ) {
 			$meta[ $key ] = get_post_meta( $id, $key, false );
 		}
 	}
 	ksort( $meta );
 	$fields = ( new Fields() )->of_post( $post, $german );
 	unset( $fields['post_content'] );
-	return array( 'body' => $post->post_content, 'meta' => $meta, 'fields' => $fields );
+	return array(
+		'body'   => $post->post_content,
+		'meta'   => $meta,
+		'fields' => $fields,
+	);
 }
 
+/**
+ * Capture every original and calculate the migration target before the first write.
+ *
+ * @param string $edge Rewrite filename.
+ * @return array<string,mixed>
+ * @throws RuntimeException When a language pair differs from the reviewed mapping.
+ */
 function snapshot( string $edge ): array {
 	$state = array(
 		'site'          => get_option( 'home' ),
@@ -179,11 +239,11 @@ function snapshot( string $edge ): array {
 	published_edge( $state['htaccess'] );
 	foreach ( PAIRS as $en => $de ) {
 		if ( (int) pll_get_post( $en, 'de' ) !== $de || 'en' !== pll_get_post_language( $en ) ) {
-			throw new RuntimeException( "Language pair changed for page $en." );
+			throw new RuntimeException( esc_html( "Language pair changed for page $en." ) );
 		}
 		foreach ( array( $en, $de ) as $id ) {
-			$row                     = page_state( $id, $id === $de );
-			$row['published']        = published_body( $row['body'], $en, $id === $de );
+			$row                   = page_state( $id, $id === $de );
+			$row['published']      = published_body( $row['body'], $en, $id === $de );
 			$state['pages'][ $id ] = $row;
 		}
 	}
@@ -199,6 +259,13 @@ function translator(): Translator {
 	return new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), new State(), DeepSeekClient::from_environment( $rules ), new Validator( $rules ), new Twins( $languages, $links, new Projection( $languages ) ), $links );
 }
 
+/**
+ * Apply or restore the reviewed bilingual pages in the enclosing transaction.
+ *
+ * @param array<int,array{body:string,published:string,meta:array<string,array<mixed>>,fields:array<string,array{string,bool}>}> $pages Original pages and their published bodies.
+ * @param bool                                                                                                                   $apply True to publish the new bodies, false to restore the preimage.
+ * @throws RuntimeException When a page changed independently or WordPress cannot persist a reviewed pair.
+ */
 function migrate_pages( array $pages, bool $apply ): void {
 	global $wp_filter;
 	foreach ( array( 'pre_post_update', 'wp_after_insert_post' ) as $hook ) {
@@ -216,18 +283,26 @@ function migrate_pages( array $pages, bool $apply ): void {
 			$row = $pages[ $id ];
 			$now = page_state( $id, $id === $de );
 			if ( $now['fields'] !== $row['fields'] || ! in_array( $now['body'], array( $row['body'], $row['published'] ), true ) || (int) pll_get_post( $en, 'de' ) !== $de ) {
-				throw new RuntimeException( "Page $id changed independently." );
+				throw new RuntimeException( esc_html( "Page $id changed independently." ) );
 			}
 			$target = $apply ? $row['published'] : $row['body'];
 			if ( $now['body'] === $target ) {
 				continue;
 			}
 			if ( $apply && $now['meta'] !== $row['meta'] ) {
-				throw new RuntimeException( "Translation metadata changed for page $id." );
+				throw new RuntimeException( esc_html( "Translation metadata changed for page $id." ) );
 			}
-			$result = wp_update_post( wp_slash( array( 'ID' => $id, 'post_content' => $target ) ), true );
-			if ( is_wp_error( $result ) || $target !== get_post_field( 'post_content', $id, 'raw' ) ) {
-				throw new RuntimeException( "Cannot update page $id." );
+			$result = wp_update_post(
+				wp_slash(
+					array(
+						'ID'           => $id,
+						'post_content' => $target,
+					)
+				),
+				true
+			);
+			if ( is_wp_error( $result ) || get_post_field( 'post_content', $id, 'raw' ) !== $target ) {
+				throw new RuntimeException( esc_html( "Cannot update page $id." ) );
 			}
 			$changed = true;
 			if ( ! $apply ) {
@@ -243,7 +318,7 @@ function migrate_pages( array $pages, bool $apply ): void {
 			}
 		}
 		if ( $apply && $changed && array( State::SYNCED ) === ( $pages[ $en ]['meta'][ State::STATUS ] ?? array() ) && ( State::SYNCED !== $translator->adopt_current( State::POST, $en ) || ! $translator->current( State::POST, $en ) ) ) {
-			throw new RuntimeException( "Cannot record the reviewed translation for page $en." );
+			throw new RuntimeException( esc_html( "Cannot record the reviewed translation for page $en." ) );
 		}
 	}
 }
@@ -254,13 +329,13 @@ function migrate_pages( array $pages, bool $apply ): void {
 	}
 	$mode = preg_replace( '/^--/', '', $args[0] ?? '' );
 	if ( count( $args ) !== 2 || ! in_array( $mode, array( 'apply', 'restore' ), true ) ) {
-		WP_CLI::error( 'Use --apply <backup> or --restore <backup>.' );
+		WP_CLI::error( 'Use apply <backup> or restore <backup>.' );
 	}
 	$file  = $args[1];
 	$apply = 'apply' === $mode;
 	$edge  = ABSPATH . '.htaccess';
 	if ( $apply && ! is_file( $file ) ) {
-		publish_file( $file, wp_json_encode( snapshot( $edge ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ), 0600 );
+		publish_file( $file, json_encode( snapshot( $edge ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ), 0600 );
 	}
 	$before = json_decode( bytes( $file ), true, 512, JSON_THROW_ON_ERROR );
 	if ( get_option( 'home' ) !== $before['site'] || ( fileperms( $edge ) & 0777 ) !== $before['htaccess_mode'] ) {
