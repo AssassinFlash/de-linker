@@ -141,6 +141,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( \Linker\Tools\Genie\InquirySummary::FILTER, array( $inquiry, 'answer' ), 10, 2 );
 		// The home hero's entry (#232).
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $hero, 'assets' ) );
+		WP_Mock::expectActionAdded( 'wp_footer', array( $hero, 'config' ) );
 		// A saved page drops Genie's cached copy (#405).
 		WP_Mock::expectActionAdded( 'pre_post_update', array( $page_cache, 'before_post_saved' ) );
 		WP_Mock::expectActionAdded( 'wp_after_insert_post', array( $page_cache, 'post_saved' ), 10, 4 );

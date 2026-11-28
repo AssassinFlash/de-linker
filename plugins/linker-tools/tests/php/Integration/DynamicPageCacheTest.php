@@ -87,27 +87,27 @@ final class DynamicPageCacheTest extends TestCase {
 		$this->assert_uncacheable( (string) get_permalink( $planner ) );
 		$this->assert_uncacheable( add_query_arg( 'foo', 'cacheprobe', $home ) );
 		$this->assert_uncacheable( add_query_arg( 'q', 'saj', (string) get_permalink( $this->product ) ) );
-		$this->assert_anonymous_dock_omits_credentials( $home, (string) get_permalink( $this->product ) );
+		$this->assert_anonymous_dock_has_no_nonce( $home, (string) get_permalink( $this->product ) );
 	}
 
 	/**
-	 * Anonymous reads share a dock without a REST nonce or renewal URL.
+	 * Cached pages omit signed-in REST credentials for anonymous visitors.
 	 *
 	 * @param string $home    Clean homepage URL.
 	 * @param string $product Clean product URL.
 	 */
-	private function assert_anonymous_dock_omits_credentials( string $home, string $product ): void {
+	private function assert_anonymous_dock_has_no_nonce( string $home, string $product ): void {
 		$first        = $this->document( $home, 'pll_language=en' );
 		$second       = $this->document( $home, 'pll_language=de' );
 		$product_page = $this->document( $product, 'wp_woocommerce_session_probe=1' );
 		$this->assertStringNotContainsString( 'no-cache', $first['header'], $home );
 		$this->assertStringNotContainsString( 'no-store', $first['header'], $home );
 		$this->assertStringNotContainsString( 'no-cache', $product_page['header'], $product );
-		$home_nonce = $this->attr( $first['body'], 'data-rest-nonce' );
-		$this->assertSame( '', $home_nonce );
-		$this->assertStringNotContainsString( 'data-genie-nonce-url=', $first['body'] );
-		$this->assertSame( $home_nonce, $this->attr( $second['body'], 'data-rest-nonce' ) );
-		$this->assertSame( $home_nonce, $this->attr( $product_page['body'], 'data-rest-nonce' ) );
+		foreach ( array( $first, $second, $product_page ) as $document ) {
+			$this->assertSame( '', $this->attr( $document['body'], 'data-rest-nonce' ) );
+			$this->assertStringNotContainsString( 'data-genie-nonce-url=', $document['body'] );
+			$this->assertStringNotContainsString( 'admin-ajax.php?action=rest-nonce', $document['body'] );
+		}
 
 		$this->assertStringNotContainsString( 'data-mail-started', $first['body'] );
 	}

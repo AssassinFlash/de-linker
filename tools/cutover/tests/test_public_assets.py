@@ -466,17 +466,23 @@ def test_tools_catalog_fetch_is_readable_after_private_staging(tmp_path: Path) -
     relative = "wp-content/plugins/linker-tools"
     staged = Path(target.path_of("wp-content/plugins/.linker-tools.next"))
     languages = staged / "languages"
-    catalog = (
-        languages / "linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json"
-    )
-    private_file(catalog, '{"source":"build/planner/assets/planner.js"}')
+    catalogs = [
+        languages / f"linker-tools-de_DE_formal-{digest}.json"
+        for digest in (
+            "cf89287c9001d7518d0d20e58c3eb721",
+            "c2be3a742ec1f5e619cd2beb8d234138",
+            "6796211aef57736d0923df38ef696ad2",
+        )
+    ]
+    for catalog in catalogs:
+        private_file(catalog, '{"locale_data":{"messages":{}}}')
     private_file(languages / "internal.json", "{}")
     private_file(languages / "linker-tools-de_DE_formal.po", "source translation")
     languages.chmod(0o700)
     from linker_cutover import public_assets
 
     proof = public_assets.prepare(target, [(relative, True)])
-    assert mode(catalog) == 0o644
+    assert all(mode(catalog) == 0o644 for catalog in catalogs)
     assert mode(languages) == 0o755
     assert mode(languages / "internal.json") == 0o600
     assert mode(languages / "linker-tools-de_DE_formal.po") == 0o600

@@ -84,6 +84,7 @@ for (const locale of ['en', 'de'] as const) {
 			name: /^(Reject all|Alle ablehnen)$/,
 		});
 		if (await reject.isVisible()) await reject.click();
+		await page.locator('.hero-prompt').focus();
 		await expect(
 			page.locator('.hero-cinematic[data-linker-genie-hero="ready"]')
 		).toHaveCount(1);

@@ -64,7 +64,7 @@ export async function productPresentation(
 			const response = await fetcher( url, {
 				credentials: 'same-origin',
 				cache: 'no-store',
-				headers: { 'X-WP-Nonce': nonce },
+				headers: nonce ? { 'X-WP-Nonce': nonce } : undefined,
 				signal: controller.signal,
 			} );
 			if ( ! response.ok ) {

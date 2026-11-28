@@ -173,7 +173,7 @@ async function publicationManifest(
 				{
 					credentials: 'same-origin',
 					cache: 'no-store',
-					headers: { 'X-WP-Nonce': nonce },
+					headers: nonce ? { 'X-WP-Nonce': nonce } : undefined,
 					signal: controller.signal,
 				}
 			);

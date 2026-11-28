@@ -123,7 +123,7 @@ for (const locale of ['en', 'de'] as const) {
 			if (conversation > 0) {
 				const deleted = await page.request.delete(
 					`${base}/wp-json/linker-ai/v1/genie/conversations/${conversation}`,
-					{ headers: { 'X-WP-Nonce': nonce } }
+					{ headers: nonce ? { 'X-WP-Nonce': nonce } : {} }
 				);
 				expect(deleted.ok()).toBe(true);
 			}

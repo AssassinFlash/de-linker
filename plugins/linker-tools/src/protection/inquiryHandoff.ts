@@ -40,12 +40,12 @@ function nativeConfig(): Config | null {
 	const mount = document.querySelector< HTMLElement >(
 		'[data-linker-app="genie"]'
 	);
-	if ( ! mount?.dataset.restUrl || ! mount.dataset.restNonce ) {
+	if ( ! mount?.dataset.restUrl ) {
 		return null;
 	}
 	return {
 		restUrl: mount.dataset.restUrl.replace( /\/?$/, '/' ),
-		restNonce: mount.dataset.restNonce,
+		restNonce: mount.dataset.restNonce ?? '',
 	};
 }
 

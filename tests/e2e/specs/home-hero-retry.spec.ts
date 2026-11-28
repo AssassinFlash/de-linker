@@ -55,6 +55,7 @@ async function fresh(
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page.locator('.hero-prompt')).toBeVisible();
 	// The entry is bound before a control may be trusted (controller.tsx).
+	await page.locator('.hero-prompt').focus();
 	await expect(
 		page.locator('.hero-cinematic[data-linker-genie-hero="ready"]')
 	).toHaveCount(1);

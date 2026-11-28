@@ -269,6 +269,7 @@ for (const locale of LOCALES) {
 			page,
 		}) => {
 			await page.goto(`${instance().url}${locale.base}`);
+			await page.locator('.hero-prompt').focus();
 			await expect(
 				page.locator('.hero-cinematic[data-linker-genie-hero="ready"]')
 			).toHaveCount(1);

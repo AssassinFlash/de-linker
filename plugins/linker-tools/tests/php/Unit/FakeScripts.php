@@ -22,21 +22,12 @@ final class FakeScripts {
 	private readonly bool $registered;
 
 	/**
-	 * Whether the entry carries script translations.
-	 *
-	 * @var bool
-	 */
-	private readonly bool $translated;
-
-	/**
 	 * Sets up the double.
 	 *
 	 * @param bool $registered Whether the entry is registered.
-	 * @param bool $translated Whether the entry has translations.
 	 */
-	public function __construct( bool $registered = true, bool $translated = false ) {
+	public function __construct( bool $registered = true ) {
 		$this->registered = $registered;
-		$this->translated = $translated;
 	}
 
 	/**
@@ -81,24 +72,13 @@ final class FakeScripts {
 				'deps' => array( 'wp-hooks' ),
 			),
 		);
+		if ( 'linker-tools-hero' === $handle ) {
+			$deps[ $handle ]        = $deps['linker-tools-genie'];
+			$deps[ $handle ]['src'] = '/build/hero.js';
+		}
 		if ( ! $this->registered || ! isset( $deps[ $handle ] ) ) {
 			return false;
 		}
 		return (object) $deps[ $handle ];
-	}
-
-	/**
-	 * What WordPress would print as this handle's inline translation script.
-	 *
-	 * @param string $handle  Script handle.
-	 * @param bool   $display Ignored; the callers under test read the return.
-	 * @return string|false
-	 */
-	public function print_translations( string $handle, bool $display = true ) {
-		unset( $display );
-		if ( ! $this->translated || 'linker-tools-genie' !== $handle ) {
-			return false;
-		}
-		return '( function( domain, translations ) { wp.i18n.setLocaleData( translations.locale_data.messages, domain ); } )( "linker-tools", {"locale_data":{"messages":{"":{"domain":"messages"},"Hide":["Ausblenden"]}}} );';
 	}
 }

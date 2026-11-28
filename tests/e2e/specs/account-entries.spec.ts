@@ -466,7 +466,7 @@ test('a separate newly created account cannot read another account document or G
 			const response = await page.request.get(
 				instance().url +
 					'/wp-json/wp-abilities/v1/abilities/linker/inquiry-status/run',
-				{ headers: { 'X-WP-Nonce': nonce! } }
+				{ headers: nonce ? { 'X-WP-Nonce': nonce } : {} }
 			);
 			expect(response.status()).toBe(200);
 			const body = (await response.json()) as {

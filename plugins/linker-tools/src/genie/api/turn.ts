@@ -565,7 +565,7 @@ async function pollTurn(
 				cache: 'no-store',
 				signal,
 				headers: {
-					'X-WP-Nonce': request.nonce,
+					...( request.nonce ? { 'X-WP-Nonce': request.nonce } : {} ),
 					...( request.plannerNonce
 						? { 'X-Linker-Planner-Nonce': request.plannerNonce }
 						: {} ),
@@ -661,7 +661,7 @@ export function sendTurn( request: TurnRequest ): Promise< Turn > {
 					signal,
 					headers: {
 						'Content-Type': 'application/json',
-						'X-WP-Nonce': nonce,
+						...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 						...( request.plannerNonce
 							? { 'X-Linker-Planner-Nonce': request.plannerNonce }
 							: {} ),
@@ -798,7 +798,7 @@ export async function readThread(
 			// A per-visitor answer: never from the browser's cache.
 			cache: 'no-store',
 			headers: {
-				'X-WP-Nonce': nonce,
+				...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 				...( proof?.plannerNonce
 					? { 'X-Linker-Planner-Nonce': proof.plannerNonce }
 					: {} ),
@@ -905,7 +905,7 @@ export async function readThread(
 						cache: 'no-store',
 						headers: {
 							'Content-Type': 'application/json',
-							'X-WP-Nonce': nonce,
+							...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 						},
 						body: JSON.stringify( {
 							schema_version: 1,
@@ -1024,7 +1024,7 @@ export async function listConversations(
 		const response = await resourceFetch( fetcher, url, {
 			credentials: 'same-origin',
 			cache: 'no-store',
-			headers: { 'X-WP-Nonce': nonce },
+			headers: nonce ? { 'X-WP-Nonce': nonce } : undefined,
 		} );
 		if ( ! response.ok ) {
 			return failed;
@@ -1066,7 +1066,10 @@ export async function selectConversation(
 		method: 'POST',
 		credentials: 'same-origin',
 		cache: 'no-store',
-		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
+		headers: {
+			'Content-Type': 'application/json',
+			...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
+		},
 		body: JSON.stringify( id ? { id } : {} ),
 	} );
 	if ( ! response.ok ) {
@@ -1101,7 +1104,7 @@ export async function deleteConversation(
 		method: 'DELETE',
 		credentials: 'same-origin',
 		cache: 'no-store',
-		headers: { 'X-WP-Nonce': nonce },
+		headers: nonce ? { 'X-WP-Nonce': nonce } : undefined,
 	} );
 	if ( ! response.ok ) {
 		throw new Error( `delete ${ response.status }` );
@@ -1241,7 +1244,7 @@ export async function sendVote(
 				credentials: 'same-origin',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-Nonce': nonce,
+					...( nonce ? { 'X-WP-Nonce': nonce } : {} ),
 				},
 				body: JSON.stringify( { vote } ),
 			}

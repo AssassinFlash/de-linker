@@ -18,8 +18,12 @@ if ( typeof window !== 'undefined' ) {
 
 export const genieFetch: typeof fetch = async ( input, init ) => {
 	const headers = new Headers( init?.headers );
-	const initial = headers.get( 'X-WP-Nonce' );
+	const initial = headers.get( 'X-WP-Nonce' )?.trim();
 	if ( ! initial ) {
+		if ( headers.has( 'X-WP-Nonce' ) ) {
+			headers.delete( 'X-WP-Nonce' );
+			return fetch( input, { ...init, headers } );
+		}
 		return fetch( input, init );
 	}
 	if ( renewed?.initial === initial ) {

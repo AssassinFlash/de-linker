@@ -145,3 +145,22 @@ it( 'returns the second 403 without starting another renewal', async () => {
 	).toBe( 403 );
 	expect( transport ).toHaveBeenCalledTimes( 3 );
 } );
+
+it( 'omits an empty guest nonce while preserving the request', async () => {
+	const transport = vi
+		.fn< typeof fetch >()
+		.mockResolvedValue( new Response() );
+	vi.stubGlobal( 'fetch', transport );
+	await genieFetch( '/turn', {
+		method: 'POST',
+		headers: { 'X-WP-Nonce': ' ', 'Content-Type': 'text/plain' },
+		body: 'hello',
+	} );
+	expect( transport ).toHaveBeenCalledTimes( 1 );
+	const init = transport.mock.calls[ 0 ][ 1 ];
+	expect( init?.body ).toBe( 'hello' );
+	expect( new Headers( init?.headers ).has( 'X-WP-Nonce' ) ).toBe( false );
+	expect( new Headers( init?.headers ).get( 'Content-Type' ) ).toBe(
+		'text/plain'
+	);
+} );

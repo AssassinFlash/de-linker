@@ -50,7 +50,7 @@ export async function saveGenieSolution(
 				headers: {
 					'Content-Type': 'application/json',
 					Nonce: nonce,
-					'X-WP-Nonce': restNonce,
+					...( restNonce ? { 'X-WP-Nonce': restNonce } : {} ),
 				},
 				body: JSON.stringify( { proof } ),
 			}

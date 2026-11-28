@@ -17,12 +17,6 @@ namespace Linker\Tools\Genie;
  * buttons); this entry binds those controls and unfolds the conversation in
  * place. The page is untouched until the visitor asks, which is what keeps
  * the owner's pixel gate on the resting hero.
- *
- * The dock's mount (`[data-linker-app="genie"]`, Entries) carries the routes,
- * nonce, language and page context the hero app reads (config.ts); the hero
- * adds no second configuration block. The dock's stylesheet is enqueued here
- * as well so the shared components (GenieCard, Reply, AttachmentCard) never
- * depend on the dock's own enqueue order.
  */
 final class Hero {
 
@@ -36,6 +30,7 @@ final class Hero {
 	 */
 	public function register(): void {
 		add_action( 'wp_enqueue_scripts', array( $this, 'assets' ) );
+		add_action( 'wp_footer', array( $this, 'config' ) );
 	}
 
 	/**
@@ -45,8 +40,22 @@ final class Hero {
 		if ( is_admin() || ! is_front_page() ) {
 			return;
 		}
-		wp_enqueue_style( Entries::HANDLE );
-		wp_enqueue_style( self::HANDLE );
-		wp_enqueue_script( self::HANDLE );
+		EntryAssets::enqueue_loader( 'hero', array( 'linker-tools-genie-loader' ) );
+	}
+
+	/** Print only the URLs for the first interaction with the homepage hero. */
+	public function config(): void {
+		if ( is_admin() || ! is_front_page() ) {
+			return;
+		}
+		$config           = EntryAssets::config( 'hero' );
+		$config['styles'] = array( EntryAssets::url( self::HANDLE, true ), EntryAssets::url( Entries::HANDLE, true ) );
+		wp_print_inline_script_tag(
+			(string) wp_json_encode( $config, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ),
+			array(
+				'type'                    => 'application/json',
+				'data-linker-hero-loader' => true,
+			)
+		);
 	}
 }

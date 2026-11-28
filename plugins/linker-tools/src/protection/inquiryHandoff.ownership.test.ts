@@ -31,10 +31,9 @@ function pendingIdentity() {
 }
 
 function currentIdentity( scope = A ) {
-	const request = vi.fn( async () => ( {
-		ok: true,
-		json: async () => ( { scope } ),
-	} ) );
+	const request = vi.fn< typeof fetch >( async () =>
+		Response.json( { scope } )
+	);
 	vi.stubGlobal( 'fetch', request );
 	return request;
 }
@@ -230,6 +229,21 @@ test( 'sender rejects missing original ownership and cross-origin destinations w
 	).toBe( false );
 	expect( window.sessionStorage.length ).toBe( 0 );
 	expect( request ).not.toHaveBeenCalled();
+} );
+
+test( 'a guest mount restores the current owner without a REST nonce', async () => {
+	rememberInquiry( '/proforma-request/', 'Guest question', A );
+	const field = destination();
+	document.body.insertAdjacentHTML(
+		'beforeend',
+		'<div data-linker-app="genie" data-rest-url="/wp-json/" data-rest-nonce=""></div>'
+	);
+	const request = currentIdentity();
+	await restoreInquiry();
+	expect( field.value ).toBe( 'Guest question' );
+	expect(
+		new Headers( request.mock.calls[ 0 ][ 1 ]?.headers ).has( 'X-WP-Nonce' )
+	).toBe( false );
 } );
 
 test( 'missing native mount leaves the handoff and native field untouched', async () => {
