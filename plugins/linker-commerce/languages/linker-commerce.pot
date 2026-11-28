@@ -6724,3 +6724,63 @@ msgid ""
 "Reply to %s to confirm or adjust this Quotation. We agree on billing and "
 "delivery with you personally."
 msgstr ""
+
+#: includes/Presentation/LibraryPage.php:379
+msgid "Filter by brand"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:380
+msgid "All brands"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:389
+msgid "Grid Certificate (VDE · ZEREZ)"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:406
+msgid "Manufacturer Certifications & Technical Document Library"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:446
+msgid "The full index could not be loaded. Please try again."
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:529
+msgid "Linker Engineering Toolkit"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:530
+msgid "Direct engineering references — no form required"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:531
+msgid "Technical parameters verified as of 2026-11. Net project pricing, availability, and delivery terms apply per formal written quotation."
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:537
+#, php-format
+msgid "%d pages"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:538
+#, php-format
+msgid "%d intervals"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:542
+msgid "Download CSV"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:681
+#, php-format
+msgid "%d manufacturer documents"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:691
+msgid "Linker Technical Document & Engineering Toolkit Library"
+msgstr ""
+
+#: includes/Presentation/LibraryPage.php:692
+msgid "Datasheets, VDE grid certificates, compatibility references, and project planning templates for installers and EPCs."
+msgstr ""
+

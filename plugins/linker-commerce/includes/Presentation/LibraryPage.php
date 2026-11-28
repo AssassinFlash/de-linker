@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Products\DocumentLibrary;
-use Linker\Commerce\Products\DocumentThumbnails;
+use Linker\Commerce\Products\ToolkitRegistry;
 use Linker\Commerce\Products\TradeRules;
 
 /**
@@ -45,6 +45,9 @@ final class LibraryPage {
 	 * prototype's page size.
 	 */
 	public const PAGE_SIZE = 20;
+
+	/** Number of product answers per brand visible in the initial register. */
+	public const FAQ_SSR_PAGE_SIZE = 10;
 
 	/**
 	 * Every anchor the page prints starts with this.
@@ -90,18 +93,11 @@ final class LibraryPage {
 	private readonly TradeRules $rules;
 
 	/**
-	 * The register's first-page thumbnails.
-	 *
-	 * @var DocumentThumbnails
-	 */
-	private readonly DocumentThumbnails $thumbs;
-
-	/**
 	 * The page's model, assembled once per request.
 	 *
 	 * @var array{
 	 *   trade: list<array{id: string, name: string, count: int, questions: list<array{question: string, answer: string}>}>,
-	 *   brands: list<array{name: string, logo: array{src:string,srcset:string,sizes:string,width:int,height:int}|null, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
+	 *   brands: list<array{name: string, logo: array{src:string,srcset:string,sizes:string,width:int,height:int}|null, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, product_links:list<array{title:string,url:string}>}>|null}>,
 	 *   types: list<array{type: string, label: string, count: int}>,
 	 *   faq_total: int,
 	 *   document_total: int
@@ -112,24 +108,23 @@ final class LibraryPage {
 	/**
 	 * Sets up the page.
 	 *
-	 * @param DocumentLibrary|null    $library Register override (tests).
-	 * @param TradeRules|null         $rules   Trade-rule data override (tests).
-	 * @param DocumentThumbnails|null $thumbs  Thumbnail-manifest override (tests).
+	 * @param DocumentLibrary|null $library Register override (tests).
+	 * @param TradeRules|null      $rules   Trade-rule data override (tests).
 	 */
 	public function __construct(
 		?DocumentLibrary $library = null,
-		?TradeRules $rules = null,
-		?DocumentThumbnails $thumbs = null
+		?TradeRules $rules = null
 	) {
 		$this->library = $library ?? new DocumentLibrary();
 		$this->rules   = $rules ?? new TradeRules();
-		$this->thumbs  = $thumbs ?? new DocumentThumbnails();
 	}
 
 	/**
 	 * Adds the fragments' shortcodes.
 	 */
 	public function register(): void {
+		add_shortcode( 'linker_library_toolkit', array( $this, 'toolkit' ) );
+		add_action( 'rest_api_init', array( LibraryIndexEndpoint::class, 'register' ) );
 		add_shortcode( 'linker_library_count', array( $this, 'count' ) );
 		add_shortcode( 'linker_library_total', array( $this, 'total' ) );
 		add_shortcode( 'linker_library_rail', array( $this, 'rail' ) );
@@ -154,6 +149,12 @@ final class LibraryPage {
 		$kept = array();
 		if ( 'documents' === ( $query['tab'] ?? null ) ) {
 			$kept['tab'] = 'documents';
+		}
+		if ( 'faq' === ( $query['tab'] ?? null ) ) {
+			$kept['tab'] = 'faq';
+		}
+		if ( isset( $query['brand'] ) && is_string( $query['brand'] ) && preg_match( '/^[a-z0-9]+(?:-[a-z0-9]+)*$/D', $query['brand'] ) && 'all' !== $query['brand'] ) {
+			$kept['brand'] = $query['brand'];
 		}
 		$type = $query['type'] ?? null;
 		if ( is_string( $type ) && in_array( $type, self::CHIP_ORDER, true ) ) {
@@ -345,7 +346,7 @@ final class LibraryPage {
 			}
 			$answers = $brand['answers'];
 			$rows    = '';
-			foreach ( $answers as $answer ) {
+			foreach ( array_slice( $answers, 0, self::FAQ_SSR_PAGE_SIZE ) as $answer ) {
 				$rows .= '<details class="linker-library-qa" data-library-item>';
 				$rows .= '<summary class="linker-library-qa-head"><span class="linker-library-qa-text">';
 				$rows .= '<span class="linker-library-qa-product">' . esc_html( $answer['product'] ) . '</span>';
@@ -375,12 +376,20 @@ final class LibraryPage {
 	public function documents( $atts = array() ): string {
 		unset( $atts );
 		$model = $this->model();
-		$out   = '<div class="linker-library-filters" data-library-filters hidden role="group" aria-label="' . esc_attr( (string) __( 'Document type', 'linker-commerce' ) ) . '">';
-		$out  .= '<button type="button" class="linker-library-chip" data-library-type="all" aria-pressed="true">' . esc_html( (string) __( 'All', 'linker-commerce' ) ) . ' <span class="linker-library-n">' . esc_html( (string) $model['document_total'] ) . '</span></button>';
-		foreach ( $model['types'] as $type ) {
-			$out .= '<button type="button" class="linker-library-chip" data-library-type="' . esc_attr( $type['type'] ) . '" aria-pressed="false">' . esc_html( $type['label'] ) . ' <span class="linker-library-n">' . esc_html( (string) $type['count'] ) . '</span></button>';
+		$out   = '<div class="linker-library-filters" data-library-filters><fieldset data-library-brand-filters><legend>' . esc_html__( 'Filter by brand', 'linker-commerce' ) . '</legend>';
+		$out  .= $this->filter_button( 'brand', 'all', __( 'All brands', 'linker-commerce' ), $model['document_total'] );
+		foreach ( $model['brands'] as $brand ) {
+			if ( ! empty( $brand['documents'] ) ) {
+				$out .= $this->filter_button( 'brand', sanitize_title( $brand['name'] ), $brand['name'], count( $brand['documents'] ) );
+			}
 		}
-		$out .= '</div>';
+		$out .= '</fieldset><fieldset data-library-type-filters><legend>' . esc_html__( 'Document type', 'linker-commerce' ) . '</legend>';
+		$out .= $this->filter_button( 'type', 'all', __( 'All', 'linker-commerce' ), $model['document_total'] );
+		foreach ( $model['types'] as $type ) {
+			$label = 'certificate' === $type['type'] ? __( 'Grid Certificate (VDE · ZEREZ)', 'linker-commerce' ) : $type['label'];
+			$out  .= $this->filter_button( 'type', $type['type'], $label, $type['count'] );
+		}
+		$out .= '</fieldset></div>';
 
 		$cards = '';
 		foreach ( $model['brands'] as $brand ) {
@@ -390,11 +399,11 @@ final class LibraryPage {
 			$documents = $brand['documents'];
 			$rows      = '';
 			foreach ( $documents as $document ) {
-				$rows .= $this->document( $document, $brand['name'] );
+				$rows .= $this->document( $document );
 			}
 			$cards .= $this->card( $brand['documents_id'], 'document', $brand['name'], count( $documents ), $brand['logo'], $rows, $brand['mark'] );
 		}
-		$out .= $this->zone( self::ZONE_DOCUMENTS, (string) __( 'Brands', 'linker-commerce' ), $cards );
+		$out .= $this->zone( self::ZONE_DOCUMENTS, (string) __( 'Manufacturer Certifications & Technical Document Library', 'linker-commerce' ), $cards );
 
 		return $out;
 	}
@@ -414,16 +423,18 @@ final class LibraryPage {
 			'linker-library-ui',
 			plugins_url( 'assets/library-ui.js', dirname( __DIR__, 2 ) . '/linker-commerce.php' ),
 			array(),
-			(string) filemtime( $path ),
+			substr( (string) md5_file( $path ), 0, 12 ),
 			array(
 				'strategy'  => 'defer',
 				'in_footer' => true,
 			)
 		);
 		$config = array(
-			'pageSize' => self::PAGE_SIZE,
-			'genieUrl' => $this->genie_url(),
-			'i18n'     => array(
+			'pageSize'    => self::PAGE_SIZE,
+			'faqPageSize' => self::FAQ_SSR_PAGE_SIZE,
+			'indexUrl'    => add_query_arg( 'lang', $this->german() ? 'de' : 'en', rest_url( 'linker/v1/library-index' ) ),
+			'genieUrl'    => $this->genie_url(),
+			'i18n'        => array(
 				/* translators: %d: number of matching entries. */
 				'resultsOne'    => __( '%d result', 'linker-commerce' ),
 				/* translators: %d: number of matching entries. */
@@ -432,6 +443,7 @@ final class LibraryPage {
 				/* translators: %d: number of questions and documents on file. */
 				'onFile'        => __( '%d on file', 'linker-commerce' ),
 				'empty'         => __( 'Nothing on file matches that search.', 'linker-commerce' ),
+				'indexError'    => __( 'The full index could not be loaded. Please try again.', 'linker-commerce' ),
 				'emptySoft'     => __( 'No documents of this type.', 'linker-commerce' ),
 				'askGenie'      => __( 'Ask Genie', 'linker-commerce' ),
 				'trade'         => __( 'Trade rule', 'linker-commerce' ),
@@ -496,43 +508,68 @@ final class LibraryPage {
 			default    => self::ZONE_ANSWERS,
 		};
 
-		return '<article class="linker-library-card" id="' . esc_attr( $id ) . '" data-library-card data-library-kind="' . esc_attr( $kind ) . '" data-library-spy data-library-zone="' . esc_attr( $zone ) . '">' . $head .
+		return '<article class="linker-library-card" id="' . esc_attr( $id ) . '" data-library-card data-library-kind="' . esc_attr( $kind ) . '" data-library-total="' . $count . '" data-library-spy data-library-zone="' . esc_attr( $zone ) . '">' . $head .
 			'<div class="linker-library-rows">' . $list . '</div></article>';
 	}
 
 	/**
-	 * One document row: its first-page thumbnail (or its type tile), its type,
-	 * its title, what it covers, its language and its download.
+	 * Preserve external media hosts while shortening first-party links.
 	 *
-	 * @param array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null} $document Document.
-	 * @param string                                                                                                                                                                                                                                     $brand Manufacturer name.
+	 * @param string $url Published canonical URL.
 	 */
-	private function document( array $document, string $brand ): string {
-		// `has-tile` is constant: the design gives every row the same 52x72
-		// slot, and what varies is only whether a page image fills it (the
-		// fragments' `has-src`) or the type tile stands alone.
-		$extra_products = array_values( array_diff( $document['products'], $document['skus'] ) );
-		$out            = '<li class="linker-library-doc has-tile" data-library-item data-library-type="' . esc_attr( $document['type'] ) . '" data-library-skus="' . esc_attr( (string) wp_json_encode( $document['skus'] ) ) . '"';
-		if ( $extra_products ) {
-			$out .= ' data-library-products="' . esc_attr( (string) wp_json_encode( $extra_products ) ) . '"';
-		}
-		$out .= '>';
-		if ( null !== $document['thumb'] ) {
-			// `has-src` is what hides the tile's icon while the page image is
-			// there; a reader without the script sees the image, and the
-			// script's error path takes the class back off.
-			$out .= '<span class="linker-library-thumb has-src" aria-hidden="true"><img src="' . esc_url( $document['thumb']['src'] ) . '" alt="" width="' . esc_attr( (string) $document['thumb']['width'] ) . '" height="' . esc_attr( (string) $document['thumb']['height'] ) . '" loading="lazy" decoding="async"></span>';
-		} else {
-			$out .= '<span class="linker-library-thumb is-type is-' . esc_attr( $document['type'] ) . '" aria-hidden="true"></span>';
-		}
-		$out .= '<span class="linker-library-doc-lead"><span class="linker-library-badge is-' . esc_attr( $document['type'] ) . '">' . esc_html( $document['type_label'] ) . '</span>';
-		$out .= '<span class="linker-library-lang"><span aria-hidden="true">' . esc_html( $document['language'] ) . '</span><span class="linker-library-sr">' . esc_html( $document['language_label'] ) . '</span></span>';
-		$out .= '<span class="linker-library-doc-title">' . esc_html( $document['title'] ) . '</span></span>';
-		$out .= '<p class="linker-library-doc-meta"><span class="linker-library-doc-covers">' . esc_html( $document['covers'] ) . '</span></p>';
-		$out .= '<a class="linker-library-dl" data-doc-kind="' . esc_attr( $document['type'] ) . '" data-doc-brand="' . esc_attr( $brand ) . '" href="' . esc_url( $document['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) __( 'Download', 'linker-commerce' ) ) . '<span class="linker-library-sr"> ' . esc_html( $document['title'] ) . '</span></a>';
-		$out .= '</li>';
+	private static function local_href( string $url ): string {
+		$root = PageUrls::root();
+		return str_starts_with( $url, $root ) ? '/' . substr( $url, strlen( $root ) ) : $url;
+	}
 
-		return $out;
+	/** The four bilingual planning references. */
+	public function toolkit(): string {
+		$cards = ToolkitRegistry::cards_for_locale( $this->german() ? 'de' : 'en' );
+		$html  = '<section class="lk-toolkit-band linker-library-wrap" id="linker-engineering-toolkit" aria-labelledby="lk-toolkit-title">';
+		$html .= '<div class="lk-toolkit-intro"><div><p class="lk-toolkit-eyebrow">' . esc_html__( 'Linker Engineering Toolkit', 'linker-commerce' ) . '</p>';
+		$html .= '<h2 id="lk-toolkit-title">' . esc_html__( 'Direct engineering references — no form required', 'linker-commerce' ) . '</h2></div>';
+		$html .= '<p>' . esc_html__( 'Technical parameters verified as of 2026-11. Net project pricing, availability, and delivery terms apply per formal written quotation.', 'linker-commerce' ) . '</p></div><div class="lk-toolkit-grid">';
+		foreach ( $cards as $card ) {
+			$pdf    = 'pdf' === $card['format'];
+			$format = strtoupper( $card['format'] );
+			$link   = $pdf ? ' target="_blank" rel="noopener noreferrer"' : ' download';
+			$units  = $pdf
+				? sprintf( /* translators: %d: number of pages in the PDF. */ __( '%d pages', 'linker-commerce' ), $card['unit_count'] )
+				: sprintf( /* translators: %d: number of measurement intervals. */ __( '%d intervals', 'linker-commerce' ), $card['unit_count'] );
+			$html  .= '<article class="lk-toolkit-card"><div class="lk-file-meta"><span class="lk-file-symbol" data-suite="' . esc_attr( $card['suite'] ) . '" aria-hidden="true"></span>';
+			$html  .= '<span>' . esc_html( $format . ' · ' . $units ) . '</span></div><h3>' . esc_html( $card['title'] ) . '</h3><p>' . esc_html( $card['description'] ) . '</p>';
+			$html  .= '<div class="lk-file-revision"><span>Rev. ' . esc_html( $card['revision'] ) . '</span><span>' . esc_html( $card['doc_code'] ) . '</span></div>';
+			$html  .= '<div class="lk-file-links"><a class="lk-toolkit-cta" href="' . esc_url( $card['url'] ) . '"' . $link . '>' . esc_html( $pdf ? __( 'Download PDF', 'linker-commerce' ) : __( 'Download CSV', 'linker-commerce' ) ) . '</a>';
+			$html  .= '<a href="' . esc_url( $card['alt_url'] ) . '" hreflang="' . esc_attr( $card['alt_lang'] ) . '"' . $link . '>' . esc_html( strtoupper( $card['alt_lang'] ) . ' ' . $format ) . ' ↗</a></div></article>';
+		}
+		return $html . '</div></section>';
+	}
+
+	/**
+	 * A facet button and its current result count.
+	 *
+	 * @param string $facet Brand or type.
+	 * @param string $value Filter value.
+	 * @param string $label Filter label.
+	 * @param int    $count Document count.
+	 */
+	private function filter_button( string $facet, string $value, string $label, int $count ): string {
+		return '<button type="button" class="linker-library-chip" data-library-' . $facet . '="' . esc_attr( $value ) . '" aria-pressed="' . ( 'all' === $value ? 'true' : 'false' ) . '">' . esc_html( $label ) . ' <span class="linker-library-n">' . $count . '</span></button>';
+	}
+
+	/**
+	 * One file link and its primary published product. The brand is shared by the containing list.
+	 *
+	 * @param array<string,mixed> $document Document row.
+	 */
+	private function document( array $document ): string {
+		$products = $document['product_links'];
+		$first    = $products[0];
+		$pdf      = self::local_href( $document['url'] );
+		$out      = '<li data-t="' . esc_attr( $document['type'] ) . '"><a href="' . esc_url( $pdf ) . '" target="_blank" rel="noopener">' . esc_html( $document['title'] ) . '</a>';
+		$out     .= '<small>' . esc_html( $document['type_label'] ) . ' · ' . esc_html( $document['language'] ) . '</small>';
+		$out     .= '<span><a href="' . esc_url( self::local_href( $first['url'] ) ) . '">' . esc_html( $first['title'] ) . '</a>';
+		return $out . ( count( $products ) > 1 ? ' (+' . ( count( $products ) - 1 ) . ')' : '' ) . '</span></li>';
 	}
 
 	/**
@@ -576,40 +613,6 @@ final class LibraryPage {
 		);
 
 		return $labels[ $type ] ?? $labels['document'];
-	}
-
-	/**
-	 * A document language's display name; the combined forms read as stored.
-	 *
-	 * @param string $language Stored language.
-	 */
-	private static function language_label( string $language ): string {
-		$labels = array(
-			'EN'  => __( 'English', 'linker-commerce' ),
-			'DE'  => __( 'German', 'linker-commerce' ),
-			'MUL' => __( 'Multilingual', 'linker-commerce' ),
-		);
-
-		return $labels[ $language ] ?? $language;
-	}
-
-	/**
-	 * What a document covers: the products whose pages state it.
-	 *
-	 * @param string[] $covers Product names.
-	 * @return string The sentence.
-	 */
-	private static function covers( array $covers ): string {
-		if ( 1 === count( $covers ) ) {
-			/* translators: %s: product name. */
-			return sprintf( __( 'covers %s', 'linker-commerce' ), $covers[0] );
-		}
-
-		return sprintf(
-			/* translators: %d: number of products. */
-			_n( 'covers %d product', 'covers %d products', count( $covers ), 'linker-commerce' ),
-			count( $covers )
-		);
 	}
 
 	/**
@@ -659,25 +662,72 @@ final class LibraryPage {
 		$model  = $this->model();
 		$entity = array();
 		foreach ( $model['trade'] as $category ) {
-			foreach ( array_slice( $category['questions'], 0, self::PAGE_SIZE ) as $question ) {
+			foreach ( $category['questions'] as $question ) {
 				$entity[] = $this->question( $question['question'], $question['answer'] );
 			}
 		}
 		foreach ( $model['brands'] as $brand ) {
-			foreach ( array_slice( $brand['answers'] ?? array(), 0, self::PAGE_SIZE ) as $answer ) {
+			foreach ( array_slice( $brand['answers'] ?? array(), 0, self::FAQ_SSR_PAGE_SIZE ) as $answer ) {
 				$entity[] = $this->question( $answer['question'], $this->brand_answer_text( $answer ) );
 			}
 		}
-		if ( array() === $entity ) {
-			return;
-		}
-		$node = array(
-			'@context'   => 'https://schema.org',
-			'@type'      => 'FAQPage',
-			'mainEntity' => $entity,
+		$url       = (string) get_permalink( $page );
+		$publisher = array( '@id' => PageUrls::root() . '#organization' );
+		$dataset   = array(
+			'@type'        => 'Dataset',
+			'@id'          => $url . '#manufacturer-documents',
+			'name'         => __( 'Manufacturer Certifications & Technical Document Library', 'linker-commerce' ),
+			'creator'      => $publisher,
+			'description'  => sprintf( /* translators: %d: number of manufacturer documents. */ __( '%d manufacturer documents', 'linker-commerce' ), $model['document_total'] ),
+			'distribution' => array(
+				'@type'          => 'DataDownload',
+				'contentUrl'     => PageUrls::root() . 'pdf-sitemap1.xml',
+				'encodingFormat' => 'application/xml',
+			),
 		);
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payload is JSON; the `<` pass below is the one dangerous character.
-		echo '<script type="application/ld+json">' . str_replace( '<', '\u003C', (string) wp_json_encode( $node, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) . "</script>\n";
+		$catalog   = array(
+			'@type'       => 'DataCatalog',
+			'@id'         => $url . '#datacatalog',
+			'name'        => __( 'Linker Technical Document & Engineering Toolkit Library', 'linker-commerce' ),
+			'description' => __( 'Datasheets, VDE grid certificates, compatibility references, and project planning templates for installers and EPCs.', 'linker-commerce' ),
+			'url'         => $url,
+			'inLanguage'  => $this->german() ? 'de-DE' : 'en',
+			'publisher'   => $publisher,
+			'isPartOf'    => array( '@id' => $url . '#webpage' ),
+			'dataset'     => array( '@id' => $dataset['@id'] ),
+			'hasPart'     => array(),
+		);
+		$assets    = array();
+		foreach ( ToolkitRegistry::cards_for_locale( $this->german() ? 'de' : 'en' ) as $card ) {
+			$id                   = $card['url'] . '#document';
+			$catalog['hasPart'][] = array( '@id' => $id );
+			$assets[]             = array(
+				'@type'          => 'DigitalDocument',
+				'@id'            => $id,
+				'name'           => $card['title'],
+				'identifier'     => '' !== $card['doc_code'] ? $card['doc_code'] : $card['filename'],
+				'url'            => $card['url'],
+				'encodingFormat' => $card['mime'],
+				'inLanguage'     => $card['content_language'],
+				'dateModified'   => $card['lastmod'],
+				'publisher'      => $publisher,
+			);
+		}
+		$nodes = array( $catalog, $dataset, ...$assets );
+		if ( $entity ) {
+			$nodes[] = array(
+				'@type'      => 'FAQPage',
+				'mainEntity' => $entity,
+			);
+		}
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON_HEX_TAG escapes script delimiters.
+		echo '<script type="application/ld+json">' . wp_json_encode(
+			array(
+				'@context' => 'https://schema.org',
+				'@graph'   => $nodes,
+			),
+			JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+		) . '</script>';
 	}
 
 	/**
@@ -732,7 +782,7 @@ final class LibraryPage {
 	 *
 	 * @return array{
 	 *   trade: list<array{id: string, name: string, count: int, questions: list<array{question: string, answer: string}>}>,
-	 *   brands: list<array{name: string, logo: array{src:string,srcset:string,sizes:string,width:int,height:int}|null, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>|null}>,
+	 *   brands: list<array{name: string, logo: array{src:string,srcset:string,sizes:string,width:int,height:int}|null, mark: string, answers_id: string, documents_id: string, answers: list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>|null, documents: list<array{title: string, url: string, type: string, type_label: string, language: string, product_links:list<array{title:string,url:string}>}>|null}>,
 	 *   types: list<array{type: string, label: string, count: int}>,
 	 *   faq_total: int,
 	 *   document_total: int
@@ -784,22 +834,19 @@ final class LibraryPage {
 		/**
 		 * The register, filed by brand; one entry per file.
 		 *
-		 * @var array<string, list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, products: list<string>, skus: array<string,string>, thumb: array{src: string, width: int, height: int}|null}>> $documents
+		 * @var array<string, list<array{title: string, url: string, type: string, type_label: string, language: string, product_links:list<array{title:string,url:string}>}>> $documents
 		 */
 		$documents = array();
 		foreach ( $entries['documents'] as $document ) {
 			$type                              = $document['type'];
 			$documents[ $document['brand'] ][] = array(
-				'title'          => $document['title'],
-				'url'            => $document['url'],
-				'type'           => $type,
-				'type_label'     => self::type_label( $type ),
-				'language'       => $document['language'],
-				'language_label' => self::language_label( $document['language'] ),
-				'covers'         => self::covers( $document['covers'] ),
-				'products'       => $document['covers'],
-				'skus'           => $document['skus'],
-				'thumb'          => $this->thumbs->of( $document['url'] ),
+				'title'         => $document['title'],
+				'url'           => $document['url'],
+				'type'          => $type,
+				'type_label'    => self::type_label( $type ),
+				'language'      => $document['language'],
+
+				'product_links' => $document['product_links'],
 			);
 		}
 

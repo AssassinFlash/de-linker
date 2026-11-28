@@ -142,15 +142,14 @@
 
 	/** The tab a URL states; anything but `tab=documents` is the FAQ tab. */
 	function tabFromSearch(search) {
-		return /(^|[?&])tab=documents(&|$)/.test(String(search || "")) ? "documents" : "faq";
+		return new URLSearchParams(search).get("tab") === "faq" ? "faq" : "documents";
 	}
 
 	/** The URL for a tab: the documents tab is named, the default is not. */
 	function tabUrl(pathname, search, hash, tab) {
-		var rest = String(search || "").replace(/[?&]?tab=[^&]*/g, "").replace(/^[?&]+/, "").replace(/[?&]+$/, "");
-		var base = rest ? "?" + rest : "";
-		var named = tab === "documents" ? (base ? "&" : "?") + "tab=documents" : "";
-		return String(pathname || "") + base + named + (hash || "");
+		var params = new URLSearchParams(search);
+		params.set("tab", tab);
+		return pathname + "?" + params.toString() + (hash || "");
 	}
 
 	var QUESTION = /(\?|\b(how|what|which|where|when|why|who|can|could|do|does|is|are|will|would|should|help|find|recommend|compare|need|want|wie|was|welche|welcher|welches|wo|wann|warum|wer|kann|können|koennen|ist|sind|soll|sollte|hilfe|hilf|empfehl|vergleich|brauche|möchte|moechte|habe|gibt)\b)/i;
@@ -203,7 +202,8 @@
 	var main = root.querySelector(".linker-library-main");
 	var filterHome = filters && filters.parentNode;
 	var filterFollowing = filters && filters.nextSibling;
-	var preparedThumbnails = new WeakSet();
+	var indexRequest;
+	var indexReady = false;
 
 	/** A native anchor may already have been followed while this script loaded. */
 	function hashTarget() {
@@ -227,6 +227,7 @@
 		tab: tabFromLocation(),
 		q: new URLSearchParams(scope.location.search).get("q") || "",
 		type: "all",
+		brand: "all",
 		pages: {},
 		searchPage: 1,
 		open: {},
@@ -240,15 +241,16 @@
 	/** Only the native page-language switchers carry this public library selection. */
 	function syncSelection(updateUrl) {
 		function selectedUrl(url) {
-			["q", "tab", "type"].forEach(function (key) {
+			["q", "tab", "type", "brand"].forEach(function (key) {
 				url.searchParams.delete(key);
 			});
 			if (state.q) {
 				url.searchParams.set("q", state.q);
 			}
-			if (state.tab === "documents") {
-				url.searchParams.set("tab", "documents");
+			if (state.tab === "faq" || new URL(scope.location.href).searchParams.has("tab")) {
+				url.searchParams.set("tab", state.tab);
 			}
+			if (state.brand !== "all") url.searchParams.set("brand", state.brand);
 			if (state.type !== "all") {
 				url.searchParams.set("type", state.type);
 			}
@@ -264,6 +266,11 @@
 				link.href = selectedUrl(url).href;
 			}
 		});
+	}
+
+	function brandFromLocation() {
+		var brand = new URLSearchParams(scope.location.search).get("brand");
+		return cards.some(function (card) { return card.kind === "document" && card.brand === brand; }) ? brand : "all";
 	}
 
 	function typeFromLocation() {
@@ -283,69 +290,97 @@
 			title: title ? title.textContent : "",
 			rowsWrap: element.querySelector(".linker-library-rows"),
 			count: element.querySelector("[data-library-card-count]"),
-			rows: slice.call(element.querySelectorAll("[data-library-item]")),
+			rows: slice.call(element.querySelectorAll("[data-library-item], li[data-t]")),
+			total: Number(element.dataset.libraryTotal || 0),
+			brand: element.id.replace(/^linker-library-docs-/, ""),
 			pager: null,
 			empty: null,
 		};
 	});
 
-	/** Every row of the page: what the search reads, and where the row lives. */
-	function rowProducts(row) {
-		try {
-			var products = JSON.parse(row.getAttribute("data-library-products") || "[]");
-			return Array.isArray(products) ? products.filter(function (product) {
-				return typeof product === "string" && product.trim() !== "";
-			}) : [];
-		} catch (error) {
-			return [];
-		}
-	}
-
 	function compactCode(value) {
 		return normalize(value).replace(/[-\s]/g, "");
 	}
 
-	function rowSkus(row) {
-		var skus = row.getAttribute("data-library-skus");
-		return skus ? Object.entries(JSON.parse(skus)).map(function (entry) {
-			return { code: compactCode(entry[0]), product: entry[1] };
-		}) : [];
+	var index = [];
+	var questions = [];
+	var documents = [];
+
+	function addRow(card, row, position) {
+		var doc = card.kind === "document";
+		if (doc) {
+			row.classList.add("linker-library-doc");
+			row.setAttribute("data-library-item", "");
+			var pdf = row.querySelector("a");
+			pdf.classList.add("linker-library-dl", "linker-library-doc-title");
+			pdf.dataset.docKind = row.dataset.t;
+			pdf.dataset.docBrand = card.title;
+		}
+		var title = row.querySelector(".linker-library-qa-q, .linker-library-doc-title");
+		row.dataset.libraryPosition = position;
+		row.dataset.libraryOrder = index.length;
+		var hit = {
+			el: row, card: card, order: index.length, kind: card.kind, type: row.dataset.t || "",
+			group: card.title, product: (row.querySelector(".linker-library-qa-product") || {}).textContent || "",
+			title: title ? title.textContent : row.textContent, text: row.textContent, products: [], skus: [],
+		};
+		index.push(hit);
+		(doc ? documents : questions).push(hit);
+	}
+	cards.forEach(function (card) { card.rows.forEach(function (row, pos) { addRow(card, row, pos); }); });
+	var fullFaqCount = cards.filter(function (card) { return card.kind !== "document"; }).reduce(function (n, card) { return n + (card.total || card.rows.length); }, 0);
+	var totals = { faq: fullFaqCount, documents: documents.length, all: fullFaqCount + documents.length };
+
+	function addAnswer(card, answer) {
+		var row = document.createElement("details");
+		row.className = "linker-library-qa";
+		row.setAttribute("data-library-item", "");
+		row.innerHTML = '<summary class="linker-library-qa-head"><span class="linker-library-qa-text"><span class="linker-library-qa-product"></span><span class="linker-library-qa-q"></span></span></summary><div class="linker-library-qa-a"><p></p><p class="linker-library-qa-source"><a></a></p></div>';
+		row.querySelector(".linker-library-qa-product").textContent = answer.product;
+		row.querySelector(".linker-library-qa-q").textContent = answer.question;
+		row.querySelector(".linker-library-qa-a p").textContent = answer.answer;
+		var reference = row.querySelector(".linker-library-qa-source");
+		reference.firstChild.href = answer.url;
+		reference.firstChild.textContent = answer.product;
+		if (answer.source) {
+			var source = document.createElement("a");
+			source.href = answer.source_url;
+			source.textContent = answer.source;
+			source.dataset.docKind = "document";
+			source.dataset.docBrand = card.title;
+			reference.append(" — ", source);
+		}
+		addRow(card, row, card.rows.length);
+		card.rows.push(row);
+		card.rowsWrap.insertBefore(row, card.pager);
 	}
 
-	var index = [];
-	cards.forEach(function (card) {
-		card.rows.forEach(function (row, position) {
-			var title = row.querySelector(".linker-library-qa-q, .linker-library-doc-title");
-			var skus = rowSkus(row);
-			var products = Array.from(new Set(rowProducts(row).concat(skus.map(function (sku) { return sku.product; }))));
-			row.setAttribute("data-library-position", String(position));
-			row.setAttribute("data-library-order", String(index.length));
-			index.push({
-				el: row,
-				card: card,
-				order: index.length,
-				kind: card.kind,
-				type: row.getAttribute("data-library-type") || "",
-				group: card.title,
-				product: (row.querySelector(".linker-library-qa-product") || {}).textContent || "",
-				title: title ? title.textContent : row.textContent,
-				text: row.textContent + " " + products.join(" "),
-				products: products,
-				skus: skus,
+	function loadIndex() {
+		if (indexRequest) return indexRequest;
+		indexRequest = scope.fetch(config.indexUrl, {credentials: "omit"}).then(function (response) {
+			if (!response.ok) throw new Error(String(response.status));
+			return response.json();
+		}).then(function (payload) {
+			documents.forEach(function (hit) {
+				var link = hit.el.querySelector(".linker-library-dl");
+				var names = payload.skus[link.href] || [];
+				hit.products = names;
+				hit.skus = names.map(function (name) { return {code: compactCode(name), product: name}; });
+				hit.text += " " + names.join(" ");
 			});
+			cards.forEach(function (card) {
+				(payload.extraFaqs[card.id] || []).forEach(function (answer) { addAnswer(card, answer); });
+			});
+			indexReady = true;
+			applySearch();
+			return true;
+		}).catch(function () {
+			indexRequest = null;
+			if (resultCount) resultCount.textContent = label("indexError");
+			return false;
 		});
-	});
-	var questions = index.filter(function (hit) {
-		return hit.kind !== "document";
-	});
-	var documents = index.filter(function (hit) {
-		return hit.kind === "document";
-	});
-	var totals = {
-		faq: questions.length,
-		documents: documents.length,
-		all: questions.length + documents.length,
-	};
+		return indexRequest;
+	}
 
 	/* ---------- small helpers ---------- */
 
@@ -422,7 +457,6 @@
 			covers.textContent = label("coversProduct").replace("%s", function () { return product; });
 		}
 		mark(clone, query);
-		prepareThumbnails(clone);
 		return clone;
 	}
 
@@ -486,7 +520,7 @@
 
 	function setTab(tab, options) {
 		var next = tab === "documents" ? "documents" : "faq";
-		var moved = next !== state.tab;
+		
 		var activePanel;
 		state.tab = next;
 		tabs.forEach(function (element) {
@@ -495,7 +529,7 @@
 			element.tabIndex = on ? 0 : -1;
 		});
 		panels.forEach(function (panel) {
-			panel.hidden = panel.getAttribute("data-library-panel") !== next || !!state.q.trim();
+			panel.hidden = !!state.q.trim();
 			if (panel.getAttribute("data-library-panel") === next) {
 				activePanel = panel;
 			}
@@ -516,7 +550,7 @@
 			state.searchPage = 1;
 			renderSearch();
 		}
-		if (moved && (!options || options.reveal !== false)) {
+		if (options && options.url && options.reveal !== false) {
 			// The pinned tab bar's rect no longer locates the content's start.
 			// Reveal the new non-sticky list only when its start is offscreen.
 			revealReaderStart(state.q.trim() ? resultsHost() : activePanel);
@@ -578,7 +612,8 @@
 
 	function renderCard(card) {
 		var rows = visibleRows(card);
-		var window_ = paginate(rows, state.pages[card.id] || 1, pageSize);
+		var size = card.kind === "answer" ? (config.faqPageSize || pageSize) : card.kind === "trade" ? Math.max(1, rows.length) : pageSize;
+		var window_ = paginate(rows, state.pages[card.id] || 1, size);
 		state.pages[card.id] = window_.page;
 		var shown = {};
 		window_.items.forEach(function (row) {
@@ -592,8 +627,9 @@
 				row.setAttribute("hidden", "");
 			}
 		});
-		countOf(card.count, rows.length);
-		renderPager(card, window_.page, window_.pages);
+		var count = card.kind === "answer" && !indexReady ? card.total || rows.length : rows.length;
+		countOf(card.count, count);
+		renderPager(card, window_.page, Math.max(1, Math.ceil(count / size)));
 		if (card.empty) {
 			card.empty.hidden = rows.length > 0 || card.kind !== "document";
 		}
@@ -607,6 +643,7 @@
 
 	function setType(type) {
 		state.type = type || "all";
+		updateFilterCounts(state.q);
 		// The rows carry `data-library-type` too (it is what they are filtered
 		// by); aria-pressed is the chips' alone, so the selector is scoped to
 		// the container the fragments print them in.
@@ -617,8 +654,9 @@
 			if (card.kind !== "document") {
 				return;
 			}
+			card.el.hidden = state.brand !== "all" && card.brand !== state.brand;
 			card.rows.forEach(function (row) {
-				var on = state.type === "all" || row.getAttribute("data-library-type") === state.type;
+				var on = state.type === "all" || row.dataset.t === state.type;
 				if (on) {
 					row.removeAttribute("data-library-filtered");
 				} else {
@@ -673,7 +711,7 @@
 	}
 
 	function matchesType(hit) {
-		return hit.kind !== "document" || state.type === "all" || hit.type === state.type;
+		return hit.kind !== "document" || ((state.type === "all" || hit.type === state.type) && (state.brand === "all" || hit.card.brand === state.brand));
 	}
 
 	/** Type counts describe the current query before choosing a document type. */
@@ -687,7 +725,14 @@
 		slice.call(filters.querySelectorAll("button[data-library-type]")).forEach(function (chip) {
 			var type = chip.getAttribute("data-library-type");
 			countOf(chip.querySelector(".linker-library-n"), hits.filter(function (hit) {
-				return type === "all" || hit.type === type;
+				return (type === "all" || hit.type === type) && (state.brand === "all" || hit.card.brand === state.brand);
+			}).length);
+		});
+		slice.call(filters.querySelectorAll("button[data-library-brand]")).forEach(function (chip) {
+			var brand = chip.dataset.libraryBrand;
+			chip.setAttribute("aria-pressed", String(brand === state.brand));
+			countOf(chip.querySelector(".linker-library-n"),hits.filter(function (hit) {
+				return (brand === "all" || hit.card.brand === brand) && (state.type === "all" || hit.type === state.type);
 			}).length);
 		});
 	}
@@ -953,7 +998,7 @@
 		}
 		applySearch();
 		setTab("faq", { url: true });
-		state.pages[hit.card.id] = Math.floor(position_ / pageSize) + 1;
+		state.pages[hit.card.id] = Math.floor(position_ / (hit.kind === "answer" ? config.faqPageSize || pageSize : pageSize)) + 1;
 		renderCard(hit.card);
 		state.open[hit.order] = true;
 		hit.el.open = true;
@@ -1035,6 +1080,8 @@
 	/** Native hash/history navigation selects content without replacing history. */
 	function restoreLocation() {
 		state.q = new URLSearchParams(scope.location.search).get("q") || "";
+		state.brand = brandFromLocation();
+		if (state.q) loadIndex();
 		if (input) {
 			input.value = state.q;
 		}
@@ -1088,36 +1135,6 @@
 
 	/* ---------- wiring ---------- */
 
-	/** Every source and search clone owns its own image readiness listeners. */
-	function prepareThumbnails(container) {
-		slice.call(container.querySelectorAll(".linker-library-thumb img")).forEach(function (image) {
-			if (preparedThumbnails.has(image)) {
-				return;
-			}
-			preparedThumbnails.add(image);
-			var tile = image.parentNode;
-			var shown = function () {
-				image.hidden = false;
-				tile.classList.remove("is-type");
-				tile.classList.add("has-src", "has-img");
-			};
-			var failed = function () {
-				image.hidden = true;
-				tile.classList.remove("has-img", "has-src");
-				tile.classList.add("is-type");
-			};
-			image.addEventListener("load", shown, { once: true });
-			image.addEventListener("error", failed, { once: true });
-			if (image.complete) {
-				if (image.naturalWidth) {
-					shown();
-				} else {
-					failed();
-				}
-			}
-		});
-	}
-
 	function prepare() {
 		cards.forEach(function (card) {
 			if (card.kind !== "document") {
@@ -1129,7 +1146,6 @@
 			card.empty.hidden = true;
 			card.rowsWrap.appendChild(card.empty);
 		});
-		prepareThumbnails(root);
 	}
 
 	function movedPage(list, raw) {
@@ -1140,6 +1156,7 @@
 	function bind() {
 		if (input) {
 			input.addEventListener("input", function () {
+				loadIndex();
 				var value = input.value;
 				if (value !== state.q) {
 					state.searchPage = 1;
@@ -1150,6 +1167,7 @@
 				applySearch();
 			});
 			input.addEventListener("focusin", function () {
+				loadIndex();
 				if (state.q.trim() && !state.suggestOpen) {
 					state.suggestOpen = true;
 					renderSuggestions();
@@ -1237,6 +1255,12 @@
 				setTab(tab.getAttribute("data-library-tab"), { url: true });
 				return;
 			}
+			var brand = target.closest("button[data-library-brand]");
+			if (brand) {
+				state.brand = brand.dataset.libraryBrand;
+				setType(state.type);
+				return;
+			}
 			var chip = target.closest("[data-library-type]");
 			if (chip && chip.tagName === "BUTTON") {
 				event.preventDefault();
@@ -1248,6 +1272,14 @@
 				event.preventDefault();
 				var list = page.getAttribute("data-library-list");
 				var next = movedPage(list, page.getAttribute("data-library-page"));
+				if (next > 1 && !indexReady && list.startsWith("linker-library-answers-")) {
+					loadIndex().then(function (ok) {
+						if (!ok) return;
+						var pager = scope.document.getElementById(list);
+						pager.querySelector('[data-library-page="' + next + '"]')?.click();
+					});
+					return;
+				}
 				if (list === "search") {
 					state.searchPage = next;
 					renderSearch();
@@ -1348,6 +1380,8 @@
 	}
 
 	function start() {
+		state.brand = brandFromLocation();
+		if (state.q) loadIndex();
 		root.classList.add("is-enhanced");
 		if (search) {
 			search.hidden = false;
