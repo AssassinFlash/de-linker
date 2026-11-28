@@ -63,7 +63,7 @@ def test_noindex_and_unclassified_pages_do_not_require_schema() -> None:
     assert all(item.kind != "structured-data" for item in result.findings)
 
 
-def test_the_indexable_library_requires_faqpage() -> None:
+def test_the_indexable_library_requires_catalog_and_faq() -> None:
     library = page("https://de-linker.com/de/faq-dokumente/")
 
     result = audit_module.audit({library.url: library}, {})
@@ -72,7 +72,7 @@ def test_the_indexable_library_requires_faqpage() -> None:
         (
             "structured-data",
             library.url,
-            "missing required type(s): BreadcrumbList, CollectionPage, FAQPage",
+            "missing required type(s): BreadcrumbList, CollectionPage, DataCatalog, FAQPage",
         )
     ]
 
@@ -221,7 +221,7 @@ def test_localized_journal_and_faq_hubs_require_breadcrumbs() -> None:
         url = "https://de-linker.com" + path
         nodes = [{"@type": "CollectionPage", "url": url}]
         if "faq" in path:
-            nodes.append({"@type": "FAQPage"})
+            nodes.extend([{"@type": "FAQPage"}, {"@type": "DataCatalog"}])
         hub = page(url, jsonld=({"@graph": nodes},))
         assert [
             item.detail for item in audit_module.audit({url: hub}, {}).findings

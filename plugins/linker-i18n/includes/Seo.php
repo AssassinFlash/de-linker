@@ -34,7 +34,7 @@ final class Seo {
 		}
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Match the public request path without rendering it.
 		$path = explode( '?', wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), 2 )[0];
-		if ( preg_match( '~^/(?:wp-json|wp-admin|\.well-known)(?:/|$)|^/wp-(?:login|register)\.php(?:/|$)|\.(?:xml|xsl|pdf|ico|txt|json)$~i', $path )
+		if ( preg_match( '~^/(?:wp-json|wp-admin|\.well-known)(?:/|$)|^/wp-(?:login|register)\.php(?:/|$)|\.(?:xml|xsl|pdf|csv|ico|txt|json)$~i', $path )
 			|| get_query_var( 'seopress_sitemap' ) || get_query_var( 'seopress_cpt' ) || get_query_var( 'seopress_sitemap_xsl' ) ) {
 			return $headers;
 		}

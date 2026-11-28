@@ -45,6 +45,7 @@ jobs:
           summary.write_text(
               f"### Cache Warm Summary\n"
               f"- Public cached URLs warmed: **{len(report.get('public', {}))}**\n"
+              f"- Public PDFs/CSVs warmed: **{len(report['documents'])}**\n"
               f"- Dynamic uncached probes: **{len(report.get('dynamic', {}))}**\n"
               f"- Failures: **{len(report.get('failed', []))}**\n"
           )

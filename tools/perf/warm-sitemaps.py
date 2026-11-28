@@ -1,4 +1,4 @@
-"""Warm the six public sitemaps after a LiteSpeed purge and read the cache back."""
+"""Warm the HTML and public document sitemaps and verify LiteSpeed cache hits."""
 
 from __future__ import annotations
 
@@ -17,6 +17,12 @@ from urllib.request import Request, urlopen
 from xml.etree.ElementTree import fromstring
 
 SITEMAPS = ("page", "product", "product_cat", "product_brand", "category", "post")
+PDF_SITEMAP = "pdf"
+TOOLKIT_PATH = "/downloads/engineering-toolkit/"
+TOOLKIT_CSVS = (
+    TOOLKIT_PATH + "linker-load-profile-template-15min-en.csv",
+    TOOLKIT_PATH + "linker-vorlage-lastgang-15min-de.csv",
+)
 PAGINATED = (
     "/products/page/2/",
     "/products/page/3/",
@@ -81,14 +87,30 @@ def get(url: str, *, read_body: bool = False) -> tuple[dict[str, str | int], byt
     except HTTPError as error:
         response = error
     with response:
-        body = response.read()
+        if read_body:
+            body = response.read()
+        else:
+            while response.read(64 * 1024):
+                pass
+            body = b""
         return {
             "url": response.geturl(),
             "status": response.status,
             "cache": response.headers.get("X-LiteSpeed-Cache", ""),
             "server_policy": response.headers.get("X-LiteSpeed-Cache-Control", ""),
             "browser_policy": response.headers.get("Cache-Control", ""),
-        }, body if read_body else b""
+        }, body
+
+
+def sitemap_links(url: str, kind: str) -> list[str]:
+    result, body = get(url, read_body=True)
+    if result["status"] != 200 or result["url"] != url:
+        raise ValueError(f"Invalid sitemap response for {url}: {result}")
+    return [
+        node.text.strip()
+        for node in fromstring(body).findall(f"{{*}}{kind}/{{*}}loc")
+        if node.text
+    ]
 
 
 def main() -> None:
@@ -100,23 +122,31 @@ def main() -> None:
     )
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--delay-ms", type=int, default=0)
+    parser.add_argument("--pdf-limit", type=int, default=24, help="OEM PDF sample size; 0 warms all PDFs")
     args = parser.parse_args()
     if args.workers < 1 or args.delay_ms < 0:
         parser.error("--workers must be positive and --delay-ms must be nonnegative")
     site = args.site.rstrip("/")
-    maps: dict[str, list[str]] = {}
-    for name in SITEMAPS:
-        url = f"{site}/{name}-sitemap1.xml"
-        result, body = get(url, read_body=True)
-        if result["status"] != 200:
-            raise ValueError(f"{url} returned {result['status']}")
-        maps[name] = [
-            node.text.strip()
-            for node in fromstring(body).findall("{*}url/{*}loc")
-            if node.text
-        ]
-        if not maps[name]:
-            raise ValueError(f"{url} contains no page URLs")
+    if args.pdf_limit < 0:
+        parser.error("--pdf-limit must be nonnegative")
+    index = sitemap_links(f"{site}/sitemaps.xml", "sitemap")
+    expected = {f"{site}/{name}-sitemap1.xml" for name in (*SITEMAPS, PDF_SITEMAP)}
+    if set(index) != expected or len(index) != len(expected):
+        raise ValueError("Expected the six HTML sitemaps and the public PDF sitemap")
+    maps = {name: sitemap_links(f"{site}/{name}-sitemap1.xml", "url") for name in SITEMAPS}
+    if not all(maps.values()):
+        raise ValueError("Empty HTML sitemap")
+    pdf_map = f"{site}/{PDF_SITEMAP}-sitemap1.xml"
+    pdfs = sitemap_links(pdf_map, "url")
+    for url in pdfs:
+        parsed = urlsplit(url)
+        if parsed[:2] != urlsplit(site)[:2] or not parsed.path.lower().endswith(".pdf") or parsed.query or parsed.fragment:
+            raise ValueError(f"Invalid PDF sitemap location: {url}")
+    toolkit = [url for url in pdfs if url.startswith(site + TOOLKIT_PATH)]
+    if len(set(toolkit)) != 6 or len(pdfs) != len(set(pdfs)):
+        raise ValueError("Expected six toolkit PDFs and unique PDF locations")
+    oem = [url for url in pdfs if not url.startswith(site + TOOLKIT_PATH)]
+    documents = toolkit + [site + path for path in TOOLKIT_CSVS] + (oem[:args.pdf_limit] if args.pdf_limit else oem)
     public = dict.fromkeys(url for urls in maps.values() for url in urls)
     public.update(dict.fromkeys(site + path for path in (*PAGINATED, *CONTACT)))
     if any(urlsplit(url)[:2] != urlsplit(site)[:2] for url in public):
@@ -125,7 +155,7 @@ def main() -> None:
     redirects = {site + path: site + target for path, target in RETIRED.items()}
     for url in (*private, *redirects):
         public.pop(url, None)
-    urls = list(public) + list(private) + list(redirects)
+    urls = list(public) + list(private) + list(redirects) + [pdf_map] + documents
 
     def request(url: str, *, discover: bool = False) -> tuple[dict[str, str | int], set[str]]:
         path = urlsplit(url).path
@@ -165,7 +195,7 @@ def main() -> None:
         expected = redirects.get(url, url)
         attempts = (first[url], result)
         ok = all(read["status"] == 200 and read["url"] == expected for read in attempts)
-        if url in public:
+        if url in public or url in documents or url == pdf_map:
             ok = ok and result["cache"] == "hit"
         else:
             ok = ok and all(
@@ -184,7 +214,9 @@ def main() -> None:
     dynamic_reads = reads(private)
     retired_reads = reads(redirects)
     report = {
-        "sitemaps": maps,
+        "sitemaps": {**maps, PDF_SITEMAP: pdfs},
+        "pdf_sitemap": reads([pdf_map])[pdf_map],
+        "documents": reads(documents),
         "public": public_reads,
         "dynamic": dynamic_reads,
         "retired": retired_reads,
@@ -196,6 +228,7 @@ def main() -> None:
     print(
         f"{len(public_reads)} public cache reads; {len(dynamic_reads)} dynamic routes; {len(retired_reads)} retired drafts; {len(failed)} failures"
     )
+    print(f"{len(documents)} public PDF/CSV cache reads")
     if failed:
         raise SystemExit(1)
 

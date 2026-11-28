@@ -37,8 +37,9 @@ final class Assets {
 			self::HANDLE,
 			'window.linkerTurnstileConfig=' . wp_json_encode(
 				array(
-					'siteKey'  => $this->configuration->site_key,
-					'language' => str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en',
+					'siteKey'      => $this->configuration->site_key,
+					'language'     => str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en',
+					'supportEmail' => is_page( array( 'faq-download', 'faq-dokumente' ) ) ? '' : ( new \Linker\Commerce\Settings\Options() )->team_mailbox(),
 				),
 				JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
 			) . ';',

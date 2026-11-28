@@ -340,6 +340,7 @@ final class SeoTest extends TestCase {
 			array( '/de', '', 'de-DE' ),
 			array( '/?linker_public_document=1', 'en', '' ),
 			array( '/wp-content/uploads/technical.pdf', 'de', '' ),
+			array( '/downloads/engineering-toolkit/linker-vorlage-lastgang-15min-de.csv', 'en', '' ),
 			array( '/page-sitemap1.xml', 'en', '' ),
 			array( '/wp-login.php', 'en', '' ),
 			array( '/wp-admin/', 'de', '' ),

@@ -152,6 +152,9 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'pll_rel_hreflang_attributes', array( new AnyInstance( PageIndexing::class ), 'alternates' ), 50 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_canonical_on_noindex', array( new AnyInstance( PageIndexing::class ), 'canonical' ), 50 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_canonical', array( new AnyInstance( PageIndexing::class ), 'canonical_tag' ), 20 ); // @phpstan-ignore argument.type
+		foreach ( array( \Linker\Commerce\Storefront\PdfSitemap::class, \Linker\Commerce\Products\ToolkitEndpoint::class ) as $endpoint ) {
+			WP_Mock::expectFilterAdded( 'do_parse_request', array( new AnyInstance( $endpoint ), 'serve' ), 1 ); // @phpstan-ignore argument.type
+		}
 		$sync = new AnyInstance( \Linker\Commerce\Storefront\SitemapSync::class );
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_urlset', array( $sync, 'xmlns' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_img', array( $sync, 'page_images' ), 20, 2 ); // @phpstan-ignore argument.type

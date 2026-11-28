@@ -231,8 +231,16 @@ final class SitemapSyncTest extends TestCase {
 				$this->assert_links( $url, $links );
 				$this->assert_date( $url, $lang );
 			}
+			WP_Mock::userFunction( 'wp_cache_supports' )->with( 'flush_runtime' )->andReturn( true );
+			WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
+			WP_Mock::userFunction( 'get_posts' )->andReturn( array() );
+			WP_Mock::userFunction( 'get_option' )->with( 'linker_publication_document_hashes_v1', array() )->andReturn( array() );
+			WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( 'https://linker.test/' );
+			WP_Mock::passthruFunction( 'esc_xml' );
 			$index = $sync->index_xml( "<sitemapindex><sitemap><loc>https://linker.test/$tax-sitemap1.xml</loc>\n</sitemap></sitemapindex>" );
 			self::assertStringContainsString( '<lastmod>2026-11-25T12:00:00+00:00</lastmod>', $index );
+			self::assertSame( 1, substr_count( $index, 'https://linker.test/pdf-sitemap1.xml</loc><lastmod>' ) );
+			self::assertSame( $index, $sync->index_xml( $index ) );
 		}
 	}
 
@@ -315,6 +323,7 @@ final class SitemapSyncTest extends TestCase {
 			}
 		}
 		$sync->post_changed( 7, new \WP_Post( (object) array( 'post_type' => 'page' ) ) );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.pdf.sitemap' );
 		$sync->product_changed();
 		$this->assertSame( 900, $sync->cache_duration( 43200 ) );
 		$this->assertSame( 60, $sync->cache_duration( 60 ) );

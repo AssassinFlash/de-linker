@@ -142,10 +142,12 @@ msgstr ""
 msgid "Review account"
 msgstr ""
 
+#. translators: %s: public team email address.
 #: build/protection.js:1
+#, javascript-format
 msgid ""
 "Verification could not be completed. No request has been sent in this "
-"attempt. Please try again or email sales@de-linker.com."
+"attempt. Please try again or email %s."
 msgstr ""
 
 #: build/protection.js:1
@@ -4850,7 +4852,7 @@ msgid ""
 "attempt. Your entries are still here. Please try again or email %s."
 msgstr ""
 
-#: includes/Protection/Business.php:183
+#: build/protection.js:1 includes/Protection/Business.php:183
 msgid ""
 "Verification could not be completed. No request has been sent in this "
 "attempt. Your entries are still here. Please try again."

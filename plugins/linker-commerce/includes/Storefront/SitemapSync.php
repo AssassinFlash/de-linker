@@ -317,7 +317,7 @@ final class SitemapSync {
 	 * @param string $xml Native XML index.
 	 */
 	public function index_xml( string $xml ): string {
-		return (string) preg_replace_callback(
+		$xml = (string) preg_replace_callback(
 			'~/(category|product_cat|product_brand)-sitemap[0-9]+\.xml</loc>(\s*)</sitemap>~',
 			function ( array $matches ): string {
 				$date = max( $this->dates()->latest( $matches[1], 0, 'en' ), $this->dates()->latest( $matches[1], 0, 'de' ) );
@@ -325,6 +325,14 @@ final class SitemapSync {
 			},
 			$xml
 		);
+		if ( str_contains( $xml, '</sitemapindex>' ) && ! str_contains( $xml, PdfSitemap::NAME ) ) {
+			$lastmod = ( new PdfSitemap() )->latest_lastmod();
+			if ( '' !== $lastmod ) {
+				$entry = '<sitemap><loc>' . esc_xml( PageUrls::root() . PdfSitemap::NAME ) . '</loc><lastmod>' . esc_xml( $lastmod ) . '</lastmod></sitemap>';
+				$xml   = str_replace( '</sitemapindex>', $entry . "\n</sitemapindex>", $xml );
+			}
+		}
+		return $xml;
 	}
 
 	/**
@@ -372,6 +380,9 @@ final class SitemapSync {
 	 * @param string $type Post type in this sitemap.
 	 */
 	private function invalidate( string $type ): void {
+		if ( 'product' === $type ) {
+			do_action( 'litespeed_purge', 'LK.pdf.sitemap' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Invalidate the LiteSpeed PDF sitemap tag.
+		}
 		$this->clear_dates();
 		$max = (int) apply_filters( 'seopress_sitemaps_max_posts_per_sitemap', 1000 ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Reuse the page size that SEOPress passes to its index query.
 		foreach ( array_unique( array( 1000, $max ) ) as $size ) {

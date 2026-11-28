@@ -159,14 +159,16 @@ msgstr "Schließen"
 msgid "Review account"
 msgstr "Konto prüfen"
 
+#. translators: %s: public team email address.
 #: build/protection.js:1
+#, javascript-format
 msgid ""
 "Verification could not be completed. No request has been sent in this "
-"attempt. Please try again or email sales@de-linker.com."
+"attempt. Please try again or email %s."
 msgstr ""
 "Die Prüfung konnte nicht abgeschlossen werden. Bei diesem Versuch wurde noch "
 "keine Anfrage gesendet. Bitte versuchen Sie es erneut oder schreiben Sie an "
-"sales@de-linker.com."
+"%s."
 
 #: build/protection.js:1
 msgid "Verifying, please wait…"
@@ -5209,7 +5211,7 @@ msgstr ""
 "wurde noch keine Anfrage gesendet. Ihre Angaben bleiben erhalten. Sie können "
 "es erneut versuchen oder uns unter %s schreiben."
 
-#: includes/Protection/Business.php:183
+#: build/protection.js:1 includes/Protection/Business.php:183
 msgid ""
 "Verification could not be completed. No request has been sent in this "
 "attempt. Your entries are still here. Please try again."

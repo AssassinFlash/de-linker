@@ -278,7 +278,7 @@ def required_types(url: str) -> frozenset[str]:
     """Structured data required for this indexable customer page type."""
     path = urllib.parse.urlsplit(url).path
     if path in {"/faq-download/", "/de/faq-dokumente/"}:
-        return frozenset({"CollectionPage", "FAQPage", "BreadcrumbList"})
+        return frozenset({"CollectionPage", "FAQPage", "BreadcrumbList", "DataCatalog"})
     if path in {"/blog/", "/de/blog/"}:
         return frozenset({"CollectionPage", "BreadcrumbList"})
     if path.startswith(("/category/", "/de/kategorie/")):

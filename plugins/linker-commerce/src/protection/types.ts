@@ -3,6 +3,7 @@ export type FormAction =
 
 export interface WidgetConfig {
 	siteKey: string;
+	supportEmail: string;
 	language: 'en' | 'de';
 }
 
