@@ -422,7 +422,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		foreach ( array( 'partials/footer.html', 'partials/de/footer.html', 'inquiry/fields.html' ) as $path ) {
 			$source = Tokens::read( $templates . $path );
 			// Only run the address-bearing fragment; other shortcodes require a page or cart.
-			if ( ! preg_match( '/<(?:div class="footer-email-card"|p class="linker-inquiry-promise")>.*?<\/(?:div|p)>/', $source, $fragment ) ) {
+			if ( ! preg_match( '/<(?:div class="footer-email-card">(?=<a href="mailto:)|p class="linker-inquiry-promise">).*?<\/(?:div|p)>/', $source, $fragment ) ) {
 				$this->fail( 'Missing contact fragment in ' . $path );
 			}
 			$html = do_shortcode( $fragment[0] );
