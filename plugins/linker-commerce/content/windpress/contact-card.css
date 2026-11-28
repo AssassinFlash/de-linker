@@ -21,6 +21,11 @@ html[lang^="de"] #tv-contact-v1 p {
 	display: none;
 }
 
+/* Reserve the verifier's rendered row before its frame arrives. */
+#tv-contact-v1 .linker-contact-form [data-linker-turnstile="contact"] {
+	min-height: 72px;
+}
+
 @media (min-width: 801px) {
 	/* At the existing desktop boundary, the 42px story title splits the final
 	 * punctuation of Energieprojekts.; the 38px boxed afterword changes from

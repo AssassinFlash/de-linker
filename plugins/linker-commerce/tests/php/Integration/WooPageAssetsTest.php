@@ -101,7 +101,7 @@ final class WooPageAssetsTest extends IntegrationTestCase {
 		$scripts->do_items( array( 'wc-order-attribution' ), 1 );
 		$tags = new \WP_HTML_Tag_Processor( (string) ob_get_clean() );
 		foreach ( array( 'sourcebuster-js-js', 'wc-order-attribution-js' ) as $id ) {
-			while ( $tags->next_tag( 'script' ) && $tags->get_attribute( 'id' ) !== $id ) {
+			while ( $tags->next_tag( array( 'tag_name' => 'SCRIPT' ) ) && $tags->get_attribute( 'id' ) !== $id ) {
 				continue;
 			}
 			$this->assertSame( $id, $tags->get_attribute( 'id' ) );
