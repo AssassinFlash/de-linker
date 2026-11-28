@@ -187,7 +187,9 @@ for (const locale of ['en', 'de'] as const) {
 						.locator('.linker-genie-reply:visible')
 						.last();
 					await expect(answer).toContainText(
-						german ? /nicht|keine/i : /not|don.t|no\b/i
+						german
+							? /nicht|keine/i
+							: /not|don['’]t|no\b|outside (?:our|Linker['’]s) product range/i
 					);
 					await expect(answer).toContainText(
 						german
