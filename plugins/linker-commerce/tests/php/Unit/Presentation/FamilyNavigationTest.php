@@ -206,6 +206,21 @@ final class FamilyNavigationTest extends TestCase {
 		self::assertSame( 'Systems | Linker', $nav->paged_title( 'Systems | Linker' ) );
 	}
 
+	/** SEOPress counts individual products; public paging groups them into families. */
+	public function test_head_links_end_at_the_last_family_page(): void {
+		$this->base        = 'http://linker.test/de/marke/goodwe/';
+		$this->native_page = 1;
+		$next              = '<link rel="next" href="http://linker.test/de/marke/goodwe/seite/2/">';
+		$prev              = '<link rel="prev" href="http://linker.test/de/marke/goodwe/">';
+		$navigation        = $this->navigation( ProductShortcodes::PER_PAGE_FAMILIES + 1 );
+		self::assertSame( $next, $navigation->page_links( '' ) );
+		self::assertSame( '', $this->navigation( 1 )->page_links( $next ) );
+		$this->native_page = 2;
+		self::assertSame( $prev, $navigation->page_links( $prev . $next ) );
+		$this->excluded['is_search'] = true;
+		self::assertSame( $next, $navigation->page_links( $next ) );
+	}
+
 	/** SEOPress applies the same filter to its explicit custom-term element. */
 	public function test_native_custom_term_canonical_remains_authoritative(): void {
 		$_GET['product-page'] = '2';

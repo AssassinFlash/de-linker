@@ -187,6 +187,7 @@ final class ModuleTest extends TestCase {
 		$family_hooks = array(
 			array( 'action', 'template_redirect', 'redirect', 0 ),
 			array( 'filter', 'seopress_titles_canonical', 'canonical', 10 ),
+			array( 'filter', 'seopress_titles_paged_rel', 'page_links', 10 ),
 			array( 'filter', 'pll_translation_url', 'translated_page', 55 ),
 			array( 'filter', 'seopress_titles_title', 'paged_title', 50 ),
 			array( 'filter', 'pre_get_document_title', 'paged_title', 50 ),

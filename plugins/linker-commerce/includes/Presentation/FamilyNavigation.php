@@ -40,6 +40,7 @@ final class FamilyNavigation {
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'redirect' ), 0 );
 		add_filter( 'seopress_titles_canonical', array( $this, 'canonical' ) );
+		add_filter( 'seopress_titles_paged_rel', array( $this, 'page_links' ) );
 		add_filter( 'pll_translation_url', array( $this, 'translated_page' ), 55, 2 );
 		add_filter( 'seopress_titles_title', array( $this, 'paged_title' ), 50 );
 		add_filter( 'pre_get_document_title', array( $this, 'paged_title' ), 50 );
@@ -125,6 +126,27 @@ final class FamilyNavigation {
 		$page = ( $this->page )();
 		$base = ( $this->base )();
 		return $page->current < 2 ? $canonical : ( str_contains( $base, '?' ) ? '' : '<link rel="canonical" href="' . esc_url( self::page_url( $base, $page->current ) ) . '">' );
+	}
+
+	/**
+	 * Link adjacent family slices in the head using the catalogue pager's bounds.
+	 *
+	 * @param string $html SEOPress links for the native query.
+	 */
+	public function page_links( string $html ): string {
+		if ( ! $this->active() ) {
+			return $html;
+		}
+		$page  = ( $this->page )();
+		$base  = ( $this->base )();
+		$links = '';
+		if ( $page->current > 1 ) {
+			$links .= '<link rel="prev" href="' . esc_url( self::page_url( $base, $page->current - 1 ) ) . '">';
+		}
+		if ( $page->current < $page->last ) {
+			$links .= '<link rel="next" href="' . esc_url( self::page_url( $base, $page->current + 1 ) ) . '">';
+		}
+		return $links;
 	}
 
 	/**
