@@ -38,7 +38,7 @@ final class ModelProfile {
 	public static function cells( int $id, array $r, array $manifest ): array {
 		$de      = Materials::is_de();
 		$figures = $r['figures'];
-		$voltage = $figures['battery_voltage_range_v']['value'] ?? $figures['module_voltage_range_v']['value'] ?? null;
+		$voltage = $figures['battery_voltage_range_v']['value'] ?? $figures['system_operating_voltage_range_v']['value'] ?? null;
 		$cells   = array(
 			( $de ? 'AC-Nennleistung' : 'Rated AC output' ) => self::value( $r['ac_power_kw'], 'kW' ),
 			( $de ? 'Max. PV-Leistung' : 'Max PV input' )  => self::value( $r['pv_input_kw'], 'kWp' ),
@@ -49,6 +49,11 @@ final class ModelProfile {
 			( $de ? 'Batteriespannung' : 'Battery voltage' ) => self::value( $voltage, 'V' ),
 			( $de ? 'Schutzart' : 'Protection' )           => self::value( $figures['ip_rating']['value'] ?? null ),
 		);
+		$cells[ $de ? 'Modulspannung' : 'Module voltage' ] = self::value( $figures['module_voltage_range_v']['value'] ?? null, 'V' );
+		$packs = $figures['modules_per_stack_min']['value'] ?? null;
+		if ( is_numeric( $packs ) && ( $figures['modules_per_stack_max']['value'] ?? null ) === $packs ) {
+			$cells[ $de ? 'Module je Stapel' : 'Modules per stack' ] = (string) $packs;
+		}
 		foreach ( array(
 			'rated_current_a'  => array( $de ? 'Nennstrom' : 'Rated current', 'A' ),
 			'max_current_a'    => array( $de ? 'Strombereich' : 'Current rating', '' ),
@@ -68,8 +73,11 @@ final class ModelProfile {
 		}
 		$links = CompatibilityIndex::for_product( $id, $manifest );
 		if ( $links['compatible'] ) {
-			$is_battery      = 'inverter' === $links['compatible'][0]['role'];
-			$label           = $is_battery ? ( $de ? 'Passende Wechselrichter' : 'Matched inverters' ) : ( $de ? 'Passende Batterien' : 'Matched batteries' );
+			$is_battery = 'inverter' === $links['compatible'][0]['role'];
+			$label      = $is_battery ? ( $de ? 'Passende Wechselrichter' : 'Matched inverters' ) : ( $de ? 'Passende Batterien' : 'Matched batteries' );
+			if ( in_array( 'released_with_accessory', array_column( $links['compatible'], 'verdict' ), true ) ) {
+				$label = $de ? 'Zuordnungen in der Matrix' : 'Pairings in the matrix';
+			}
 			$cells[ $label ] = (string) count( $links['compatible'] );
 		}
 		$sku   = (string) get_post_meta( $r['product_id'], '_sku', true );
@@ -88,7 +96,7 @@ final class ModelProfile {
 				foreach ( $group['rows'] as $row ) {
 					$label = wp_strip_all_tags( $row['label'] );
 					$value = trim( wp_strip_all_tags( $row['value'] . ' ' . $row['unit'] ) );
-					if ( '' !== $label && '' !== $value && mb_strlen( $value ) <= 55 && ! in_array( strtolower( $label ), array( 'model', 'modell', 'brand', 'marke', 'manufacturer', 'hersteller' ), true ) ) {
+					if ( '' !== $label && '' !== $value && mb_strlen( $value ) <= 55 && ! in_array( $value, $cells, true ) && 0 !== strcasecmp( $value, $r['model'] ) && ! in_array( strtolower( $label ), array( 'model', 'modell', 'brand', 'marke', 'manufacturer', 'hersteller' ), true ) ) {
 						$cells[ $label ] ??= $value;
 					}
 					if ( count( $cells ) >= 4 ) {
@@ -151,16 +159,30 @@ final class ModelProfile {
 		$badge     = GridThresholdPairs::badge( $product->get_sku(), Materials::locale() );
 		$figures   = $r['figures'];
 		$mppt      = self::value( $figures['n_mppt']['value'] ?? null );
-		$voltage   = self::value( $figures['battery_voltage_range_v']['value'] ?? $figures['module_voltage_range_v']['value'] ?? null, 'V' );
+		$voltage   = self::value( $figures['battery_voltage_range_v']['value'] ?? $figures['system_operating_voltage_range_v']['value'] ?? null, 'V' );
 		$ip        = self::value( $figures['ip_rating']['value'] ?? null );
 		$sentences = array();
 
 		if ( '' !== $badge ) {
-			$lead   = $badge . ' · ' . $name;
-			$angles = $de
-				? array( 'Vergleichen Sie die AC-Grenzen beider Modelle am Netzanschluss.', 'Die Auslegung berücksichtigt die maximale Scheinleistung am Anschlusspunkt.', 'Für die Wahl der Leistungsstufe zählt auch der Strom am Netzanschluss.', 'Die Vergleichstabelle zeigt, welche AC-Reserve das Schwestermodell bietet.' )
-				: array( 'Compare both models at the grid connection.', 'Size the connection against maximum apparent power.', 'Check the AC current limit when selecting this power step.', 'Compare output headroom with the other model in the series.' );
-			$lead  .= '. ' . $angles[ $pos % 4 ];
+			$frames = $de ? array(
+				'%1$s am Netz. Für den %2$s sind %3$s PV-Leistung und %4$s MPP-Tracker angegeben.',
+				'%1$s für die Netzeinspeisung. Der %2$s nimmt bis zu %3$s PV-Leistung an %4$s Trackern auf.',
+				'%1$s am Netz. Auf der DC-Seite des %2$s stehen %4$s MPP-Tracker für bis zu %3$s PV-Leistung bereit.',
+				'%1$s am AC-Ausgang des %2$s. Die PV-Seite ist auf %3$s an %4$s MPP-Trackern ausgelegt.',
+				'%1$s am Netzanschluss des %2$s. Bis zu %3$s PV-Leistung verteilen sich auf %4$s MPP-Tracker.',
+				'%1$s erreicht der %2$s auf der AC-Seite. Der PV-Generator darf bis zu %3$s leisten, verteilt auf %4$s MPP-Tracker.',
+			) : array(
+				'%1$s at the grid. The %2$s accepts up to %3$s of PV across %4$s trackers.',
+				'%1$s grid export. The %2$s pairs a %3$s PV array limit with %4$s independent MPPT inputs.',
+				'%1$s on the AC side of the %2$s. Its %4$s trackers can take up to %3$s from the PV array.',
+				'%1$s at the AC terminals of the %2$s. Its %4$s MPPT channels handle a PV array of up to %3$s.',
+				'%1$s at the grid terminals of the %2$s. Plan the PV strings for %4$s MPPT inputs and up to %3$s of array power.',
+				'%1$s for grid export with the %2$s. A PV generator rated up to %3$s can feed its %4$s tracking channels.',
+			);
+			$slot   = $pos % 8;
+			$lead   = $pv && $mppt ? sprintf( $frames[ $slot % count( $frames ) ], $badge, $name, $pv, $mppt ) : $badge . ' · ' . $name;
+			$angles = array();
+
 		} elseif ( str_contains( $model, '-STS-' ) && $ac && isset( $figures['rated_current_a']['value'], $figures['max_current_a']['value'] ) ) {
 			$rated  = self::value( $figures['rated_current_a']['value'], 'A' );
 			$max    = self::value( $figures['max_current_a']['value'], 'A' );
@@ -186,12 +208,16 @@ final class ModelProfile {
 			);
 			$lead         = sprintf( $descriptions[ array_search( $model, array( 'GW7K-HCA-20', 'GW11K-HCA-20', 'GW22K-HCA-20' ), true ) ], $name, $ac, $amps );
 			$angles       = array();
+		} elseif ( 'all-in-one-systems' === $r['device_class'] && '' === $pv && $ac && $nominal ) {
+			$lead   = $de ? sprintf( '%s verbindet %s AC-Leistung mit einer Nennenergie von %s im Speicherschrank.', $name, $ac, $nominal )
+				: sprintf( '%s combines %s of AC output with %s of nominal storage capacity in one cabinet.', $name, $ac, $nominal );
+			$angles = $de ? array( 'Die Einbindung erfolgt auf der AC-Seite.' ) : array( 'The cabinet connects on the AC side.' );
 		} elseif ( in_array( $r['device_class'], array( 'inverters', 'all-in-one-systems' ), true ) && '' !== $ac ) {
 			$leads  = $de ? array(
 				'%1$s liefert %2$s AC-Nennleistung.',
 				'Für eine AC-Leistung von %2$s steht der %1$s zur Wahl.',
 				'%1$s eignet sich für einen Anschluss mit %2$s Nennleistung.',
-				'Die %2$s-Leistungsstufe der Serie trägt die Bezeichnung %1$s.',
+				'%1$s ist die Variante mit %2$s AC-Nennleistung.',
 				'%1$s erreicht im Netzbetrieb eine Nennleistung von %2$s.',
 				'%2$s am AC-Ausgang bilden den Auslegungspunkt des %1$s.',
 				'%1$s ist für %2$s AC im Dauerbetrieb ausgelegt.',
@@ -223,16 +249,16 @@ final class ModelProfile {
 				'%1$s stellt %2$s bereit.',
 				'Für die Speicherplanung mit %1$s gelten %2$s.',
 				'Das Speichersystem %1$s bietet %2$s.',
-				'Die Kapazitätsstufe des %1$s beträgt %2$s.',
+				'Für den %1$s weist das Datenblatt %2$s aus.',
 				'%2$s stehen mit dem Batteriespeicher %1$s zur Verfügung.',
 				'Die Auslegung des %1$s basiert auf %2$s.',
 				'%1$s erweitert die Auswahl um eine Speicherstufe mit %2$s.',
 			) : array(
-				'%1$s provides %2$s for storage sizing.',
+				'%1$s provides %2$s for the storage system.',
 				'Plan a battery system around the %1$s with %2$s.',
 				'The %1$s storage unit delivers %2$s.',
-				'With %2$s, the %1$s occupies this capacity step.',
-				'%1$s makes %2$s available to the storage design.',
+				'%1$s stores %2$s for subsequent discharge.',
+				'With the %1$s, storage sizing starts at %2$s.',
 				'Size the storage bank with %2$s from the %1$s.',
 				'The %1$s brings %2$s to the battery installation.',
 			);
@@ -248,16 +274,35 @@ final class ModelProfile {
 				$lead = $first;
 			}
 			foreach ( self::cells( $product->get_id(), $r, $manifest ) as $key => $value ) {
-				$sentences[] = $key . ': ' . $value;
+				if ( ! str_contains( strtolower( $lead ), strtolower( $value ) ) ) {
+					$sentences[] = $key . ': ' . $value;
+				}
+			}
+			foreach ( ( new ProductView() )->spec_groups( $product->get_id() ) as $group ) {
+				foreach ( $group['rows'] as $row ) {
+					$value = trim( wp_strip_all_tags( $row['value'] . ' ' . $row['unit'] ) );
+					if ( '' !== $value && ! str_contains( strtolower( $lead ), strtolower( $value ) ) && mb_strlen( $row['label'] . $value ) <= 35 ) {
+						$sentences[] = wp_strip_all_tags( $row['label'] ) . ': ' . $value;
+					}
+				}
 			}
 
 			$angles = $de ? array( 'Technische Angaben für den Systemanschluss.', 'Details für die Anlagenplanung vergleichen.', 'Schnittstellen für die Einbindung prüfen.', 'Passende Systeme und Einbaudaten prüfen.' )
 				: array( 'Review the model connections for site planning.', 'Compare the details for system integration.', 'Check the interfaces for your installation.', 'Review equipment and mounting requirements.' );
 		}
 		if ( '' !== $badge || in_array( $r['device_class'], array( 'inverters', 'all-in-one-systems' ), true ) ) {
-			$sentences[] = $pv ? ( $de ? 'PV-Eingang bis ' . $pv : 'PV input up to ' . $pv ) : '';
-			$sentences[] = $mppt ? $mppt . ( $de ? ' MPP-Tracker' : ' MPPT trackers' ) : '';
-			$sentences[] = $phase ? $role . ' · ' . $phase : $role;
+			$sentences[] = $pv && '' === $badge ? ( $de ? 'PV-Eingang bis ' . $pv : 'PV input up to ' . $pv ) : '';
+			$sentences[] = $mppt && '' === $badge ? $mppt . ( $de ? ' MPP-Tracker' : ' MPPT trackers' ) : '';
+			if ( $pv || $phase ) {
+				if ( preg_match( '/-(?:EHA|ETA)-G20$/', $model ) ) {
+					$role = $de ? 'ESA-Leistungsmodul' : 'ESA power module';
+				}
+				$sentences[] = $phase ? $role . ' · ' . $phase : $role;
+			}
+			$current = $figures['mppt_max_current_a']['value'] ?? null;
+			if ( is_numeric( $current ) ) {
+				$sentences[] = self::value( $current, 'A' ) . ( $de ? ' je MPP-Tracker' : ' per MPPT input' );
+			}
 			if ( is_numeric( $r['ac_power_kw'] ) && '' === $badge ) {
 				$upper = match ( true ) {
 					$r['ac_power_kw'] <= 6 => 6,
@@ -267,15 +312,22 @@ final class ModelProfile {
 					$r['ac_power_kw'] <= 85 => 85,
 					default => 0,
 				};
-				$sentences[] = $upper ? ( $de ? 'Leistungsbereich bis ' : 'Power band up to ' ) . $upper . ' kW' : ( $de ? 'Leistungsklasse oberhalb von 85 kW' : 'Output class above 85 kW' );
+				$angles[] = $upper ? ( $de ? 'Auswahlklasse bis ' : 'Series tier up to ' ) . $upper . ' kW' : ( $de ? 'Leistungsklasse oberhalb von 85 kW' : 'Output class above 85 kW' );
 			}
 		}
 		$sentences[] = $voltage ? ( $de ? 'Batteriebus ' : 'Battery bus ' ) . $voltage : '';
-		$sentences[] = $nominal ? ( $de ? 'Nennenergie ' : 'Nominal capacity ' ) . $nominal : '';
+		$sentences[] = $nominal && ! str_contains( $lead, $nominal ) ? ( $de ? 'Nennenergie ' : 'Nominal capacity ' ) . $nominal : '';
+		$sentences[] = isset( $figures['module_voltage_range_v']['value'] ) ? ( $de ? 'Modulspannung ' : 'Module voltage ' ) . self::value( $figures['module_voltage_range_v']['value'], 'V' ) : '';
 		$sentences[] = $ip ? ( $de ? 'Schutzart ' : 'Enclosure rating ' ) . $ip : '';
-		$matches     = CompatibilityIndex::for_product( $product->get_id(), $manifest )['compatible'];
-		$count       = count( $matches );
-		if ( $count ) {
+		$modules     = $figures['modules_per_stack_min']['value'] ?? null;
+		if ( is_numeric( $modules ) && ( $figures['modules_per_stack_max']['value'] ?? null ) === $modules ) {
+			$sentences[] = $modules . ' ' . ( $de ? ( 1 === (int) $modules ? 'Modul je Stapel' : 'Module je Stapel' ) : ( 1 === (int) $modules ? 'module per stack' : 'modules per stack' ) );
+		}
+		$matches = CompatibilityIndex::for_product( $product->get_id(), $manifest )['compatible'];
+		$count   = count( $matches );
+		if ( in_array( 'released_with_accessory', array_column( $matches, 'verdict' ), true ) ) {
+			$sentences[] = $count . ( $de ? ' Zuordnungen in der Matrix' : ' pairings listed in the matrix' );
+		} elseif ( $count ) {
 			$inverters   = 'inverter' === $matches[0]['role'];
 			$sentences[] = $count . ' ' . ( $de
 				? ( $inverters ? ( 1 === $count ? 'passender Wechselrichter' : 'passende Wechselrichter' ) : ( 1 === $count ? 'passende Batterie' : 'passende Batterien' ) )
@@ -286,6 +338,7 @@ final class ModelProfile {
 			$offset    = $pos % count( $sentences );
 			$sentences = array_merge( array_slice( $sentences, $offset ), array_slice( $sentences, 0, $offset ) );
 		}
+		$sentences = array_unique( $sentences );
 		if ( $angles ) {
 			$offset = $pos % count( $angles );
 			array_push( $sentences, ...array_slice( $angles, $offset ), ...array_slice( $angles, 0, $offset ) );
