@@ -63,6 +63,7 @@ final class SeriesMatrix {
 			$members = $index->members_for( $group );
 			$ranges  = array();
 			$phases  = array();
+			$voltage = array();
 			$links   = array();
 			foreach ( $members as $pos => $id ) {
 				$r = $index->rating( $id );
@@ -77,6 +78,10 @@ final class SeriesMatrix {
 				if ( is_int( $r['phase'] ) ) {
 					$phases[ $r['phase'] ] = $r['phase'] . ( $de ? '-phasig' : '-phase' );
 				}
+				$band = $r['figures']['battery_voltage_range_v']['value'] ?? $r['figures']['system_operating_voltage_range_v']['value'] ?? null;
+				if ( is_scalar( $band ) && '' !== (string) $band ) {
+					$voltage[ (string) $band ] = Materials::de_number( str_replace( '~', '–', (string) $band ) ) . ' V';
+				}
 				if ( 0 === $pos || '' !== GridThresholdPairs::badge( (string) get_post_meta( $r['product_id'], '_sku', true ), Materials::locale() ) ) {
 					$links[] = '<a href="' . esc_url( (string) get_permalink( $id ) ) . '">' . esc_html( $r['model'] ) . '</a>';
 				}
@@ -85,7 +90,7 @@ final class SeriesMatrix {
 			foreach ( $ranges as $unit => $values ) {
 				$span[] = Materials::de_number( implode( '–', array_unique( array( min( $values ), max( $values ) ) ) ) ) . ' ' . $unit;
 			}
-			$html .= '<tr><th scope="row">' . esc_html( $index->rating( $group )['series'] ) . '</th><td>' . count( $members ) . '</td><td>' . esc_html( $span || $phases ? implode( ' · ', array_merge( $span, array_values( $phases ) ) ) : '—' ) . '</td><td>' . implode( ', ', $links ) . '</td></tr>';
+			$html .= '<tr><th scope="row">' . esc_html( $index->rating( $group )['series'] ) . '</th><td>' . count( $members ) . '</td><td>' . esc_html( $span || $phases || $voltage ? implode( ' · ', array_merge( $span, array_values( $phases ), array_values( $voltage ) ) ) : '—' ) . '</td><td>' . implode( ', ', $links ) . '</td></tr>';
 		}
 		return self::table( $de ? 'Modellserien im Vergleich' : 'Compare model series', $de ? array( 'Serie', 'Anzahl', 'Auslegung', 'Modelle' ) : array( 'Series', 'Count', 'Ratings', 'Models' ), $html );
 	}
@@ -122,6 +127,17 @@ final class SeriesMatrix {
 		}
 		$de   = Materials::is_de();
 		$keys = $de ? array( 'AC-Grenzwert', 'AC-Nennleistung', 'Max. PV-Leistung', 'Nutzbare Energie', 'Nennenergie', 'MPPT', 'Batteriespannung', 'Passende Wechselrichter', 'Passende Batterien', 'Netznorm' ) : array( 'AC limit', 'Rated AC output', 'Max PV input', 'Usable energy', 'Nominal energy', 'MPPT', 'Battery voltage', 'Matched inverters', 'Matched batteries', 'Grid standard' );
+		if ( in_array( $rating['device_class'], array( 'home-storage', 'battery-systems' ), true ) ) {
+			$members  = $index->members_for( $id );
+			$position = array_search( $id, $members, true );
+			$label    = $de ? 'Position in der Serie' : 'Position in series';
+			if ( false !== $position && count( $members ) > 1 ) {
+				$cells[ $label ] = sprintf( $de ? '%1$d von %2$d · %3$s' : '%1$d of %2$d · %3$s', $position + 1, count( $members ), $rating['series'] );
+			}
+			$keys = $de
+				? array( 'Nutzbare Energie', 'Batteriespannung', 'Schutzart', 'Passende Wechselrichter', 'Zuordnungen in der Matrix', $label, 'Nennenergie' )
+				: array( 'Usable energy', 'Battery voltage', 'Protection', 'Matched inverters', 'Pairings in the matrix', $label, 'Nominal energy' );
+		}
 		$html = '<dl class="pdp-intro-facts" aria-label="' . ( $de ? 'Modell-Eckdaten' : 'Key model figures' ) . '">';
 		foreach ( array_slice( array_intersect_key( array_flip( $keys ), $cells ) + $cells, 0, 5, true ) as $key => $_ ) {
 			$html .= '<div class="pdp-intro-fact"><dt>' . esc_html( $key ) . '</dt><dd>' . esc_html( $cells[ $key ] ) . '</dd></div>';
