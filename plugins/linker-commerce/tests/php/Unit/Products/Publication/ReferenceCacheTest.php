@@ -31,7 +31,11 @@ final class ReferenceCacheTest extends TestCase {
 		WP_Mock::userFunction( 'get_post' )->with( 340 )->andReturn( $pdf );
 		WP_Mock::userFunction( 'update_option' )->andReturn( true );
 		WP_Mock::userFunction( 'as_has_scheduled_action' )->andReturn( true );
+		WP_Mock::userFunction( 'get_post_meta' )->with( 340, '_wp_attached_file', true )->andReturn( '2026/manual.pdf' );
 		WP_Mock::expectAction( 'litespeed_purge', 'PT.product' );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.pdf.sitemap' );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.att.340' );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.pdf.' . substr( hash( 'sha256', '2026/manual.pdf' ), 0, 12 ) );
 		( new Module() )->metadata_changed( 1, 340, '_linker_document_public' );
 		$this->assertConditionsMet();
 	}

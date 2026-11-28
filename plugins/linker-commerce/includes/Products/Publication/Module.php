@@ -48,6 +48,26 @@ final class Module {
 	}
 
 	/**
+	 * Evict the documents that used this native source and refresh the public index.
+	 *
+	 * @param \WP_Post $post Product or PDF attachment.
+	 */
+	private static function purge_documents( \WP_Post $post ): void {
+		$tags = array( 'LK.pdf.sitemap' );
+		if ( 'product' === $post->post_type ) {
+			$tags[] = 'LK.prod.' . $post->ID;
+			$tags[] = 'LK.prod.' . \Linker\Commerce\Products\Publication::canonical_id( $post->ID );
+		} else {
+			$tags[] = 'LK.att.' . $post->ID;
+			$file   = get_post_meta( $post->ID, '_wp_attached_file', true );
+			if ( is_string( $file ) && '' !== $file ) {
+				$tags[] = DocumentCache::path_tag( $file );
+			}
+		}
+		DocumentCache::purge( $tags );
+	}
+
+	/**
 	 * Product and technical-PDF events have their source ID as the first argument.
 	 *
 	 * @param int $id Native post identity.
@@ -56,6 +76,7 @@ final class Module {
 		$post = get_post( $id );
 		if ( $post instanceof \WP_Post && self::is_source( $post ) ) {
 			self::purge_product_links();
+			self::purge_documents( $post );
 			( new PreparationJobs() )->changed();
 		}
 	}
@@ -86,8 +107,9 @@ final class Module {
 			return;
 		}
 		$pdf_change = 'attachment' === $post->post_type && in_array( $key, array( '_wp_attached_file', '_wp_attachment_metadata', '_linker_document_public' ), true );
-		if ( $pdf_change || ( 'product' === $post->post_type && in_array( $key, array( \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, \Linker\Commerce\Products\EngineeringData::DOCUMENTS_META_KEY, EvidenceBindings::META_KEY, CompatibilityClaims::META_KEY, '_tv_legacy_acf_json', '_sku', \Linker\Commerce\Products\EngineeringReference::ROLE_META_KEY ), true ) ) ) {
+		if ( $pdf_change || ( 'product' === $post->post_type && in_array( $key, array( \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, \Linker\Commerce\Products\EngineeringData::DOCUMENTS_META_KEY, EvidenceBindings::META_KEY, CompatibilityClaims::META_KEY, '_tv_legacy_acf_json', '_linker_de_acf_json', '_delinker_datasheet_url', '_delinker_manual_url', '_linker_documents_managed', '_sku', \Linker\Commerce\Products\EngineeringReference::ROLE_META_KEY ), true ) ) ) {
 			self::purge_product_links();
+			self::purge_documents( $post );
 		}
 		if ( 'product' === $post->post_type || $pdf_change ) {
 			( new PreparationJobs() )->changed();
@@ -105,6 +127,7 @@ final class Module {
 		unset( $new_status, $old_status );
 		if ( self::is_source( $post ) ) {
 			self::purge_product_links();
+			self::purge_documents( $post );
 			( new PreparationJobs() )->changed();
 		}
 	}
@@ -119,6 +142,7 @@ final class Module {
 		unset( $id );
 		if ( self::is_source( $post ) ) {
 			self::purge_product_links();
+			self::purge_documents( $post );
 			( new PreparationJobs() )->changed();
 		}
 	}

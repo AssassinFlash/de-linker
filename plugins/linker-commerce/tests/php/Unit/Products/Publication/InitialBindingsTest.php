@@ -117,6 +117,9 @@ final class InitialBindingsTest extends TestCase {
 	/** A normal final Woo save captures unchanged source fields before its final queue signal. */
 	public function test_final_woo_save_initializes_canonical_evidence_then_queues_preparation(): void {
 		WP_Mock::expectAction( 'litespeed_purge', 'PT.product' );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.pdf.sitemap' );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.prod.12' );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.prod.13' );
 		$raw    = $this->source_fields();
 		$file   = DocumentFiles::resolve( $raw['documents'][0]['url'] );
 		$queued = false;
@@ -257,6 +260,8 @@ final class InitialBindingsTest extends TestCase {
 	/** Plain WordPress status writes queue changes but do not claim Woo's final-save boundary. */
 	public function test_status_only_wordpress_write_queues_without_initializing_bindings(): void {
 		WP_Mock::expectAction( 'litespeed_purge', 'PT.product' );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.pdf.sitemap' );
+		WP_Mock::expectAction( 'litespeed_purge', 'LK.prod.12' );
 		$queued = false;
 		WP_Mock::userFunction( 'update_option' )->with( 'linker_publication_pending', true, false )->andReturnUsing(
 			static function () use ( &$queued ): bool {

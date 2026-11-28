@@ -82,7 +82,7 @@ final class RevisionTest extends TestCase {
 			self::assertSame( 416, $response['status'] );
 			self::assertSame( 'bytes', $response['headers']['Accept-Ranges'] ?? null );
 			self::assertArrayNotHasKey( 'Link', $response['headers'] );
-			self::assertArrayNotHasKey( 'X-Robots-Tag', $response['headers'] );
+			self::assertSame( 'noindex, nofollow', $response['headers']['X-Robots-Tag'] );
 			self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
 		}
 	}
@@ -101,22 +101,10 @@ final class RevisionTest extends TestCase {
 			}
 		);
 		$access = new DocumentAccess();
-		self::assertSame(
-			array(
-				'allowed'   => true,
-				'owner_ids' => array( 12, 13 ),
-			),
-			Publication::authorize_document( $file )
-		);
+		self::assertSame( array( 12, 13 ), Publication::authorize_document( $file )['owner_ids'] ?? array() );
 		self::assertSame( '<https://de-linker.com/wp-content/uploads/2026/manual.pdf>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
 		$role = \Linker\Commerce\Products\EngineeringReference::CABLE;
-		self::assertSame(
-			array(
-				'allowed'   => true,
-				'owner_ids' => array( 12 ),
-			),
-			Publication::authorize_document( $file )
-		);
+		self::assertSame( array( 12 ), Publication::authorize_document( $file )['owner_ids'] ?? array() );
 		self::assertSame( '<https://de-linker.com/wp-content/uploads/2026/manual.pdf>; rel="canonical"', $access->response( $file, 'GET' )['headers']['Link'] );
 	}
 

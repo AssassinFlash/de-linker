@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Products;
 
 use Linker\Commerce\Products\Publication\DocumentFiles;
+use Linker\Commerce\Products\Publication\DocumentCache;
 use Linker\Commerce\Products\Publication\PreparationJobs;
 use Linker\Commerce\Products\Publication\EvidenceBindings;
 
@@ -402,8 +403,9 @@ final class Publication {
 	/**
 	 * Identify the current sales products behind this authorized public file.
 	 *
+	 * @phpstan-impure
 	 * @param array<string,string> $file Resolved hosted PDF.
-	 * @return array{allowed:true,owner_ids:list<int>}|null
+	 * @return array{allowed:true,owner_ids:list<int>,cache_tags:list<string>,language:string}|null
 	 */
 	public static function authorize_document( array $file ): ?array {
 		self::refresh_runtime();
@@ -419,7 +421,7 @@ final class Publication {
 	 * Preserve manifest association order and alias permission for this PDF.
 	 *
 	 * @param array<string,string> $file The caller's resolved hosted PDF.
-	 * @return array{allowed:true,owner_ids:list<int>}|null
+	 * @return array{allowed:true,owner_ids:list<int>,cache_tags:list<string>,language:string}|null
 	 */
 	private static function document_authorization_in_current_read( array $file ): ?array {
 		$target     = DocumentFiles::id( $file['url'] );
@@ -473,6 +475,9 @@ final class Publication {
 		$allowed     = array();
 		$owners      = array();
 		$permissions = array();
+		$products    = array();
+		$files       = array( $file['url'] => $file['relative'] );
+		$language    = '';
 		foreach ( $rows as [ $id, $identity, $row ] ) {
 			if ( ! isset( $candidates[ $identity ] ) || false === ( $allowed[ $identity ] ?? null ) ) {
 				continue;
@@ -483,29 +488,55 @@ final class Publication {
 			}
 			// Only the first public record for a primary URL determines its aliases.
 			$allowed[ $identity ] ??= self::document_matches( $file, $primary, $row, $target, $permissions );
-			if ( $allowed[ $identity ] && ! EngineeringReference::is_reference( $id ) ) {
-				$owners[ $id ] = true;
+			if ( $allowed[ $identity ] ) {
+				$files[ $primary['url'] ] = $primary['relative'];
+				$products[ $id ]          = true;
+				if ( '' === $language ) {
+					$language = (string) ( $row['lang'] ?? '' );
+				}
+				if ( ! EngineeringReference::is_reference( $id ) ) {
+					$owners[ $id ] = true;
+				}
 			}
 		}
 		if ( ! in_array( true, $allowed, true ) ) {
 			return null;
 		}
+		$tags = array( 'LK.pdf' );
+		foreach ( $files as $url => $relative ) {
+			$tags[]     = DocumentCache::path_tag( $relative );
+			$attachment = $permissions[ $url ]['id'];
+			if ( $attachment > 0 ) {
+				$tags[] = 'LK.att.' . $attachment;
+			}
+		}
+		// The native candidates include both translations. A shared primary or alias
+		// must be evicted by any authorizing product, including engineering references.
+		foreach ( $ids as $index => $locale_id ) {
+			$source = $canonical_ids[ $index ];
+			if ( isset( $products[ $source ] ) ) {
+				$tags[] = 'LK.prod.' . $locale_id;
+				$tags[] = 'LK.prod.' . $source;
+			}
+		}
 		$ids = array_keys( $owners );
 		sort( $ids, SORT_NUMERIC );
 		return array(
-			'allowed'   => true,
-			'owner_ids' => $ids,
+			'allowed'    => true,
+			'owner_ids'  => $ids,
+			'cache_tags' => array_values( array_unique( $tags ) ),
+			'language'   => $language,
 		);
 	}
 
 	/**
 	 * Match the requested bytes against the primary file or one of its published aliases.
 	 *
-	 * @param array<string,string> $file Requested file.
-	 * @param array<string,string> $primary Primary document.
-	 * @param array<string,mixed>  $row First authorized primary record.
-	 * @param string               $target Requested document identity.
-	 * @param array<string,bool>   $permissions Attachment permissions within this read.
+	 * @param array<string,string>                     $file Requested file.
+	 * @param array<string,string>                     $primary Primary document.
+	 * @param array<string,mixed>                      $row First authorized primary record.
+	 * @param string                                   $target Requested document identity.
+	 * @param array<string,array{id:int,allowed:bool}> $permissions Attachment permissions within this read.
 	 */
 	private static function document_matches( array $file, array $primary, array $row, string $target, array &$permissions ): bool {
 		if ( $primary['url'] === $file['url'] && $primary['blob_sha256'] === $file['blob_sha256'] ) {
@@ -936,15 +967,18 @@ final class Publication {
 	/**
 	 * A media-level withdrawal applies to every relation of that attachment.
 	 *
-	 * @param string             $url Hosted document URL.
-	 * @param array<string,bool> $permissions Decisions for this assembly only.
+	 * @param string                                   $url Hosted document URL.
+	 * @param array<string,array{id:int,allowed:bool}> $permissions Decisions for this assembly only.
 	 */
 	private static function attachment_allows( string $url, array &$permissions ): bool {
 		if ( ! array_key_exists( $url, $permissions ) ) {
 			$id                  = attachment_url_to_postid( $url );
-			$permissions[ $url ] = 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true );
+			$permissions[ $url ] = array(
+				'id'      => $id,
+				'allowed' => 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true ),
+			);
 		}
-		return $permissions[ $url ];
+		return $permissions[ $url ]['allowed'];
 	}
 
 	/**

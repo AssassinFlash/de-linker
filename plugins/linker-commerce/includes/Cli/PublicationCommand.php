@@ -173,6 +173,7 @@ final class PublicationCommand {
 	/** Reconcile current preparation jobs. */
 	public function reconcile(): void {
 		( new PreparationJobs() )->reconcile();
+		\Linker\Commerce\Products\Publication\DocumentCache::purge( array( 'LK.pdf', 'LK.pdf.sitemap' ) );
 		\WP_CLI::success( 'Current preparation jobs reconciled.' );
 	}
 
