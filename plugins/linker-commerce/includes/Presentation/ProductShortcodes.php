@@ -17,6 +17,7 @@ use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Storefront\GridThresholdPairs;
 use Linker\Commerce\Storefront\ProductImageAlt;
 use Linker\Commerce\Storefront\ProductFamilies;
 use Linker\Commerce\Storefront\ProductFilters;
@@ -128,6 +129,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_pdp_gallery_pair', array( $this, 'pdp_gallery_pair' ) );
 		add_shortcode( 'linker_pdp_gallery_thumbs', array( $this, 'pdp_gallery_thumbs' ) );
 		add_shortcode( 'linker_pdp_intro', array( $this, 'pdp_intro' ) );
+		add_shortcode( 'linker_pdp_grid_threshold', array( $this, 'pdp_grid_threshold' ) );
 		add_shortcode( 'linker_pdp_benefits', array( $this, 'pdp_benefits' ) );
 		add_shortcode( 'linker_pdp_specs', array( $this, 'pdp_specs' ) );
 		add_shortcode( 'linker_pdp_scenes', array( $this, 'pdp_scenes' ) );
@@ -1292,6 +1294,12 @@ final class ProductShortcodes {
 			return wp_kses_post( wpautop( (string) $view['body'] ) );
 		}
 		return '<p class="tv-empty-state">' . esc_html__( 'Introduction in preparation. The specification below carries the values from the datasheet on file.', 'linker-commerce' ) . '</p>';
+	}
+
+	/** The current unit and its published grid-connection counterpart. */
+	public function pdp_grid_threshold(): string {
+		$view = $this->current_view();
+		return GridThresholdPairs::render( (string) ( $view['sku'] ?? '' ), Materials::locale() );
 	}
 
 	/**
