@@ -145,7 +145,7 @@ final class ModuleTest extends TestCase {
 		// Data shortcodes across the product, checkout, comparison,
 		// library, account and blog families, including the product's configurator
 		// entry and the FAQ section's scoped rows.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 82 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 87 ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_loop_add_to_cart_args', array( $products, 'loop_cart_attributes' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $blog, 'empty_search_title' ), 60 );

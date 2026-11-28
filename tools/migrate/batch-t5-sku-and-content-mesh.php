@@ -115,9 +115,10 @@ function write_meta( string $kind, int $id, string $key, mixed $value ): void {
 /**
  * Capture the native fields and translation baseline of one pair.
  *
- * @param string $type Post type or taxonomy.
- * @param string $slug English source slug.
- * @param array  $fields Metadata keys and post fields by language.
+ * @param string                     $type Post type or taxonomy.
+ * @param string                     $slug English source slug.
+ * @param array<string,list<string>> $fields Metadata keys and post fields by language.
+ * @return array<string,mixed>
  */
 function entry( string $type, string $slug, array $fields ): array {
 	$ids  = pair( $type, $slug );
@@ -135,14 +136,34 @@ function entry( string $type, string $slug, array $fields ): array {
 	return $row;
 }
 
-/** Reviewed SEOPress field values by source slug and language. */
+/**
+ * Read a local migration input.
+ *
+ * @param string $path JSON data or site snapshot.
+ * @return array<string,mixed>
+ * @throws RuntimeException When the input cannot be read.
+ */
+function read_json( string $path ): array {
+	$bytes = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local CLI input.
+	if ( false === $bytes ) {
+		throw new RuntimeException( 'Cannot read ' . esc_html( $path ) );
+	}
+	return json_decode( $bytes, true, 512, JSON_THROW_ON_ERROR );
+}
+
+/**
+ * Reviewed SEOPress field values by source slug and language.
+ *
+ * @return array<string,array<string,array<string,array<string,string>>>>
+ */
 function search_copy(): array {
-	return json_decode( file_get_contents( __DIR__ . '/batch-t5-search-copy.json' ), true, 512, JSON_THROW_ON_ERROR ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local migration input.
+	return read_json( __DIR__ . '/batch-t5-search-copy.json' );
 }
 
 /**
  * Collect the bilingual fields and their evidence bindings before publication.
  *
+ * @return array<string,mixed>
  * @throws RuntimeException When the required source product is absent.
  */
 function snapshot(): array {
@@ -188,14 +209,14 @@ function image_sizes( string $html, string $slug ): string {
 	);
 	$tags  = new \WP_HTML_Tag_Processor( $html );
 	$found = array();
-	while ( $tags->next_tag( 'IMG' ) ) {
+	while ( $tags->next_tag( array( 'tag_name' => 'IMG' ) ) ) {
 		$file = basename( (string) $tags->get_attribute( 'src' ) );
 		if ( ! isset( $sizes[ $file ] ) ) {
 			continue;
 		}
 		list( $width, $height ) = $sizes[ $file ];
-		$tags->set_attribute( 'width', $width );
-		$tags->set_attribute( 'height', $height );
+		$tags->set_attribute( 'width', (string) $width );
+		$tags->set_attribute( 'height', (string) $height );
 		if ( 'lk-about-capability-linker-team-in-barleben.webp' === $file ) {
 			$tags->set_attribute( 'loading', 'eager' );
 		} else {
@@ -243,7 +264,7 @@ function page_copy( string $html, string $slug, string $lang ): string {
 		return $html;
 	}
 	$html = preg_replace( $pattern, '$1' . $link, $html, -1, $count );
-	if ( 1 !== $count ) {
+	if ( null === $html || 1 !== $count ) {
 		throw new RuntimeException( esc_html( 'Missing or repeated Capability link placement on ' . $slug . '/' . $lang ) );
 	}
 	return $html;
@@ -252,8 +273,8 @@ function page_copy( string $html, string $slug, string $lang ): string {
 /**
  * Apply the reviewed fields or restore the snapshot in one native transaction.
  *
- * @param array $before Original snapshot for this site.
- * @param bool  $apply Whether to apply or restore the values.
+ * @param array<string,mixed> $before Original snapshot for this site.
+ * @param bool                $apply Whether to apply or restore the values.
  * @throws RuntimeException When a field or its owner changed, or a write failed.
  */
 function migrate( array $before, bool $apply ): void {
@@ -337,7 +358,7 @@ $linker_commerce_t5_operation = $args[0] ?? '';
 if ( 'snapshot' === $linker_commerce_t5_operation ) {
 	echo wp_json_encode( snapshot(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR ) . "\n";
 } elseif ( isset( $args[1] ) && in_array( $linker_commerce_t5_operation, array( 'apply', 'restore' ), true ) ) {
-	migrate( json_decode( file_get_contents( $args[1] ), true, 512, JSON_THROW_ON_ERROR ), 'apply' === $linker_commerce_t5_operation ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local migration input.
+	migrate( read_json( $args[1] ), 'apply' === $linker_commerce_t5_operation );
 	WP_CLI::success( 'Editorial migration: ' . $linker_commerce_t5_operation );
 } else {
 	WP_CLI::error( 'Usage: snapshot | apply <snapshot> | restore <snapshot>' );
