@@ -131,7 +131,7 @@ final class DocumentAccess {
 		}
 		list( $start, $end ) = $bounds;
 		$status              = '' === $range ? 200 : 206;
-		$cacheable           = 200 === $status && $clean && '' === $expected;
+		$cacheable           = 'GET' === $method && 200 === $status && $clean && '' === $expected;
 		$headers             = array(
 			'Content-Type'     => 'application/pdf',
 			'Accept-Ranges'    => 'bytes',

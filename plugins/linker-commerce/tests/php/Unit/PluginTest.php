@@ -229,6 +229,8 @@ final class PluginTest extends TestCase {
 			WP_Mock::expectFilterAdded( $hook, array( new AnyInstance( $class ), $method ), $priority, $args ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		}
 
+		WP_Mock::expectFilterAdded( 'mod_rewrite_rules', array( \Linker\Commerce\Products\Publication\DocumentCache::class, 'request_rules' ), 20 );
+
 		$plugin->register();
 
 		$this->assertSame( 'linker_contact_form', $shortcode[0] ?? null );

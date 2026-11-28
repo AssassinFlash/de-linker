@@ -213,6 +213,8 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( 'Can I request a single unit, and where do you deliver?', $html );
 		$this->assertStringContainsString( 'You can request a single unit.', $html );
 		$this->assertStringContainsString( 'id="linker-library-zone-answers"', $html );
+		$this->assertStringNotContainsString( 'our-brand-goodwe-mono-light', $html );
+		$this->assertStringContainsString( 'class="linker-library-mark"', $html );
 		$this->assertStringContainsString( 'Is the module stackable?', $html );
 		$this->assertStringContainsString( 'Yes, up to four modules.', $html );
 		$this->assertStringContainsString( '<a href="/produkt/goodwe-gw5-1/">GoodWe GW5.1-BAT-D-G21</a>', $html );
@@ -245,6 +247,7 @@ final class LibraryPageTest extends TestCase {
 		self::assertStringNotContainsString( '<svg', $html );
 		$this->assertStringNotContainsString( 'data-library-skus=', $html );
 		$this->assertStringNotContainsString( 'faq-thumbs', $html );
+		$this->assertStringContainsString( 'our-brand-goodwe-mono-light', $html );
 		$this->assertStringContainsString( 'data-library-brand="goodwe"', $html );
 		$this->assertStringContainsString( 'data-library-type="datasheet" aria-pressed="false"', $html );
 		$this->assertStringContainsString( 'Grid Certificate (VDE · ZEREZ)', $html );

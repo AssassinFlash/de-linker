@@ -61,7 +61,11 @@ final class ToolkitEndpoint {
 			header( 'Cache-Control: private, no-store, max-age=0' );
 		} else {
 			status_header( 200 );
-			DocumentCache::allow( array( 'LK.toolkit', 'LK.toolkit.' . $item['suite'] ), DAY_IN_SECONDS );
+			if ( 'GET' === $method && '' === $range ) {
+				DocumentCache::allow( array( 'LK.toolkit', 'LK.toolkit.' . $item['suite'] ), DAY_IN_SECONDS );
+			} else {
+				DocumentCache::forbid( false );
+			}
 			header( 'Cache-Control: public, max-age=86400, stale-while-revalidate=3600' );
 		}
 		header( 'Content-Type: ' . $item['mime'] );
