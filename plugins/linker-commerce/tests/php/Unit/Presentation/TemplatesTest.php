@@ -282,26 +282,9 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( 'Suche', (string) file_get_contents( $paths['is_search__de'] ) );
 		$this->assertStringNotContainsString( 'Search articles', (string) file_get_contents( $paths['is_search__de'] ) );
 
-		// The blog index's structured data names the site through the data
-		// shortcode, so every instance answers with its own address; the
-		// template engine resolves nothing inside a script block, and the live
-		// template carried the host it was authored on.
-		foreach ( array(
-			'is_blog_posts_index'     => 'blog/',
-			// [linker_site_url] is the current language's root: / on the
-			// English face and /de/ on the German one. Prefixing another de/
-			// produced /de/de/blog/ on the live German face.
-			'is_blog_posts_index__de' => 'blog/',
-		) as $index => $path ) {
-			$html = (string) file_get_contents( $paths[ $index ] );
-			$this->assertStringContainsString( '"url": "[linker_site_url]' . $path . '"', $html );
-			$this->assertStringContainsString( '"url": "[linker_site_url]"', $html );
-			$this->assertStringNotContainsString( '<site url', $html );
+		foreach ( array( 'is_blog_posts_index', 'is_blog_posts_index__de' ) as $index ) {
+			$this->assertStringNotContainsString( 'application/ld+json', (string) file_get_contents( $paths[ $index ] ) );
 		}
-		$this->assertStringNotContainsString(
-			'[linker_site_url]de/',
-			(string) file_get_contents( $paths['is_blog_posts_index__de'] )
-		);
 
 		// The redesigned blog index's configurator CTA point at the tool's own
 		// addresses, and the German face names it the way the rest of the site

@@ -208,8 +208,7 @@ final class PageSchemaTest extends TestCase {
 		$this->assertSame( $role, $node['author']['jobTitle'] );
 		$this->assertSame( 'https://example.org/#organization', $node['author']['worksFor']['@id'] );
 		$this->assertSame( ContactChannels::chester_same_as(), $node['author']['sameAs'] );
-		$this->assertSame( ContactChannels::company_same_as(), $node['publisher']['sameAs'] );
-		$this->assertSame( 'logo', $node['publisher']['logo'] );
+		$this->assertSame( array( '@id' => 'https://example.org/#organization' ), $node['publisher'] );
 		$template_author                = new \WP_User();
 		$template_author->user_nicename = 'chester-john';
 		$post                           = new WP_Post( (object) array( 'post_author' => '61' ) );

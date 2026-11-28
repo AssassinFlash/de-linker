@@ -79,25 +79,22 @@ final class GuideEquipmentMeshTest extends TestCase {
 	/** Only a visible, opt-in list without a matching SEOPress FAQ becomes structured data. */
 	public function test_visible_and_deduplicated_faq(): void {
 		$page = new PageSchema();
-		$post = new WP_Post( (object) array( 'ID' => 10 ) );
-		WP_Mock::userFunction( 'is_singular' )->with( 'post' )->andReturn( true );
-		WP_Mock::userFunction( 'get_the_ID' )->andReturn( 10 );
-		WP_Mock::userFunction( 'get_queried_object_id' )->andReturn( 10 );
-		WP_Mock::userFunction( 'get_post' )->andReturn( $post );
+		$post = new WP_Post(
+			(object) array(
+				'ID'           => 10,
+				'post_content' => '<p>No questions.</p>',
+			)
+		);
 		WP_Mock::userFunction( 'has_block' )->andReturn( false );
 		WP_Mock::userFunction( 'get_post_meta' )->andReturn( array() )->byDefault();
-		$body = '<section class="lk-faq-list"><h3>Which model?</h3><p>Model A</p><div hidden><h3>Hidden?</h3><p>Hidden</p></div></section>';
-		self::assertSame( '<p>No questions.</p>', $page->guide_faq( '<p>No questions.</p>' ) );
-		$html = $page->guide_faq( $body );
-		if ( 1 !== preg_match( '#<script[^>]*>(.*?)</script>#s', $html, $match ) ) {
-			self::fail( 'Missing FAQ schema script.' );
-		}
-		$faq = json_decode( $match[1], true, 512, JSON_THROW_ON_ERROR );
+		self::assertSame( array(), $page->guide_faq( $post ) );
+		$post->post_content = '<section class="lk-faq-list"><h3>Which model?</h3><p>Model A</p><div hidden><h3>Hidden?</h3><p>Hidden</p></div></section>';
+		$faq                = $page->guide_faq( $post );
 		self::assertSame( 'FAQPage', $faq['@type'] );
 		self::assertCount( 1, $faq['mainEntity'] );
 		self::assertSame( 'Which model?', $faq['mainEntity'][0]['name'] );
 		self::assertSame( 'Model A', $faq['mainEntity'][0]['acceptedAnswer']['text'] );
 		WP_Mock::userFunction( 'get_post_meta' )->andReturn( array( array( '_seopress_pro_rich_snippets_type' => 'faq' ) ) );
-		self::assertSame( $body, $page->guide_faq( $body ) );
+		self::assertSame( array(), $page->guide_faq( $post ) );
 	}
 }
