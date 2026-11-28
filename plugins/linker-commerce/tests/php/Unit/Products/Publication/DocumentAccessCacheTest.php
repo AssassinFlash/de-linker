@@ -38,8 +38,9 @@ final class DocumentAccessCacheTest extends TestCase {
 		self::assertLessThan( strpos( $updated, 'linker_public_document=' ), strpos( $updated, 'Cache-Control:no-cache' ) );
 		self::assertSame( $original, preg_replace( '~<IfModule LiteSpeed>.*?</IfModule>\n~s', '', $updated ) );
 		self::assertStringContainsString( "RewriteCond %{REQUEST_METHOD} ^HEAD$ [OR]\nRewriteCond %{HTTP:Range} !^$", $updated );
-		self::assertMatchesRegularExpression( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache,NC\]$/m', $updated );
-		preg_match( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache,NC\]$/m', $updated, $rule );
+		if ( 1 !== preg_match( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache,NC\]$/m', $updated, $rule ) ) {
+			self::fail( 'Missing document method rule.' );
+		}
 		foreach ( array( 'wp-content/uploads/2026/manual.pdf', 'downloads/engineering-toolkit/workbook.csv', 'downloads/engineering-toolkit/guide.pdf' ) as $path ) {
 			self::assertMatchesRegularExpression( '~' . $rule[1] . '~i', $path );
 		}
