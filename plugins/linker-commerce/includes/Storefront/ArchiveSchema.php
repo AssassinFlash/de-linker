@@ -40,7 +40,13 @@ final class ArchiveSchema {
 	 * Prints the two blocks, or nothing when this request is not the catalogue.
 	 */
 	public function print_block(): void {
-		$this->print_blocks( array( $this->collection(), $this->breadcrumb() ) );
+		$blocks = array( $this->collection(), $this->breadcrumb() );
+		if ( $blocks[0] ) {
+			foreach ( ProductGroupIndex::archive_groups() as $id ) {
+				$blocks[] = ProductGroupIndex::current()->schema( $id );
+			}
+		}
+		$this->print_blocks( $blocks );
 	}
 
 	/**

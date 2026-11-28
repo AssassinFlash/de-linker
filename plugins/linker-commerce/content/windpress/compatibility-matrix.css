@@ -53,3 +53,4 @@
 	.lk-matrix-details dl { display: block; }
 	.lk-matrix-details dd { margin: .2rem 0 .75rem; }
 }
+.lk-matrix .lk-guide-mesh ul { display: grid; gap: .6rem; padding-inline-start: 1.2rem; }

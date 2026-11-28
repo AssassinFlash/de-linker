@@ -1,4 +1,5 @@
 .pdp-family-links .lk-model-links,
+.lk-blog-equipment .lk-model-links,
 .lk-solution-products .lk-model-links {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
@@ -29,3 +30,23 @@
 .lk-solution-products h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.25rem); line-height: 1.2; }
 .lk-solution-categories { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; }
 .lk-solution-categories a { color: #174d63; text-decoration: underline; text-underline-offset: .2em; }
+.lk-guide-mesh {
+	max-width: 1200px;
+	margin: 2.5rem auto;
+	padding-inline: clamp(1rem, 4vw, 3rem);
+}
+.lk-guide-mesh h2, .lk-blog-equipment h2 {
+	font-size: clamp(1.35rem, 2.5vw, 2rem);
+	line-height: 1.2;
+}
+.lk-guide-mesh ul { display: grid; gap: .6rem; margin: 1rem 0; padding-inline-start: 1.2rem; }
+.lk-guide-mesh a, .lk-guide-matrix { color: #174d63; text-decoration: underline; text-underline-offset: .18em; }
+.lk-blog-equipment .lk-model-links a { flex-wrap: wrap; overflow-wrap: anywhere; }
+
+.lk-series-matrix { min-width: 0; max-width: 100%; }
+.lk-series-matrix-scroll { overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
+.lk-series-matrix-table { width: 100%; border-collapse: collapse; font-size: .925rem; text-align: start; }
+.lk-series-matrix-table :is(th, td) { padding: .75rem 1rem; border-bottom: 1px solid var(--shop-line, #dbe4e8); vertical-align: top; text-align: start; }
+.lk-series-matrix-table thead, .lk-series-matrix-table .is-current { background: var(--shop-mist, #edf5f4); }
+.lk-series-matrix-table a { text-decoration: underline; text-underline-offset: .16em; }
+.lk-series-matrix-table a, .lk-series-matrix-table tbody th { white-space: nowrap; }

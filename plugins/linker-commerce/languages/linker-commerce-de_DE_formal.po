@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-11-28T05:42:41+00:00\n"
+"POT-Creation-Date: 2026-11-28T08:18:12+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -151,7 +151,7 @@ msgstr[1] "%s Konten zu prüfen"
 msgid "Accounts waiting for you"
 msgstr "Konten zur Prüfung"
 
-#: build/accounts.js:2 includes/Presentation/BlogShortcodes.php:190
+#: build/accounts.js:2 includes/Presentation/BlogShortcodes.php:226
 msgid "Close"
 msgstr "Schließen"
 
@@ -185,24 +185,24 @@ msgid "Check this model for the project"
 msgstr "Dieses Modell für das Projekt prüfen"
 
 #: content/livecanvas/single_product.html:46
-#: content/livecanvas/single_product.html:53
+#: content/livecanvas/single_product.html:55
 msgid "Description"
 msgstr "Beschreibung"
 
-#: content/livecanvas/single_product.html:51
+#: content/livecanvas/single_product.html:53
 msgid "Product sections"
 msgstr "Produktbereiche"
 
-#: content/livecanvas/single_product.html:54
-#: content/livecanvas/single_product.html:70
+#: content/livecanvas/single_product.html:56
+#: content/livecanvas/single_product.html:72
 msgid "Technical data"
 msgstr "Technische Daten"
 
-#: content/livecanvas/single_product.html:55
+#: content/livecanvas/single_product.html:57
 msgid "Applications"
 msgstr "Anwendungen"
 
-#: content/livecanvas/single_product.html:89
+#: content/livecanvas/single_product.html:91
 msgid "Product questions"
 msgstr "Produktfragen"
 
@@ -419,8 +419,8 @@ msgid "Products and inquiries of de-linker.com."
 msgstr "Produkte und Anfragen von de-linker.com."
 
 #: includes/Abilities/SearchProducts.php:142
-#: includes/Presentation/ProductShortcodes.php:238
-#: includes/Presentation/ProductShortcodes.php:2163
+#: includes/Presentation/ProductShortcodes.php:244
+#: includes/Presentation/ProductShortcodes.php:2188
 msgid "Search products"
 msgstr "Produkte suchen"
 
@@ -644,7 +644,7 @@ msgstr "Gespeicherte Lösungen"
 #: includes/Admin/DocumentsMetaBox.php:56 includes/Contact/SelectionView.php:95
 #: includes/Presentation/AccountTemplates.php:522
 #: includes/Presentation/LibraryPage.php:444
-#: includes/Presentation/ProductShortcodes.php:1061
+#: includes/Presentation/ProductShortcodes.php:1080
 msgid "Documents"
 msgstr "Dokumente"
 
@@ -894,7 +894,7 @@ msgstr "Es geht um"
 msgid "Your question"
 msgstr "Ihre Frage"
 
-#: includes/Contact/Form.php:181 includes/Presentation/BlogShortcodes.php:187
+#: includes/Contact/Form.php:181 includes/Presentation/BlogShortcodes.php:223
 msgid "What would you like to know?"
 msgstr "Was möchten Sie wissen?"
 
@@ -1064,9 +1064,9 @@ msgstr "Zugehörige Angaben"
 
 #: includes/Contact/SelectionView.php:93
 #: includes/Presentation/AccountTemplates.php:486
-#: includes/Presentation/BlogShortcodes.php:219
-#: includes/Presentation/ProductShortcodes.php:239
-#: includes/Presentation/ProductShortcodes.php:2163
+#: includes/Presentation/BlogShortcodes.php:255
+#: includes/Presentation/ProductShortcodes.php:245
+#: includes/Presentation/ProductShortcodes.php:2188
 msgid "Search"
 msgstr "Suchen"
 
@@ -1079,27 +1079,27 @@ msgid "Product"
 msgstr "Produkt"
 
 #: includes/Contact/SelectionView.php:96
-#: includes/Presentation/ProductShortcodes.php:359
-#: includes/Presentation/ProductShortcodes.php:555
+#: includes/Presentation/ProductShortcodes.php:365
+#: includes/Presentation/ProductShortcodes.php:561
 #: includes/Storefront/AgentMarkdown.php:220
 msgid "Brand"
 msgstr "Marke"
 
 #: includes/Contact/SelectionView.php:97
-#: includes/Presentation/ProductShortcodes.php:358
-#: includes/Storefront/ProductSchema.php:224
+#: includes/Presentation/ProductShortcodes.php:364
+#: includes/Storefront/ProductSchema.php:219
 #: includes/Storefront/ProductView.php:300
 msgid "Application"
 msgstr "Anwendung"
 
 #: includes/Contact/SelectionView.php:98
-#: includes/Presentation/ProductShortcodes.php:360
+#: includes/Presentation/ProductShortcodes.php:366
 #: includes/Products/Materials.php:911
 msgid "Phase"
 msgstr "Phase"
 
 #: includes/Contact/SelectionView.php:99
-#: includes/Presentation/ProductShortcodes.php:361
+#: includes/Presentation/ProductShortcodes.php:367
 msgid "Power"
 msgstr "Leistung"
 
@@ -1120,7 +1120,7 @@ msgid "Maximum capacity (kWh)"
 msgstr "Höchstkapazität (kWh)"
 
 #: includes/Contact/SelectionView.php:104
-#: includes/Presentation/ProductShortcodes.php:472
+#: includes/Presentation/ProductShortcodes.php:478
 #: includes/Vocabulary/Terms.php:68
 msgid "Sort products"
 msgstr "Produkte sortieren"
@@ -1130,27 +1130,27 @@ msgid "Datasheets & certificates"
 msgstr "Datenblätter und Zertifikate"
 
 #: includes/Contact/SelectionView.php:121
-#: includes/Presentation/ProductShortcodes.php:463
+#: includes/Presentation/ProductShortcodes.php:469
 msgid "Newest first"
 msgstr "Neueste zuerst"
 
 #: includes/Contact/SelectionView.php:122
-#: includes/Presentation/ProductShortcodes.php:464
+#: includes/Presentation/ProductShortcodes.php:470
 msgid "Name A-Z"
 msgstr "Name A-Z"
 
 #: includes/Contact/SelectionView.php:123
-#: includes/Presentation/ProductShortcodes.php:465
+#: includes/Presentation/ProductShortcodes.php:471
 msgid "Power high-low"
 msgstr "Leistung hoch-niedrig"
 
 #: includes/Contact/SelectionView.php:124
-#: includes/Presentation/ProductShortcodes.php:466
+#: includes/Presentation/ProductShortcodes.php:472
 msgid "Power low-high"
 msgstr "Leistung niedrig-hoch"
 
 #: includes/Contact/SelectionView.php:125
-#: includes/Presentation/ProductShortcodes.php:462
+#: includes/Presentation/ProductShortcodes.php:468
 msgid "Recommended"
 msgstr "Empfohlen"
 
@@ -1771,7 +1771,7 @@ msgstr "Angabe des Kunden"
 
 #: includes/Inquiry/Assessment/EvidenceView.php:42
 #: includes/Inquiry/OrderAdmin.php:74
-#: includes/Presentation/BlogShortcodes.php:201
+#: includes/Presentation/BlogShortcodes.php:237
 #: templates/emails/linker-new-inquiry.php:62
 msgid "Contact form"
 msgstr "Kontaktformular"
@@ -2426,7 +2426,7 @@ msgstr "Ändern"
 msgid "Work email"
 msgstr "Geschäftliche E-Mail-Adresse"
 
-#: includes/Inquiry/Form.php:360 includes/Presentation/BlogShortcodes.php:198
+#: includes/Inquiry/Form.php:360 includes/Presentation/BlogShortcodes.php:234
 #: templates/emails/linker-inquiry-received.php:23
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
@@ -2442,8 +2442,8 @@ msgstr "Schon Linker-Partner? Anmelden"
 #: includes/Inquiry/Form.php:363 includes/Presentation/AccountLinks.php:31
 #: includes/Presentation/AccountLinks.php:51
 #: includes/Presentation/AccountLinks.php:70
-#: includes/Presentation/ProductShortcodes.php:2168
-#: includes/Presentation/ProductShortcodes.php:2182
+#: includes/Presentation/ProductShortcodes.php:2193
+#: includes/Presentation/ProductShortcodes.php:2207
 #: includes/Presentation/Shortcodes.php:384
 #: templates/myaccount/auth/form-login.php:69
 #: templates/myaccount/auth/form-register.php:106
@@ -2451,8 +2451,8 @@ msgid "Sign in"
 msgstr "Anmelden"
 
 #: includes/Inquiry/Form.php:365 includes/Planning/Context.php:1053
-#: includes/Presentation/ProductShortcodes.php:2166
-#: includes/Presentation/ProductShortcodes.php:2169
+#: includes/Presentation/ProductShortcodes.php:2191
+#: includes/Presentation/ProductShortcodes.php:2194
 #: includes/Vocabulary/Labels.php:112 includes/Vocabulary/Labels.php:187
 #: includes/Vocabulary/Labels.php:211 includes/Vocabulary/Terms.php:31
 #: templates/emails/linker-genie-handoff.php:56
@@ -2783,7 +2783,7 @@ msgid "Planning project"
 msgstr "Planungsprojekt"
 
 #: includes/Planning/Context.php:746
-#: includes/Presentation/ProductShortcodes.php:1536
+#: includes/Presentation/ProductShortcodes.php:1561
 msgid "Project note"
 msgstr "Projekthinweis"
 
@@ -2823,8 +2823,8 @@ msgstr "PDF herunterladen"
 
 #: includes/Planning/LegacyRoutes.php:47
 #: includes/Presentation/AccountTemplates.php:515
-#: includes/Presentation/ProductShortcodes.php:401
-#: includes/Presentation/ProductShortcodes.php:1099
+#: includes/Presentation/ProductShortcodes.php:407
+#: includes/Presentation/ProductShortcodes.php:1118
 msgid "Open the Solution Configurator"
 msgstr "Lösungskonfigurator öffnen"
 
@@ -2846,7 +2846,7 @@ msgid "Workplace"
 msgstr "Arbeitsbereich"
 
 #: includes/Presentation/AccountTemplates.php:382
-#: includes/Presentation/ProductShortcodes.php:2157
+#: includes/Presentation/ProductShortcodes.php:2182
 msgid "Account"
 msgstr "Konto"
 
@@ -2898,7 +2898,7 @@ msgid "Saved on"
 msgstr "Gespeichert am"
 
 #: includes/Presentation/AccountTemplates.php:504
-#: includes/Presentation/ProductShortcodes.php:732
+#: includes/Presentation/ProductShortcodes.php:738
 #: includes/Storefront/ProductView.php:383 includes/Vocabulary/Labels.php:34
 #: includes/Vocabulary/Terms.php:43
 #: templates/myaccount/linker-saved-solutions.php:51
@@ -2992,34 +2992,49 @@ msgid_plural "%s products"
 msgstr[0] "%s Produkt"
 msgstr[1] "%s Produkte"
 
-#: includes/Presentation/BlogShortcodes.php:171
+#: includes/Presentation/BlogShortcodes.php:90
+msgid "Related Systems & Compatibility"
+msgstr "Passende Systeme & Kompatibilitätsmatrix"
+
+#: includes/Presentation/BlogShortcodes.php:96
+#: includes/Presentation/CompatibilityMatrixPage.php:41
+#: includes/Presentation/CompatibilityMatrixPage.php:115
+#: includes/Storefront/PageSchema.php:133
+msgid "Compatibility matrix"
+msgstr "Kompatibilitätsmatrix"
+
+#: includes/Presentation/BlogShortcodes.php:109
+msgid "Planning & Commissioning Guides"
+msgstr "Planungs- & Installationsleitfäden"
+
+#: includes/Presentation/BlogShortcodes.php:207
 msgid "Talk to Chester"
 msgstr "Chester kontaktieren"
 
-#: includes/Presentation/BlogShortcodes.php:194
+#: includes/Presentation/BlogShortcodes.php:230
 msgid "Ask me a question or tell me what you’re working on."
 msgstr ""
 "Schreiben Sie mir, was Sie wissen möchten oder woran Sie gerade arbeiten."
 
-#: includes/Presentation/BlogShortcodes.php:199
+#: includes/Presentation/BlogShortcodes.php:235
 msgid "Loading the form…"
 msgstr "Das Formular wird geladen …"
 
-#: includes/Presentation/BlogShortcodes.php:200
+#: includes/Presentation/BlogShortcodes.php:236
 msgid "Open the contact form"
 msgstr "Kontaktformular öffnen"
 
-#: includes/Presentation/BlogShortcodes.php:217
+#: includes/Presentation/BlogShortcodes.php:253
 msgid "All posts"
 msgstr "Alle Beiträge"
 
 #. translators: %s: social network name.
-#: includes/Presentation/BlogShortcodes.php:252
+#: includes/Presentation/BlogShortcodes.php:288
 #, php-format
 msgid "Share on %s"
 msgstr "Auf %s teilen"
 
-#: includes/Presentation/BlogShortcodes.php:368
+#: includes/Presentation/BlogShortcodes.php:404
 msgid "Read the post"
 msgstr "Beitrag lesen"
 
@@ -3054,7 +3069,7 @@ msgstr ""
 "%s?"
 
 #: includes/Presentation/ComparePage.php:317
-#: includes/Presentation/ProductShortcodes.php:402
+#: includes/Presentation/ProductShortcodes.php:408
 msgid "Ask via WhatsApp →"
 msgstr "Per WhatsApp anfragen →"
 
@@ -3079,11 +3094,11 @@ msgid "Product comparison table"
 msgstr "Vergleichstabelle der Produkte"
 
 #: includes/Presentation/ComparePage.php:329
-#: includes/Presentation/ProductShortcodes.php:217
 #: includes/Presentation/ProductShortcodes.php:223
-#: includes/Presentation/ProductShortcodes.php:227
-#: includes/Presentation/ProductShortcodes.php:1845
-#: includes/Storefront/ArchiveSchema.php:306
+#: includes/Presentation/ProductShortcodes.php:229
+#: includes/Presentation/ProductShortcodes.php:233
+#: includes/Presentation/ProductShortcodes.php:1870
+#: includes/Storefront/ArchiveSchema.php:312
 #: includes/Storefront/ProductView.php:738
 #: templates/myaccount/linker-saved-solutions.php:29
 #: templates/myaccount/linker-saved-solutions.php:41
@@ -3091,7 +3106,7 @@ msgid "Products"
 msgstr "Produkte"
 
 #: includes/Presentation/ComparePage.php:342
-#: includes/Presentation/ProductShortcodes.php:1720
+#: includes/Presentation/ProductShortcodes.php:1745
 #: templates/emails/linker-genie-handoff.php:64
 msgid "Item number"
 msgstr "Produktnummer"
@@ -3106,19 +3121,19 @@ msgstr "Verfügbarkeit"
 
 #. translators: %s: product name.
 #: includes/Presentation/ComparePage.php:436
-#: includes/Presentation/ProductShortcodes.php:731
-#: includes/Presentation/ProductShortcodes.php:1057
+#: includes/Presentation/ProductShortcodes.php:737
+#: includes/Presentation/ProductShortcodes.php:1076
 msgid "Compare"
 msgstr "Vergleichen"
 
 #: includes/Presentation/ComparePage.php:479
-#: includes/Storefront/ProductFilters.php:775
+#: includes/Storefront/ProductFilters.php:774
 #: includes/Storefront/ProductView.php:301
 msgid "Home"
 msgstr "Privat"
 
 #: includes/Presentation/ComparePage.php:480
-#: includes/Storefront/ProductFilters.php:776
+#: includes/Storefront/ProductFilters.php:775
 #: includes/Storefront/ProductView.php:301
 msgid "Commercial"
 msgstr "Gewerbe"
@@ -3131,43 +3146,38 @@ msgstr "Nein"
 msgid "Yes"
 msgstr "Ja"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:39
-#: includes/Presentation/CompatibilityMatrixPage.php:113
-msgid "Compatibility matrix"
-msgstr "Kompatibilitätsmatrix"
-
-#: includes/Presentation/CompatibilityMatrixPage.php:69
-#: includes/Storefront/ProductSchema.php:218
+#: includes/Presentation/CompatibilityMatrixPage.php:71
+#: includes/Storefront/ProductSchema.php:213
 msgid "Single-phase"
 msgstr "Einphasig"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:69
-#: includes/Storefront/ProductSchema.php:218
+#: includes/Presentation/CompatibilityMatrixPage.php:71
+#: includes/Storefront/ProductSchema.php:213
 msgid "Three-phase"
 msgstr "Dreiphasig"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:112
+#: includes/Presentation/CompatibilityMatrixPage.php:114
 msgid "Inverter & HV Battery Compatibility Matrix"
 msgstr "Wechselrichter- & Hochvoltspeicher-Kompatibilitätsmatrix"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:113
+#: includes/Presentation/CompatibilityMatrixPage.php:115
 msgid "Breadcrumb"
 msgstr "Brotkrumen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:113
-#: includes/Presentation/ProductShortcodes.php:215
-#: includes/Storefront/ArchiveSchema.php:97
-#: includes/Storefront/ArchiveSchema.php:188
-#: includes/Storefront/PageSchema.php:287
-#: includes/Storefront/PageSchema.php:312
-#: includes/Storefront/PageSchema.php:327
-#: includes/Storefront/PageSchema.php:436
+#: includes/Presentation/CompatibilityMatrixPage.php:115
+#: includes/Presentation/ProductShortcodes.php:221
+#: includes/Storefront/ArchiveSchema.php:103
+#: includes/Storefront/ArchiveSchema.php:194
+#: includes/Storefront/PageSchema.php:393
+#: includes/Storefront/PageSchema.php:418
+#: includes/Storefront/PageSchema.php:433
+#: includes/Storefront/PageSchema.php:542
 #: includes/Storefront/ProductView.php:734
 msgctxt "breadcrumb"
 msgid "Home"
 msgstr "Startseite"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:115
+#: includes/Presentation/CompatibilityMatrixPage.php:117
 msgid ""
 "The compatibility reference is temporarily unavailable. Please try again "
 "later or contact the Linker team."
@@ -3175,79 +3185,79 @@ msgstr ""
 "Die Kompatibilitätsübersicht ist vorübergehend nicht verfügbar. Bitte "
 "versuchen Sie es später erneut oder wenden Sie sich an das Linker-Team."
 
-#: includes/Presentation/CompatibilityMatrixPage.php:118
+#: includes/Presentation/CompatibilityMatrixPage.php:120
 msgid "Residential inverter and battery pairings"
 msgstr "Wechselrichter und Speicher für Wohngebäude"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:119
+#: includes/Presentation/CompatibilityMatrixPage.php:121
 msgid "Commercial and industrial pairings"
 msgstr "Kombinationen für Gewerbe und Industrie"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:120
+#: includes/Presentation/CompatibilityMatrixPage.php:122
 msgid "Meters, backup switches and parallel controllers"
 msgstr "Zähler, Ersatzstromumschalter und Parallelsteuerungen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:121
+#: includes/Presentation/CompatibilityMatrixPage.php:123
 msgid "European grid-code certificates"
 msgstr "Netzanschlusszertifikate für Europa"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:122
+#: includes/Presentation/CompatibilityMatrixPage.php:124
 msgid "Documented non-released combinations"
 msgstr "Dokumentierte Kombinationen ohne Freigabe"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:157
+#: includes/Presentation/CompatibilityMatrixPage.php:159
 msgid "Accessory required"
 msgstr "Zubehör erforderlich"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:157
-#: includes/Presentation/ProductShortcodes.php:1717
+#: includes/Presentation/CompatibilityMatrixPage.php:159
+#: includes/Presentation/ProductShortcodes.php:1742
 #: includes/Products/Publication/CompatibilityEditor.php:87
 #: includes/Storefront/AgentMarkdown.php:256
 msgid "Released"
 msgstr "Freigegeben"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:167
+#: includes/Presentation/CompatibilityMatrixPage.php:169
 msgid "Smart meter"
 msgstr "Smart Meter"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:168
+#: includes/Presentation/CompatibilityMatrixPage.php:170
 msgid "Backup switch"
 msgstr "Ersatzstromumschalter"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:169
+#: includes/Presentation/CompatibilityMatrixPage.php:171
 #: includes/Products/Publication/CompatibilityEditor.php:105
 #: includes/Products/Publication/CompatibilityEditor.php:399
 #: includes/Products/Publication/PackageContentsEditor.php:102
 msgid "Parallel controller"
 msgstr "Parallelsteuerung"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:179
+#: includes/Presentation/CompatibilityMatrixPage.php:181
 #: includes/Products/Publication/CompatibilityEditor.php:113
 msgid "Included"
 msgstr "Enthalten"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:179
+#: includes/Presentation/CompatibilityMatrixPage.php:181
 msgid "Supplied separately"
 msgstr "Separat erhältlich"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:198
+#: includes/Presentation/CompatibilityMatrixPage.php:200
 msgid "Release declarations"
 msgstr "Freigabeerklärungen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:199
+#: includes/Presentation/CompatibilityMatrixPage.php:201
 msgid "Declarations requiring an accessory"
 msgstr "Freigaben mit erforderlichem Zubehör"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:200
+#: includes/Presentation/CompatibilityMatrixPage.php:202
 msgid "System requirements"
 msgstr "Systemanforderungen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:201
+#: includes/Presentation/CompatibilityMatrixPage.php:203
 msgid "Grid-code certificate PDFs"
 msgstr "Netzanschlusszertifikate (PDF)"
 
 #. translators: 1: number of distinct model pairs, 2: number requiring an accessory.
-#: includes/Presentation/CompatibilityMatrixPage.php:205
+#: includes/Presentation/CompatibilityMatrixPage.php:207
 #, php-format
 msgid ""
 "The manufacturer documents cover %1$d inverter and battery combinations. An "
@@ -3263,62 +3273,62 @@ msgstr ""
 "Unterlagen. Angaben zu Zählern, Ersatzstrom und Netzanschlusszertifikaten "
 "finden Sie in eigenen Tabellen, jeweils nach Modell aufgeschlüsselt."
 
-#: includes/Presentation/CompatibilityMatrixPage.php:212
+#: includes/Presentation/CompatibilityMatrixPage.php:214
 msgid "On this page"
 msgstr "Auf dieser Seite"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:219
-#: includes/Presentation/CompatibilityMatrixPage.php:220
+#: includes/Presentation/CompatibilityMatrixPage.php:221
+#: includes/Presentation/CompatibilityMatrixPage.php:222
 msgid "Accessory and conditions"
 msgstr "Zubehör und Bedingungen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:219
+#: includes/Presentation/CompatibilityMatrixPage.php:221
 msgid "Compatible HV battery"
 msgstr "Kompatibler Hochvoltspeicher"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:219
+#: includes/Presentation/CompatibilityMatrixPage.php:221
 msgid "Inverter (power and phase)"
 msgstr "Wechselrichter (Leistung und Phasen)"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:219
-#: includes/Presentation/CompatibilityMatrixPage.php:220
+#: includes/Presentation/CompatibilityMatrixPage.php:221
+#: includes/Presentation/CompatibilityMatrixPage.php:222
 msgid "Manufacturer document"
 msgstr "Herstellerunterlage"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:219
+#: includes/Presentation/CompatibilityMatrixPage.php:221
 #: includes/Storefront/AgentMarkdown.php:252
 msgid "Release status"
 msgstr "Freigabestatus"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:220
+#: includes/Presentation/CompatibilityMatrixPage.php:222
 msgid "Accessory role"
 msgstr "Zubehörfunktion"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:220
+#: includes/Presentation/CompatibilityMatrixPage.php:222
 msgid "Inverter"
 msgstr "Wechselrichter"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:220
+#: includes/Presentation/CompatibilityMatrixPage.php:222
 msgid "Scope"
 msgstr "Umfang"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:221
+#: includes/Presentation/CompatibilityMatrixPage.php:223
 msgid "Brand and model"
 msgstr "Hersteller und Modell"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:221
+#: includes/Presentation/CompatibilityMatrixPage.php:223
 msgid "Category and rating"
 msgstr "Kategorie und Nennleistung"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:221
+#: includes/Presentation/CompatibilityMatrixPage.php:223
 msgid "Certificate PDFs"
 msgstr "Zertifikate (PDF)"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:221
+#: includes/Presentation/CompatibilityMatrixPage.php:223
 msgid "Verified standards"
 msgstr "Nachgewiesene Normen"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:227
+#: includes/Presentation/CompatibilityMatrixPage.php:229
 msgid ""
 "For the specific models below, the cited documents do not establish a "
 "release. Open a series to see the exact models."
@@ -3327,41 +3337,41 @@ msgstr ""
 "keine Freigabe vor. Öffnen Sie eine Baureihe, um die genauen Modelle zu "
 "sehen."
 
-#: includes/Presentation/CompatibilityMatrixPage.php:268
-#: includes/Presentation/ProductShortcodes.php:817
+#: includes/Presentation/CompatibilityMatrixPage.php:270
+#: includes/Presentation/ProductShortcodes.php:832
 msgid "Solution Configurator"
 msgstr "Lösungskonfigurator"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:269
+#: includes/Presentation/CompatibilityMatrixPage.php:271
 msgid "FAQ and documents"
 msgstr "FAQ und Dokumente"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:270
+#: includes/Presentation/CompatibilityMatrixPage.php:272
 #: includes/Registration/AccountsTable.php:44
 msgid "Contact"
 msgstr "Kontakt"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:298
+#: includes/Presentation/CompatibilityMatrixPage.php:300
 msgid "per stack"
 msgstr "je Speicherturm"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:299
+#: includes/Presentation/CompatibilityMatrixPage.php:301
 msgid "per system"
 msgstr "je System"
 
-#: includes/Presentation/CompatibilityMatrixPage.php:300
+#: includes/Presentation/CompatibilityMatrixPage.php:302
 msgid "per unit"
 msgstr "je Gerät"
 
 #. translators: 1 and 2: minimum and maximum number of battery modules.
-#: includes/Presentation/CompatibilityMatrixPage.php:307
+#: includes/Presentation/CompatibilityMatrixPage.php:309
 #, php-format
 msgid "%1$d–%2$d battery modules"
 msgstr "%1$d–%2$d Batteriemodule"
 
 #. translators: %d: PDF page number.
 #. translators: %d: page number.
-#: includes/Presentation/CompatibilityMatrixPage.php:333
+#: includes/Presentation/CompatibilityMatrixPage.php:335
 #: includes/Products/DocumentLibrary.php:318
 #, php-format
 msgid "p. %d"
@@ -3392,7 +3402,7 @@ msgid "Hello Linker team, I would like to discuss a solar storage inquiry."
 msgstr "Guten Tag Linker-Team, ich habe eine Anfrage zu einem Speichersystem."
 
 #. translators: %d: product archive page number.
-#: includes/Presentation/FamilyNavigation.php:112
+#: includes/Presentation/FamilyNavigation.php:107
 #, php-format
 msgid "Page %d"
 msgstr "Seite %d"
@@ -3460,8 +3470,8 @@ msgid "No documents of this type."
 msgstr "Keine Dokumente dieses Typs."
 
 #: includes/Presentation/LibraryPage.php:436
-#: includes/Presentation/ProductShortcodes.php:1059
-#: includes/Presentation/ProductShortcodes.php:1674
+#: includes/Presentation/ProductShortcodes.php:1078
+#: includes/Presentation/ProductShortcodes.php:1699
 #: includes/Presentation/Shortcodes.php:360
 msgid "Ask Genie"
 msgstr "Genie fragen"
@@ -3471,12 +3481,12 @@ msgid "Trade rule"
 msgstr "Handelsregel"
 
 #: includes/Presentation/LibraryPage.php:440
-#: includes/Presentation/ProductShortcodes.php:1810
+#: includes/Presentation/ProductShortcodes.php:1835
 msgid "Previous"
 msgstr "Zurück"
 
 #: includes/Presentation/LibraryPage.php:441
-#: includes/Presentation/ProductShortcodes.php:1819
+#: includes/Presentation/ProductShortcodes.php:1844
 msgid "Next"
 msgstr "Weiter"
 
@@ -3534,7 +3544,7 @@ msgid "German"
 msgstr "Deutsch"
 
 #: includes/Presentation/LibraryPage.php:590
-#: includes/Presentation/ProductShortcodes.php:1612
+#: includes/Presentation/ProductShortcodes.php:1637
 msgid "Multilingual"
 msgstr "Mehrsprachig"
 
@@ -3602,88 +3612,88 @@ msgstr ""
 msgid "Our reason:"
 msgstr "Unser Grund:"
 
-#: includes/Presentation/ProductShortcodes.php:230
-#: includes/Storefront/ArchiveSchema.php:150
+#: includes/Presentation/ProductShortcodes.php:236
+#: includes/Storefront/ArchiveSchema.php:156
 msgid "Search products or filter by category and project requirements."
 msgstr ""
 "Suchen Sie Produkte oder filtern Sie nach Kategorie und Projektanforderungen."
 
-#: includes/Presentation/ProductShortcodes.php:231
+#: includes/Presentation/ProductShortcodes.php:237
 msgid "Press Search to reload the results."
 msgstr "Wählen Sie „Suchen“, um die Ergebnisse erneut zu laden."
 
-#: includes/Presentation/ProductShortcodes.php:238
+#: includes/Presentation/ProductShortcodes.php:244
 msgid "Search model or item number"
 msgstr "Modell oder Produktnummer suchen"
 
-#: includes/Presentation/ProductShortcodes.php:272
+#: includes/Presentation/ProductShortcodes.php:278
 msgid "Product categories"
 msgstr "Produktkategorien"
 
-#: includes/Presentation/ProductShortcodes.php:273
-#: includes/Presentation/ProductShortcodes.php:345
+#: includes/Presentation/ProductShortcodes.php:279
+#: includes/Presentation/ProductShortcodes.php:351
 msgid "All products"
 msgstr "Alle Produkte"
 
-#: includes/Presentation/ProductShortcodes.php:300
+#: includes/Presentation/ProductShortcodes.php:306
 msgid "Close filters"
 msgstr "Filter schließen"
 
-#: includes/Presentation/ProductShortcodes.php:313
-#: includes/Presentation/ProductShortcodes.php:322
-#: includes/Presentation/ProductShortcodes.php:523
+#: includes/Presentation/ProductShortcodes.php:319
+#: includes/Presentation/ProductShortcodes.php:328
+#: includes/Presentation/ProductShortcodes.php:529
 msgid "Filters"
 msgstr "Filter"
 
 #. translators: %d: number of selected filters.
-#: includes/Presentation/ProductShortcodes.php:314
+#: includes/Presentation/ProductShortcodes.php:320
 #, php-format
 msgid "Filters (%d)"
 msgstr "Filter (%d)"
 
-#: includes/Presentation/ProductShortcodes.php:323
+#: includes/Presentation/ProductShortcodes.php:329
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: includes/Presentation/ProductShortcodes.php:336
-#: includes/Presentation/ProductShortcodes.php:1711
+#: includes/Presentation/ProductShortcodes.php:342
+#: includes/Presentation/ProductShortcodes.php:1736
 #: includes/Storefront/AgentMarkdown.php:224
 msgid "Category"
 msgstr "Kategorie"
 
-#: includes/Presentation/ProductShortcodes.php:386
-#: includes/Presentation/ProductShortcodes.php:547
+#: includes/Presentation/ProductShortcodes.php:392
+#: includes/Presentation/ProductShortcodes.php:553
 #: includes/Storefront/ProductView.php:308
 msgid "AC power"
 msgstr "AC-Leistung"
 
-#: includes/Presentation/ProductShortcodes.php:386
+#: includes/Presentation/ProductShortcodes.php:392
 msgid "Maximum AC power in kilowatts"
 msgstr "Maximale AC-Leistung in Kilowatt"
 
-#: includes/Presentation/ProductShortcodes.php:386
+#: includes/Presentation/ProductShortcodes.php:392
 msgid "Minimum AC power in kilowatts"
 msgstr "Minimale AC-Leistung in Kilowatt"
 
-#: includes/Presentation/ProductShortcodes.php:389
+#: includes/Presentation/ProductShortcodes.php:395
 msgid "Maximum usable energy in kilowatt hours"
 msgstr "Maximale nutzbare Energie in Kilowattstunden"
 
-#: includes/Presentation/ProductShortcodes.php:389
+#: includes/Presentation/ProductShortcodes.php:395
 msgid "Minimum usable energy in kilowatt hours"
 msgstr "Minimale nutzbare Energie in Kilowattstunden"
 
-#: includes/Presentation/ProductShortcodes.php:389
-#: includes/Presentation/ProductShortcodes.php:548
+#: includes/Presentation/ProductShortcodes.php:395
+#: includes/Presentation/ProductShortcodes.php:554
 #: includes/Products/Materials.php:915
 msgid "Usable energy"
 msgstr "Nutzbare Energie"
 
-#: includes/Presentation/ProductShortcodes.php:399
+#: includes/Presentation/ProductShortcodes.php:405
 msgid "Plan with the Solution Configurator"
 msgstr "Mit dem Lösungskonfigurator planen"
 
-#: includes/Presentation/ProductShortcodes.php:400
+#: includes/Presentation/ProductShortcodes.php:406
 msgid ""
 "Configure a storage system from your site data; the result is a solution "
 "draft you can send as an inquiry."
@@ -3691,19 +3701,19 @@ msgstr ""
 "Konfigurieren Sie aus Ihren Standortdaten ein Speichersystem; das Ergebnis "
 "ist ein Lösungsentwurf, den Sie als Anfrage senden können."
 
-#: includes/Presentation/ProductShortcodes.php:406
+#: includes/Presentation/ProductShortcodes.php:412
 msgid "Clear"
 msgstr "Zurücksetzen"
 
-#: includes/Presentation/ProductShortcodes.php:407
+#: includes/Presentation/ProductShortcodes.php:413
 msgid "Show products"
 msgstr "Produkte anzeigen"
 
-#: includes/Presentation/ProductShortcodes.php:436
+#: includes/Presentation/ProductShortcodes.php:442
 msgid "Set"
 msgstr "Übernehmen"
 
-#: includes/Presentation/ProductShortcodes.php:495
+#: includes/Presentation/ProductShortcodes.php:501
 msgid ""
 "No products match your search and selected filters. Try another search term "
 "or change a filter."
@@ -3711,84 +3721,87 @@ msgstr ""
 "Für Ihre Suche und die ausgewählten Filter wurden keine Produkte gefunden. "
 "Versuchen Sie einen anderen Suchbegriff oder ändern Sie einen Filter."
 
-#: includes/Presentation/ProductShortcodes.php:497
+#: includes/Presentation/ProductShortcodes.php:503
 msgid "No products match your search. Try another search term."
 msgstr ""
 "Für Ihre Suche wurden keine Produkte gefunden. Versuchen Sie einen anderen "
 "Suchbegriff."
 
-#: includes/Presentation/ProductShortcodes.php:499
+#: includes/Presentation/ProductShortcodes.php:505
 msgid ""
 "No products match the selected filters. Try changing or clearing a filter."
 msgstr ""
 "Für die ausgewählten Filter wurden keine Produkte gefunden. Ändern oder "
 "entfernen Sie einen Filter."
 
-#: includes/Presentation/ProductShortcodes.php:501
+#: includes/Presentation/ProductShortcodes.php:507
 msgid "No products are listed here."
 msgstr "Hier sind keine Produkte aufgeführt."
 
-#: includes/Presentation/ProductShortcodes.php:522
+#: includes/Presentation/ProductShortcodes.php:528
 msgid "Product actions"
 msgstr "Produktaktionen"
 
-#: includes/Presentation/ProductShortcodes.php:547
+#: includes/Presentation/ProductShortcodes.php:553
 msgid "kW"
 msgstr "kW"
 
-#: includes/Presentation/ProductShortcodes.php:548
+#: includes/Presentation/ProductShortcodes.php:554
 msgid "kWh"
 msgstr "kWh"
 
-#: includes/Presentation/ProductShortcodes.php:567
+#: includes/Presentation/ProductShortcodes.php:573
 msgid "Clear all"
 msgstr "Alle zurücksetzen"
 
-#: includes/Presentation/ProductShortcodes.php:697
-#: includes/Presentation/ProductShortcodes.php:2134
+#: includes/Presentation/ProductShortcodes.php:703
+#: includes/Presentation/ProductShortcodes.php:2159
 msgid "Item no."
 msgstr "Produktnr."
 
-#: includes/Presentation/ProductShortcodes.php:709
+#: includes/Presentation/ProductShortcodes.php:715
 #: includes/Storefront/AgentMarkdown.php:221
 #: includes/Storefront/AgentMarkdown.php:252
 #: templates/emails/linker-genie-conversation.php:46
 msgid "Model"
 msgstr "Modell"
 
-#: includes/Presentation/ProductShortcodes.php:713
+#: includes/Presentation/ProductShortcodes.php:719
 msgid "Key product data"
 msgstr "Produktdaten"
 
-#: includes/Presentation/ProductShortcodes.php:728
+#: includes/Presentation/ProductShortcodes.php:734
 msgid "View product"
 msgstr "Produkt ansehen"
 
 #. translators: %s: product name.
-#: includes/Presentation/ProductShortcodes.php:730
-#: includes/Presentation/ProductShortcodes.php:2098
+#: includes/Presentation/ProductShortcodes.php:736
+#: includes/Presentation/ProductShortcodes.php:2123
 #, php-format
 msgid "Compare: %s"
 msgstr "Vergleichen: %s"
 
-#: includes/Presentation/ProductShortcodes.php:734
+#: includes/Presentation/ProductShortcodes.php:740
 msgid "Log in for pricing"
 msgstr "Für Preise anmelden"
 
-#: includes/Presentation/ProductShortcodes.php:789
-msgid "Other models in this series"
-msgstr "Weitere Modelle dieser Serie"
-
-#: includes/Presentation/ProductShortcodes.php:809
+#: includes/Presentation/ProductShortcodes.php:824
 msgid "Inverters and battery systems"
 msgstr "Wechselrichter und Batteriesysteme"
 
-#: includes/Presentation/ProductShortcodes.php:1036
+#: includes/Presentation/ProductShortcodes.php:836
+msgid ""
+"See how Linker handles pre-delivery checks, certificates, and project supply "
+"from Barleben →"
+msgstr ""
+"So begleitet Linker aus Barleben Systemprüfung, Zertifikate und Lieferung →"
+
+#: includes/Presentation/ProductShortcodes.php:1055
 msgid "Ask about this product"
 msgstr "Produkt anfragen"
 
 #. translators: %s: product name with item number.
-#: includes/Presentation/ProductShortcodes.php:1053
+#: includes/Presentation/ProductShortcodes.php:1072
 #, php-format
 msgid ""
 "About %s: give me the key specs, which batteries or inverters it pairs with, "
@@ -3799,42 +3812,42 @@ msgstr ""
 "geeignet ist."
 
 #. translators: 1: product title, 2: item number.
-#: includes/Presentation/ProductShortcodes.php:1063
+#: includes/Presentation/ProductShortcodes.php:1082
 #, php-format
 msgid "Hello Linker team, I have a question about %1$s (Item %2$s)."
 msgstr "Guten Tag Linker-Team, ich habe eine Frage zu %1$s (Art.-Nr. %2$s)."
 
-#: includes/Presentation/ProductShortcodes.php:1125
+#: includes/Presentation/ProductShortcodes.php:1144
 msgid "New system"
 msgstr "Neues System"
 
 #. translators: %s: product name with item number.
-#: includes/Presentation/ProductShortcodes.php:1127
+#: includes/Presentation/ProductShortcodes.php:1146
 #, php-format
 msgid "I am planning a new system with %s."
 msgstr "Ich plane ein neues System mit %s."
 
-#: includes/Presentation/ProductShortcodes.php:1130
+#: includes/Presentation/ProductShortcodes.php:1149
 msgid "Extend an existing system"
 msgstr "Bestehendes System erweitern"
 
 #. translators: %s: product name with item number.
-#: includes/Presentation/ProductShortcodes.php:1132
+#: includes/Presentation/ProductShortcodes.php:1151
 #, php-format
 msgid "I am extending an existing system with %s."
 msgstr "Ich erweitere ein bestehendes System um %s."
 
-#: includes/Presentation/ProductShortcodes.php:1135
+#: includes/Presentation/ProductShortcodes.php:1154
 msgid "Replace an existing unit"
 msgstr "Gerät ersetzen"
 
 #. translators: %s: product name with item number.
-#: includes/Presentation/ProductShortcodes.php:1137
+#: includes/Presentation/ProductShortcodes.php:1156
 #, php-format
 msgid "I am replacing a unit in an existing system with %s."
 msgstr "Ich ersetze ein Gerät in einem bestehenden System durch %s."
 
-#: includes/Presentation/ProductShortcodes.php:1140
+#: includes/Presentation/ProductShortcodes.php:1159
 msgid ""
 "Then ask one question at a time for what you still need (existing model, "
 "quantity, installation postcode, installation date) and check compatibility, "
@@ -3844,33 +3857,33 @@ msgstr ""
 "Menge, Installations-PLZ, Montagetermin) und prüfe Kompatibilität, fehlende "
 "Systemkomponenten und Lieferfenster anhand aktueller Linker-Daten."
 
-#: includes/Presentation/ProductShortcodes.php:1173
+#: includes/Presentation/ProductShortcodes.php:1192
 msgid "Product photography for this model is in preparation."
 msgstr "Die Produktfotografie für dieses Modell wird vorbereitet."
 
 #. translators: %s: product name.
-#: includes/Presentation/ProductShortcodes.php:1177
+#: includes/Presentation/ProductShortcodes.php:1196
 #, php-format
 msgid "Enlarge the product image: %s"
 msgstr "Produktbild vergrößern: %s"
 
-#: includes/Presentation/ProductShortcodes.php:1202
+#: includes/Presentation/ProductShortcodes.php:1221
 msgid "Product image 2"
 msgstr "Produktbild 2"
 
 #. translators: %s: product image description.
-#: includes/Presentation/ProductShortcodes.php:1207
+#: includes/Presentation/ProductShortcodes.php:1226
 #, php-format
 msgid "%s — alternate product view"
 msgstr "%s — weitere Produktansicht"
 
 #. translators: %d: image number.
-#: includes/Presentation/ProductShortcodes.php:1266
+#: includes/Presentation/ProductShortcodes.php:1285
 #, php-format
 msgid "Product image %d"
 msgstr "Produktbild %d"
 
-#: includes/Presentation/ProductShortcodes.php:1290
+#: includes/Presentation/ProductShortcodes.php:1309
 msgid ""
 "Introduction in preparation. The specification below carries the values from "
 "the datasheet on file."
@@ -3878,11 +3891,11 @@ msgstr ""
 "Die Einleitung wird vorbereitet. Die Spezifikation darunter enthält die "
 "Werte des hinterlegten Datenblatts."
 
-#: includes/Presentation/ProductShortcodes.php:1453
+#: includes/Presentation/ProductShortcodes.php:1478
 msgid "Specifications"
 msgstr "Spezifikationen"
 
-#: includes/Presentation/ProductShortcodes.php:1459
+#: includes/Presentation/ProductShortcodes.php:1484
 msgid ""
 "The specification table for this product is in preparation. Ask us for the "
 "datasheet."
@@ -3890,16 +3903,16 @@ msgstr ""
 "Die Spezifikationstabelle für dieses Produkt wird vorbereitet. Fragen Sie "
 "uns nach dem Datenblatt."
 
-#: includes/Presentation/ProductShortcodes.php:1462
+#: includes/Presentation/ProductShortcodes.php:1487
 msgid "Specification group"
 msgstr "Spezifikationsgruppe"
 
-#: includes/Presentation/ProductShortcodes.php:1502
+#: includes/Presentation/ProductShortcodes.php:1527
 msgid "About these specifications"
 msgstr "Zu diesen Angaben"
 
 #. translators: %s: product name.
-#: includes/Presentation/ProductShortcodes.php:1530
+#: includes/Presentation/ProductShortcodes.php:1555
 #, php-format
 msgid ""
 "Scenarios that show which projects the %s belongs in, and the limits behind "
@@ -3908,40 +3921,40 @@ msgstr ""
 "Szenarien für %s: in welche Projekte das Produkt passt und welche Grenzen "
 "der Empfehlung unserer Ingenieure zugrunde liegen."
 
-#: includes/Presentation/ProductShortcodes.php:1536
+#: includes/Presentation/ProductShortcodes.php:1561
 msgid "Project scenario"
 msgstr "Projektszenario"
 
-#: includes/Presentation/ProductShortcodes.php:1543
+#: includes/Presentation/ProductShortcodes.php:1568
 msgid "Checks"
 msgstr "Prüfpunkte"
 
-#: includes/Presentation/ProductShortcodes.php:1543
+#: includes/Presentation/ProductShortcodes.php:1568
 msgid "Linker view"
 msgstr "Linker-Einschätzung"
 
-#: includes/Presentation/ProductShortcodes.php:1543
+#: includes/Presentation/ProductShortcodes.php:1568
 msgid "Project"
 msgstr "Projekt"
 
-#: includes/Presentation/ProductShortcodes.php:1545
+#: includes/Presentation/ProductShortcodes.php:1570
 msgid "Project information"
 msgstr "Projektinformationen"
 
-#: includes/Presentation/ProductShortcodes.php:1563
+#: includes/Presentation/ProductShortcodes.php:1588
 msgid "Limits for the configuration"
 msgstr "Grenzen für die Konfiguration"
 
-#: includes/Presentation/ProductShortcodes.php:1568
+#: includes/Presentation/ProductShortcodes.php:1593
 msgid "Linker's read"
 msgstr "Unsere Einschätzung"
 
-#: includes/Presentation/ProductShortcodes.php:1595
+#: includes/Presentation/ProductShortcodes.php:1620
 msgid "No documents are available for this product."
 msgstr "Für dieses Produkt sind keine Dokumente verfügbar."
 
 #. translators: %s: equipment model.
-#: includes/Presentation/ProductShortcodes.php:1656
+#: includes/Presentation/ProductShortcodes.php:1681
 #, php-format
 msgid ""
 "Which inverters are compatible with %s? Please include the manufacturer "
@@ -3951,7 +3964,7 @@ msgstr ""
 "Unterlagen des Herstellers."
 
 #. translators: %s: equipment model.
-#: includes/Presentation/ProductShortcodes.php:1658
+#: includes/Presentation/ProductShortcodes.php:1683
 #, php-format
 msgid ""
 "Which equipment is compatible with %s? Please include the manufacturer "
@@ -3960,16 +3973,16 @@ msgstr ""
 "Welche Geräte sind mit %s kompatibel? Nennen Sie bitte die Unterlagen des "
 "Herstellers."
 
-#: includes/Presentation/ProductShortcodes.php:1659
+#: includes/Presentation/ProductShortcodes.php:1684
 msgid "Check inverter compatibility"
 msgstr "Kompatibilität mit Wechselrichtern prüfen"
 
-#: includes/Presentation/ProductShortcodes.php:1659
+#: includes/Presentation/ProductShortcodes.php:1684
 msgid "Check system compatibility"
 msgstr "Systemkompatibilität prüfen"
 
 #. translators: %s: equipment model.
-#: includes/Presentation/ProductShortcodes.php:1662
+#: includes/Presentation/ProductShortcodes.php:1687
 #, php-format
 msgid ""
 "Find an inverter for %s or discuss your existing equipment with our team."
@@ -3978,75 +3991,75 @@ msgstr ""
 "vorhandene Anlage mit unserem Team."
 
 #. translators: %s: equipment model.
-#: includes/Presentation/ProductShortcodes.php:1664
+#: includes/Presentation/ProductShortcodes.php:1689
 #, php-format
 msgid "Check which equipment works with %s in your project."
 msgstr "Prüfen Sie, welche Geräte in Ihrem Projekt mit %s zusammenarbeiten."
 
-#: includes/Presentation/ProductShortcodes.php:1675
+#: includes/Presentation/ProductShortcodes.php:1700
 msgid "Open configurator"
 msgstr "Konfigurator öffnen"
 
-#: includes/Presentation/ProductShortcodes.php:1676
+#: includes/Presentation/ProductShortcodes.php:1701
 msgid "Contact our team"
 msgstr "Unser Team kontaktieren"
 
-#: includes/Presentation/ProductShortcodes.php:1699
+#: includes/Presentation/ProductShortcodes.php:1724
 msgid "View full inverter & battery compatibility matrix"
 msgstr ""
 "Vollständige Wechselrichter- und Speicher-Kompatibilitätsmatrix ansehen"
 
-#: includes/Presentation/ProductShortcodes.php:1711
+#: includes/Presentation/ProductShortcodes.php:1736
 msgid "Compatible model"
 msgstr "Kompatibles Modell"
 
-#: includes/Presentation/ProductShortcodes.php:1711
+#: includes/Presentation/ProductShortcodes.php:1736
 msgid "Rating"
 msgstr "Leistung / Kapazität"
 
-#: includes/Presentation/ProductShortcodes.php:1711
+#: includes/Presentation/ProductShortcodes.php:1736
 msgid "Status & required accessory"
 msgstr "Freigabe und erforderliches Zubehör"
 
-#: includes/Presentation/ProductShortcodes.php:1717
+#: includes/Presentation/ProductShortcodes.php:1742
 #: includes/Storefront/AgentMarkdown.php:256
 msgid "Released with accessory"
 msgstr "Mit Zubehör freigegeben"
 
 #. translators: %d: number of product families.
-#: includes/Presentation/ProductShortcodes.php:1789
+#: includes/Presentation/ProductShortcodes.php:1814
 #, php-format
 msgid "%d product family"
 msgid_plural "%d product families"
 msgstr[0] "%d Produktfamilie"
 msgstr[1] "%d Produktfamilien"
 
-#: includes/Presentation/ProductShortcodes.php:1807
+#: includes/Presentation/ProductShortcodes.php:1832
 msgid "Product pagination"
 msgstr "Seitennavigation der Produkte"
 
 #. translators: %s: product category name.
-#: includes/Presentation/ProductShortcodes.php:1848
+#: includes/Presentation/ProductShortcodes.php:1873
 #, php-format
 msgid "Category: %s"
 msgstr "Kategorie: %s"
 
 #. translators: %s: shop page title.
-#: includes/Presentation/ProductShortcodes.php:1850
+#: includes/Presentation/ProductShortcodes.php:1875
 #, php-format
 msgid "Archives: %s"
 msgstr "Archiv: %s"
 
-#: includes/Presentation/ProductShortcodes.php:1886
+#: includes/Presentation/ProductShortcodes.php:1911
 #: includes/Presentation/Shortcodes.php:280
 msgid "CONTACT LINKER"
 msgstr "KONTAKT ZU LINKER"
 
-#: includes/Presentation/ProductShortcodes.php:1887
+#: includes/Presentation/ProductShortcodes.php:1912
 msgid "Not sure which model to look for?"
 msgstr "Noch nicht sicher, welches Modell passt?"
 
-#: includes/Presentation/ProductShortcodes.php:1888
+#: includes/Presentation/ProductShortcodes.php:1913
 #: includes/Presentation/Shortcodes.php:282
 msgid ""
 "Your question includes this page as context. You can remove it before "
@@ -4055,19 +4068,19 @@ msgstr ""
 "Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden "
 "entfernen."
 
-#: includes/Presentation/ProductShortcodes.php:1891
+#: includes/Presentation/ProductShortcodes.php:1916
 msgid "Need help choosing?"
 msgstr "Hilfe bei der Auswahl?"
 
-#: includes/Presentation/ProductShortcodes.php:2129
+#: includes/Presentation/ProductShortcodes.php:2154
 msgid "All models"
 msgstr "Alle Modelle"
 
-#: includes/Presentation/ProductShortcodes.php:2131
+#: includes/Presentation/ProductShortcodes.php:2156
 msgid "Selected model"
 msgstr "Ausgewähltes Modell"
 
-#: includes/Presentation/ProductShortcodes.php:2157
+#: includes/Presentation/ProductShortcodes.php:2182
 #: templates/myaccount/auth/form-lost-password.php:37
 #: templates/myaccount/auth/lost-password-confirmation.php:29
 msgid "My account"
@@ -4286,13 +4299,11 @@ msgstr "Nettopreis nach Partner-Anmeldung"
 
 #: includes/Products/CompatibilityIndex.php:275
 #: includes/Storefront/ProductImageAlt.php:42
-#: includes/Storefront/ProductSchema.php:305
 msgid "single-phase"
 msgstr "einphasig"
 
 #: includes/Products/CompatibilityIndex.php:275
 #: includes/Storefront/ProductImageAlt.php:42
-#: includes/Storefront/ProductSchema.php:305
 msgid "three-phase"
 msgstr "dreiphasig"
 
@@ -4406,7 +4417,7 @@ msgid "Max. apparent power"
 msgstr "Max. Scheinleistung"
 
 #: includes/Products/Materials.php:912
-#: includes/Storefront/ProductSchema.php:212
+#: includes/Storefront/ProductSchema.php:207
 msgid "MPPT trackers"
 msgstr "MPPT-Tracker"
 
@@ -4431,7 +4442,7 @@ msgid "Nominal AC voltage"
 msgstr "AC-Nennspannung"
 
 #: includes/Products/Materials.php:919
-#: includes/Storefront/ProductSchema.php:221
+#: includes/Storefront/ProductSchema.php:216
 msgid "System energy range"
 msgstr "Energiebereich des Systems"
 
@@ -4505,7 +4516,7 @@ msgid "Communication address range"
 msgstr "Kommunikationsadressbereich"
 
 #: includes/Products/Materials.php:938
-#: includes/Storefront/ProductSchema.php:209
+#: includes/Storefront/ProductSchema.php:204
 msgid "Maximum PV input power"
 msgstr "Maximale PV-Eingangsleistung"
 
@@ -4550,7 +4561,7 @@ msgid "Communication"
 msgstr "Kommunikation"
 
 #: includes/Products/Materials.php:949 includes/Products/Materials.php:950
-#: includes/Storefront/ProductSchema.php:213
+#: includes/Storefront/ProductSchema.php:208
 msgid "Ingress protection"
 msgstr "Schutzart"
 
@@ -6265,118 +6276,83 @@ msgstr ""
 "Finden Sie Modelle und Datenblätter von %s für Ihr nächstes Solar- oder "
 "Speicherprojekt. Linker unterstützt Installateure und EPCs in ganz Europa."
 
-#: includes/Storefront/PageSchema.php:332
+#: includes/Storefront/PageSchema.php:438
 msgid "Solar and battery storage solutions"
 msgstr "Solar- und Batteriespeicherlösungen"
 
-#: includes/Storefront/PageSchema.php:333
+#: includes/Storefront/PageSchema.php:439
 msgid "Residential Solar Battery Storage"
 msgstr "Heimspeicher"
 
-#: includes/Storefront/PageSchema.php:334
+#: includes/Storefront/PageSchema.php:440
 msgid "Commercial & Industrial Battery Storage"
 msgstr "Gewerbespeicher (C&I)"
 
-#: includes/Storefront/PageSchema.php:335
+#: includes/Storefront/PageSchema.php:441
 msgid "Utility-Scale Battery Energy Storage Systems"
 msgstr "Batteriegroßspeicher"
 
-#: includes/Storefront/PageSchema.php:383
+#: includes/Storefront/PageSchema.php:489
 msgid "Solutions"
 msgstr "Lösungen"
 
 #. translators: %d: number of grid phases.
-#: includes/Storefront/ProductFilters.php:575
-#: includes/Storefront/ProductFilters.php:771
+#: includes/Storefront/ProductFilters.php:574
+#: includes/Storefront/ProductFilters.php:770
 #, php-format
 msgid "%d-phase"
 msgid_plural "%d-phase"
 msgstr[0] "%d-phasig"
 msgstr[1] "%d-phasig"
 
-#: includes/Storefront/ProductFilters.php:751
+#: includes/Storefront/ProductFilters.php:750
 msgid "Up to 6 kW"
 msgstr "Bis 6 kW"
 
-#: includes/Storefront/ProductFilters.php:752
+#: includes/Storefront/ProductFilters.php:751
 msgid "6 to 15 kW"
 msgstr "6 bis 15 kW"
 
-#: includes/Storefront/ProductFilters.php:753
+#: includes/Storefront/ProductFilters.php:752
 msgid "15 to 30 kW"
 msgstr "15 bis 30 kW"
 
-#: includes/Storefront/ProductFilters.php:754
+#: includes/Storefront/ProductFilters.php:753
 msgid "Over 30 kW"
 msgstr "Über 30 kW"
 
-#: includes/Storefront/ProductSchema.php:208
+#: includes/Storefront/ProductSchema.php:203
 msgid "Rated AC output power"
 msgstr "AC-Nennleistung"
 
-#: includes/Storefront/ProductSchema.php:210
+#: includes/Storefront/ProductSchema.php:205
 msgid "Usable battery energy"
 msgstr "Nutzbare Batteriekapazität"
 
-#: includes/Storefront/ProductSchema.php:211
+#: includes/Storefront/ProductSchema.php:206
 msgid "Nominal battery energy"
 msgstr "Nennenergie der Batterie"
 
-#: includes/Storefront/ProductSchema.php:214
+#: includes/Storefront/ProductSchema.php:209
 msgid "Battery voltage range"
 msgstr "Batteriespannungsbereich"
 
-#: includes/Storefront/ProductSchema.php:215
+#: includes/Storefront/ProductSchema.php:210
 msgid "Grid compliance standards"
 msgstr "Netzanschlussnormen"
 
-#: includes/Storefront/ProductSchema.php:218
+#: includes/Storefront/ProductSchema.php:213
 #: includes/Storefront/ProductView.php:304
 msgid "Grid phases"
 msgstr "Netzphasen"
 
-#: includes/Storefront/ProductSchema.php:224
+#: includes/Storefront/ProductSchema.php:219
 msgid "Commercial & Industrial"
 msgstr "Gewerbe und Industrie"
 
-#: includes/Storefront/ProductSchema.php:224
+#: includes/Storefront/ProductSchema.php:219
 msgid "Residential"
 msgstr "Wohngebäude"
-
-#: includes/Storefront/ProductSchema.php:325
-msgid ""
-"Use the manufacturer’s documents to check the technical details, then "
-"request a quotation from Linker for your installation."
-msgstr ""
-"Prüfen Sie die technischen Angaben in den Herstellerunterlagen und fragen "
-"Sie bei Linker ein Angebot für Ihre Anlage an."
-
-#: includes/Storefront/ProductSchema.php:326
-msgid ""
-"Check the technical details in the manufacturer’s documents and request a "
-"quotation from Linker for your project."
-msgstr ""
-"Lesen Sie die technischen Angaben in den Herstellerunterlagen und fragen Sie "
-"Ihr Projektangebot bei Linker an."
-
-#: includes/Storefront/ProductSchema.php:327
-msgid ""
-"Check the manufacturer’s documents and ask Linker for a quotation for your "
-"installation."
-msgstr ""
-"Prüfen Sie die Herstellerunterlagen und fragen Sie bei Linker ein Angebot "
-"für Ihre Anlage an."
-
-#: includes/Storefront/ProductSchema.php:328
-msgid ""
-"See the manufacturer’s documents and request a project quotation from Linker."
-msgstr ""
-"Prüfen Sie die Herstellerunterlagen und fragen Sie Ihr Projektangebot bei "
-"Linker an."
-
-#: includes/Storefront/ProductSchema.php:329
-msgid "Check the manufacturer’s documents and request a quotation."
-msgstr "Prüfen Sie die Herstellerunterlagen und fragen Sie ein Angebot an."
 
 #: includes/Storefront/ProductView.php:314
 msgid "Energy capacity"
@@ -7286,6 +7262,40 @@ msgid ""
 msgstr ""
 "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. "
 "Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
+
+#~ msgid "Other models in this series"
+#~ msgstr "Weitere Modelle dieser Serie"
+
+#~ msgid ""
+#~ "Use the manufacturer’s documents to check the technical details, then "
+#~ "request a quotation from Linker for your installation."
+#~ msgstr ""
+#~ "Prüfen Sie die technischen Angaben in den Herstellerunterlagen und fragen "
+#~ "Sie bei Linker ein Angebot für Ihre Anlage an."
+
+#~ msgid ""
+#~ "Check the technical details in the manufacturer’s documents and request a "
+#~ "quotation from Linker for your project."
+#~ msgstr ""
+#~ "Lesen Sie die technischen Angaben in den Herstellerunterlagen und fragen "
+#~ "Sie Ihr Projektangebot bei Linker an."
+
+#~ msgid ""
+#~ "Check the manufacturer’s documents and ask Linker for a quotation for "
+#~ "your installation."
+#~ msgstr ""
+#~ "Prüfen Sie die Herstellerunterlagen und fragen Sie bei Linker ein Angebot "
+#~ "für Ihre Anlage an."
+
+#~ msgid ""
+#~ "See the manufacturer’s documents and request a project quotation from "
+#~ "Linker."
+#~ msgstr ""
+#~ "Prüfen Sie die Herstellerunterlagen und fragen Sie Ihr Projektangebot bei "
+#~ "Linker an."
+
+#~ msgid "Check the manufacturer’s documents and request a quotation."
+#~ msgstr "Prüfen Sie die Herstellerunterlagen und fragen Sie ein Angebot an."
 
 #~ msgid "Released model pairs"
 #~ msgstr "Freigegebene Modellkombinationen"

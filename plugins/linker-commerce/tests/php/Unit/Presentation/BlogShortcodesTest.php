@@ -59,6 +59,7 @@ final class BlogShortcodesTest extends TestCase {
 	 */
 	public function test_register_adds_the_blog_shortcodes(): void {
 		$codes = new BlogShortcodes();
+		WP_Mock::userFunction( 'add_shortcode' )->with( 'linker_blog_equipment_links', array( $codes, 'equipment_links' ) )->once();
 		WP_Mock::userFunction( 'add_shortcode' )->with( 'linker_blog_cover_image', array( $codes, 'cover_image' ) )->once();
 		WP_Mock::userFunction(
 			'add_shortcode',

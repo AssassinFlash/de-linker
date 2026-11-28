@@ -311,3 +311,6 @@ body #linker-products.sf-products form.wbsort.woocommerce-ordering {
   float: none;
   margin: 0;
 }
+
+#linker-products .product-results:has(.lk-series-matrix) { min-width: 0; }
+#linker-products .lk-series-matrix { margin-block: 2rem; }

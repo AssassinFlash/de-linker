@@ -5,6 +5,7 @@ The input is the compact JSON produced by the URL/SEO sweep, plus one or more
 existing curl caches for hreflang counterparts. Checks:
 
 * sitemap page status, final URL, canonical and indexability;
+* title uniqueness and length, description length and retired PDP copy;
 * explicit EN/DE indexability symmetry;
 * structured data required by indexable customer page type;
 * page-node JSON-LD URLs that do not state their own URL;
@@ -53,6 +54,8 @@ class Page:
     jsonld: tuple[object, ...]
     internal_links: tuple[str, ...]
     error: str = ""
+    title: str | None = None
+    description: str | None = None
 
 
 @dataclass(frozen=True)
@@ -79,6 +82,8 @@ class PageParser(HTMLParser):
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
+        self.title = ""
+        self.in_title = False
         self.links: list[dict[str, str]] = []
         self.metas: list[dict[str, str]] = []
         self.anchors: set[str] = set()
@@ -87,7 +92,9 @@ class PageParser(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = {key: value or "" for key, value in attrs}
-        if tag == "link":
+        if tag == "title":
+            self.in_title = True
+        elif tag == "link":
             self.links.append(values)
         elif tag == "meta":
             self.metas.append(values)
@@ -97,11 +104,15 @@ class PageParser(HTMLParser):
             self._script = []
 
     def handle_data(self, data: str) -> None:
+        if self.in_title:
+            self.title += data
         if self._script is not None:
             self._script.append(data)
 
     def handle_endtag(self, tag: str) -> None:
-        if tag == "script" and self._script is not None:
+        if tag == "title":
+            self.in_title = False
+        elif tag == "script" and self._script is not None:
             self.scripts.append("".join(self._script))
             self._script = None
 
@@ -139,6 +150,15 @@ def parse_html(url: str, html: str) -> dict[str, Any]:
         == urllib.parse.urlsplit(url).hostname
     }
     return {
+        "title": parser.title.strip(),
+        "description": next(
+            (
+                m.get("content", "")
+                for m in parser.metas
+                if m.get("name", "").lower() == "description"
+            ),
+            "",
+        ),
         "robots": robots,
         "hreflang": hreflang,
         "canonical": tuple(canonical),
@@ -168,6 +188,8 @@ def load_parsed(path: Path) -> dict[str, Page]:
             ),
             internal_links=tuple(_strings(raw.get("internal_links"))),
             error=_string(raw.get("error")),
+            title=_string(raw["title"]) if "title" in raw else None,
+            description=_string(raw["description"]) if "description" in raw else None,
         )
     return pages
 
@@ -193,6 +215,8 @@ def load_cache(url_list: Path, directory: Path) -> dict[str, Page]:
             jsonld=tuple(parsed["jsonld"]),
             internal_links=tuple(parsed["internal_links"]),
             error=fields[3],
+            title=parsed["title"],
+            description=parsed["description"],
         )
     return pages
 
@@ -278,6 +302,7 @@ def audit(parsed: dict[str, Page], cache_pages: dict[str, Page]) -> Audit:
     sitemap = set(parsed)
     findings: list[Finding] = []
 
+    titles: dict[str, str] = {}
     for url, page in sorted(parsed.items()):
         if page.status != 200:
             findings.append(Finding("sitemap-status", url, f"answered {page.status}"))
@@ -291,6 +316,33 @@ def audit(parsed: dict[str, Page], cache_pages: dict[str, Page]) -> Audit:
         if noindex(page):
             findings.append(Finding("sitemap-noindex", url, "sitemap URL is noindex"))
             continue
+        if page.title is not None:
+            if len(page.title) > 65 or not page.title:
+                findings.append(
+                    Finding("title-length", url, f"{len(page.title)} characters")
+                )
+            if page.title in titles:
+                findings.append(Finding("duplicate-title", url, titles[page.title]))
+            titles[page.title] = url
+        if page.description is not None:
+            is_product = urllib.parse.urlsplit(url).path.startswith(
+                ("/product/", "/de/produkt/")
+            )
+            low, high = (120, 158) if is_product else (0, 160)
+            if not low <= len(page.description) <= high:
+                findings.append(
+                    Finding(
+                        "description-length", url, f"{len(page.description)} characters"
+                    )
+                )
+            if is_product and re.search(
+                r"check the manufacturer[’']s documents|prüfen sie die herstellerunterlagen",
+                page.description,
+                re.I,
+            ):
+                findings.append(
+                    Finding("description-boilerplate", url, page.description)
+                )
         present = set().union(*(json_types(item) for item in page.jsonld))
         missing = sorted(required_types(url) - present)
         if missing:

@@ -1,0 +1,123 @@
+{
+  "post": {
+    "gateway-meter-cloud-monitoring-data-layer": {
+      "en": {
+        "_seopress_titles_title": "Gateway, Meter & Cloud Monitoring Data Layer | Linker"
+      },
+      "de": {
+        "_seopress_titles_title": "Gateway, Zähler & Cloud-Monitoring im Verbund | Linker",
+        "_seopress_titles_desc": "Wie Wechselrichter-Gateway, Energiezähler und Cloud-Plattform auf Hardware- und Software-Ebene für transparente Anlagenüberwachung sorgen."
+      }
+    },
+    "indoor-vs-outdoor-battery-storage-planning": {
+      "en": {
+        "_seopress_titles_title": "Indoor vs. Outdoor Battery Storage Planning | Linker"
+      },
+      "de": {
+        "_seopress_titles_title": "Innen- vs. Außenbatteriespeicher richtig planen | Linker",
+        "_seopress_titles_desc": "Wie Temperatur, Luftfeuchte, IP-Schutzart und Belüftung die Systemplanung zwischen Innen- und Außenaufstellung von Batteriespeichern steuern."
+      }
+    },
+    "installer-checklist-inverter-battery-pairing": {
+      "en": {
+        "_seopress_titles_title": "Inverter & Battery Pairing Installer Checklist | Linker",
+        "_seopress_titles_desc": "Pre-installation checklist for installers: verify inverter-battery compatibility, BMS protocols, cable sizing, and site prep before pairing."
+      },
+      "de": {
+        "_seopress_titles_title": "Checkliste: Wechselrichter & Speicher kombinieren | Linker",
+        "_seopress_titles_desc": "Installateur-Checkliste vor der Kopplung: Wechselrichter-Batterie-Freigabe, Kommunikationsprotokolle, Kabeldimensionierung und Standortwahl."
+      }
+    },
+    "installer-handover-documentation-checklist": {
+      "en": {
+        "_seopress_titles_title": "Installer Project Handover Documentation Checklist | Linker",
+        "_seopress_titles_desc": "Essential handover documentation for solar installers: as-built schematics, commissioning test reports, monitoring access, and service plans."
+      },
+      "de": {
+        "_seopress_titles_title": "Übergabedokumentation für PV-Speicherprojekte | Linker",
+        "_seopress_titles_desc": "Wichtige Übergabedokumentation für Installateure: Bestandspläne, Prüfprotokolle, Monitoring-Zugänge und Wartungspläne vor Projektabschluss."
+      }
+    },
+    "residential-storage-backup-self-consumption": {
+      "en": {
+        "_seopress_titles_title": "Residential Storage: Backup & Self-Consumption | Linker"
+      },
+      "de": {
+        "_seopress_titles_title": "Heimspeicher: Notstrom & Eigenverbrauch planen | Linker"
+      }
+    },
+    "size-battery-storage-residential-backup": {
+      "en": {
+        "_seopress_titles_title": "Sizing Battery Storage for Residential Backup | Linker"
+      },
+      "de": {
+        "_seopress_titles_title": "Heimspeicher für Notstrom richtig dimensionieren | Linker"
+      }
+    },
+    "solar-plus-storage-commissioning-checklist": {
+      "de": {
+        "_seopress_titles_title": "Inbetriebnahme-Checkliste für PV-Speichersysteme | Linker",
+        "_seopress_titles_desc": "Strukturierte Inbetriebnahme-Checkliste für PV-Speicher: elektrische Prüfungen, Kommunikationssetup, Batterieaktivierung und Netzkonformität."
+      },
+      "en": {
+        "_seopress_titles_desc": "Structured solar-plus-storage commissioning checklist covering electrical tests, BMS communication setup, battery activation, and grid checks."
+      }
+    },
+    "remote-monitoring-after-installation": {
+      "en": {
+        "_seopress_titles_desc": "Why post-installation remote monitoring matters: detect faults early, optimize self-consumption, and verify live system performance for owners."
+      },
+      "de": {
+        "_seopress_titles_desc": "Warum Fernüberwachung nach der Installation entscheidend ist: Fehler früh erkennen, Eigenverbrauch optimieren und Anlagenleistung nachweisen."
+      }
+    }
+  },
+  "product_cat": {
+    "all-in-one-systems": {
+      "en": {
+        "_seopress_titles_desc": "All-in-one C&I storage cabinets: SAJ CHS2 hybrid systems (29.9–50 kW) and AC-coupled Pylontech OPTIM US L260-OMNI (125 kW / 260 kWh)."
+      },
+      "de": {
+        "_seopress_titles_desc": "Gewerbespeicher-Komplettsysteme: SAJ CHS2 Hybrid (29,9–50 kW) und AC-gekoppelter Pylontech OPTIM US L260-OMNI mit 125 kW / 260 kWh."
+      }
+    },
+    "ems-monitoring": {
+      "en": {
+        "_seopress_titles_desc": "Energy managers and data loggers for residential and C&I storage: GoodWe SEC3000C, EzManager3000, SAJ eManager, eManager-C1 Pro, and AIO3."
+      }
+    },
+    "home-storage": {
+      "de": {
+        "_seopress_titles_desc": "Hochvolt-LFP-Heimspeicher: GoodWe ESA-Module (5–9 kWh, bis 108 kWh stapelbar), Steuerungen und SAJ-B2-Systeme von 5 bis 25 kWh."
+      }
+    }
+  },
+  "page": {
+    "faq-download": {
+      "en": {
+        "_seopress_titles_desc": "Download datasheets, manuals and compatibility lists without an account. Find answers to questions about products, quotations and delivery."
+      }
+    },
+    "privacy-policy": {
+      "en": {
+        "_seopress_titles_desc": "How de-linker.com handles personal data for partner accounts and business transactions, why it is processed, how long it is kept and your data rights."
+      },
+      "de": {
+        "_seopress_titles_desc": "Wie Linker Ihre Daten für Partnerkonten und Geschäftsvorgänge verarbeitet, wie lange sie gespeichert werden und welche Datenschutzrechte Sie haben."
+      }
+    },
+    "refund-returns": {
+      "en": {
+        "_seopress_titles_desc": "Find out how to report an incorrect or damaged delivery, make a warranty claim and arrange a return or RMA for your business."
+      }
+    },
+    "terms-of-sale": {
+      "en": {
+        "_seopress_titles_desc": "Linker’s terms of sale for business customers cover quotations, contract formation, prices, taxes, delivery and liability."
+      },
+      "de": {
+        "_seopress_titles_desc": "Die Verkaufsbedingungen von Linker für Geschäftskunden regeln Angebote, Vertragsschluss, Preise, Steuern, Lieferung und Haftung."
+      }
+    }
+  }
+}

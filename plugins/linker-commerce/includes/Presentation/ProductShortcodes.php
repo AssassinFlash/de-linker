@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Storefront\GuideEquipmentMesh;
+
 use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\Materials;
@@ -17,8 +19,8 @@ use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Storefront\GridThresholdPairs;
 use Linker\Commerce\Storefront\ProductImageAlt;
-use Linker\Commerce\Storefront\ProductFamilies;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\SolutionProducts;
 use Linker\Commerce\Storefront\ProductView;
@@ -95,6 +97,8 @@ final class ProductShortcodes {
 	 */
 	public function register(): void {
 		( new FamilyNavigation( $this->family_page( ... ), $this->archive_base_url( ... ) ) )->register();
+		add_shortcode( 'linker_pdp_guides', array( $this, 'pdp_guides' ) );
+		add_shortcode( 'linker_archive_guides', array( $this, 'archive_guides' ) );
 		add_shortcode( 'linker_products_head', array( $this, 'products_head' ) );
 		add_shortcode( 'linker_products_filters', array( $this, 'products_filters' ) );
 		add_shortcode( 'linker_products_sort', array( $this, 'products_sort' ) );
@@ -110,6 +114,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_products_contact', array( $this, 'products_contact' ) );
 		add_shortcode( 'linker_pdp_brand_class', array( $this, 'pdp_brand_class' ) );
 		add_shortcode( 'linker_pdp_brand', array( $this, 'pdp_brand' ) );
+		add_shortcode( 'linker_archive_series_matrix', array( SeriesMatrix::class, 'archive' ) );
 		add_shortcode( 'linker_pdp_family', array( $this, 'pdp_family' ) );
 		add_shortcode( 'linker_solution_products', array( $this, 'solution_products' ) );
 		add_shortcode( 'linker_pdp_model', array( $this, 'pdp_model' ) );
@@ -128,6 +133,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_pdp_gallery_pair', array( $this, 'pdp_gallery_pair' ) );
 		add_shortcode( 'linker_pdp_gallery_thumbs', array( $this, 'pdp_gallery_thumbs' ) );
 		add_shortcode( 'linker_pdp_intro', array( $this, 'pdp_intro' ) );
+		add_shortcode( 'linker_pdp_grid_threshold', array( $this, 'pdp_grid_threshold' ) );
 		add_shortcode( 'linker_pdp_benefits', array( $this, 'pdp_benefits' ) );
 		add_shortcode( 'linker_pdp_specs', array( $this, 'pdp_specs' ) );
 		add_shortcode( 'linker_pdp_scenes', array( $this, 'pdp_scenes' ) );
@@ -778,15 +784,24 @@ final class ProductShortcodes {
 		return null === $view ? '' : esc_html( (string) $view['model'] );
 	}
 
+	/** Planning guides matching the displayed product. */
+	public function pdp_guides(): string {
+		return BlogShortcodes::guide_links( GuideEquipmentMesh::for_product( get_queried_object_id() ) );
+	}
+
+	/** Planning guides on the first unfiltered shop, category or manufacturer page. */
+	public function archive_guides(): string {
+		if ( $this->selection_parameters() || $this->family_page()->current > 1 ) {
+			return '';
+		}
+		$term = get_queried_object();
+		return BlogShortcodes::guide_links( GuideEquipmentMesh::for_archive( $term instanceof WP_Term ? $term : null ) );
+	}
+
 	/** Published sibling links on the current product page. */
 	public function pdp_family(): string {
 		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- A published sibling or its translation can change this page.
-		$id   = get_queried_object_id();
-		$rows = SolutionProducts::links( ProductFamilies::published_members( $id ) );
-		if ( count( $rows ) < 2 ) {
-			return '';
-		}
-		return '<section class="pdp-block sf-container pdp-family-links"><h2 class="pdp-section-title">' . esc_html__( 'Other models in this series', 'linker-commerce' ) . '</h2>' . self::model_links( $rows, $id ) . '</section>';
+		return SeriesMatrix::product( get_queried_object_id() );
 	}
 
 	/**
@@ -816,6 +831,10 @@ final class ProductShortcodes {
 		if ( 'utility' === $scope ) {
 			$html .= '<a href="' . esc_url( PageUrls::page( 'solution-configurator' ) ) . '">' . esc_html__( 'Solution Configurator', 'linker-commerce' ) . '</a>';
 		}
+		$capability = PageUrls::translated( 'about/capability' );
+		if ( '' !== $capability ) {
+			$html .= '<a href="' . esc_url( $capability ) . '">' . esc_html__( 'See how Linker handles pre-delivery checks, certificates, and project supply from Barleben →', 'linker-commerce' ) . '</a>';
+		}
 		return $html . self::matrix_link() . '</div></section>';
 	}
 
@@ -825,7 +844,7 @@ final class ProductShortcodes {
 	 * @param list<array{id:int,name:string,url:string,rating:string}> $rows Model links.
 	 * @param int                                                      $current Current PDP, if any.
 	 */
-	private static function model_links( array $rows, int $current = 0 ): string {
+	public static function model_links( array $rows, int $current = 0 ): string {
 		$html = '<ul class="lk-model-links">';
 		foreach ( $rows as $row ) {
 			$html .= '<li><a href="' . esc_url( $row['url'] ) . '"' . ( $current === $row['id'] ? ' aria-current="page"' : '' ) . '>' . esc_html( $row['name'] ) . ( '' !== $row['rating'] ? ' <small>' . esc_html( $row['rating'] ) . '</small>' : '' ) . '</a></li>';
@@ -1282,12 +1301,18 @@ final class ProductShortcodes {
 			return '';
 		}
 		if ( '' !== (string) $view['intro'] ) {
-			return wp_kses_post( wpautop( (string) $view['intro'] ) );
+			return wp_kses_post( wpautop( (string) $view['intro'] ) ) . SeriesMatrix::intro( get_queried_object_id() );
 		}
 		if ( '' !== (string) $view['body'] ) {
-			return wp_kses_post( wpautop( (string) $view['body'] ) );
+			return wp_kses_post( wpautop( (string) $view['body'] ) ) . SeriesMatrix::intro( get_queried_object_id() );
 		}
 		return '<p class="tv-empty-state">' . esc_html__( 'Introduction in preparation. The specification below carries the values from the datasheet on file.', 'linker-commerce' ) . '</p>';
+	}
+
+	/** The current unit and its published grid-connection counterpart. */
+	public function pdp_grid_threshold(): string {
+		$view = $this->current_view();
+		return GridThresholdPairs::render( (string) ( $view['sku'] ?? '' ), Materials::locale() );
 	}
 
 	/**

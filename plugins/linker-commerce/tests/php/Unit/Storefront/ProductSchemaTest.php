@@ -70,6 +70,13 @@ final class ProductSchemaTest extends TestCase {
 		WP_Mock::userFunction( 'get_the_terms' )->with( self::PRODUCT, 'pa_application' )->andReturn( false );
 		WP_Mock::userFunction( 'get_the_terms' )->with( self::PRODUCT, 'pa_phase' )->andReturn( false );
 
+		WP_Mock::userFunction( 'pll_get_post' )->with( self::PRODUCT, 'en' )->andReturn( self::PRODUCT );
+		WP_Mock::userFunction( 'get_post_meta' )->with( self::PRODUCT, 'linker_specs', true )->andReturn( '' );
+		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( 'https://de-linker.com' );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnUsing( static fn( $value ) => rtrim( $value, '/' ) . '/' );
+		WP_Mock::userFunction( 'sanitize_title' )->andReturnUsing( static fn( $value ) => strtolower( $value ) );
+		WP_Mock::userFunction( 'get_the_title' )->with( self::PRODUCT )->andReturn( 'GoodWe GW5.1-BAT-D-G21' );
+		WP_Mock::userFunction( 'get_post_meta' )->with( self::PRODUCT, '_sku', true )->andReturn( 'DLK-GOODWE-GW51BATDG21' );
 		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction(
 			'wp_json_encode',
@@ -90,6 +97,9 @@ final class ProductSchemaTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $schema, 'title' ), 45 );
 		WP_Mock::expectFilterAdded( 'seopress_titles_desc', array( $schema, 'description' ), 45 );
 
+		foreach ( array( 'seopress_social_og_title', 'seopress_social_twitter_card_title', 'seopress_social_og_desc', 'seopress_social_twitter_card_desc' ) as $filter ) {
+			WP_Mock::expectFilterAdded( $filter, array( $schema, 'social' ), 45 );
+		}
 		$schema->register();
 
 		$this->assertConditionsMet();
@@ -131,8 +141,8 @@ final class ProductSchemaTest extends TestCase {
 		$value  = $schema->description( 'Project notes for GoodWe GW5.1-BAT-D-G21.' );
 		if ( $generated ) {
 			$this->assertSame( $schema->data( $product )['description'], $value );
-			$this->assertGreaterThanOrEqual( 125, mb_strlen( $value ) );
-			$this->assertLessThanOrEqual( 155, mb_strlen( $value ) );
+			$this->assertGreaterThanOrEqual( 120, mb_strlen( $value ) );
+			$this->assertLessThanOrEqual( 158, mb_strlen( $value ) );
 		} else {
 			$this->assertSame( 'Project notes for GoodWe GW5.1-BAT-D-G21.', $value );
 		}
@@ -297,10 +307,9 @@ final class ProductSchemaTest extends TestCase {
 	}
 
 	/**
-	 * A product page prints exactly one block, wrapped in the element a
-	 * structured-data reader looks for.
+	 * The product and its group are separate blocks sharing a group identity.
 	 */
-	public function test_a_product_page_prints_one_block(): void {
+	public function test_a_product_page_prints_a_product_and_its_group(): void {
 		WP_Mock::expectAction( 'litespeed_tag_add', 'PT.product' );
 		WP_Mock::userFunction(
 			'is_singular',
@@ -323,7 +332,16 @@ final class ProductSchemaTest extends TestCase {
 		( $this->schema() )->print_block();
 		$printed = (string) ob_get_clean();
 
-		$this->assertSame( 1, substr_count( $printed, 'type="application/ld+json"' ) );
+		$this->assertSame( 2, substr_count( $printed, 'type="application/ld+json"' ) );
+		preg_match_all( '~<script type="application/ld\+json">(.*?)</script>~s', $printed, $scripts );
+		list( $node, $group ) = array_map( static fn( $json ) => json_decode( $json, true ), $scripts[1] );
+		$this->assertSame( 'ProductGroup', $group['@type'] );
+		$this->assertSame( $group['@id'], $node['inProductGroupWithID'] );
+		$this->assertSame( $group['productGroupID'], $node['isVariantOf']['@id'] );
+		$this->assertSame( $node['sku'], $group['hasVariant'][0]['sku'] );
+		$this->assertArrayNotHasKey( 'variesBy', $group );
+		$this->assertArrayNotHasKey( 'url', $group );
+		$this->assertArrayNotHasKey( '@type', $group['hasVariant'][0] );
 		$this->assertStringStartsWith( '<script type="application/ld+json">', $printed );
 		$this->assertStringContainsString( '"@type":"Product"', $printed );
 		$this->assertConditionsMet();

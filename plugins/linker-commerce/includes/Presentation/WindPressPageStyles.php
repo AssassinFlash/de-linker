@@ -163,6 +163,7 @@ final class WindPressPageStyles {
 		$compare   = isset( $ids['linker-compare'] ) || isset( $ids['container-content-compare'] ) || str_contains( $content, '[linker_compare_' );
 		$contact   = isset( $ids['tv-contact-v1'] ) || str_contains( $content, '[linker_contact_form' );
 		$home      = is_front_page() || isset( $ids['home-a'] );
+		$article   = is_singular( 'post' ) || isset( $ids['tv-blog-single-v1'] ) || str_contains( $content, '[linker_blog_' );
 		$blog      = is_home() || isset( $ids['tv-blog-index-v1'] );
 		$category  = is_category() || isset( $ids['tv-blog-category-v1'] );
 		$search    = is_search() || isset( $ids['tv-blog-search-v1'] );
@@ -180,10 +181,10 @@ final class WindPressPageStyles {
 			'library'          => isset( $ids['linker-faq-page'] ) || str_contains( $content, '[linker_library_' ),
 			'product'          => $product,
 			'compatibility'    => isset( $ids['linker-compatibility-matrix'] ) || 1 === preg_match( '/(?<!\[)\[linker_compatibility_matrix(?=[\s\/\]])/', $content ),
-			'model_links'      => $product || str_contains( $content, '[linker_solution_products' ),
+			'model_links'      => $product || $catalogue || $article || str_contains( $content, '[linker_solution_products' ),
 			'catalogue'        => $catalogue,
 			'storefront'       => $catalogue || $product || $cart || $inquiry || $account || $compare,
-			'article'          => is_singular( 'post' ) || isset( $ids['tv-blog-single-v1'] ) || str_contains( $content, '[linker_blog_' ),
+			'article'          => $article,
 			'contact'          => $contact,
 			'category'         => $category,
 			'blog'             => $blog,

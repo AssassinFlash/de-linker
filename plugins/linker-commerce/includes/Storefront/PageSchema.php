@@ -25,6 +25,7 @@ final class PageSchema {
 		add_filter( 'seopress_schemas_auto_article_json', array( $this, 'article_schema' ) );
 		add_filter( 'seopress_pro_get_json_data_author', array( $this, 'author_schema' ), 10, 2 );
 		add_filter( 'seopress_schemas_auto_custom_html', array( $this, 'about_publisher' ) );
+		add_filter( 'the_content', array( $this, 'guide_faq' ), 99 );
 		add_action( 'wp_head', array( $this, 'print_blocks' ) );
 		add_action( 'wp_head', array( $this, 'print_organization' ) );
 	}
@@ -101,7 +102,112 @@ final class PageSchema {
 			$node['publisher']['@id']    = self::organization_id();
 			$node['publisher']['sameAs'] = ContactChannels::company_same_as();
 		}
+		$post  = get_queried_object();
+		$entry = $post instanceof WP_Post ? GuideEquipmentMesh::for_post( $post ) : array();
+		if ( ! empty( $entry['technical'] ) ) {
+			$node['@type']            = array( 'BlogPosting', 'TechArticle' );
+			$node['proficiencyLevel'] = 'Expert';
+			$node['about']            = array();
+			foreach ( $entry['topics'] as $topic ) {
+				$node['about'][] = array(
+					'@type' => 'Thing',
+					'name'  => $topic,
+				);
+			}
+			$brand_names = array(
+				'goodwe'    => 'GoodWe',
+				'pylontech' => 'Pylontech',
+				'saj'       => 'SAJ',
+				'chint'     => 'CHINT',
+			);
+			foreach ( $entry['brands'] as $brand ) {
+				$node['about'][] = array(
+					'@type' => 'Brand',
+					'name'  => $brand_names[ $brand ],
+				);
+			}
+			$node['mentions'] = array();
+			$links            = $entry['products'];
+			if ( '' !== $entry['matrix'] ) {
+				$links[] = array(
+					'name' => __( 'Compatibility matrix', 'linker-commerce' ),
+					'url'  => $entry['matrix'],
+				);
+			}
+			foreach ( $links as $link ) {
+				$node['mentions'][] = array(
+					'@type' => 'WebPage',
+					'@id'   => $link['url'],
+					'name'  => $link['name'],
+					'url'   => $link['url'],
+				);
+			}
+		}
 		return $node;
+	}
+
+	/**
+	 * Reflect explicit, visible FAQ lists in rendered journal content.
+	 *
+	 * @param string $content Rendered body of the post.
+	 */
+	public function guide_faq( string $content ): string {
+		if ( ! str_contains( $content, 'lk-faq-list' ) || ! is_singular( 'post' ) || get_the_ID() !== get_queried_object_id() ) {
+			return $content;
+		}
+		$post = get_post();
+		if ( ! $post instanceof WP_Post || has_block( 'wpseopress/faq-block', $post ) || has_block( 'wpseopress/faq-block-v2', $post ) ) {
+			return $content;
+		}
+		foreach ( (array) get_post_meta( $post->ID, '_seopress_pro_schemas_manual', true ) as $schema ) {
+			if ( 'faq' === ( $schema['_seopress_pro_rich_snippets_type'] ?? '' ) ) {
+				return $content;
+			}
+		}
+		if ( str_contains( $content, '"FAQPage"' ) ) {
+			return $content;
+		}
+		$document = new \DOMDocument();
+		$document->loadHTML( '<meta charset="utf-8"><body>' . $content . '</body>', LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING );
+		$xpath = new \DOMXPath( $document );
+		// Remove hidden branches before reading question or answer text.
+		$hidden = $xpath->query( '//*[@hidden or @aria-hidden="true" or contains(concat(" ",normalize-space(@class)," "), " d-none ") or contains(translate(@style," ",""),"display:none") or contains(translate(@style," ",""),"visibility:hidden")]' );
+		foreach ( $hidden ? iterator_to_array( $hidden ) : array() as $element ) {
+			/** Matching HTML element.
+			 *
+			 * @var \DOMElement $element
+			 */
+			$element->parentNode?->removeChild( $element ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Native DOM property.
+		}
+		$questions = array();
+		$headings  = $xpath->query( '//*[contains(concat(" ",normalize-space(@class)," "), " lk-faq-list ")]/h3' );
+		foreach ( false !== $headings ? $headings : array() as $heading ) {
+			/** Question heading.
+			 *
+			 * @var \DOMElement $heading
+			 */
+			$answer   = $xpath->evaluate( 'string(following-sibling::*[1][self::p])', $heading );
+			$question = trim( $xpath->evaluate( 'string(.)', $heading ) );
+			if ( '' !== $question && is_string( $answer ) && '' !== trim( $answer ) ) {
+				$questions[] = array(
+					'@type'          => 'Question',
+					'name'           => $question,
+					'acceptedAnswer' => array(
+						'@type' => 'Answer',
+						'text'  => trim( $answer ),
+					),
+				);
+			}
+		}
+		if ( ! $questions ) {
+			return $content;
+		}
+		$faq = array(
+			'@context'   => 'https://schema.org',
+			'@type'      => 'FAQPage',
+			'mainEntity' => $questions,
+		);
+		return $content . '<script type="application/ld+json">' . wp_json_encode( $faq, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>';
 	}
 
 	/**

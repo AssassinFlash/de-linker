@@ -93,7 +93,7 @@ final class WindPressPageStylesTest extends TestCase {
 			'home showcase'            => array( 'is_front_page', '', '<section id="configurator-showcase"><a href="/solution-configurator/" data-linker-planner-entry>Plan</a></section>', array(), array( 'marketing-rhythm.css', 'homepage-focus.css', 'homepage-readability.css', 'home-configurator.css', 'home-sections.css', 'home-journal.css', 'capability-cards.css', 'app-details.css', 'reference-photo-scenes.css' ) ),
 			'custom showcase'          => array( '', '<section id="configurator-showcase">', '', array(), array( 'home-configurator.css' ) ),
 
-			'product category'         => array( 'is_product_taxonomy', '', '', array( 'products-mounts.css', 'products.css', 'storefront.css' ), array() ),
+			'product category'         => array( 'is_product_taxonomy', '', '', array( 'model-links.css', 'products-mounts.css', 'products.css', 'storefront.css' ), array() ),
 			'matrix body'              => array( '', '[linker_compatibility_matrix]', '', array( 'compatibility-matrix.css' ), array() ),
 			'matrix link only'         => array( '', '[linker_compatibility_matrix_link]', '', array(), array() ),
 			'translated FAQ'           => array( '', '', '<div id="linker-faq-page">', array( 'faq.css' ), array() ),
@@ -101,7 +101,7 @@ final class WindPressPageStylesTest extends TestCase {
 			'solution product links'   => array( '', '[linker_solution_products scope="utility"]', '', array( 'model-links.css' ), array() ),
 			'native search'            => array( 'is_search', '', '', array( 'blog-search.css' ), array( 'journal.css' ) ),
 			'account endpoint'         => array( 'is_account_page', '', '', array( 'account.css', 'auth.css', 'storefront.css' ), array() ),
-			'planner inside post'      => array( 'post', '[linker_planner]', '', array( 'blog.css', 'contact-invitation.css' ), array( 'planner.css', 'planner-equipment.css', 'planner-report.css', 'planner-site-energy.css', 'roof-studio.css' ) ),
+			'planner inside post'      => array( 'post', '[linker_planner]', '', array( 'model-links.css', 'blog.css', 'contact-invitation.css' ), array( 'planner.css', 'planner-equipment.css', 'planner-report.css', 'planner-site-energy.css', 'roof-studio.css' ) ),
 			'translated services'      => array( '', '<main id="service-redesign">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css', 'capability-cards.css', 'app-details.css' ) ),
 			'installer stage controls' => array( '', '<main id="installer-journal">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css', 'capability-cards.css', 'app-details.css' ) ),
 			'utility application dots' => array( '', '<main id="tv-utility-page-v1">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),

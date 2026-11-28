@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A product page carries exactly one Product node, and it is the product's.
 
-Two assertions over plain HTTP, no authentication:
+The public page carries one Product and its matching sibling ProductGroup.
 
 1. Count: the page's JSON-LD holds exactly one schema.org `Product` node.
    Blocks are not the count — a single `@graph` holds two contradictory nodes
@@ -90,10 +90,8 @@ def product_nodes(value: object) -> list[dict[str, object]]:
     types = value.get("@type")
     if types == PRODUCT or (isinstance(types, list) and PRODUCT in types):
         found.append(value)
-    graph = value.get("@graph")
-    if isinstance(graph, list):
-        for item in graph:
-            found.extend(product_nodes(item))
+    for item in value.values():
+        found.extend(product_nodes(item))
     return found
 
 
@@ -199,8 +197,54 @@ def check(base: str, path: str, name: str) -> tuple[bool, str]:
     problems: list[str] = []
     if "offers" in node:
         problems.append("quotation-only product has an offer")
-    if re.search(r'"(?:price|priceCurrency|lowPrice|highPrice|priceSpecification)"\s*:', json.dumps(node), re.I):
+    if re.search(
+        r'"(?:price|priceCurrency|lowPrice|highPrice|priceSpecification)"\s*:',
+        json.dumps(node),
+        re.I,
+    ):
         problems.append("price data in the public Product node")
+    blocks = [json.loads(block) for block in LD_JSON.findall(html)]
+    groups = [
+        block
+        for block in blocks
+        if isinstance(block, dict) and block.get("@type") == "ProductGroup"
+    ]
+    if len(groups) != 1:
+        problems.append(f"{len(groups)} sibling ProductGroup blocks, expected 1")
+    else:
+        group = groups[0]
+        group_id = node.get("inProductGroupWithID")
+        if (
+            not group_id
+            or group.get("@id") != group_id
+            or group.get("productGroupID") != group_id
+            or node.get("isVariantOf") != {"@id": group_id}
+        ):
+            problems.append("ProductGroup identity mismatch")
+        if "url" in group or re.search(
+            r'"(?:offers|price|priceCurrency|availability)"\s*:',
+            json.dumps([node, group]),
+        ):
+            problems.append("ProductGroup URL or commercial data")
+        members = group.get("hasVariant")
+        if (
+            not isinstance(members, list)
+            or not members
+            or any(
+                not isinstance(row, dict)
+                or set(row) != {"@id", "name", "sku", "url"}
+                or not all(row.values())
+                or row["@id"] != str(row["url"]) + "#product"
+                for row in members
+            )
+        ):
+            problems.append("invalid variant references")
+        elif not any(
+            row["sku"] == sku and row["@id"] == node.get("@id") for row in members
+        ):
+            problems.append("current model missing from hasVariant")
+        elif (len(members) > 1) != bool(group.get("variesBy")):
+            problems.append("variesBy does not match the series size")
     if not brand:
         problems.append("brand is missing")
     elif brand.casefold() == name.casefold():
