@@ -47,7 +47,7 @@ final class LibraryPage {
 	public const PAGE_SIZE = 20;
 
 	/** Number of product answers per brand visible in the initial register. */
-	public const FAQ_SSR_PAGE_SIZE = 10;
+	public const FAQ_SSR_PAGE_SIZE = 3;
 
 	/**
 	 * Every anchor the page prints starts with this.
@@ -325,9 +325,9 @@ final class LibraryPage {
 			$rows = '';
 			foreach ( $category['questions'] as $question ) {
 				$rows  .= '<details class="linker-library-qa" data-library-item>';
-				$rows  .= '<summary class="linker-library-qa-head"><span class="linker-library-qa-text">';
+				$rows  .= '<summary class="linker-library-qa-head">';
 				$rows  .= '<span class="linker-library-qa-q">' . esc_html( $question['question'] ) . '</span>';
-				$rows  .= '</span></summary>';
+				$rows  .= '</summary>';
 				$answer = $question['answer'];
 				if ( str_contains( $answer, '?intent=support"' ) ) {
 					$answer = str_replace( '?intent=support"', '?intent=support&amp;source=' . rawurlencode( (string) get_permalink() ) . '"', $answer );
@@ -348,14 +348,14 @@ final class LibraryPage {
 			$rows    = '';
 			foreach ( array_slice( $answers, 0, self::FAQ_SSR_PAGE_SIZE ) as $answer ) {
 				$rows .= '<details class="linker-library-qa" data-library-item>';
-				$rows .= '<summary class="linker-library-qa-head"><span class="linker-library-qa-text">';
+				$rows .= '<summary class="linker-library-qa-head">';
 				$rows .= '<span class="linker-library-qa-product">' . esc_html( $answer['product'] ) . '</span>';
 				$rows .= '<span class="linker-library-qa-q">' . esc_html( $answer['question'] ) . '</span>';
-				$rows .= '</span></summary>';
+				$rows .= '</summary>';
 				$rows .= '<div class="linker-library-qa-a"><p>' . wp_kses_post( $answer['answer'] ) . '</p>';
-				$rows .= '<p class="linker-library-qa-source"><a href="' . esc_url( $answer['url'] ) . '">' . esc_html( $answer['product'] ) . '</a>';
+				$rows .= '<p class="linker-library-qa-source"><a href="' . esc_url( self::local_href( $answer['url'] ) ) . '">' . esc_html( $answer['product'] ) . '</a>';
 				if ( '' !== $answer['source'] ) {
-					$rows .= ' — <a data-doc-kind="document" data-doc-brand="' . esc_attr( $brand['name'] ) . '" href="' . esc_url( $answer['source_url'] ) . '">' . esc_html( $answer['source'] ) . '</a>';
+					$rows .= ' — <a data-doc-kind="document" data-doc-brand="' . esc_attr( $brand['name'] ) . '" href="' . esc_url( self::local_href( $answer['source_url'] ) ) . '">' . esc_html( $answer['source'] ) . '</a>';
 				}
 				$rows .= '</p></div></details>';
 			}
@@ -566,10 +566,10 @@ final class LibraryPage {
 		$products = $document['product_links'];
 		$first    = $products[0];
 		$pdf      = self::local_href( $document['url'] );
-		$out      = '<li data-t="' . esc_attr( $document['type'] ) . '"><a href="' . esc_url( $pdf ) . '" target="_blank" rel="noopener">' . esc_html( $document['title'] ) . '</a>';
+		$out      = '<li data-t="' . esc_attr( $document['type'] ) . '"><a href="' . esc_url( $pdf ) . '" target=_blank>' . esc_html( $document['title'] ) . '</a>';
 		$out     .= '<small>' . esc_html( $document['type_label'] ) . ' · ' . esc_html( $document['language'] ) . '</small>';
-		$out     .= '<span><a href="' . esc_url( self::local_href( $first['url'] ) ) . '">' . esc_html( $first['title'] ) . '</a>';
-		return $out . ( count( $products ) > 1 ? ' (+' . ( count( $products ) - 1 ) . ')' : '' ) . '</span></li>';
+		$out     .= '<a href="' . esc_url( self::local_href( $first['url'] ) ) . '">' . esc_html( $first['title'] ) . '</a>';
+		return $out . ( count( $products ) > 1 ? ' (+' . ( count( $products ) - 1 ) . ')' : '' ) . '</li>';
 	}
 
 	/**
@@ -671,7 +671,7 @@ final class LibraryPage {
 				$entity[] = $this->question( $answer['question'], $this->brand_answer_text( $answer ) );
 			}
 		}
-		$url       = (string) get_permalink( $page );
+		$url       = (string) get_permalink( $page->ID );
 		$publisher = array( '@id' => PageUrls::root() . '#organization' );
 		$dataset   = array(
 			'@type'        => 'Dataset',

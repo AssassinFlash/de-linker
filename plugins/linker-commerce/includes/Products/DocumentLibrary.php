@@ -95,6 +95,9 @@ final class DocumentLibrary {
 	private function products( array $manifest, string $lang ): array {
 		$allowed = array();
 		foreach ( $manifest['products'] as $product ) {
+			if ( EngineeringReference::is_reference( $product['product_id'] ) ) {
+				continue;
+			}
 			foreach ( $product['published_locale_ids'] as $id ) {
 				$allowed[ $id ] = true;
 			}

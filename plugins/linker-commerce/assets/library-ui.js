@@ -311,6 +311,8 @@
 		if (doc) {
 			row.classList.add("linker-library-doc");
 			row.setAttribute("data-library-item", "");
+			row.dataset.libraryType = row.dataset.t;
+			row.dataset.libraryBrand = card.brand;
 			var pdf = row.querySelector("a");
 			pdf.classList.add("linker-library-dl", "linker-library-doc-title");
 			pdf.dataset.docKind = row.dataset.t;
@@ -335,7 +337,7 @@
 		var row = document.createElement("details");
 		row.className = "linker-library-qa";
 		row.setAttribute("data-library-item", "");
-		row.innerHTML = '<summary class="linker-library-qa-head"><span class="linker-library-qa-text"><span class="linker-library-qa-product"></span><span class="linker-library-qa-q"></span></span></summary><div class="linker-library-qa-a"><p></p><p class="linker-library-qa-source"><a></a></p></div>';
+		row.innerHTML = '<summary class="linker-library-qa-head"><span class="linker-library-qa-product"></span><span class="linker-library-qa-q"></span></summary><div class="linker-library-qa-a"><p></p><p class="linker-library-qa-source"><a></a></p></div>';
 		row.querySelector(".linker-library-qa-product").textContent = answer.product;
 		row.querySelector(".linker-library-qa-q").textContent = answer.question;
 		row.querySelector(".linker-library-qa-a p").textContent = answer.answer;
