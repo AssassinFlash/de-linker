@@ -21,12 +21,35 @@ final class ContactChannels {
 	public const DIRECTORY_NORTHDATA    = 'https://www.northdata.de/Linker%20Technology%20GmbH,%20Barleben/Amtsgericht%20Stendal%20HRB%2033824';
 	public const DIRECTORY_11880        = 'https://www.11880.com/branchenbuch/barleben/250424085B114309018/linker-technology-gmbh.html';
 	public const DIRECTORY_HOTFROG      = 'https://www.hotfrog.de/company/AaIcwgYnceK8KVPjsAyONQ/linker-technology-gmbh/barleben/electrical-supplies-services';
-	public const CHESTER_LINKEDIN       = 'https://www.linkedin.com/in/johnchestersr/';
-	public const CHESTER_YOUTUBE        = 'https://www.youtube.com/@chesterjohn.linker';
-	public const CHESTER_X              = 'https://x.com/chester_linker';
-	public const CHESTER_FACEBOOK       = 'https://www.facebook.com/chesterjohn.linker/';
-	public const CHESTER_INSTAGRAM      = 'https://www.instagram.com/chesterjohn.linker/';
-	public const CHESTER_TIKTOK         = 'https://www.tiktok.com/@chesterjohn.linker';
+
+	public const DIRECTORY_ONLINE_HANDELSREGISTER = 'https://www.online-handelsregister.de/handelsregisterauszug/st/Stendal/HRB/33824/Linker-Technology-GmbH';
+	public const DIRECTORY_IMPLISENSE             = 'https://app.implisense.com/de/companies/linker-technology-gmbh-barleben--DE5WQKGDA060';
+	public const DIRECTORY_OPENSTREETMAP          = 'https://www.openstreetmap.org/node/14425788951';
+	public const DIRECTORY_WORDPRESS              = 'https://linkertechnology.wordpress.com/';
+	public const DIRECTORY_GRAVATAR               = 'https://gravatar.com/linkertechnology';
+	public const DIRECTORY_CARRD                  = 'https://de-linker.carrd.co/';
+	public const DIRECTORY_GITBOOK                = 'https://linker-technology-gmbh.gitbook.io/de-linker';
+	public const DIRECTORY_MASTODON               = 'https://mastodon.social/@delinker';
+	public const DIRECTORY_SURGE                  = 'https://de-linker.surge.sh/';
+	public const DIRECTORY_THEORG                 = 'https://theorg.com/org/linker-technology-gmbh';
+	public const DIRECTORY_PEERLIST               = 'https://peerlist.io/company/delinker';
+	public const DIRECTORY_LINKCENTRE             = 'https://www.linkcentre.com/profile/linkertechnology/';
+	public const DIRECTORY_TRUSTBURN              = 'https://trustburn.com/reviews/de-linker-com';
+	public const DIRECTORY_ENTERPRISELEAGUE       = 'https://enterpriseleague.com/company/linker-technology-gmbh';
+	public const DIRECTORY_SECONDSOL              = 'https://www.secondsol.com/de/business_directory_list/view_user_vendor,Linker-Technology-GmbH,75802.htm';
+	public const DIRECTORY_INDUUX                 = 'https://www.induux.de/firmen/7785';
+	public const DIRECTORY_LINKIVERSE             = 'https://linkiverse.de/companies/barleben/branche/linker-technology-gmbh';
+	public const DIRECTORY_FINDERR                = 'https://www.finderr.de/linker.com-elektrogrosshandel-barleben-linker-technology-gmbh-101982282';
+	public const DIRECTORY_SUCHNADEL              = 'https://www.suchnadel.de/detail.php?gs_id=9801';
+	public const DIRECTORY_UNTERNEHMENSAUSKUNFT   = 'https://www.unternehmensauskunft.com/Linker-Technology-GmbH-47899935.html';
+	public const DIRECTORY_BUSINESS_BRANCHENBUCH  = 'https://www.business-branchenbuch.de/Linker-Technology-GmbH-47899935.html';
+
+	public const CHESTER_LINKEDIN  = 'https://www.linkedin.com/in/johnchestersr/';
+	public const CHESTER_YOUTUBE   = 'https://www.youtube.com/@chesterjohn.linker';
+	public const CHESTER_X         = 'https://x.com/chester_linker';
+	public const CHESTER_FACEBOOK  = 'https://www.facebook.com/chesterjohn.linker/';
+	public const CHESTER_INSTAGRAM = 'https://www.instagram.com/chesterjohn.linker/';
+	public const CHESTER_TIKTOK    = 'https://www.tiktok.com/@chesterjohn.linker';
 
 	public const DIRECT_EMAIL  = 'chester@de-linker.com';
 	public const GERMANY_PHONE = '+49 174 4276991';
@@ -50,6 +73,27 @@ final class ContactChannels {
 			self::DIRECTORY_NORTHDATA,
 			self::DIRECTORY_11880,
 			self::DIRECTORY_HOTFROG,
+			self::DIRECTORY_ONLINE_HANDELSREGISTER,
+			self::DIRECTORY_IMPLISENSE,
+			self::DIRECTORY_OPENSTREETMAP,
+			self::DIRECTORY_WORDPRESS,
+			self::DIRECTORY_GRAVATAR,
+			self::DIRECTORY_CARRD,
+			self::DIRECTORY_GITBOOK,
+			self::DIRECTORY_MASTODON,
+			self::DIRECTORY_SURGE,
+			self::DIRECTORY_THEORG,
+			self::DIRECTORY_PEERLIST,
+			self::DIRECTORY_LINKCENTRE,
+			self::DIRECTORY_TRUSTBURN,
+			self::DIRECTORY_ENTERPRISELEAGUE,
+			self::DIRECTORY_SECONDSOL,
+			self::DIRECTORY_INDUUX,
+			self::DIRECTORY_LINKIVERSE,
+			self::DIRECTORY_FINDERR,
+			self::DIRECTORY_SUCHNADEL,
+			self::DIRECTORY_UNTERNEHMENSAUSKUNFT,
+			self::DIRECTORY_BUSINESS_BRANCHENBUCH,
 		);
 	}
 
