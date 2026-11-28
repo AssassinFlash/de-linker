@@ -87,6 +87,7 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'old_slug_redirect_post_id', GermanUrlMigration::class, 'old_post', 10, 1 ),
 		array( 'filter', 'old_slug_redirect_url', GermanUrlMigration::class, 'old_url', 10, 1 ),
 		array( 'filter', 'linker_tools_retired_url', GermanUrlMigration::class, 'retired_url', 10, 2 ),
+		array( 'filter', 'wp_headers', Seo::class, 'content_language', 20, 1 ),
 		array( 'filter', 'pll_rel_hreflang_attributes', Seo::class, 'hreflangs', 99, 1 ),
 		array( 'filter', 'do_redirect_guess_404_permalink', Seo::class, 'guess_404', 10, 1 ),
 		array( 'filter', 'seopress_titles_title', Seo::class, 'not_found_title', 10, 1 ),

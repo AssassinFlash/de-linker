@@ -278,9 +278,9 @@ def required_types(url: str) -> frozenset[str]:
     """Structured data required for this indexable customer page type."""
     path = urllib.parse.urlsplit(url).path
     if path in {"/faq-download/", "/de/faq-dokumente/"}:
-        return frozenset({"FAQPage"})
+        return frozenset({"CollectionPage", "FAQPage", "BreadcrumbList"})
     if path in {"/blog/", "/de/blog/"}:
-        return frozenset({"CollectionPage"})
+        return frozenset({"CollectionPage", "BreadcrumbList"})
     if path.startswith(("/category/", "/de/kategorie/")):
         return frozenset({"CollectionPage", "BreadcrumbList"})
     if path.startswith(("/product-category/", "/de/produkt-kategorie/")):
@@ -343,6 +343,24 @@ def audit(parsed: dict[str, Page], cache_pages: dict[str, Page]) -> Audit:
                 findings.append(
                     Finding("description-boilerplate", url, page.description)
                 )
+        if (
+            len(page.jsonld) != 1
+            or not isinstance(page.jsonld[0], dict)
+            or not isinstance(page.jsonld[0].get("@graph"), list)
+        ):
+            findings.append(
+                Finding("jsonld-graph", url, "expected 1 unified @graph JSON-LD block")
+            )
+        elif urllib.parse.urlsplit(url).path not in {"/", "/de/"} and any(
+            "Organization" in declared_types(node) for node in page.jsonld[0]["@graph"]
+        ):
+            findings.append(
+                Finding(
+                    "jsonld-duplicate-org",
+                    url,
+                    "duplicate Organization node on inner page",
+                )
+            )
         present = set().union(*(json_types(item) for item in page.jsonld))
         missing = sorted(required_types(url) - present)
         if missing:

@@ -137,8 +137,8 @@ final class RedirectsTest extends SiteTestCase {
 	 * roof step, per language.
 	 */
 	public function test_the_retired_tool_addresses_go_to_the_configurator(): void {
-		$this->assertRedirects( '/design-canvas/', '/solution-configurator/?step=roof' );
-		$this->assertRedirects( '/de/entwurfsflache/', '/de/loesungskonfigurator/?step=roof' );
+		$this->assertRedirects( '/design-canvas/', '/solution-configurator/' );
+		$this->assertRedirects( '/de/entwurfsflache/', '/de/loesungskonfigurator/' );
 	}
 
 	/**

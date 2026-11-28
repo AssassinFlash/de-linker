@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A product page carries exactly one Product node, and it is the product's.
 
-The public page carries one Product and its matching sibling ProductGroup.
+The page graph carries one Product and its matching ProductGroup.
 
 1. Count: the page's JSON-LD holds exactly one schema.org `Product` node.
    Blocks are not the count — a single `@graph` holds two contradictory nodes
@@ -54,7 +54,10 @@ TIMEOUT = 30
 def fetch(url: str) -> tuple[int | None, str]:
     """Return (status, body). status is None when the request itself failed."""
     request = urllib.request.Request(
-        url, headers={"User-Agent": "product-schema-check/1.0"}
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+        },
     )
     try:
         with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
@@ -95,18 +98,14 @@ def product_nodes(value: object) -> list[dict[str, object]]:
     return found
 
 
-def parse_page(html: str) -> tuple[list[dict[str, object]], int]:
-    """(Product nodes, JSON-LD blocks that did not parse) in a page."""
-    nodes: list[dict[str, object]] = []
-    unreadable = 0
-    for block in LD_JSON.findall(html):
-        try:
-            parsed = json.loads(block)
-        except json.JSONDecodeError:
-            unreadable += 1
-            continue
-        nodes.extend(product_nodes(parsed))
-    return nodes, unreadable
+def graph_nodes(value: object) -> list[dict[str, object]]:
+    """Direct entities of a graph or a standalone JSON-LD document."""
+    if isinstance(value, list):
+        return [node for item in value for node in graph_nodes(item)]
+    if not isinstance(value, dict):
+        return []
+    graph = value.get("@graph")
+    return graph_nodes(graph) if isinstance(graph, list) else [value]
 
 
 def brand_name(node: dict[str, object]) -> str:
@@ -135,7 +134,7 @@ def site_name(base: str) -> str | None:
             parsed = json.loads(block)
         except json.JSONDecodeError:
             continue
-        for node in [parsed] if isinstance(parsed, dict) else []:
+        for node in graph_nodes(parsed):
             types = node.get("@type")
             if types == "WebSite" or (isinstance(types, list) and "WebSite" in types):
                 name = node.get("name")
@@ -182,9 +181,18 @@ def check(base: str, path: str, name: str) -> tuple[bool, str]:
         return False, f"{path}: the instance did not answer"
     if status != 200:
         return False, f"{path}: answered {status}"
-    nodes, unreadable = parse_page(html)
-    if unreadable:
-        return False, f"{path}: {unreadable} JSON-LD block(s) did not parse"
+    try:
+        blocks = [json.loads(block) for block in LD_JSON.findall(html)]
+    except json.JSONDecodeError as exc:
+        return False, f"{path}: JSON-LD did not parse: {exc}"
+    if (
+        len(blocks) != 1
+        or not isinstance(blocks[0], dict)
+        or not isinstance(blocks[0].get("@graph"), list)
+    ):
+        return False, f"{path}: expected 1 unified @graph JSON-LD block"
+    entities = graph_nodes(blocks[0])
+    nodes = product_nodes(blocks[0])
     if len(nodes) != 1:
         brands = ", ".join(brand_name(node) or "?" for node in nodes) or "none"
         return (
@@ -203,14 +211,18 @@ def check(base: str, path: str, name: str) -> tuple[bool, str]:
         re.I,
     ):
         problems.append("price data in the public Product node")
-    blocks = [json.loads(block) for block in LD_JSON.findall(html)]
-    groups = [
-        block
-        for block in blocks
-        if isinstance(block, dict) and block.get("@type") == "ProductGroup"
-    ]
+    for item in entities:
+        declared = item.get("@type")
+        if (
+            declared == "Organization"
+            or isinstance(declared, list)
+            and "Organization" in declared
+        ):
+            problems.append("duplicate Organization node on inner page")
+            break
+    groups = [item for item in entities if item.get("@type") == "ProductGroup"]
     if len(groups) != 1:
-        problems.append(f"{len(groups)} sibling ProductGroup blocks, expected 1")
+        problems.append(f"{len(groups)} ProductGroup nodes, expected 1")
     else:
         group = groups[0]
         group_id = node.get("inProductGroupWithID")

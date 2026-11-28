@@ -29,7 +29,7 @@ def page(
     *,
     robots: tuple[str, ...] = ("index", "follow"),
     hreflang: dict[str, str] | None = None,
-    jsonld: tuple[object, ...] = (),
+    jsonld: tuple[object, ...] | None = None,
 ) -> Any:
     return audit_module.Page(
         url=url,
@@ -38,7 +38,9 @@ def page(
         robots=robots,
         hreflang=hreflang or {"en": url, "de": url, "x-default": url},
         canonical=(url,),
-        jsonld=jsonld,
+        jsonld=({"@graph": [{"@type": "WebPage", "url": url}]},)
+        if jsonld is None
+        else jsonld,
         internal_links=(),
     )
 
@@ -70,7 +72,7 @@ def test_the_indexable_library_requires_faqpage() -> None:
         (
             "structured-data",
             library.url,
-            "missing required type(s): FAQPage",
+            "missing required type(s): BreadcrumbList, CollectionPage, FAQPage",
         )
     ]
 
@@ -189,3 +191,40 @@ def test_rendered_metadata_duplicates_and_bounds() -> None:
     assert kinds.count("title-length") == 2
     assert kinds.count("description-length") == 1
     assert kinds.count("description-boilerplate") == 1
+
+
+def test_graph_and_organization_scope() -> None:
+    for path, expected in (
+        ("/", []),
+        ("/de/", []),
+        ("/privacy-policy/", ["jsonld-duplicate-org"]),
+    ):
+        url = "https://de-linker.com" + path
+        document = page(url, jsonld=({"@graph": [{"@type": ["Organization"]}]},))
+        assert [
+            f.kind for f in audit_module.audit({url: document}, {}).findings
+        ] == expected
+    invalid: tuple[tuple[object, ...], ...] = (
+        (),
+        ({"@type": "WebPage"},),
+        ({"@graph": []}, {"@graph": []}),
+    )
+    for blocks in invalid:
+        document = page(url, jsonld=blocks)
+        assert [f.kind for f in audit_module.audit({url: document}, {}).findings] == [
+            "jsonld-graph"
+        ]
+
+
+def test_localized_journal_and_faq_hubs_require_breadcrumbs() -> None:
+    for path in ("/blog/", "/de/blog/", "/faq-download/", "/de/faq-dokumente/"):
+        url = "https://de-linker.com" + path
+        nodes = [{"@type": "CollectionPage", "url": url}]
+        if "faq" in path:
+            nodes.append({"@type": "FAQPage"})
+        hub = page(url, jsonld=({"@graph": nodes},))
+        assert [
+            item.detail for item in audit_module.audit({url: hub}, {}).findings
+        ] == ["missing required type(s): BreadcrumbList"]
+        nodes.append({"@type": "BreadcrumbList"})
+        assert audit_module.audit({url: hub}, {}).findings == ()

@@ -25,9 +25,7 @@ final class PageSchema {
 		add_filter( 'seopress_schemas_auto_article_json', array( $this, 'article_schema' ) );
 		add_filter( 'seopress_pro_get_json_data_author', array( $this, 'author_schema' ), 10, 2 );
 		add_filter( 'seopress_schemas_auto_custom_html', array( $this, 'about_publisher' ) );
-		add_filter( 'the_content', array( $this, 'guide_faq' ), 99 );
 		add_action( 'wp_head', array( $this, 'print_blocks' ) );
-		add_action( 'wp_head', array( $this, 'print_organization' ) );
 	}
 
 	/**
@@ -98,9 +96,8 @@ final class PageSchema {
 		if ( isset( $node['author'] ) && is_array( $node['author'] ) ) {
 			$node['author'] = $this->author_schema( $node['author'] );
 		}
-		if ( isset( $node['publisher'] ) && is_array( $node['publisher'] ) ) {
-			$node['publisher']['@id']    = self::organization_id();
-			$node['publisher']['sameAs'] = ContactChannels::company_same_as();
+		if ( isset( $node['publisher'] ) ) {
+			$node['publisher'] = array( '@id' => self::organization_id() );
 		}
 		$post  = get_queried_object();
 		$entry = $post instanceof WP_Post ? GuideEquipmentMesh::for_post( $post ) : array();
@@ -147,25 +144,24 @@ final class PageSchema {
 	}
 
 	/**
-	 * Reflect explicit, visible FAQ lists in rendered journal content.
+	 * Visible FAQ questions for an opt-in guide without an existing FAQ schema.
 	 *
-	 * @param string $content Rendered body of the post.
+	 * @param WP_Post $post Current journal post.
+	 * @return array<string,mixed>
+	 * @phpstan-impure Reads the current SEOPress manual schema.
 	 */
-	public function guide_faq( string $content ): string {
-		if ( ! str_contains( $content, 'lk-faq-list' ) || ! is_singular( 'post' ) || get_the_ID() !== get_queried_object_id() ) {
-			return $content;
-		}
-		$post = get_post();
-		if ( ! $post instanceof WP_Post || has_block( 'wpseopress/faq-block', $post ) || has_block( 'wpseopress/faq-block-v2', $post ) ) {
-			return $content;
+	public function guide_faq( WP_Post $post ): array {
+		$content = $post->post_content;
+		if ( ! str_contains( $content, 'lk-faq-list' ) || has_block( 'wpseopress/faq-block', $post ) || has_block( 'wpseopress/faq-block-v2', $post ) ) {
+			return array();
 		}
 		foreach ( (array) get_post_meta( $post->ID, '_seopress_pro_schemas_manual', true ) as $schema ) {
 			if ( 'faq' === ( $schema['_seopress_pro_rich_snippets_type'] ?? '' ) ) {
-				return $content;
+				return array();
 			}
 		}
 		if ( str_contains( $content, '"FAQPage"' ) ) {
-			return $content;
+			return array();
 		}
 		$document = new \DOMDocument();
 		$document->loadHTML( '<meta charset="utf-8"><body>' . $content . '</body>', LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING );
@@ -200,14 +196,12 @@ final class PageSchema {
 			}
 		}
 		if ( ! $questions ) {
-			return $content;
+			return array();
 		}
-		$faq = array(
-			'@context'   => 'https://schema.org',
+		return array(
 			'@type'      => 'FAQPage',
 			'mainEntity' => $questions,
 		);
-		return $content . '<script type="application/ld+json">' . wp_json_encode( $faq, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>';
 	}
 
 	/**
@@ -335,7 +329,7 @@ final class PageSchema {
 	 * @param string $html A resolved SEOPress automatic custom schema.
 	 */
 	public function about_publisher( string $html ): string {
-		if ( ! is_page( array( 'about', 'contact' ) ) || ! preg_match( '~^\s*<script\b[^>]*>(.*?)</script>\s*$~is', $html, $script ) ) {
+		if ( ! is_page( array( 'about', 'contact', 'faq-download' ) ) || ! preg_match( '~^\s*<script\b[^>]*>(.*?)</script>\s*$~is', $html, $script ) ) {
 			return $html;
 		}
 		$node  = json_decode( $script[1], true );
@@ -345,6 +339,8 @@ final class PageSchema {
 			$node['mentions'] = array( array( '@id' => self::chester_id() ) );
 		} elseif ( is_page( 'contact' ) && in_array( 'ContactPage', $types, true ) ) {
 			$node['mainEntity'] = array( '@id' => self::organization_id() );
+		} elseif ( is_page( 'faq-download' ) && in_array( 'CollectionPage', $types, true ) ) {
+			$node['@id'] = get_permalink() . '#webpage';
 		} else {
 			return $html;
 		}
@@ -353,18 +349,44 @@ final class PageSchema {
 		return '<script type="application/ld+json">' . wp_json_encode( $node, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "</script>\n";
 	}
 
-	/** SEOPress prints its Knowledge Graph organization only on the front page. */
-	public function print_organization(): void {
-		if ( ! is_front_page() ) {
-			$this->print_node(
-				$this->organization( array( '@type' => 'Organization' ) )
-			);
-		}
-	}
-
 	/** Print breadcrumbs and page identities for the visible public page. */
 	public function print_blocks(): void {
 		$post = get_queried_object();
+		if ( is_home() ) {
+			$blog  = PageUrls::page( 'blog' );
+			$home  = PageUrls::home();
+			$paged = (int) get_query_var( 'paged' );
+			$url   = $paged > 1 ? (string) get_pagenum_link( $paged ) : $blog;
+			$title = $post instanceof WP_Post ? wp_strip_all_tags( get_the_title( $post ) ) : 'Blog';
+			$this->print_node(
+				array(
+					'@type'       => array( 'CollectionPage', 'WebPage' ),
+					'@id'         => $url . '#collectionpage',
+					'name'        => 'Linker Journal',
+					'url'         => $url,
+					'inLanguage'  => self::is_german() ? 'de' : 'en',
+					'description' => self::is_german()
+						? 'Praxiswissen für Installationsbetriebe und EPCs bei der Planung und Inbetriebnahme von Photovoltaik- und Speichersystemen.'
+						: 'Technical guides on system sizing, inverter-battery pairing, commissioning and monitoring for installers, EPCs and energy partners working with photovoltaic and energy-storage solutions.',
+					'isPartOf'    => array( '@id' => $home . '#website' ),
+					'publisher'   => array( '@id' => self::organization_id() ),
+				)
+			);
+			$this->print_trail(
+				array(
+					array(
+						'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
+						'url'   => $home,
+					),
+					array(
+						'label' => $title,
+						'url'   => $blog,
+					),
+				),
+				$url
+			);
+			return;
+		}
 		if ( ! $post instanceof WP_Post ) {
 			return;
 		}
@@ -388,6 +410,10 @@ final class PageSchema {
 			);
 			$trail = ProductView::crumbs( $post->ID );
 		} elseif ( is_singular( 'post' ) ) {
+			$faq = $this->guide_faq( $post );
+			if ( $faq ) {
+				$this->print_node( $faq );
+			}
 			$trail = array(
 				array(
 					'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
@@ -534,22 +560,20 @@ final class PageSchema {
 			if ( 'about' !== $post->post_name ) {
 				$this->print_node( $node );
 			}
-		} elseif ( is_page( array( 'contact', 'kontakt', 'faq-dokumente' ) ) ) {
-			$contact = 'faq-dokumente' !== $post->post_name;
-			if ( $contact ) {
-				$trail = array(
-					array(
-						'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
-						'url'   => $home,
-					),
-					array(
-						'label' => $title,
-						'url'   => $url,
-					),
-				);
-			}
-			// The English contact page uses the SEOPress custom ContactPage.
-			if ( 'contact' !== $post->post_name ) {
+		} elseif ( is_page( array( 'contact', 'kontakt', 'faq-download', 'faq-dokumente' ) ) ) {
+			$contact = in_array( $post->post_name, array( 'contact', 'kontakt' ), true );
+			$trail   = array(
+				array(
+					'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
+					'url'   => $home,
+				),
+				array(
+					'label' => $title,
+					'url'   => $url,
+				),
+			);
+			// SEOPress supplies the English ContactPage and FAQ CollectionPage.
+			if ( ! in_array( $post->post_name, array( 'contact', 'faq-download' ), true ) ) {
 				$node = array(
 					'@type'       => array( $contact ? 'ContactPage' : 'CollectionPage', 'WebPage' ),
 					'@id'         => $url . '#webpage',
@@ -566,22 +590,31 @@ final class PageSchema {
 			}
 		}
 		if ( $trail ) {
-			$items = array();
-			foreach ( $trail as $index => $crumb ) {
-				$items[] = array(
-					'@type'    => 'ListItem',
-					'position' => $index + 1,
-					'name'     => html_entity_decode( $crumb['label'], ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
-					'item'     => $crumb['url'] ?? $url,
-				);
-			}
-			$this->print_node(
-				array(
-					'@type'           => 'BreadcrumbList',
-					'itemListElement' => $items,
-				)
+			$this->print_trail( $trail, $url );
+		}
+	}
+
+	/** Emit the visible trail with its localized destinations.
+	 *
+	 * @param array<int,array{label:string,url?:string|null}> $trail Breadcrumb links.
+	 * @param string                                          $url Current page.
+	 */
+	private function print_trail( array $trail, string $url ): void {
+		$items = array();
+		foreach ( $trail as $index => $crumb ) {
+			$items[] = array(
+				'@type'    => 'ListItem',
+				'position' => $index + 1,
+				'name'     => html_entity_decode( $crumb['label'], ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
+				'item'     => $crumb['url'] ?? $url,
 			);
 		}
+		$this->print_node(
+			array(
+				'@type'           => 'BreadcrumbList',
+				'itemListElement' => $items,
+			)
+		);
 	}
 
 	/**

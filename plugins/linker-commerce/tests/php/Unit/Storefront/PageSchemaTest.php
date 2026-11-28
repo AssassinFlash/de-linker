@@ -20,6 +20,12 @@ use WP_Post;
  */
 final class PageSchemaTest extends TestCase {
 
+	/** Individual pages are the default request for these fixtures. */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'is_home' )->andReturn( false )->byDefault();
+	}
+
 	/** Product pages link the localized four-level trail and the product entity.
 	 *
 	 * @dataProvider product_locales
@@ -64,6 +70,45 @@ final class PageSchemaTest extends TestCase {
 		$trail = json_decode( $matches[1][1], true )['itemListElement'];
 		$this->assertSame( array( $home_label, 'Products', 'Equipment', 'Model A' ), array_column( $trail, 'name' ) );
 		$this->assertSame( array( $home, $home . 'products/', $home . 'equipment/', $url ), array_column( $trail, 'item' ) );
+	}
+
+	/**
+	 * Each edition of the journal describes its current page and links to its landing page.
+	 *
+	 * @dataProvider product_locales
+	 * @param string $lang   Language.
+	 * @param string $label  Home link text.
+	 */
+	public function test_journal_page_and_breadcrumb( string $lang, string $label ): void {
+		$root = 'https://example.org/';
+		$home = 'de' === $lang ? $root . 'de/' : $root;
+		$blog = $home . 'blog/';
+		$page = $blog . ( 'de' === $lang ? 'seite' : 'page' ) . '/2/';
+		$post = new WP_Post( (object) array( 'ID' => 7 ) );
+		WP_Mock::userFunction( 'is_home' )->andReturn( true );
+		WP_Mock::userFunction( 'get_queried_object' )->andReturn( null );
+		WP_Mock::userFunction( 'get_page_by_path' )->with( 'blog' )->andReturn( $post );
+		WP_Mock::userFunction( 'pll_get_post' )->with( 7, 'de' )->andReturn( 8 );
+		WP_Mock::userFunction( 'get_permalink' )->with( 'de' === $lang ? 8 : 7 )->andReturn( $blog );
+		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( $root );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnArg( 0 );
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( $lang );
+		WP_Mock::userFunction( 'pll_home_url' )->andReturn( $home );
+		WP_Mock::userFunction( 'get_query_var' )->with( 'paged' )->andReturn( 2 );
+		WP_Mock::userFunction( 'get_pagenum_link' )->with( 2 )->andReturn( $page );
+		WP_Mock::userFunction( '_x' )->andReturn( $label );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( 'json_encode' );
+		ob_start();
+		( new PageSchema() )->print_blocks();
+		$html = (string) ob_get_clean();
+		preg_match_all( '#<script[^>]*>(.*?)</script>#s', $html, $matches );
+		list( $collection, $trail ) = array_map( static fn( $node ) => json_decode( $node, true, 512, JSON_THROW_ON_ERROR ), $matches[1] );
+		self::assertContains( 'CollectionPage', $collection['@type'] );
+		self::assertSame( $page, $collection['url'] );
+		self::assertSame( $home . '#website', $collection['isPartOf']['@id'] );
+		self::assertSame( $root . '#organization', $collection['publisher']['@id'] );
+		self::assertSame( array( $home, $blog ), array_column( $trail['itemListElement'], 'item' ) );
+		self::assertSame( array( $label, 'Blog' ), array_column( $trail['itemListElement'], 'name' ) );
 	}
 
 	/** Product graph languages.
@@ -163,8 +208,7 @@ final class PageSchemaTest extends TestCase {
 		$this->assertSame( $role, $node['author']['jobTitle'] );
 		$this->assertSame( 'https://example.org/#organization', $node['author']['worksFor']['@id'] );
 		$this->assertSame( ContactChannels::chester_same_as(), $node['author']['sameAs'] );
-		$this->assertSame( ContactChannels::company_same_as(), $node['publisher']['sameAs'] );
-		$this->assertSame( 'logo', $node['publisher']['logo'] );
+		$this->assertSame( array( '@id' => 'https://example.org/#organization' ), $node['publisher'] );
 		$template_author                = new \WP_User();
 		$template_author->user_nicename = 'chester-john';
 		$post                           = new WP_Post( (object) array( 'post_author' => '61' ) );
@@ -320,6 +364,8 @@ final class PageSchemaTest extends TestCase {
 			array( 'wechselrichter-speicher-kompatibilitaet', 'de', 'WebPage', 2 ),
 			array( 'contact', 'en', '', 2 ),
 			array( 'kontakt', 'de', 'ContactPage', 2 ),
+			array( 'faq-download', 'en', '', 2 ),
+			array( 'faq-dokumente', 'de', 'CollectionPage', 2 ),
 			array( 'about', 'en', '', 2 ),
 			array( 'ueber-uns', 'de', 'AboutPage', 2 ),
 			array( 'capability', 'en', 'WebPage', 3 ),
