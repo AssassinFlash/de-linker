@@ -264,7 +264,7 @@
 	/* Keep the localized count out of the input row. Its existing 28px line
 	 * has the existing 8px gap above and below (28 + 8 + 8 = 44px).
 	 * The suggestion box still starts below the unchanged 52px search row. */
-	
+
 	/* The filtered search is the containing block: include its 1px bottom
 	 * border so the visible outer-edge gap is the intended 8px. */
 	/* Use the existing ink on the exposed gradient; the muted token has

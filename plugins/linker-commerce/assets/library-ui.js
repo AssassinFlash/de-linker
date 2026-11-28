@@ -522,7 +522,7 @@
 
 	function setTab(tab, options) {
 		var next = tab === "documents" ? "documents" : "faq";
-		
+
 		var activePanel;
 		state.tab = next;
 		tabs.forEach(function (element) {
