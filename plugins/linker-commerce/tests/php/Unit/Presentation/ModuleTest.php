@@ -221,6 +221,8 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.before', WindPressPageStyles::class, 'before_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_play_cdn.after', WindPressPageStyles::class, 'after_cache' );
 		$cards = new AnyInstance( SocialCards::class );
+		// @phpstan-ignore argument.type (WP_Mock matches array callbacks with AnyInstance.)
+		WP_Mock::expectActionAdded( 'wp_head', array( $cards, 'domain_verification' ), 1 );
 		WP_Mock::expectFilterAdded( 'seopress_social_twitter_card_site', '__return_empty_string' );
 		foreach ( array(
 			'seopress_social_og_type'              => 'open_graph_type',

@@ -157,4 +157,19 @@ final class SocialCardsTest extends TestCase {
 			$this->assertStringContainsString( 'sizes="' . $size . 'x' . $size . '"', $html );
 		}
 	}
+
+	/** Meta reads its verification tag from the front page head. */
+	public function test_front_page_outputs_domain_verification(): void {
+		WP_Mock::userFunction( 'is_front_page' )->andReturn( true );
+		WP_Mock::userFunction( 'esc_attr' )->andReturnArg( 0 );
+		$this->expectOutputString( '<meta name="facebook-domain-verification" content="wmuo0z9zanm2ye6l5fpzqywavsy6v2" />' . "\n" );
+		( new SocialCards() )->domain_verification();
+	}
+
+	/** Inner pages omit the verification tag. */
+	public function test_inner_page_omits_domain_verification(): void {
+		WP_Mock::userFunction( 'is_front_page' )->andReturn( false );
+		$this->expectOutputString( '' );
+		( new SocialCards() )->domain_verification();
+	}
 }

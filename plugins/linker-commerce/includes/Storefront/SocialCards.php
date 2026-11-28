@@ -15,6 +15,8 @@ use Linker\Commerce\Presentation\BlogShortcodes;
 /** SEOPress renders Open Graph before Twitter in the same page head. */
 final class SocialCards {
 
+	public const META_DOMAIN_VERIFICATION = 'wmuo0z9zanm2ye6l5fpzqywavsy6v2';
+
 	public const ARTWORK = array(
 		'default' => 'Linker Technology GmbH — Residential and C&I energy storage systems, Barleben, Germany',
 		'blog'    => 'Linker Journal — Technical guidance on PV and energy storage sizing, pairing and commissioning by Chester John',
@@ -26,8 +28,9 @@ final class SocialCards {
 	 */
 	private string $image_url = '';
 
-	/** Register the native SEOPress meta filters. */
+	/** Register the homepage verification tag and social preview filters. */
 	public function register(): void {
+		add_action( 'wp_head', array( $this, 'domain_verification' ), 1 );
 		add_filter( 'seopress_social_og_type', array( $this, 'open_graph_type' ) );
 		add_filter( 'site_icon_meta_tags', array( $this, 'site_icons' ) );
 		add_filter( 'seopress_social_twitter_card_summary', array( $this, 'summary' ), 10, 0 );
@@ -35,6 +38,14 @@ final class SocialCards {
 		add_filter( 'seopress_social_twitter_card_site', '__return_empty_string' );
 		add_filter( 'seopress_social_twitter_card_creator', array( $this, 'creator' ), 10, 0 );
 		add_filter( 'seopress_social_twitter_card_thumb', array( $this, 'twitter_image' ) );
+	}
+
+	/** Render Meta's domain verification tag on the front page. */
+	public function domain_verification(): void {
+		if ( ! is_front_page() ) {
+			return;
+		}
+		echo '<meta name="facebook-domain-verification" content="' . esc_attr( self::META_DOMAIN_VERIFICATION ) . '" />' . "\n";
 	}
 
 	/**
