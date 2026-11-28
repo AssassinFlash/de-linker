@@ -335,6 +335,7 @@ function migrate_pages( array $pages, bool $apply ): void {
 	$apply = 'apply' === $mode;
 	$edge  = ABSPATH . '.htaccess';
 	if ( $apply && ! is_file( $file ) ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- A failed encoding must throw before an exact preimage is published.
 		publish_file( $file, json_encode( snapshot( $edge ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ), 0600 );
 	}
 	$before = json_decode( bytes( $file ), true, 512, JSON_THROW_ON_ERROR );
