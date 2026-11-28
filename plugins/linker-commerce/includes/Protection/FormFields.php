@@ -16,16 +16,16 @@ final class FormFields {
 	/**
 	 * The request ID connects an inquiry retry to its original submission.
 	 *
-	 * @param string $action Native form action.
-	 * @param string $id     Previous inquiry or contact request ID.
+	 * @param string      $action Native form action.
+	 * @param string|null $id     Previous request ID, or null to issue it when a cached form is opened.
 	 */
-	public static function render( string $action, string $id = '' ): string {
+	public static function render( string $action, ?string $id = '' ): string {
 		if ( ! Configuration::verification_required( $action ) ) {
 			return '';
 		}
 		$html = '';
 		if ( in_array( $action, array( 'contact', 'inquiry' ), true ) ) {
-			$id   = wp_is_uuid( $id, 4 ) ? $id : wp_generate_uuid4();
+			$id   = null === $id ? '' : ( wp_is_uuid( $id, 4 ) ? $id : wp_generate_uuid4() );
 			$html = '<input type="hidden" name="linker_request_id" value="' . esc_attr( $id ) . '" />';
 		}
 		if ( is_user_logged_in() ) {

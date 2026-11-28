@@ -1,0 +1,58 @@
+name: Cache Warm
+on:
+  schedule:
+    - cron: '17 */4 * * *'
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Target site URL'
+        default: 'https://de-linker.com'
+        required: false
+concurrency:
+  group: cache-warm
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Warm public sitemaps and pagination
+        env:
+          TARGET_SITE: ${{ inputs.site || 'https://de-linker.com' }}
+        run: |
+          python3 tools/perf/warm-sitemaps.py \
+            --site "$TARGET_SITE" \
+            --workers 4 \
+            --delay-ms 50 \
+            --output warm-report.json
+      - name: Publish summary
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          if not Path("warm-report.json").exists():
+              Path(os.environ["GITHUB_STEP_SUMMARY"]).write_text("The warmer stopped before producing its report.")
+              raise SystemExit(1)
+          report = json.loads(Path("warm-report.json").read_text())
+          summary = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          summary.write_text(
+              f"### Cache Warm Summary\n"
+              f"- Public cached URLs warmed: **{len(report.get('public', {}))}**\n"
+              f"- Dynamic uncached probes: **{len(report.get('dynamic', {}))}**\n"
+              f"- Failures: **{len(report.get('failed', []))}**\n"
+          )
+          PY
+      - name: Upload warm report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cache-warm-report
+          path: warm-report.json
+          retention-days: 7

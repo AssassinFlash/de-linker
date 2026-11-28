@@ -33,6 +33,7 @@ final class Module {
 		( new Form() )->register();
 		( new Handler() )->register();
 		( new SelectionView() )->register();
+		add_action( 'rest_api_init', array( new SessionEndpoint(), 'register_routes' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_language' ) );
 		add_action( 'template_redirect', array( $this, 'prepare_form_owner' ) );
 		add_action( 'template_redirect', array( $this, 'render_article_form' ), 100 );
@@ -44,10 +45,28 @@ final class Module {
 	/** Bind the displayed contact form before the theme sends the first HTML bytes. */
 	public function prepare_form_owner(): void {
 		$page = get_queried_object();
-		if ( $page instanceof \WP_Post && self::is_contact_page( $page ) ) {
+		if ( $page instanceof \WP_Post && self::is_contact_page( $page ) && ! self::is_cacheable_shell() ) {
 			\Linker\Commerce\Cache\DynamicHtml::forbid( 'contact form' );
 			\Linker\Commerce\Protection\Identity::ensure_browser_cookie();
 		}
+	}
+
+	/**
+	 * Whether the form can share its initial HTML with other visitors.
+	 *
+	 * @param string $back Embedded article form URL.
+	 */
+	public static function is_cacheable_shell( string $back = '' ): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Test only for query presence and the two public read methods.
+		if ( '' !== $back || ! empty( $_GET ) || ! in_array( strtoupper( (string) ( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) ), array( 'GET', 'HEAD' ), true ) || is_user_logged_in() ) {
+			return false;
+		}
+		foreach ( array_keys( $_COOKIE ) as $key ) {
+			if ( is_string( $key ) && ( str_starts_with( $key, 'wp_woocommerce_session_' ) || 'woocommerce_items_in_cart' === $key ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/** Serve the same native form and receipt in the author's dialog. */
