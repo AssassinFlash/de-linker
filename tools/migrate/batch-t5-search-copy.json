@@ -91,5 +91,33 @@
         "_seopress_titles_desc": "Hochvolt-LFP-Heimspeicher: GoodWe ESA-Module (5–9 kWh, bis 108 kWh stapelbar), Steuerungen und SAJ-B2-Systeme von 5 bis 25 kWh."
       }
     }
+  },
+  "page": {
+    "faq-download": {
+      "en": {
+        "_seopress_titles_desc": "Download datasheets, manuals and compatibility lists without an account. Find answers to questions about products, quotations and delivery."
+      }
+    },
+    "privacy-policy": {
+      "en": {
+        "_seopress_titles_desc": "How de-linker.com handles personal data for partner accounts and business transactions, why it is processed, how long it is kept and your data rights."
+      },
+      "de": {
+        "_seopress_titles_desc": "Wie Linker Ihre Daten für Partnerkonten und Geschäftsvorgänge verarbeitet, wie lange sie gespeichert werden und welche Datenschutzrechte Sie haben."
+      }
+    },
+    "refund-returns": {
+      "en": {
+        "_seopress_titles_desc": "Find out how to report an incorrect or damaged delivery, make a warranty claim and arrange a return or RMA for your business."
+      }
+    },
+    "terms-of-sale": {
+      "en": {
+        "_seopress_titles_desc": "Linker’s terms of sale for business customers cover quotations, contract formation, prices, taxes, delivery and liability."
+      },
+      "de": {
+        "_seopress_titles_desc": "Die Verkaufsbedingungen von Linker für Geschäftskunden regeln Angebote, Vertragsschluss, Preise, Steuern, Lieferung und Haftung."
+      }
+    }
   }
 }

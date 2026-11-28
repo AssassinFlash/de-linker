@@ -224,7 +224,7 @@ function migrate( array $before, bool $apply ): void {
 	if ( $before['site'] !== $current['site'] || array_keys( $before['entries'] ) !== array_keys( $current['entries'] ) ) {
 		throw new RuntimeException( 'Snapshot does not match the site or editorial inventory.' );
 	}
-	$copy       = search_copy();
+	$copy       = array_merge( ...array_values( search_copy() ) );
 	$translator = translator();
 	pause_translation();
 	NativeTransaction::run(
@@ -235,8 +235,8 @@ function migrate( array $before, bool $apply ): void {
 					throw new RuntimeException( 'Translated object identity changed: ' . $slug );
 				}
 				$desired = $row['values'];
-				if ( isset( $copy['post'][ $slug ] ) || isset( $copy['product_cat'][ $slug ] ) ) {
-					$desired = $copy['post'][ $slug ] ?? $copy['product_cat'][ $slug ];
+				if ( isset( $copy[ $slug ] ) ) {
+					$desired = $copy[ $slug ];
 				} elseif ( 'etr' === $slug ) {
 					require_once __DIR__ . '/batch-t5-etr-parity.php';
 					$desired['en'] = array_replace( $desired['en'], batch_t5_etr_meta( $row['ids']['en'], $row['values']['en'] ) );
