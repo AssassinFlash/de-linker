@@ -10,6 +10,9 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Storefront;
 
 use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Products\CompatibilityIndex;
+use Linker\Commerce\Products\DocumentLibrary;
+use Linker\Commerce\Products\DocumentThumbnails;
 
 /** SEOPress enumerates each shared WooCommerce manufacturer term once. */
 final class SitemapSync {
@@ -23,6 +26,7 @@ final class SitemapSync {
 	/** Attach to the native sitemap serializers and content lifecycle. */
 	public function register(): void {
 		add_filter( 'seopress_sitemaps_urlset', array( $this, 'xmlns' ) );
+		add_filter( 'seopress_sitemaps_single_img', array( $this, 'page_images' ), 20, 2 );
 		add_filter( 'seopress_sitemaps_single_url', array( $this, 'post_entry' ), 30, 2 );
 		add_filter( 'seopress_sitemaps_term_single_url', array( $this, 'term_entry' ), 30, 2 );
 		add_filter( 'seopress_sitemaps_no_archive_link', array( $this, 'archive_xml' ), 20, 2 );
@@ -36,6 +40,87 @@ final class SitemapSync {
 		add_action( 'transition_post_status', array( $this, 'transition' ), 10, 3 );
 		add_action( 'woocommerce_new_product', array( $this, 'product_changed' ), 10, 0 );
 		add_action( 'woocommerce_update_product', array( $this, 'product_changed' ), 10, 0 );
+	}
+
+	/**
+	 * Add the tool's published images when SEOPress finds no static page images.
+	 *
+	 * @param string   $xml Native URL entry before its closing tag.
+	 * @param \WP_Post $post Page included in the sitemap.
+	 */
+	public function page_images( string $xml, \WP_Post $post ): string {
+		if ( 'page' !== $post->post_type || str_contains( $xml, '<image:image>' ) ) {
+			return $xml;
+		}
+		$source = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $post->ID, 'en' ) : $post->ID;
+		$slug   = $source && $source !== $post->ID ? get_post_field( 'post_name', $source ) : $post->post_name;
+		$lang   = function_exists( 'pll_get_post_language' ) && 'de' === pll_get_post_language( $post->ID, 'slug' ) ? 'de' : 'en';
+		$images = array();
+		if ( 'solution-configurator' === $slug || 'compare-products' === $slug ) {
+			$views = 'compare-products' === $slug ? array( 'compare' ) : array( 'compare', 'equipment', 'roof' );
+			foreach ( $views as $view ) {
+				$images[] = plugins_url( "assets/home-configurator/{$view}-{$lang}-1440.webp", dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+			}
+		}
+		if ( 'faq-download' === $slug ) {
+			$thumbs = new DocumentThumbnails();
+			foreach ( ( new DocumentLibrary() )->documents( $lang ) as $document ) {
+				if ( 'datasheet' !== $document['type'] ) {
+					continue;
+				}
+				$cover = $thumbs->of( $document['url'] );
+				if ( $cover ) {
+					$images[ $cover['src'] ] = $cover['src'];
+				}
+				if ( 4 === count( $images ) ) {
+					break;
+				}
+			}
+		}
+		if ( 'inverter-battery-compatibility' === $slug || 'compare-products' === $slug ) {
+			$images = array_merge( $images, self::paired_images( $lang, 'compare-products' === $slug ? 2 : 4 ) );
+		}
+		foreach ( array_unique( $images ) as $image ) {
+			if ( preg_match( '~^https?://~i', $image ) ) {
+				$xml .= "\n<image:image><image:loc><![CDATA[" . esc_url_raw( $image ) . ']]></image:loc></image:image>';
+			}
+		}
+		return $xml;
+	}
+
+	/**
+	 * Featured images from released inverter and battery pairs, one per brand and role.
+	 *
+	 * @param string $lang Page language.
+	 * @param int    $limit Number of images to include.
+	 * @return list<string>
+	 */
+	private static function paired_images( string $lang, int $limit ): array {
+		$manifest = CompatibilityIndex::manifest();
+		$pairs    = CompatibilityIndex::declarations( $manifest )['pairs'];
+		$products = array_column( $manifest['products'], null, 'product_id' );
+		$images   = array();
+		foreach ( $pairs as $pair ) {
+			if ( 'not_released' === $pair['verdict'] ) {
+				continue;
+			}
+			foreach ( array( 'inverter_product_id', 'battery_product_id' ) as $role ) {
+				$item = $products[ $pair[ $role ] ];
+				$id   = $item['locale_product_ids'][ $lang ] ?? 0;
+				$key  = $item['brand'] . '/' . $role;
+				if ( isset( $images[ $key ] ) || ! in_array( $id, $item['published_locale_ids'], true ) ) {
+					continue;
+				}
+				$url = get_the_post_thumbnail_url( $id, 'full' );
+				if ( $url && ! in_array( $url, $images, true ) ) {
+					$images[ $key ] = $url;
+					if ( count( $images ) === $limit ) {
+						return array_values( $images );
+					}
+				}
+			}
+		}
+		return array_values( $images );
 	}
 
 	/**

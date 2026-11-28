@@ -148,6 +148,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_titles_canonical', array( new AnyInstance( PageIndexing::class ), 'canonical_tag' ), 20 ); // @phpstan-ignore argument.type
 		$sync = new AnyInstance( \Linker\Commerce\Storefront\SitemapSync::class );
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_urlset', array( $sync, 'xmlns' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_img', array( $sync, 'page_images' ), 20, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_url', array( $sync, 'post_entry' ), 30, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_term_single_url', array( $sync, 'term_entry' ), 30, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_no_archive_link', array( $sync, 'archive_xml' ), 20, 2 ); // @phpstan-ignore argument.type

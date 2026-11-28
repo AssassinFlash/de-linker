@@ -19,6 +19,34 @@ use Linker\Commerce\Tests\TestCase;
  * @covers \Linker\Commerce\Storefront\SitemapSync
  */
 final class SitemapSyncTest extends TestCase {
+	/** Both configurator pages publish their three localized UI captures once. */
+	public function test_tool_sitemap_images(): void {
+		$sync = new SitemapSync();
+		WP_Mock::userFunction( 'pll_get_post' )->andReturn( 14 );
+		WP_Mock::userFunction( 'get_post_field' )->with( 'post_name', 14 )->andReturn( 'solution-configurator' );
+		WP_Mock::userFunction( 'pll_get_post_language' )->andReturnUsing( static fn( $id ) => 14 === $id ? 'en' : 'de' );
+		WP_Mock::userFunction( 'plugins_url' )->andReturnUsing( static fn( $asset ) => 'https://linker.test/' . $asset );
+		WP_Mock::passthruFunction( 'esc_url_raw' );
+		foreach ( array(
+			14 => 'en',
+			15 => 'de',
+		) as $id => $lang ) {
+			$post = new \WP_Post(
+				(object) array(
+					'ID'        => $id,
+					'post_type' => 'page',
+					'post_name' => 'en' === $lang ? 'solution-configurator' : 'loesungskonfigurator',
+				)
+			);
+			$xml  = $sync->page_images( '<url>', $post );
+			self::assertSame( 3, substr_count( $xml, '<image:image>' ) );
+			foreach ( array( 'compare', 'equipment', 'roof' ) as $view ) {
+				self::assertStringContainsString( "/{$view}-{$lang}-1440.webp", $xml );
+			}
+			self::assertSame( $xml, $sync->page_images( $xml, $post ) );
+		}
+	}
+
 	/**
 	 * A shared term can have published equipment in either or both languages.
 	 *

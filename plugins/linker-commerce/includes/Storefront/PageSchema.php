@@ -335,7 +335,7 @@ final class PageSchema {
 	 * @param string $html A resolved SEOPress automatic custom schema.
 	 */
 	public function about_publisher( string $html ): string {
-		if ( ! is_page( array( 'about', 'contact' ) ) || ! preg_match( '~^\s*<script\b[^>]*>(.*?)</script>\s*$~is', $html, $script ) ) {
+		if ( ! is_page( array( 'about', 'contact', 'faq-download' ) ) || ! preg_match( '~^\s*<script\b[^>]*>(.*?)</script>\s*$~is', $html, $script ) ) {
 			return $html;
 		}
 		$node  = json_decode( $script[1], true );
@@ -345,6 +345,8 @@ final class PageSchema {
 			$node['mentions'] = array( array( '@id' => self::chester_id() ) );
 		} elseif ( is_page( 'contact' ) && in_array( 'ContactPage', $types, true ) ) {
 			$node['mainEntity'] = array( '@id' => self::organization_id() );
+		} elseif ( is_page( 'faq-download' ) && in_array( 'CollectionPage', $types, true ) ) {
+			$node['@id'] = get_permalink() . '#webpage';
 		} else {
 			return $html;
 		}
@@ -365,6 +367,41 @@ final class PageSchema {
 	/** Print breadcrumbs and page identities for the visible public page. */
 	public function print_blocks(): void {
 		$post = get_queried_object();
+		if ( is_home() ) {
+			$blog  = PageUrls::page( 'blog' );
+			$home  = PageUrls::home();
+			$paged = (int) get_query_var( 'paged' );
+			$url   = $paged > 1 ? (string) get_pagenum_link( $paged ) : $blog;
+			$title = $post instanceof WP_Post ? wp_strip_all_tags( get_the_title( $post ) ) : 'Blog';
+			$this->print_node(
+				array(
+					'@type'       => array( 'CollectionPage', 'WebPage' ),
+					'@id'         => $url . '#collectionpage',
+					'name'        => 'Linker Journal',
+					'url'         => $url,
+					'inLanguage'  => self::is_german() ? 'de' : 'en',
+					'description' => self::is_german()
+						? 'Praxiswissen für Installationsbetriebe und EPCs bei der Planung und Inbetriebnahme von Photovoltaik- und Speichersystemen.'
+						: 'Technical guides on system sizing, inverter-battery pairing, commissioning and monitoring for installers, EPCs and energy partners working with photovoltaic and energy-storage solutions.',
+					'isPartOf'    => array( '@id' => $home . '#website' ),
+					'publisher'   => array( '@id' => self::organization_id() ),
+				)
+			);
+			$this->print_trail(
+				array(
+					array(
+						'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
+						'url'   => $home,
+					),
+					array(
+						'label' => $title,
+						'url'   => $blog,
+					),
+				),
+				$url
+			);
+			return;
+		}
 		if ( ! $post instanceof WP_Post ) {
 			return;
 		}
@@ -534,22 +571,20 @@ final class PageSchema {
 			if ( 'about' !== $post->post_name ) {
 				$this->print_node( $node );
 			}
-		} elseif ( is_page( array( 'contact', 'kontakt', 'faq-dokumente' ) ) ) {
-			$contact = 'faq-dokumente' !== $post->post_name;
-			if ( $contact ) {
-				$trail = array(
-					array(
-						'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
-						'url'   => $home,
-					),
-					array(
-						'label' => $title,
-						'url'   => $url,
-					),
-				);
-			}
-			// The English contact page uses the SEOPress custom ContactPage.
-			if ( 'contact' !== $post->post_name ) {
+		} elseif ( is_page( array( 'contact', 'kontakt', 'faq-download', 'faq-dokumente' ) ) ) {
+			$contact = in_array( $post->post_name, array( 'contact', 'kontakt' ), true );
+			$trail   = array(
+				array(
+					'label' => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
+					'url'   => $home,
+				),
+				array(
+					'label' => $title,
+					'url'   => $url,
+				),
+			);
+			// SEOPress supplies the English ContactPage and FAQ CollectionPage.
+			if ( ! in_array( $post->post_name, array( 'contact', 'faq-download' ), true ) ) {
 				$node = array(
 					'@type'       => array( $contact ? 'ContactPage' : 'CollectionPage', 'WebPage' ),
 					'@id'         => $url . '#webpage',
@@ -566,22 +601,31 @@ final class PageSchema {
 			}
 		}
 		if ( $trail ) {
-			$items = array();
-			foreach ( $trail as $index => $crumb ) {
-				$items[] = array(
-					'@type'    => 'ListItem',
-					'position' => $index + 1,
-					'name'     => html_entity_decode( $crumb['label'], ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
-					'item'     => $crumb['url'] ?? $url,
-				);
-			}
-			$this->print_node(
-				array(
-					'@type'           => 'BreadcrumbList',
-					'itemListElement' => $items,
-				)
+			$this->print_trail( $trail, $url );
+		}
+	}
+
+	/** Emit the visible trail with its localized destinations.
+	 *
+	 * @param array<int,array{label:string,url?:string|null}> $trail Breadcrumb links.
+	 * @param string                                          $url Current page.
+	 */
+	private function print_trail( array $trail, string $url ): void {
+		$items = array();
+		foreach ( $trail as $index => $crumb ) {
+			$items[] = array(
+				'@type'    => 'ListItem',
+				'position' => $index + 1,
+				'name'     => html_entity_decode( $crumb['label'], ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
+				'item'     => $crumb['url'] ?? $url,
 			);
 		}
+		$this->print_node(
+			array(
+				'@type'           => 'BreadcrumbList',
+				'itemListElement' => $items,
+			)
+		);
 	}
 
 	/**
