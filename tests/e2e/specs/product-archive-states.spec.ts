@@ -10,12 +10,8 @@
  * - filtered-pagination-count-consistency — a filtered listing's declared
  *   pages, its last page and the page past it agree, and the filter survives
  *   every one of them.
- * - add-to-draft and loading-error — the two states the archive does not
- *   have: its cards carry an inert placeholder instead of an add control,
- *   and it renders whole from the server with no request to fail. Both tests
- *   assert that absence rather than a fabricated interaction, so the rows
- *   close on measured facts (the EN-1440 siblings recorded the same
- *   `not-applicable-today` on production, 2026-11-08).
+ * - add-to-draft — each available card points to its model in the localized draft.
+ * - loading-error — archive navigation remains server-rendered.
  */
 
 /**
@@ -369,106 +365,50 @@ for (const locale of ['en', 'de'] as Locale[]) {
 	});
 }
 
-/**
- * add-to-draft on the archive (EN 390, DE 390, DE 1440): the archive's cards
- * print `a[data-card-atc][hidden]` beside the price gate, but nothing in the
- * shipped scripts reveals it or handles a click — the operable add lives on
- * the product page, which is where the failure-injection suite exercises its
- * states. So the row is `not-applicable-today` by measurement, and the test
- * pins exactly that: an inert placeholder must never become a control the
- * customer can hit, and the product page must still carry the real one.
- */
-for (const [locale, width] of [
-	['en', 390],
-	['de', 390],
-	['de', 1440],
-] as Array<[Locale, number]>) {
-	test(`${locale} ${width}: the archive's add-to-draft placeholder stays inert`, async ({
-		page,
-	}) => {
-		await page.setViewportSize({
-			width,
-			height: width === 390 ? 844 : 900,
+for (const locale of ['en', 'de'] as const) {
+	for (const width of [390, 1440]) {
+		test(`${locale} ${width}: archive draft links identify the displayed model`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			const origin = instance().url;
+			await page.goto(origin + ARCHIVE[locale]);
+			const cards = await page
+				.locator('#linker-products .sf-card')
+				.evaluateAll((nodes) =>
+					nodes.map((card) => {
+						const link =
+							card.querySelector<HTMLAnchorElement>(
+								'a[data-card-atc]'
+							);
+						return {
+							id: card.getAttribute('data-product-id'),
+							present: Boolean(link),
+							href: link?.getAttribute('href'),
+							visible: Boolean(link?.getClientRects().length),
+							nofollow: link?.relList.contains('nofollow'),
+						};
+					})
+				);
+			const draft = locale === 'de' ? '/de/loesungsentwurf/' : '/cart/';
+			expect(cards.some((card) => card.visible)).toBe(true);
+			for (const card of cards) {
+				expect(card.present).toBe(true);
+				if (!card.visible) {
+					expect(card.href).toBeNull();
+					continue;
+				}
+				expect(card.id).toMatch(/^\d+$/);
+				expect(card.href).toBe(
+					`${origin}${draft}?add-to-cart=${card.id}`
+				);
+				expect(card.nofollow).toBe(true);
+			}
 		});
-		await page.goto(`${instance().url}${ARCHIVE[locale]}`);
-
-		const placeholders = page.locator('#linker-products [data-card-atc]');
-		expect(
-			await placeholders.count(),
-			'every card prints the placeholder'
-		).toBeGreaterThan(0);
-
-		const inert = await page.evaluate(() => {
-			const nodes = Array.from(
-				document.querySelectorAll('#linker-products [data-card-atc]')
-			);
-			return {
-				allHidden: nodes.every((el) => el.hasAttribute('hidden')),
-				rendered: nodes.filter(
-					(el) => el.getBoundingClientRect().height > 0
-				).length,
-				hrefs: Array.from(
-					new Set(nodes.map((el) => el.getAttribute('href')))
-				),
-			};
-		});
-		expect(inert.allHidden, 'the placeholder is hidden in the markup').toBe(
-			true
-		);
-		expect(inert.rendered, 'no placeholder reaches the screen').toBe(0);
-		expect(inert.hrefs, 'the placeholder points nowhere').toStrictEqual([
-			'#',
-		]);
-
-		// A synthetic click is the strongest form of "no consumer": the
-		// markup's own event path runs and must change nothing. The `#` href
-		// may add a fragment, never a document or a draft.
-		const before = page.url();
-		const draftBefore = await page.evaluate(() =>
-			document.cookie
-				.split(';')
-				.map((row) => row.trim().split('=')[0] ?? '')
-				.filter((name) => /woocommerce_session/.test(name))
-		);
-		await page.evaluate(() => {
-			document
-				.querySelectorAll<HTMLElement>(
-					'#linker-products [data-card-atc]'
-				)
-				.forEach((el) => el.click());
-		});
-		await page.waitForTimeout(500);
-		expect(
-			page.url().split('#')[0],
-			'clicking the placeholder opens no document'
-		).toBe(before.split('#')[0]);
-		const draftAfter = await page.evaluate(() =>
-			document.cookie
-				.split(';')
-				.map((row) => row.trim().split('=')[0] ?? '')
-				.filter((name) => /woocommerce_session/.test(name))
-		);
-		expect(draftAfter, 'nothing was added to the draft').toStrictEqual(
-			draftBefore
-		);
-
-		// The counterpart: the product page carries the real control, so the
-		// archive's absence is where the action lives, not a lost path.
-		await page.goto(`${instance().url}${PRODUCT[locale]}`);
-		const add = await page.evaluate(() => {
-			const links = Array.from(
-				document.querySelectorAll('a[href*="add-to-cart"]')
-			);
-			return links.filter((el) => {
-				const box = el.getBoundingClientRect();
-				return box.height > 0 && box.width > 0;
-			}).length;
-		});
-		expect(
-			add,
-			'the product page offers the operable add control'
-		).toBeGreaterThan(0);
-	});
+	}
 }
 
 /**
@@ -674,16 +614,7 @@ for (const [locale, width] of [
 	});
 }
 
-/**
- * product:out-of-stock (EN 390, DE 1440, DE 390). The owner's ruling states
- * the status and never the quantity (AGENTS.md §2, 2026-10-11), and Woo's own
- * quantity-derived status is the authority: the fixture flips the shared
- * slug's product through WP-CLI — the side an ERP push lands on — and puts it
- * back. Both halves of the state are asserted: the availability line names
- * the state, and the add control the page still offers refuses it in Woo's own
- * words with nothing added to the draft (a recoverable refusal, not a dead
- * end).
- */
+/** A product that sells out hides its draft link and Woo refuses its old URL. */
 for (const [locale, width] of [
 	['en', 390],
 	['de', 1440],
@@ -749,6 +680,19 @@ for (const [locale, width] of [
 				'the in-stock state is the page default'
 			).toMatch(AVAILABILITY[locale][0]);
 
+			const add = page.locator(
+				'#tv-storefront-pdp .pdp-btn-dark[href*="add-to-cart"]'
+			);
+			await expect(add).toBeVisible();
+			const inStockDraftUrl = new URL(
+				(await add.getAttribute('href'))!,
+				page.url()
+			);
+			expect(inStockDraftUrl.origin).toBe(instance().url);
+			expect(inStockDraftUrl.pathname).toBe(
+				locale === 'de' ? '/de/loesungsentwurf/' : '/cart/'
+			);
+
 			flip('outofstock');
 			await page.goto(`${instance().url}${PRODUCT[locale]}`);
 
@@ -768,15 +712,13 @@ for (const [locale, width] of [
 				'the two states differ in colour'
 			).not.toBe(inStock.color);
 
-			// The add control is still offered (the page's own contract for
-			// anyone who reaches a product directly), and the add is refused
-			// in Woo's words with nothing landing in the draft.
-			const add = page
-				.locator('a[href*="add-to-cart"]')
-				.filter({ visible: true })
-				.first();
-			await add.click();
-			await page.waitForLoadState('load');
+			await expect(add).toHaveCount(0);
+			await expect(
+				page.locator(
+					'#tv-storefront-pdp .pdp-btn-secondary[data-linker-contact]'
+				)
+			).toBeVisible();
+			await page.goto(inStockDraftUrl.href);
 			const notices = await page.evaluate(() =>
 				Array.from(
 					document.querySelectorAll(
