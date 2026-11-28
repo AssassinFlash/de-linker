@@ -34,15 +34,11 @@ final class SitemapSyncTest extends TestCase {
 				'term_id'  => 42,
 			)
 		);
-		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
-			function ( $args ) use ( $live ) {
-				$this->assertSame( 'publish', $args['post_status'] );
-				$this->assertSame( 'product', $args['post_type'] );
-				$tax = array_column( $args['tax_query'], null, 'taxonomy' );
-				$this->assertSame( 42, $tax['product_brand']['terms'] );
-				return in_array( $tax['language']['terms'], $live, true ) ? array( 12 ) : array();
-			}
-		);
+		$rows = array();
+		foreach ( $live as $lang ) {
+			$rows[] = $this->date_row( 'product_brand', 42, $lang );
+		}
+		$this->archive_rows( $rows );
 		WP_Mock::userFunction( 'esc_url', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( 'https://linker.test/' );
 		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn( $s ) => rtrim( $s, '/' ) . '/' ) );
@@ -52,10 +48,18 @@ final class SitemapSyncTest extends TestCase {
 			return;
 		}
 		$this->assertIsArray( $entry );
-		$xml = $sync->brand_xml( '<url><loc>' . $entry['loc'] . '</loc></url>', $entry );
-		$this->assertSame( count( $live ), substr_count( $xml, '<loc>' ) );
+		$doc   = $this->xml( $sync, $sync->entry_xml( '<url><loc>' . $entry['loc'] . '</loc></url>', $entry ) );
+		$links = array();
 		foreach ( $live as $lang ) {
-			$this->assertStringContainsString( '<loc>https://linker.test/' . ( 'de' === $lang ? 'de/' : '' ) . 'brand/testbrand/</loc>', $xml );
+			$links[ $lang ] = 'https://linker.test/' . ( 'de' === $lang ? 'de/marke/' : 'brand/' ) . 'testbrand/';
+		}
+		self::assertSame( count( $live ), $doc->getElementsByTagName( 'url' )->length );
+		foreach ( $doc->getElementsByTagName( 'url' ) as $url ) {
+			$loc  = $url->getElementsByTagName( 'loc' )->item( 0 )?->textContent;
+			$lang = array_search( $loc, $links, true );
+			self::assertIsString( $lang );
+			$this->assert_links( $url, $links );
+			$this->assert_date( $url, $lang );
 		}
 	}
 
@@ -73,9 +77,190 @@ final class SitemapSyncTest extends TestCase {
 		);
 	}
 
+	/**
+	 * XML alternates are namespaced and point to exactly the indexable language pair.
+	 *
+	 * @param \DOMElement          $url   URL node.
+	 * @param array<string,string> $links Published language URLs.
+	 */
+	private function assert_links( \DOMElement $url, array $links ): void {
+		$actual = array();
+		foreach ( $url->getElementsByTagNameNS( 'http://www.w3.org/1999/xhtml', 'link' ) as $link ) {
+			self::assertSame( 'alternate', $link->getAttribute( 'rel' ) );
+			$actual[ $link->getAttribute( 'hreflang' ) ] = $link->getAttribute( 'href' );
+		}
+		self::assertSame( isset( $links['en'], $links['de'] ) ? array_merge( $links, array( 'x-default' => $links['en'] ) ) : array(), $actual );
+	}
+
+	/**
+	 * The date belongs to the language of the URL.
+	 *
+	 * @param \DOMElement $url URL element.
+	 * @param string      $lang Language.
+	 */
+	private function assert_date( \DOMElement $url, string $lang ): void {
+		self::assertSame( '2026-11-' . ( 'en' === $lang ? '20' : '25' ) . 'T12:00:00+00:00', $url->getElementsByTagName( 'lastmod' )->item( 0 )?->textContent );
+	}
+
+	/**
+	 * Parse the same wrapper SEOPress uses.
+	 *
+	 * @param SitemapSync $sync Filter provider.
+	 * @param string      $rows Serialized entries.
+	 */
+	private function xml( SitemapSync $sync, string $rows ): \DOMDocument {
+		$doc = new \DOMDocument();
+		self::assertTrue( $doc->loadXML( $sync->xmlns( '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' ) . $rows . '</urlset>' ) );
+		self::assertSame( 'http://www.w3.org/1999/xhtml', $doc->getElementsByTagName( 'urlset' )->item( 0 )?->lookupNamespaceURI( 'xhtml' ) );
+		return $doc;
+	}
+
+	/**
+	 * Date returned by the grouped WordPress query.
+	 *
+	 * @param string $taxonomy Grouping taxonomy.
+	 * @param int    $id       Term ID.
+	 * @param string $lang     Language.
+	 */
+	private function date_row( string $taxonomy, int $id, string $lang ): object {
+		return (object) array(
+			'post_type' => 'category' === $taxonomy ? 'post' : 'product',
+			'taxonomy'  => $taxonomy,
+			'term_id'   => $id,
+			'lang'      => $lang,
+			'modified'  => '2026-11-' . ( 'en' === $lang ? '20' : '25' ) . ' 12:00:00',
+		);
+	}
+
+	/**
+	 * All rows must be served by one database aggregate.
+	 *
+	 * @param object[] $rows Grouped rows.
+	 */
+	private function archive_rows( array $rows ): void {
+		$db = \Mockery::mock( \wpdb::class );
+		foreach ( array( 'posts', 'terms', 'term_relationships', 'term_taxonomy' ) as $table ) {
+			$db->$table = 'wp_' . $table;
+		}
+		$db->expects( 'get_results' )->once()->andReturn( $rows );
+		$GLOBALS['wpdb'] = $db;
+	}
+
+	/** Release the database double used by the aggregate. */
+	public function tearDown(): void {
+		unset( $GLOBALS['wpdb'] );
+		parent::tearDown();
+	}
+
+	/** Both term languages include products attached only to a child. */
+	public function test_category_and_product_category_dates_cover_descendants(): void {
+		$sync = new SitemapSync();
+		$rows = array();
+		$ids  = array(
+			'en' => 12,
+			'de' => 13,
+		);
+		foreach ( array( 'category', 'product_cat' ) as $tax ) {
+			foreach ( $ids as $lang => $id ) {
+				$rows[] = $this->date_row( $tax, $id + 100, $lang );
+			}
+		}
+		$this->archive_rows( $rows );
+		WP_Mock::userFunction( 'get_term_children' )->andReturnUsing( static fn( $id ) => array( $id + 100 ) );
+		WP_Mock::userFunction( 'pll_get_term_translations' )->andReturn( $ids );
+		WP_Mock::userFunction( 'get_term_meta' )->andReturn( '' );
+		WP_Mock::userFunction( 'get_term_link' )->andReturnUsing( static fn( $id ) => "https://linker.test/cat/$id/" );
+		$links = array(
+			'en' => 'https://linker.test/cat/12/',
+			'de' => 'https://linker.test/cat/13/',
+		);
+		foreach ( array( 'category', 'product_cat' ) as $tax ) {
+			foreach ( $ids as $lang => $id ) {
+				$term  = new \WP_Term(
+					(object) array(
+						'taxonomy' => $tax,
+						'term_id'  => $id,
+					)
+				);
+				$entry = $sync->term_entry( array( 'loc' => $links[ $lang ] ), $term );
+				$doc   = $this->xml( $sync, $sync->entry_xml( '<url><loc>' . $links[ $lang ] . '</loc></url>', $entry ) );
+				$url   = $doc->getElementsByTagName( 'url' )->item( 0 );
+				self::assertNotNull( $url );
+				$this->assert_links( $url, $links );
+				$this->assert_date( $url, $lang );
+			}
+			$index = $sync->index_xml( "<sitemapindex><sitemap><loc>https://linker.test/$tax-sitemap1.xml</loc>\n</sitemap></sitemapindex>" );
+			self::assertStringContainsString( '<lastmod>2026-11-25T12:00:00+00:00</lastmod>', $index );
+		}
+	}
+
+	/** Post, page and product twins retain their native lastmod when alternates are added. */
+	public function test_translated_posts_and_unpaired_post(): void {
+		$sync  = new SitemapSync();
+		$ids   = array(
+			'en' => 12,
+			'de' => 13,
+		);
+		$links = array(
+			'en' => 'https://linker.test/story/',
+			'de' => 'https://linker.test/de/beitrag/',
+		);
+		$posts = array();
+		foreach ( $ids as $lang => $id ) {
+			$posts[ $id ] = new \WP_Post( (object) array( 'ID' => $id ) );
+		}
+		WP_Mock::userFunction( 'get_post' )->andReturnUsing( static fn( $id ) => $posts[ $id ] );
+		WP_Mock::userFunction( 'get_permalink' )->andReturnUsing( static fn( $post ) => $links[ 12 === $post->ID ? 'en' : 'de' ] );
+		WP_Mock::userFunction( 'pll_get_post_translations' )->andReturn( $ids );
+		foreach ( $ids as $lang => $id ) {
+			$other_id = 12 === $id ? 13 : 12;
+			$row      = array(
+				'loc'               => $links[ 'en' === $lang ? 'de' : 'en' ],
+				'linker_alternates' => array(),
+			);
+			$this->filter_returns( 'seopress_sitemaps_single_url', $row, array( $row, $posts[ $other_id ] ) );
+			$entry = $sync->post_entry( array( 'loc' => $links[ $lang ] ), $posts[ $id ] );
+			$doc   = $this->xml( $sync, $sync->entry_xml( '<url><loc>' . $links[ $lang ] . '</loc><lastmod>2026-11-26T09:00:00Z</lastmod></url>', $entry ) );
+			$url   = $doc->getElementsByTagName( 'url' )->item( 0 );
+			self::assertNotNull( $url );
+			$this->assert_links( $url, $links );
+			self::assertSame( 1, $doc->getElementsByTagName( 'lastmod' )->length );
+		}
+		$posts[13]->post_status = 'draft';
+		$entry                  = $sync->post_entry( array( 'loc' => $links['en'] ), $posts[12] );
+		self::assertSame( array( 'en' => $links['en'] ), $entry['linker_alternates'] ?? null );
+	}
+
+	/** Archive links emitted outside the post entry filter also carry reciprocal tags and dates. */
+	public function test_product_archive_dates_and_links(): void {
+		$sync  = new SitemapSync();
+		$ids   = array(
+			'en' => 12,
+			'de' => 13,
+		);
+		$links = array(
+			'en' => 'https://linker.test/products/',
+			'de' => 'https://linker.test/de/produkte/',
+		);
+		$this->archive_rows( array( $this->date_row( 'language', 2, 'en' ), $this->date_row( 'language', 4, 'de' ) ) );
+		WP_Mock::userFunction( 'get_option' )->with( 'woocommerce_shop_page_id' )->andReturn( 12 );
+		WP_Mock::userFunction( 'pll_get_post_translations' )->with( 12 )->andReturn( $ids );
+		WP_Mock::userFunction( 'get_post' )->andReturnUsing( static fn( $id ) => new \WP_Post( (object) array( 'ID' => $id ) ) );
+		WP_Mock::userFunction( 'get_permalink' )->andReturnUsing( static fn( $post ) => $links[ 12 === $post->ID ? 'en' : 'de' ] );
+		WP_Mock::userFunction( 'esc_url', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'get_post_meta' )->andReturn( '' );
+		foreach ( $links as $lang => $link ) {
+			$doc = $this->xml( $sync, $sync->archive_xml( '<url><loc>' . $link . '</loc></url>', 'product' ) );
+			$url = $doc->getElementsByTagName( 'url' )->item( 0 );
+			self::assertNotNull( $url );
+			$this->assert_links( $url, $links );
+			$this->assert_date( $url, $lang );
+		}
+	}
+
 	/** SEOPress also calls the XML hook when an omitted Woo page has no entry. */
 	public function test_excluded_page_stays_out_of_post_sitemaps(): void {
-		$this->assertSame( '', ( new SitemapSync() )->brand_xml( '', null ) );
+		$this->assertSame( '', ( new SitemapSync() )->entry_xml( '', null ) );
 	}
 
 	/** Saves and deletions invalidate native index entries at the configured pagination size. */

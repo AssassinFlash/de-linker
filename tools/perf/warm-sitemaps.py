@@ -12,6 +12,14 @@ from urllib.request import Request, urlopen
 from xml.etree.ElementTree import fromstring
 
 SITEMAPS = ("page", "product", "product_cat", "product_brand", "category", "post")
+PAGINATED = (
+    "/products/page/2/",
+    "/products/page/3/",
+    "/de/produkte/seite/2/",
+    "/de/produkte/seite/3/",
+    "/product-category/inverters/page/2/",
+    "/de/produkt-kategorie/wechselrichter/seite/2/",
+)
 DYNAMIC = (
     "/contact/",
     "/de/kontakt/",
@@ -62,6 +70,7 @@ def main() -> None:
         if not maps[name]:
             raise ValueError(f"{url} contains no page URLs")
     public = list(dict.fromkeys(url for urls in maps.values() for url in urls))
+    public.extend(site + path for path in PAGINATED)
     urls = list(dict.fromkeys(public + [site + path for path in (*DYNAMIC, *RETIRED)]))
 
     def request(url: str) -> dict[str, str | int]:

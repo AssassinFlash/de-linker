@@ -1990,7 +1990,7 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_the_terms',
 			array(
-				'return' => static fn ( int $id, string $taxonomy ): array => 'pa_brand' === $taxonomy
+				'return' => static fn ( int $id, string $taxonomy ): array => in_array( $taxonomy, array( 'pa_brand', 'product_brand' ), true )
 					? array(
 						new \WP_Term(
 							(object) array(
@@ -2005,9 +2005,11 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'get_posts', array( 'return' => array( 991 ) ) );
 		WP_Mock::userFunction( 'wp_get_attachment_image_src', array( 'return' => fn ( int $id, $size ): array => 991 === $id && 'medium' === $size ? array( 'http://linker.test/uploads/logo-300.png', 300, 58, true ) : array( $this->pdp_image_url( $id ), 1024, 768, false ) ) );
 		WP_Mock::userFunction( 'wp_get_attachment_image_srcset', array( 'return' => fn ( int $id ): string => 991 === $id ? 'http://linker.test/uploads/logo-300.png 300w, http://linker.test/uploads/logo.png 1480w' : '' ) );
+		WP_Mock::userFunction( 'get_term_link', array( 'return' => 'http://linker.test/brand/unique-brand/' ) );
 		$shortcodes = $this->pdp( true );
 
 		$html = $shortcodes->pdp_brand_logo();
+		$this->assertStringContainsString( 'class="pdp-brand-link" href="http://linker.test/brand/unique-brand/"', $html );
 		$this->assertStringNotContainsString( 'fetchpriority="high"', $html );
 
 		$this->assertStringContainsString( 'srcset="http://linker.test/uploads/logo-300.png 300w, http://linker.test/uploads/logo.png 1480w"', $html );

@@ -51,6 +51,69 @@ final class CrawlHygieneTest extends TestCase {
 		return array( array( 'none' ), array( 'blog' ), array( 'comments' ), array( 'archive' ), array( 'term' ), array( 'single' ) );
 	}
 
+	/** Add missing directives to the wildcard group exactly once. */
+	public function test_robots_txt_keeps_crawler_groups_and_site_search(): void {
+		$policy   = new CrawlHygiene();
+		$special  = "User-agent: ArchiveBot\nDisallow: /\n";
+		$original = $special . "User-agent: *\nDisallow: /*?intent=\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://example.test/sitemaps.xml\n";
+		$robots   = $policy->robots_txt( $original, true );
+		self::assertStringStartsWith( $special . "User-agent: *\n", $robots );
+		self::assertStringEndsWith( "Allow: /wp-admin/admin-ajax.php\n\nSitemap: https://example.test/sitemaps.xml\n", $robots );
+		self::assertSame( $robots, $policy->robots_txt( $robots, true ) );
+		foreach ( array( 'redirect_to', 'intent', 'linker_contact_selection', 'wc-ajax' ) as $key ) {
+			self::assertSame( 1, substr_count( $robots, 'Disallow: /*?' . $key . '=' ) );
+			self::assertSame( 1, substr_count( $robots, 'Disallow: /*?*' . $key . '=' ) );
+		}
+		self::assertStringNotContainsString( '/*?s=', $robots );
+		self::assertSame( $original, $policy->robots_txt( $original, false ) );
+	}
+
+	/**
+	 * Historical product searches and malformed selections retire on public reads.
+	 *
+	 * @dataProvider catalog_queries
+	 * @param string $query Query fixture.
+	 * @param bool   $shop On a catalog archive.
+	 * @param bool   $gone Expected retirement.
+	 */
+	public function test_query_responses( string $query, bool $shop, bool $gone ): void {
+		$before = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Restore request fixture.
+		parse_str( $query, $params );
+		$_GET = $params;
+		try {
+			WP_Mock::userFunction( 'is_admin' )->andReturn( false );
+			WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( isset( $params['wc-ajax'] ) );
+			WP_Mock::userFunction( 'is_feed' )->andReturn( false );
+			WP_Mock::userFunction( 'is_shop' )->andReturn( $shop );
+			WP_Mock::userFunction( 'is_product_taxonomy' )->andReturn( false );
+			if ( $gone ) {
+				WP_Mock::userFunction( 'status_header' )->with( 410 )->once()->andThrow( new \RuntimeException( 'Gone' ) );
+				$this->expectExceptionMessage( 'Gone' );
+			}
+			self::assertSame( array(), ( new CrawlHygiene() )->headers( array() ) );
+		} finally {
+			$_GET = $before;
+		}
+	}
+
+	/**
+	 * Real search and archive query shapes.
+	 *
+	 * @return list<array{string,bool,bool}>
+	 */
+	public static function catalog_queries(): array {
+		return array(
+			array( 's&post_type=product&power=mid,high', false, true ),
+			array( 's=goodwe', false, false ),
+			array( 's=goodwe&post_type=post', false, false ),
+			array( 'wc-ajax=%25%25endpoint%25%25', false, true ),
+			array( 'wc-ajax=get_refreshed_fragments', false, false ),
+			array( 'phase=3,1,1', true, true ),
+			array( 'phase=3,1,1', false, false ),
+			array( 'phase=3,1', true, false ),
+		);
+	}
+
 	/** Only publicly viewable published parents receive an attachment redirect. */
 	public function test_attachment_parent(): void {
 		$parent = new \WP_Post(

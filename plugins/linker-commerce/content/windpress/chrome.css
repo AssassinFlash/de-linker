@@ -421,3 +421,7 @@ html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop
 }
 #tv-header-v2 #tv-mobile-panel > .tv-direct-contacts a { padding-block: .4rem; }
 #tv-header-v2 .tv-direct-contacts a:hover { text-decoration: underline; }
+
+#tv-header-v2 .brand-links{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;padding:12px 8px 4px;border-top:1px solid var(--proto-neutral-200)}
+#tv-header-v2 .brand-links a{color:var(--proto-teal-700);font-weight:600;text-decoration:none}
+#tv-header-v2 .brand-links a:hover{text-decoration:underline}

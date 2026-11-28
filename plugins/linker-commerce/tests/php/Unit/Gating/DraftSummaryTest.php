@@ -70,7 +70,7 @@ final class DraftSummaryTest extends TestCase {
 		$html = (string) ob_get_clean();
 
 		$this->assertStringContainsString( 'form="linker-woo-cart-form" class="checkout-button button alt wc-forward">Send inquiry</button>', $html );
-		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">Create account</a>', $html );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/" rel="nofollow">Create account</a>', $html );
 	}
 
 	/**

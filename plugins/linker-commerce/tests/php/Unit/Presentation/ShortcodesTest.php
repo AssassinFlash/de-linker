@@ -910,7 +910,7 @@ final class ShortcodesTest extends TestCase {
 			'add_query_arg',
 			array(
 				'return' => function ( array $args, string $url ): string {
-					return $url . '?' . http_build_query( $args );
+					return $url . '?' . implode( '&', array_map( static fn( $key, $value ) => $key . '=' . $value, array_keys( $args ), $args ) );
 				},
 			)
 		);

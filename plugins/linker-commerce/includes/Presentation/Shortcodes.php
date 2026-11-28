@@ -92,7 +92,8 @@ final class Shortcodes {
 			: ( 'mobile' === $attributes['placement'] ? 'tv-header-cta tv-mobile-cta' : 'tv-header-cta' );
 		$product    = function_exists( 'is_product' ) && is_product() ? wc_get_product( (int) get_the_ID() ) : false;
 		$url        = $product instanceof WC_Product ? PageUrls::product_contact( $product ) : self::contact_page_url();
-		return '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( $url ) . '">' . esc_html( self::contact_link_label( (string) $attributes['label'], (string) $attributes['label_de'] ) ) . '</a>';
+		$rel        = $product instanceof WC_Product ? ' rel="nofollow"' : '';
+		return '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( $url ) . '"' . $rel . '>' . esc_html( self::contact_link_label( (string) $attributes['label'], (string) $attributes['label_de'] ) ) . '</a>';
 	}
 
 	/**
@@ -166,8 +167,8 @@ final class Shortcodes {
 			array(
 				'intent'    => $intent,
 				'kind'      => (string) $context['kind'],
-				'title'     => (string) $context['title'],
-				'source'    => (string) $context['url'],
+				'title'     => rawurlencode( (string) $context['title'] ),
+				'source'    => rawurlencode( (string) $context['url'] ),
 				'source_id' => (int) $context['source_id'],
 			),
 			self::contact_page_url()
@@ -183,7 +184,7 @@ final class Shortcodes {
 		$html .= '<p>' . esc_html( $row['note'] ) . '</p>';
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-invitation-actions">';
-		$html .= '<a class="linker-contact-primary" href="' . esc_url( $url ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $context ) ) . '">' . esc_html( $row['button'] ) . '</a>';
+		$html .= '<a class="linker-contact-primary" rel="nofollow" href="' . esc_url( $url ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $context ) ) . '">' . esc_html( $row['button'] ) . '</a>';
 		$html .= '<a class="linker-contact-email" href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a>';
 		$html .= '</div>';
 		return $html . '</section>';
@@ -354,7 +355,7 @@ final class Shortcodes {
 	 */
 	public static function form_assistant( $attributes = array() ): string {
 		$genie = sprintf(
-			'<a class="linker-form-assistant" href="%s" data-linker-genie-open aria-controls="linker-genie-mount" aria-expanded="false">%s</a>',
+			'<a class="linker-form-assistant" rel="nofollow" href="%s" data-linker-genie-open aria-controls="linker-genie-mount" aria-expanded="false">%s</a>',
 			esc_url( PageUrls::page( 'genie' ) ),
 			esc_html__( 'Ask Genie', 'linker-commerce' )
 		);

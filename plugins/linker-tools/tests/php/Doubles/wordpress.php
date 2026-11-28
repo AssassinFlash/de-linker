@@ -86,6 +86,7 @@ if ( ! class_exists( 'WP_Post' ) ) {
 
 if ( ! class_exists( 'WP_Term' ) ) {
 	class WP_Term {
+		public $name = '';
 		public $term_id = 0;
 		public $slug = '';
 		public $taxonomy = '';

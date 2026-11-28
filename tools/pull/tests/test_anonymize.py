@@ -378,6 +378,14 @@ def test_submissions_jobs_and_sessions_keep_their_tables_but_no_rows(
     assert "Gen3rated!Pass" not in text
 
 
+def test_tracking_script_embedded_in_a_serialized_option_loses_its_token() -> None:
+    script = (
+        '<script data-config=\'{"token":"private-value","mode":"stats"}\'></script>'
+    )
+    sanitized = Anonymizer([]).scrub(script)
+    assert sanitized == script.replace("private-value", "")
+
+
 def test_only_keys_named_for_a_credential_are_emptied() -> None:
     rules = (
         'a:2:{s:32:"(.?.+?)/lost-password(/(.*))?/?$";'

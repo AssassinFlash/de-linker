@@ -145,7 +145,8 @@ final class ModuleTest extends TestCase {
 		// Data shortcodes across the product, checkout, comparison,
 		// library, account and blog families, including the product's configurator
 		// entry and the FAQ section's scoped rows.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 81 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 82 ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_loop_add_to_cart_args', array( $products, 'loop_cart_attributes' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $blog, 'empty_search_title' ), 60 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $blog, 'redirect_chester_archive' ), -1 );
@@ -165,16 +166,15 @@ final class ModuleTest extends TestCase {
 		$families     = new AnyInstance( FamilyNavigation::class );
 		$family_hooks = array(
 			array( 'action', 'template_redirect', 'redirect', 0 ),
-			array( 'filter', 'seopress_titles_noindex_bypass', 'noindex', 10 ),
 			array( 'filter', 'seopress_titles_canonical', 'canonical', 10 ),
-			array( 'filter', 'seopress_titles_canonical_on_noindex', 'canonical_on_noindex', 20 ),
+			array( 'filter', 'pll_translation_url', 'translated_page', 55 ),
 			array( 'filter', 'seopress_titles_title', 'paged_title', 50 ),
 			array( 'filter', 'pre_get_document_title', 'paged_title', 50 ),
 			array( 'filter', 'pll_rel_hreflang_attributes', 'hreflangs', 20 ),
 		);
 		$registered   = array_fill_keys( array_column( $family_hooks, 1 ), 0 );
 		foreach ( $family_hooks as list( $type, $hook, $method, $priority ) ) {
-			$responder = WP_Mock::onHookAdded( $hook, $type )->with( array( $families, $method ), $priority, 1 );
+			$responder = WP_Mock::onHookAdded( $hook, $type )->with( array( $families, $method ), $priority, 'pll_translation_url' === $hook ? 2 : 1 );
 			self::assertInstanceOf( \WP_Mock\HookedCallbackResponder::class, $responder );
 			$responder->perform(
 				static function () use ( &$registered, $hook ): void {

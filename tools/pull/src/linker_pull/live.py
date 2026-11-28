@@ -264,7 +264,15 @@ def sitemap_urls(xml: bytes) -> list[str]:
 
 
 def _get(url: str) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "linker-pull"})
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+            )
+        },
+    )
     # A bound on a hung connection, not on a slow answer: robots.txt and the
     # sitemaps (76 KB at most) came within 2 seconds on 2026-10-09.
     with urllib.request.urlopen(request, timeout=60) as response:

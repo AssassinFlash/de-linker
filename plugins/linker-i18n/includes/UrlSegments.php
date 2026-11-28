@@ -31,6 +31,9 @@ final class UrlSegments {
 	 */
 	public const PRODUCT_CATEGORY = 'produkt-kategorie';
 
+	/** German base for WooCommerce manufacturer archives. */
+	public const PRODUCT_BRAND = 'marke';
+
 	/**
 	 * The German segment of the shop (the product archive).
 	 */
@@ -57,8 +60,9 @@ final class UrlSegments {
 	public function segments(): array {
 		$structure = wc_get_permalink_structure();
 		$segments  = array(
-			trim( (string) $structure['product_rewrite_slug'], '/' )  => self::PRODUCT,
+			trim( (string) $structure['product_rewrite_slug'], '/' ) => self::PRODUCT,
 			trim( (string) $structure['category_rewrite_slug'], '/' ) => self::PRODUCT_CATEGORY,
+			'brand' => self::PRODUCT_BRAND,
 		);
 		$shop_page = (int) get_option( 'woocommerce_shop_page_id' );
 		$shop_path = $shop_page > 0 ? get_page_uri( $shop_page ) : '';
@@ -91,7 +95,7 @@ final class UrlSegments {
 	 */
 	public function polylang_rule( bool $modify, array $rule, string $filter, $archive ): bool {
 		unset( $rule );
-		if ( in_array( $filter, array( 'product', 'product_cat' ), true ) || 'product' === $archive ) {
+		if ( in_array( $filter, array( 'product', 'product_cat', 'product_brand' ), true ) || 'product' === $archive ) {
 			return false;
 		}
 		return $modify;
@@ -175,6 +179,8 @@ final class UrlSegments {
 			$base . self::PRODUCT . '/([^/]+)/?$'        => 'index.php?product=$matches[1]' . $lang,
 			$base . self::PRODUCT_CATEGORY . '/(.+?)/page/?([0-9]{1,})/?$' => 'index.php?product_cat=$matches[1]&paged=$matches[2]' . $lang,
 			$base . self::PRODUCT_CATEGORY . '/(.+?)/?$' => 'index.php?product_cat=$matches[1]' . $lang,
+			$base . self::PRODUCT_BRAND . '/([^/]+)/page/?([0-9]{1,})/?$' => 'index.php?product_brand=$matches[1]&paged=$matches[2]' . $lang,
+			$base . self::PRODUCT_BRAND . '/([^/]+)/?$'  => 'index.php?product_brand=$matches[1]' . $lang,
 			$base . self::SHOP . '/page/?([0-9]{1,})/?$' => 'index.php?post_type=product&paged=$matches[1]' . $lang,
 			$base . self::SHOP . '/?$'                   => 'index.php?post_type=product' . $lang,
 		);

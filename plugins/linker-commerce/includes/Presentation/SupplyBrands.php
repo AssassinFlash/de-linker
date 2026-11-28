@@ -10,12 +10,74 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Storefront\SitemapSync;
 
 /** Aggregate native product attributes without reading technical documents. */
 final class SupplyBrands {
+	/**
+	 * Active archive destinations for the current frontend language.
+	 *
+	 * @var array<string,array{label:string,url:string,id:int}>|null
+	 */
+	private ?array $archives = null;
+
 	/** Register the data fragment; LC retains its words, markup and styling. */
 	public function register(): void {
 		add_shortcode( 'linker_supply_brands', array( $this, 'render' ) );
+		add_shortcode( 'linker_brand_links', array( $this, 'links' ) );
+	}
+
+	/**
+	 * Brand links lead to the same indexable archives published in the sitemap.
+	 *
+	 * @param array<string,string>|string $atts Header, mobile drawer, footer or archive.
+	 */
+	public function links( $atts = array() ): string {
+		$variant = is_array( $atts ) ? ( $atts['variant'] ?? 'scope' ) : 'scope';
+		if ( null === $this->archives ) {
+			$terms = get_terms(
+				array(
+					'taxonomy'   => 'product_brand',
+					'hide_empty' => true,
+					'orderby'    => 'name',
+				)
+			);
+			if ( ! is_array( $terms ) ) {
+				return '';
+			}
+			$archives = array();
+			$sitemap  = new SitemapSync();
+			foreach ( $terms as $term ) {
+				$link = get_term_link( $term );
+				if ( ! is_string( $link ) ) {
+					continue;
+				}
+				$entry = $sitemap->brand_urls( array( 'loc' => $link ), $term );
+				if ( null !== $entry && in_array( $link, array( $entry['loc'], $entry['linker_brand_twin'] ?? '' ), true ) ) {
+					$archives[ $term->slug ] = array(
+						'label' => $term->name,
+						'url'   => $link,
+						'id'    => $term->term_id,
+					);
+				}
+			}
+			$order = array_flip( array( 'goodwe', 'saj', 'pylontech', 'chint' ) );
+			uksort( $archives, static fn( string $a, string $b ): int => ( $order[ $a ] ?? 4 ) <=> ( $order[ $b ] ?? 4 ) );
+			$this->archives = $archives;
+		}
+		if ( empty( $this->archives ) ) {
+			return '';
+		}
+		$scope = 'scope' === $variant;
+		$label = esc_html__( 'Brands', 'linker-commerce' );
+		$html  = $scope ? '<nav class="wb-scope wb-brands sf-container" aria-label="' . esc_attr( $label ) . '">' : '<div class="brand-links"><strong>' . $label . '</strong>';
+		foreach ( $this->archives as $brand ) {
+			$active = $scope && is_tax( 'product_brand', $brand['id'] );
+			$class  = $scope ? ' class="wbs' . ( $active ? ' on' : '' ) . '"' : '';
+			$role   = 'header' === $variant ? ' role="menuitem"' : '';
+			$html  .= '<a' . $class . $role . ( $active ? ' aria-current="page"' : '' ) . ' href="' . esc_url( $brand['url'] ) . '">' . esc_html( $brand['label'] ) . '</a>';
+		}
+		return $html . ( $scope ? '</nav>' : '</div>' );
 	}
 
 	/**

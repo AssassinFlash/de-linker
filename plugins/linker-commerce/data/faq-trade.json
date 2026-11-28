@@ -139,8 +139,8 @@
             "de": "Wie werden Garantieansprüche bearbeitet?"
           },
           "answer": {
-            "en": "For a warranty claim, contact us with your invoice number or project reference, serial number, model, and fault description. Linker handles the diagnostic exchange with the manufacturer's technical desk. <a href=\"/contact/?intent=support\">Contact us about Warranty & Replacements</a>.",
-            "de": "Für einen Garantieanspruch kontaktieren Sie uns mit Ihrer Rechnungsnummer oder Projektreferenz, Seriennummer, Modell und Fehlerbeschreibung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href=\"/de/kontakt/?intent=support\">Kontakt zu Garantie & Ersatz</a>."
+            "en": "For a warranty claim, contact us with your invoice number or project reference, serial number, model, and fault description. Linker handles the diagnostic exchange with the manufacturer's technical desk. <a href=\"/contact/?intent=support\" rel=\"nofollow\">Contact us about Warranty & Replacements</a>.",
+            "de": "Für einen Garantieanspruch kontaktieren Sie uns mit Ihrer Rechnungsnummer oder Projektreferenz, Seriennummer, Modell und Fehlerbeschreibung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href=\"/de/kontakt/?intent=support\" rel=\"nofollow\">Kontakt zu Garantie & Ersatz</a>."
           }
         },
         {

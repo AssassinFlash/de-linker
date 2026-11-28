@@ -54,7 +54,7 @@ final class SelectionLinkTest extends TestCase {
 		);
 		try {
 			$html = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_contact();
-			$this->assertSame( 1, preg_match( '/class="linker-contact-primary" href="([^"]+)"/', $html, $match ) );
+			$this->assertSame( 1, preg_match( '/class="linker-contact-primary" rel="nofollow" href="([^"]+)"/', $html, $match ) );
 			$href = $match[1] ?? '';
 			$this->assertNotSame( '', $href );
 			parse_str( (string) parse_url( $href, PHP_URL_QUERY ), $query );

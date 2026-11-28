@@ -30,6 +30,13 @@ final class FamilyNavigationTest extends TestCase {
 	private int $native_page = 0;
 
 	/**
+	 * Current archive root and selections.
+	 *
+	 * @var string
+	 */
+	private string $base = 'http://linker.test/products/?q=SAJ&sort=name';
+
+	/**
 	 * Native request flags outside the family surface.
 	 *
 	 * @var array<string, bool>
@@ -50,6 +57,7 @@ final class FamilyNavigationTest extends TestCase {
 		WP_Mock::userFunction( 'is_main_query', array( 'return' => fn(): bool => ! $this->request_excluded( 'secondary' ) ) );
 		WP_Mock::userFunction( 'is_shop', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_query_var', array( 'return' => fn(): int => $this->native_page ) );
+		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn( string $url, int $part ) => parse_url( $url, $part ) ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction(
 			'add_query_arg',
@@ -85,7 +93,7 @@ final class FamilyNavigationTest extends TestCase {
 		}
 		return new FamilyNavigation(
 			fn(): FamilyPage => new FamilyPage( $rows, wp_unslash( $_GET['product-page'] ?? $this->native_page ), ProductShortcodes::PER_PAGE_FAMILIES ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- fixture input, validated by FamilyPage.
-			static fn(): string => 'http://linker.test/products/?q=SAJ&sort=name'
+			fn(): string => $this->base
 		);
 	}
 
@@ -152,27 +160,37 @@ final class FamilyNavigationTest extends TestCase {
 		self::assertSame( '', $this->navigation()->normalization_target() );
 	}
 
-	/** Real family paging follows the configured native paged-noindex gate. */
-	public function test_existing_noindex_decisions_and_native_paged_policy_are_preserved(): void {
+	/** Clean page URLs are canonical and query aliases redirect once. */
+	public function test_clean_page_and_query_alias(): void {
+		$this->base             = 'http://linker.test/de/produkte/';
+		$this->native_page      = 2;
+		$_SERVER['REQUEST_URI'] = '/de/produkte/seite/2/';
+		$nav                    = $this->navigation();
+		$url                    = $this->base . 'seite/2/';
+		self::assertSame( '', $nav->normalization_target() );
+		self::assertSame( '<link rel="canonical" href="' . $url . '">', $nav->canonical( '' ) );
+		$_SERVER['REQUEST_URI'] = '/de/produkte/page/2/';
+		self::assertSame( $url, $this->navigation()->normalization_target() );
+		$this->native_page    = 0;
 		$_GET['product-page'] = '2';
-		WP_Mock::userFunction(
-			'seopress_get_service',
-			array(
-				'return' => new class() {
-					/** Native configured option value. */
-					public function getPagedNoIndex(): string { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- native method name.
-						return '1';
-					}
-				},
+		self::assertSame( $url, $this->navigation()->normalization_target() );
+		self::assertSame(
+			array( 'de' => $url ),
+			$nav->hreflangs(
+				array(
+					'de' => $url,
+					'en' => 'http://linker.test/products/',
+				)
 			)
 		);
-		self::assertSame( '1', $this->navigation()->noindex( '' ) );
-		self::assertSame( 'yes', $this->navigation()->noindex( 'yes' ) );
+		unset( $_SERVER['REQUEST_URI'] );
+	}
+
+	/** Selections have neither canonical nor translated indexing targets. */
+	public function test_filtered_page_has_no_canonical_or_alternates(): void {
+		$_GET['product-page'] = '2';
 		self::assertSame( array(), $this->navigation()->hreflangs( array( 'en' => '/products/' ) ) );
-		self::assertStringContainsString( '?q=SAJ&sort=name&product-page=2', $this->navigation()->canonical( '<link rel="canonical" href="/products/">' ) );
-		$_GET = array();
-		self::assertSame( '', $this->navigation()->noindex( '' ) );
-		self::assertSame( array( 'en' => '/products/' ), $this->navigation()->hreflangs( array( 'en' => '/products/' ) ) );
+		self::assertSame( '', $this->navigation()->canonical( '<link rel="canonical" href="/products/">' ) );
 	}
 
 	/** Page numbers use the current language and are added only once. */
@@ -180,14 +198,12 @@ final class FamilyNavigationTest extends TestCase {
 		WP_Mock::userFunction( 'get_bloginfo' )->with( 'name' )->andReturn( 'Linker' );
 		$nav                  = $this->navigation();
 		$_GET['product-page'] = '2';
-		self::assertTrue( $nav->canonical_on_noindex( false ) );
-		$title = 'Systems – Page 2 | Linker';
+		$title                = 'Systems – Page 2 | Linker';
 		self::assertSame( $title, $nav->paged_title( 'Systems | Linker' ) );
 		self::assertSame( $title, $nav->paged_title( $title ) );
 		self::assertSame( '', $nav->paged_title( '' ) );
 		$_GET = array();
 		self::assertSame( 'Systems | Linker', $nav->paged_title( 'Systems | Linker' ) );
-		self::assertFalse( $nav->canonical_on_noindex( false ) );
 	}
 
 	/** SEOPress applies the same filter to its explicit custom-term element. */

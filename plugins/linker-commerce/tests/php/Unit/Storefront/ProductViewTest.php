@@ -204,7 +204,7 @@ final class ProductViewTest extends TestCase {
 			'add_query_arg',
 			array(
 				'return' => static function ( array $args, string $url ): string {
-					return $url . '?' . http_build_query( $args );
+					return $url . '?' . implode( '&', array_map( static fn( $key, $value ) => $key . '=' . $value, array_keys( $args ), $args ) );
 				},
 			)
 		);
@@ -219,6 +219,9 @@ final class ProductViewTest extends TestCase {
 		$this->assertStringStartsWith( 'http://linker.test/de/kontakt/?', $url );
 		$this->assertStringContainsString( 'intent=product', $url );
 		$this->assertStringContainsString( 'product_id=7', $url );
+		$this->assertStringContainsString( 'source=http%3A%2F%2Flinker.test%2Fde%2Fprodukt%2Fgoodwe-gw10k-et%2F', $url );
+		parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $query ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Standalone request fixture.
+		$this->assertSame( $product->get_permalink(), $query['source'] );
 		$this->assertStringNotContainsString( 'amp', $url );
 	}
 

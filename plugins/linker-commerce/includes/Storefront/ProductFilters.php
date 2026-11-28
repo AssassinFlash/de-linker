@@ -235,6 +235,12 @@ final class ProductFilters {
 		if ( ! $query->is_post_type_archive( 'product' ) && ! $query->is_tax( get_object_taxonomies( 'product', 'names' ) ) ) {
 			return;
 		}
+		if ( (int) $query->get( 'paged' ) > 1 && ! $query->is_feed() ) {
+			// The LC grid pages families independently. Keep a first-page native
+			// query for the archive identity, including Polylang's head links.
+			$query->set( 'offset', 0 );
+			$query->is_paged = false;
+		}
 		if ( $query->is_tax( 'product_brand' ) ) {
 			// Keep the native queried term for the route, LC and canonical URL.
 			// Product membership follows Woo's pa_brand, as the shop facet does;

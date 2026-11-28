@@ -169,6 +169,7 @@ final class ProductFiltersTest extends TestCase {
 		);
 		$query = Mockery::mock( \WP_Query::class );
 		$query->allows( 'is_main_query' )->andReturn( true );
+		$query->allows( 'get' )->with( 'paged' )->andReturn( 0 );
 		$query->allows( 'is_post_type_archive' )->with( 'product' )->andReturn( false );
 		$query->allows( 'is_tax' )->with( array( 'product_brand', 'pa_brand', 'product_cat' ) )->andReturn( true );
 		$query->allows( 'is_tax' )->with( 'product_brand' )->andReturn( true );
@@ -202,6 +203,7 @@ final class ProductFiltersTest extends TestCase {
 		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'product_brand', 'pa_brand', 'product_cat' ) ) );
 		$query = Mockery::mock( \WP_Query::class );
 		$query->allows( 'is_main_query' )->andReturn( true );
+		$query->allows( 'get' )->with( 'paged' )->andReturn( 0 );
 		$query->allows( 'is_post_type_archive' )->with( 'product' )->andReturn( false );
 		$query->allows( 'is_tax' )->with( array( 'product_brand', 'pa_brand', 'product_cat' ) )->andReturn( true );
 		$query->allows( 'is_tax' )->with( 'product_brand' )->andReturn( false );

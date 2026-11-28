@@ -186,7 +186,7 @@
 }
 #tv-footer-v2 .footer-dock {
 	display: none;
-	grid-template-columns: repeat(5, minmax(0, 1fr));
+	grid-template-columns: repeat(6, minmax(0, 1fr));
 	gap: 8px;
 	padding: 4px 0;
 }
@@ -720,3 +720,16 @@
 	color: #cbd5e1;
 }
 #tv-footer-v2 .footer-socials a:hover { color: #fff; border-color: #2fd49a; }
+
+#tv-footer-v2 .footer-product-links,
+#tv-footer-v2 .brand-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 14px;
+	margin-top: 12px;
+}
+#tv-footer-v2 .footer-product-links a,
+#tv-footer-v2 .brand-links a {
+	color: var(--proto-teal-700);
+}

@@ -44,7 +44,7 @@ final class Module {
 	/** Bind the displayed contact form before the theme sends the first HTML bytes. */
 	public function prepare_form_owner(): void {
 		$page = get_queried_object();
-		if ( $page instanceof \WP_Post && $this->is_contact_page( $page ) ) {
+		if ( $page instanceof \WP_Post && self::is_contact_page( $page ) ) {
 			\Linker\Commerce\Cache\DynamicHtml::forbid( 'contact form' );
 			\Linker\Commerce\Protection\Identity::ensure_browser_cookie();
 		}
@@ -57,7 +57,7 @@ final class Module {
 			return;
 		}
 		$page = get_queried_object();
-		if ( ! $page instanceof \WP_Post || ! $this->is_contact_page( $page ) ) {
+		if ( ! $page instanceof \WP_Post || ! self::is_contact_page( $page ) ) {
 			return;
 		}
 
@@ -94,7 +94,7 @@ final class Module {
 			return;
 		}
 		$page = get_queried_object();
-		if ( $page instanceof \WP_Post && $this->is_contact_page( $page ) ) {
+		if ( $page instanceof \WP_Post && self::is_contact_page( $page ) ) {
 			LanguageDraft::enqueue();
 		}
 	}
@@ -120,7 +120,7 @@ final class Module {
 	 * @param string $content The page content.
 	 */
 	public function mount_form( string $content ): string {
-		if ( ! $this->is_contact_page( $this->rendered_page() ) || ! str_contains( $content, 'data-linker-contact-mount' ) ) {
+		if ( ! self::is_contact_page( $this->rendered_page() ) || ! str_contains( $content, 'data-linker-contact-mount' ) ) {
 			return $content;
 		}
 		// Either branch: the fallback stays while the shortcode cannot
@@ -156,7 +156,7 @@ final class Module {
 	 *
 	 * @param \WP_Post|null $page The queried page, or the page whose content is rendering.
 	 */
-	private function is_contact_page( ?\WP_Post $page ): bool {
+	public static function is_contact_page( ?\WP_Post $page ): bool {
 		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type ) {
 			return false;
 		}

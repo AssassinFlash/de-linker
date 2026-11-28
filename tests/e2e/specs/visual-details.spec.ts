@@ -135,7 +135,7 @@ for (const locale of ['en', 'de'] as const) {
 			const tab = page.locator('#footer-tab-services');
 			if (width === 390) {
 				const tabs = page.locator('.footer-tab');
-				await expect(tabs).toHaveCount(5);
+				await expect(tabs).toHaveCount(6);
 				const positions = await tabs.evaluateAll((nodes) =>
 					nodes.map((node) => ({
 						top: node.getBoundingClientRect().top,

@@ -68,15 +68,47 @@ final class LlmsTxtTest extends TestCase {
 		WP_Mock::userFunction( 'pll_get_post' )->andReturnUsing( static fn( int $id, string $lang ) => $id - ( 1 - $id % 2 ) + ( 'de' === $lang ? 1 : 0 ) );
 		WP_Mock::userFunction( 'pll_get_term' )->andReturnUsing( static fn( int $id, string $lang ) => 'de' === $lang ? 2 : 1 );
 		WP_Mock::userFunction( 'is_wp_error' )->andReturn( false );
+		$brand = new \WP_Term(
+			(object) array(
+				'term_id'  => 42,
+				'taxonomy' => 'product_brand',
+				'name'     => 'GoodWe',
+				'slug'     => 'goodwe',
+			)
+		);
+		$rows  = array();
+		foreach ( array( 'en', 'de' ) as $lang ) {
+			$rows[] = (object) array(
+				'post_type' => 'product',
+				'taxonomy'  => 'product_brand',
+				'term_id'   => 42,
+				'lang'      => $lang,
+				'modified'  => '2026-11-19 12:00:00',
+			);
+		}
+		$db = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_results' ) )->getMock();
+		foreach ( array( 'posts', 'terms', 'term_relationships', 'term_taxonomy' ) as $table ) {
+			$db->$table = 'wp_' . $table;
+		}
+		$db->expects( self::once() )->method( 'get_results' )->willReturn( $rows );
+		$GLOBALS['wpdb'] = $db; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- WordPress database test double.
+		WP_Mock::userFunction( 'esc_url', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnUsing( static fn( $url ) => rtrim( $url, '/' ) . '/' );
 		WP_Mock::userFunction( 'get_terms' )->andReturnUsing(
 			static fn( $args ) => 'product_cat' === $args['taxonomy'] ? array( $en, $de ) : array(
+				$brand,
 				(object) array(
 					'name' => 'RetiredSample',
 					'slug' => 'retiredsample',
 				),
 			)
 		);
-		WP_Mock::userFunction( 'get_term_link' )->andReturnUsing( static fn( \stdClass $term ) => $home . ( 1 === $term->term_id ? '/product-category/inverters/' : '/de/produkt-kategorie/wechselrichter/' ) );
+		$term_paths = array(
+			1  => '/product-category/inverters/',
+			2  => '/de/produkt-kategorie/wechselrichter/',
+			42 => '/brand/goodwe/',
+		);
+		WP_Mock::userFunction( 'get_term_link' )->andReturnUsing( static fn( $term ) => $home . $term_paths[ $term->term_id ] );
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
 		WP_Mock::userFunction( 'wc_get_product_visibility_term_ids' )->andReturn( array( 'exclude-from-catalog' => 12 ) );
@@ -100,7 +132,7 @@ final class LlmsTxtTest extends TestCase {
 		WP_Mock::userFunction( 'get_the_title' )->andReturnUsing( static fn( int $id ) => $names[ $id ] );
 		WP_Mock::userFunction( 'get_permalink' )->andReturnUsing( static fn( int $id ) => $home . $routes[ $id ] );
 		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return_arg' => 0 ) );
-		WP_Mock::userFunction( 'get_option' )->andReturn( 'sales@de-linker.com' );
+		WP_Mock::userFunction( 'get_option' )->andReturnUsing( static fn( $option ) => 'home' === $option ? $home : 'sales@de-linker.com' );
 		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing( 'parse_url' );
 		WP_Mock::userFunction( 'sanitize_email', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'get_lastpostmodified' )->andReturnUsing( static fn( string $zone, string $type ) => 'product' === $type ? '2026-11-19 12:00:00' : '2026-11-17 09:00:00' );
@@ -125,6 +157,8 @@ final class LlmsTxtTest extends TestCase {
 				'documents' => array(),
 			)
 		);
+		unset( $GLOBALS['wpdb'] );
+		$this->assertStringContainsString( '[GoodWe (DE)](https://linker.test/de/marke/goodwe/)', $text );
 		$this->assertStringNotContainsString( '112.6 kWh', $text );
 		$this->assertStringNotContainsString( 'RetiredSample', $text );
 		$this->assertSame( 1, substr_count( $text, 'GoodWe · ESA Series' ) );

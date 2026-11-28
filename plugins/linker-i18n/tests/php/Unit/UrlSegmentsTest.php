@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 namespace Linker\I18n\Tests\Unit;
 
 use Linker\I18n\Languages;
+use Linker\I18n\GermanRoutes;
+use Linker\I18n\GermanUrlMigration;
 use Linker\I18n\UrlSegments;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -64,6 +66,8 @@ final class UrlSegmentsTest extends TestCase {
 		return array(
 			'German product'           => array( $home . 'de/product/goodwe-gw60k-sts-g10/', $home . 'de/produkt/goodwe-gw60k-sts-g10/' ),
 			'German category path'     => array( $home . 'de/product-category/zubehoer/notstrom/', $home . 'de/produkt-kategorie/zubehoer/notstrom/' ),
+			'German brand'             => array( $home . 'de/brand/goodwe/', $home . 'de/marke/goodwe/' ),
+			'English brand'            => array( $home . 'marke/goodwe/', $home . 'brand/goodwe/' ),
 			'German shop'              => array( $home . 'de/products/', $home . 'de/produkte/' ),
 			'German shop, page 2'      => array( $home . 'de/products/page/2/', $home . 'de/produkte/page/2/' ),
 			'German page untouched'    => array( $home . 'de/ueber-uns/', $home . 'de/ueber-uns/' ),
@@ -86,6 +90,18 @@ final class UrlSegmentsTest extends TestCase {
 		$this->assertSame( $expected, $this->segments()->link( $link ) );
 	}
 
+	/** Legacy German manufacturer requests redirect directly to their native archive. */
+	public function test_legacy_brand_paths(): void {
+		PolylangDouble::mock();
+		WP_Mock::userFunction( 'get_option', array( 'return' => static fn( string $key ): int => GermanUrlMigration::ACTIVE === $key ? 1 : 0 ) );
+		WP_Mock::userFunction( 'untrailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) ) );
+		$routes = new GermanRoutes();
+		foreach ( array( 'goodwe', 'ecoflow' ) as $slug ) {
+			self::assertSame( PolylangDouble::HOME . 'de/marke/' . $slug . '/', $routes->endpoint_history( '/de/brand/' . $slug . '/' ) );
+			self::assertNull( $routes->endpoint_history( '/de/marke/' . $slug . '/' ) );
+		}
+	}
+
 	/**
 	 * The German rules come first and send the German segments to the
 	 * product, category and shop queries in German.
@@ -95,12 +111,14 @@ final class UrlSegmentsTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'de/produkt/([^/]+)/?$'            => 'index.php?product=$matches[1]&lang=de',
+				'de/produkt/([^/]+)/?$'                 => 'index.php?product=$matches[1]&lang=de',
 				'de/produkt-kategorie/(.+?)/page/?([0-9]{1,})/?$' => 'index.php?product_cat=$matches[1]&paged=$matches[2]&lang=de',
-				'de/produkt-kategorie/(.+?)/?$'    => 'index.php?product_cat=$matches[1]&lang=de',
-				'de/produkte/page/?([0-9]{1,})/?$' => 'index.php?post_type=product&paged=$matches[1]&lang=de',
-				'de/produkte/?$'                   => 'index.php?post_type=product&lang=de',
-				'(.?.+?)(?:/([0-9]+))?/?$'         => 'index.php?pagename=$matches[1]',
+				'de/produkt-kategorie/(.+?)/?$'         => 'index.php?product_cat=$matches[1]&lang=de',
+				'de/marke/([^/]+)/page/?([0-9]{1,})/?$' => 'index.php?product_brand=$matches[1]&paged=$matches[2]&lang=de',
+				'de/marke/([^/]+)/?$'                   => 'index.php?product_brand=$matches[1]&lang=de',
+				'de/produkte/page/?([0-9]{1,})/?$'      => 'index.php?post_type=product&paged=$matches[1]&lang=de',
+				'de/produkte/?$'                        => 'index.php?post_type=product&lang=de',
+				'(.?.+?)(?:/([0-9]+))?/?$'              => 'index.php?pagename=$matches[1]',
 			),
 			$rules
 		);
@@ -114,6 +132,7 @@ final class UrlSegmentsTest extends TestCase {
 
 		$this->assertFalse( $segments->polylang_rule( true, array(), 'product', false ) );
 		$this->assertFalse( $segments->polylang_rule( true, array(), 'product_cat', false ) );
+		$this->assertFalse( $segments->polylang_rule( true, array(), 'product_brand', false ) );
 		$this->assertFalse( $segments->polylang_rule( true, array(), 'rewrite_rules_array', 'product' ) );
 		$this->assertTrue( $segments->polylang_rule( true, array(), 'page', false ) );
 		$this->assertTrue( $segments->polylang_rule( true, array(), 'rewrite_rules_array', 'post' ) );
