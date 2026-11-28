@@ -2,7 +2,7 @@
 /**
  * Publish or restore the bilingual WindPress pages and their public cache rules.
  *
- * wp eval-file batch-deepening-06-edge-and-pages.php -- --apply|--restore /private/backup.json
+ * wp eval-file batch-deepening-06-edge-and-pages.php apply|restore /private/backup.json
  *
  * @package Linker\Migrate
  */
@@ -252,11 +252,12 @@ function migrate_pages( array $pages, bool $apply ): void {
 	if ( ( $args[0] ?? '' ) === '--' ) {
 		array_shift( $args );
 	}
-	if ( count( $args ) !== 2 || ! in_array( $args[0], array( '--apply', '--restore' ), true ) ) {
+	$mode = preg_replace( '/^--/', '', $args[0] ?? '' );
+	if ( count( $args ) !== 2 || ! in_array( $mode, array( 'apply', 'restore' ), true ) ) {
 		WP_CLI::error( 'Use --apply <backup> or --restore <backup>.' );
 	}
-	list( $action, $file ) = $args;
-	$apply = '--apply' === $action;
+	$file  = $args[1];
+	$apply = 'apply' === $mode;
 	$edge  = ABSPATH . '.htaccess';
 	if ( $apply && ! is_file( $file ) ) {
 		publish_file( $file, wp_json_encode( snapshot( $edge ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ), 0600 );
