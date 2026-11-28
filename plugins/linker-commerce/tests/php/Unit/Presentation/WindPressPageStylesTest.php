@@ -37,7 +37,7 @@ final class WindPressPageStylesTest extends TestCase {
 		$path = $dir . '/windpress/cache/linker';
 		mkdir( $path, 0777, true );
 		foreach ( array_merge( $before, $after ) as $file ) {
-			touch( $path . '/' . $file, 1234567890 );
+			file_put_contents( $path . '/' . $file, $file );
 		}
 
 		$post = new WP_Post( (object) array( 'post_content' => $body ) );
@@ -58,7 +58,7 @@ final class WindPressPageStylesTest extends TestCase {
 				$file      = basename( $url );
 				$emitted[] = $file;
 				$this->assertSame( 'https://linker.test/uploads/windpress/cache/linker/' . $file, $url );
-				$this->assertSame( '1234567890', $version );
+				$this->assertSame( substr( md5( $file ), 0, 12 ), $version );
 			}
 		);
 		WP_Mock::userFunction( 'wp_print_styles' )->andReturn( null );
@@ -90,7 +90,7 @@ final class WindPressPageStylesTest extends TestCase {
 	 */
 	public static function pages(): array {
 		return array(
-			'home showcase'            => array( 'is_front_page', '', '<section id="configurator-showcase"><a href="/solution-configurator/" data-linker-planner-entry>Plan</a></section>', array(), array( 'marketing-rhythm.css', 'homepage-focus.css', 'homepage-readability.css', 'home-configurator.css', 'home-sections.css', 'home-journal.css', 'capability-cards.css', 'app-details.css', 'reference-photo-scenes.css' ) ),
+			'home showcase'            => array( 'is_front_page', '', '<section id="configurator-showcase"><a href="/solution-configurator/" data-linker-planner-entry>Plan</a></section>', array(), array( 'marketing-rhythm.css', 'home-bundle.css', 'capability-cards.css', 'app-details.css', 'reference-photo-scenes.css' ) ),
 			'custom showcase'          => array( '', '<section id="configurator-showcase">', '', array(), array( 'home-configurator.css' ) ),
 
 			'product category'         => array( 'is_product_taxonomy', '', '', array( 'model-links.css', 'products-mounts.css', 'products.css', 'storefront.css' ), array() ),
@@ -104,7 +104,10 @@ final class WindPressPageStylesTest extends TestCase {
 			'planner inside post'      => array( 'post', '[linker_planner]', '', array( 'model-links.css', 'blog.css', 'contact-invitation.css' ), array( 'planner.css', 'planner-equipment.css', 'planner-report.css', 'planner-site-energy.css', 'roof-studio.css' ) ),
 			'translated services'      => array( '', '<main id="service-redesign">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css', 'capability-cards.css', 'app-details.css' ) ),
 			'installer stage controls' => array( '', '<main id="installer-journal">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css', 'capability-cards.css', 'app-details.css' ) ),
-			'utility application dots' => array( '', '<main id="tv-utility-page-v1">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css' ) ),
+			'utility application dots' => array( '', '<main id="tv-utility-page-v1">', '', array(), array( 'service-intro.css', 'marketing-rhythm.css', 'utility-journal.css', 'utility-middle.css' ) ),
+			'about inline'             => array( '', '<main id="about-journal"><style data-site-css="about-journal.css">', '', array(), array( 'marketing-rhythm.css', 'app-details.css', 'reference-photo-scenes.css' ) ),
+			'about published'          => array( '', '<main id="about-journal">', '', array(), array( 'marketing-rhythm.css', 'app-details.css', 'reference-photo-scenes.css', 'about-journal.css', 'mobile-photo-topics.css' ) ),
+			'solutions published'      => array( '', '<main id="tv-solution-v1">', '', array(), array( 'marketing-rhythm.css', 'solution-journal.css', 'capability-cards.css', 'app-details.css' ) ),
 			'no component'             => array( '', '<p>Legal notice</p>', '', array(), array() ),
 		);
 	}

@@ -33,24 +33,32 @@ final class WindPressPageStyles {
 		'blog-search.css'          => 'search',
 	);
 
+	/** Homepage sheets in their published cascade order. */
+	public const HOME_BUNDLE = array( 'homepage-focus.css', 'homepage-readability.css', 'home-configurator.css', 'home-sections.css', 'home-journal.css' );
+
 	/** Volume imports following the shared control styles. */
 	private const AFTER = array(
 		'journal.css'                => 'journal',
 		'service-intro.css'          => 'services',
 		'marketing-rhythm.css'       => 'marketing',
-		'homepage-focus.css'         => 'home',
-		'homepage-readability.css'   => 'home',
+		'home-bundle.css'            => 'home',
 		'planner.css'                => 'planner',
 		'contact-journal.css'        => 'contact',
 		'planner-equipment.css'      => 'planner',
 		'planner-report.css'         => 'planner',
 		'planner-site-energy.css'    => 'planner',
-		'home-configurator.css'      => 'showcase',
-		'home-sections.css'          => 'home',
-		'home-journal.css'           => 'home',
+		'home-configurator.css'      => 'showcase_only',
+		'capability-page.css'        => 'capability_page',
+		'solution-journal.css'       => 'solution_hub',
+		'residential-journal.css'    => 'residential',
+		'commercial-journal.css'     => 'commercial',
+		'utility-journal.css'        => 'utility',
+		'utility-middle.css'         => 'utility',
 		'capability-cards.css'       => 'capability_cards',
 		'app-details.css'            => 'app_details',
 		'reference-photo-scenes.css' => 'photo_scenes',
+		'about-journal.css'          => 'about',
+		'mobile-photo-topics.css'    => 'about',
 		'not-found.css'              => 'not_found',
 		'roof-studio.css'            => 'planner',
 	);
@@ -67,7 +75,7 @@ final class WindPressPageStyles {
 	 * @return list<string>
 	 */
 	public static function filenames(): array {
-		return array_merge( array_keys( self::BEFORE + self::AFTER ), array( 'planner-maplibre.css' ) );
+		return array_values( array_unique( array_merge( array_keys( self::BEFORE + self::AFTER ), self::HOME_BUNDLE, array( 'planner-maplibre.css' ) ) ) );
 	}
 
 	/**
@@ -77,7 +85,16 @@ final class WindPressPageStyles {
 		$uploads  = wp_get_upload_dir();
 		$relative = '/windpress/cache/linker/planner-maplibre.css';
 		$file     = $uploads['basedir'] . $relative;
-		return $uploads['baseurl'] . $relative . ( is_file( $file ) ? '?ver=' . filemtime( $file ) : '' );
+		return $uploads['baseurl'] . $relative . ( is_file( $file ) ? '?ver=' . self::asset_version( $file ) : '' );
+	}
+
+	/** Keep URLs stable when an unchanged stylesheet is republished.
+	 *
+	 * @param string $file Published stylesheet.
+	 */
+	private static function asset_version( string $file ): string {
+		static $versions            = array();
+		return $versions[ $file ] ??= is_file( $file ) ? substr( (string) md5_file( $file ), 0, 12 ) : '';
 	}
 
 	/** Both the cached frontend and LiveCanvas's live compiler use the same page styles. */
@@ -134,7 +151,7 @@ final class WindPressPageStyles {
 			}
 			$relative = '/windpress/cache/linker/' . $file;
 			$handle   = 'linker-volume-' . basename( $file, '.css' );
-			wp_enqueue_style( $handle, $uploads['baseurl'] . $relative, array(), (string) filemtime( $uploads['basedir'] . $relative ) );
+			wp_enqueue_style( $handle, $uploads['baseurl'] . $relative, array(), self::asset_version( $uploads['basedir'] . $relative ) );
 			$handles[] = $handle;
 		}
 		if ( array() !== $handles ) {
@@ -193,7 +210,13 @@ final class WindPressPageStyles {
 			'services'         => $services || isset( $ids['installer-journal'] ) || isset( $ids['tv-utility-page-v1'] ),
 			'marketing'        => $home || $services || array() !== array_intersect( array_keys( $ids ), array( 'installer-journal', 'about-journal', 'tv-rs-page-v1', 'tv-cs-page-v1', 'tv-cp-page-v1', 'tv-solution-v1', 'tv-solutions-developers-v1', 'tv-utility-page-v1' ) ),
 			'home'             => $home,
-			'showcase'         => $home || isset( $ids['configurator-showcase'] ),
+			'showcase_only'    => ! $home && isset( $ids['configurator-showcase'] ),
+			'about'            => isset( $ids['about-journal'] ) && ! str_contains( $content, 'data-site-css="about-journal.css"' ),
+			'capability_page'  => isset( $ids['tv-cp-page-v1'] ) && ! str_contains( $content, '#tv-cp-page-v1 :where(' ),
+			'solution_hub'     => isset( $ids['tv-solution-v1'] ) && ! str_contains( $content, 'data-site-css="solution-journal.css"' ),
+			'residential'      => isset( $ids['tv-rs-page-v1'] ) && ! str_contains( $content, 'data-site-css="residential-journal.css"' ),
+			'commercial'       => isset( $ids['tv-cs-page-v1'] ) && ! str_contains( $content, 'data-site-css="commercial-journal.css"' ),
+			'utility'          => isset( $ids['tv-utility-page-v1'] ) && ! str_contains( $content, 'data-site-css="utility-journal.css"' ),
 			'planner'          => 1 === preg_match( '/<(?:section|div)\b[^>]*\sdata-linker-planner(?=[\s=\/>])|(?<!\[)\[(?:linker_planner|linker_configurator)(?=[\s\/\]])/i', $content ),
 			'not_found'        => is_404() || isset( $ids['tv-404-v1'] ),
 		);
