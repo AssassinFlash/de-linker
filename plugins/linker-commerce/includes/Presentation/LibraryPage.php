@@ -342,7 +342,7 @@ final class LibraryPage {
 				}
 				$rows .= '</p></div></details>';
 			}
-			$cards .= $this->card( $brand['answers_id'], 'answer', $brand['name'], count( $answers ), $brand['logo'], $rows, $brand['mark'] );
+			$cards .= $this->card( $brand['answers_id'], 'answer', $brand['name'], count( $answers ), null, $rows, $brand['mark'] );
 		}
 		$out .= $this->zone( self::ZONE_ANSWERS, (string) __( 'Product answers', 'linker-commerce' ), $cards );
 
