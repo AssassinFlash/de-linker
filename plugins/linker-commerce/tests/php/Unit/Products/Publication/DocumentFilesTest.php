@@ -250,7 +250,7 @@ final class DocumentFilesTest extends TestCase {
 		$rules = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule . /index.php [L]\n";
 		$after = ( new DocumentAccess() )->rewrite_rules( $rules );
 		self::assertStringContainsString( 'linker_public_document=$1 [END,NC,QSA]', $after );
-		self::assertMatchesRegularExpression( '/RewriteCond %\{HTTP:Range\} !\^\$ \[OR\]\nRewriteCond %\{QUERY_STRING\} !\^\$\nRewriteRule [^\n]+Cache-Control:no-cache/', $after );
+		self::assertStringNotContainsString( 'Cache-Control:no-cache', $after );
 		self::assertLessThan( strpos( $after, 'REQUEST_FILENAME' ), strpos( $after, 'linker_public_document=' ) );
 	}
 

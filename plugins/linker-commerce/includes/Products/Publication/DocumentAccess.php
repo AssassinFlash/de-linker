@@ -30,17 +30,8 @@ final class DocumentAccess {
 		if ( '' !== $home && str_starts_with( $prefix, $home . '/' ) ) {
 			$prefix = substr( $prefix, strlen( $home ) + 1 );
 		}
-		$pdf           = '^' . preg_quote( $prefix, '#' ) . '/(.+\.pdf)$';
-		$gate          = 'RewriteRule ' . $pdf . ' index.php?' . self::QUERY_VAR . '=$1 [END,NC,QSA]';
-		$rules_for_pdf = array(
-			'RewriteEngine On',
-			'# Current Woo technical-document permission',
-			'RewriteCond %{HTTP:Range} !^$ [OR]',
-			'RewriteCond %{QUERY_STRING} !^$',
-			'RewriteRule ' . $pdf . ' - [E=Cache-Control:no-cache,NC]',
-			$gate,
-		);
-		return str_replace( 'RewriteEngine On', implode( "\n", $rules_for_pdf ), $rules );
+		$gate = 'RewriteRule ^' . preg_quote( $prefix, '#' ) . '/(.+\.pdf)$ index.php?' . self::QUERY_VAR . '=$1 [END,NC,QSA]';
+		return str_replace( 'RewriteEngine On', "RewriteEngine On\n# Current Woo technical-document permission\n" . $gate, $rules );
 	}
 
 	/** Internal request path, also used by the local server's dynamic router. */
