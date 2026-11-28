@@ -36,6 +36,7 @@ final class DocumentAccessCacheTest extends TestCase {
 		$original = "RewriteEngine On\nRewriteRule ^wp-content/uploads/(.+\\.pdf)$ index.php?linker_public_document=\$1 [END,NC,QSA]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule . /index.php [L]\n";
 		$updated  = DocumentCache::request_rules( $original );
 		self::assertLessThan( strpos( $updated, 'linker_public_document=' ), strpos( $updated, 'Cache-Control:no-cache' ) );
+		self::assertStringContainsString( 'CacheMaxFileSize 67108864', $updated );
 		self::assertSame( $original, preg_replace( '~<IfModule LiteSpeed>.*?</IfModule>\n~s', '', $updated ) );
 		self::assertStringContainsString( "RewriteCond %{REQUEST_METHOD} ^HEAD$ [OR]\nRewriteCond %{HTTP:Range} !^$", $updated );
 		if ( 1 !== preg_match( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache,NC\]$/m', $updated, $rule ) ) {

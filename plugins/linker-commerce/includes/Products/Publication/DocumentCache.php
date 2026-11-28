@@ -22,6 +22,7 @@ final class DocumentCache {
 	public static function request_rules( string $rules ): string {
 		$bypass = <<<'RULES'
 <IfModule LiteSpeed>
+CacheMaxFileSize 67108864
 RewriteCond %{REQUEST_METHOD} ^HEAD$ [OR]
 RewriteCond %{HTTP:Range} !^$
 RewriteRule ^(?:wp-content/uploads/.+\.pdf|downloads/engineering-toolkit/[^/]+\.(?:pdf|csv))$ - [E=Cache-Control:no-cache,NC]
