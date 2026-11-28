@@ -1,4 +1,4 @@
-/** Real library fragments: loaded search thumbnails, readable actions and keyboard continuation. */
+/** Real library fragments: searchable documents, readable actions and keyboard continuation. */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
@@ -6,13 +6,13 @@ import { instance, REPO_ROOT } from '../lib/instance';
 
 const output = join(
 	REPO_ROOT,
-	'docs/acceptance/2026-10-22/full-site/library/local',
+	'tests/e2e/artifacts/library',
 	new Date().toISOString().replaceAll(/[-:.]/g, '')
 );
 const evidence: Record<string, unknown>[] = [];
 const navigationOutput = join(
 	REPO_ROOT,
-	'docs/acceptance/2026-10-22/full-site/marketing-library-online/navigation-local',
+	'tests/e2e/artifacts/library-navigation',
 	new Date().toISOString().replaceAll(/[-:.]/g, '')
 );
 const paths = { en: '/faq-download/', de: '/de/faq-dokumente/' };
@@ -224,6 +224,9 @@ for (const locale of ['en', 'de'] as const) {
 			).toBeGreaterThanOrEqual(12);
 			await root.locator('[data-library-tab="faq"]').click();
 			await input.fill('AIO3');
+			await expect(
+				root.locator('#linker-library-result-count')
+			).toHaveAttribute('aria-busy', 'false');
 			await input.press('ArrowDown');
 			await input.press('Enter');
 			const summary = root
@@ -411,6 +414,9 @@ for (const locale of ['en', 'de'] as const) {
 			).toHaveCount(0);
 			const input = page.locator('#linker-library-q');
 			await input.fill('AIO3');
+			await expect(
+				page.locator('#linker-library-result-count')
+			).toHaveAttribute('aria-busy', 'false');
 			await expect(
 				page.locator('#linker-library-sug-0 .linker-library-sug-meta')
 			).toContainText('AIO3');

@@ -332,8 +332,7 @@
 #linker-faq-page li[data-t] > i { font-style: normal; font-size: 12px; color: var(--ll-muted); }
 #linker-faq-page li[data-t] > p { font-size: 13px; color: var(--ll-muted); }
 #linker-faq-page li[data-t] > p > a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ll-accent-dark); text-underline-offset: 3px; }
-#linker-faq-page .linker-library-help { margin-top: 16px; }
-#linker-faq-page .linker-library-panel .linker-genie-chips { margin-top: 16px; }
+#linker-faq-page .linker-library-panel .linker-library-help { margin-block: 16px; }
 #linker-faq-page .linker-library-help a,#linker-faq-page .linker-library-toc a,#linker-faq-page .linker-library-rail-label a { display: inline-flex; align-items: center; min-height: 44px; }
 @media (min-width:1200px) {
 	#linker-faq-page { --ll-container: 1512px; --ll-pad: clamp(20px,2vw,40px); }
