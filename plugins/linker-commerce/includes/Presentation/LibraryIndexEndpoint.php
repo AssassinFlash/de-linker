@@ -79,8 +79,10 @@ final class LibraryIndexEndpoint {
 		$uri    = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' );
 		$method = wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' );
 		// phpcs:enable
+		$cookies   = (string) $request->get_header( 'cookie' );
+		$private   = preg_match( '/(?:^|;\s*)(?:wordpress_(?:logged_in_[^=;]+|sec_[^=;]+|[a-f0-9]{32})|wp-postpass_[^=;]+|wp_woocommerce_session_[^=;]+|woocommerce_(?:items_in_cart|cart_hash))=/', $cookies );
 		$canonical = wp_parse_url( rest_url( 'linker/v1/library-index' ), PHP_URL_PATH ) . '?lang=' . $lang;
-		if ( $uri !== $canonical || 'GET' !== $method || is_user_logged_in() || $request->get_header( 'cookie' ) || $request->get_header( 'authorization' ) || $request->get_header( 'x-wp-nonce' ) || isset( $_SERVER['PHP_AUTH_USER'] ) || ! empty( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) ) {
+		if ( $uri !== $canonical || 'GET' !== $method || is_user_logged_in() || $private || $request->get_header( 'authorization' ) || $request->get_header( 'x-wp-nonce' ) || isset( $_SERVER['PHP_AUTH_USER'] ) || ! empty( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) ) {
 			$response->header( 'Cache-Control', 'private, no-store, max-age=0' );
 			$response->header( 'X-LiteSpeed-Cache-Control', 'no-cache' );
 			return;

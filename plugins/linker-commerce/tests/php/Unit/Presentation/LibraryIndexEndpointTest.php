@@ -26,14 +26,16 @@ final class LibraryIndexEndpointTest extends TestCase {
 	 */
 	public static function requests(): array {
 		return array(
-			'english'         => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, '', true ),
-			'german'          => array( '/wp-json/linker/v1/library-index?lang=de', 'de', false, '', true ),
-			'other parameter' => array( '/wp-json/linker/v1/library-index?lang=en&_fields=skus', 'en', false, '', false ),
-			'other route'     => array( '/wp-json/other/v1/page?lang=en', 'en', false, '', false ),
-			'logged in'       => array( '/wp-json/linker/v1/library-index?lang=en', 'en', true, '', false ),
-			'credential'      => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, 'authorization', false ),
-			'cookie'          => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, 'cookie', false ),
-			'nonce'           => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, 'x-wp-nonce', false ),
+			'english'              => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, '', true ),
+			'german'               => array( '/wp-json/linker/v1/library-index?lang=de', 'de', false, '', true ),
+			'other parameter'      => array( '/wp-json/linker/v1/library-index?lang=en&_fields=skus', 'en', false, '', false ),
+			'other route'          => array( '/wp-json/other/v1/page?lang=en', 'en', false, '', false ),
+			'logged in'            => array( '/wp-json/linker/v1/library-index?lang=en', 'en', true, '', false ),
+			'credential'           => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, 'authorization', false ),
+			'language and consent' => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, 'pll_language=en; cookieyes-consent=consent', true ),
+			'login cookie'         => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, 'pll_language=en; wordpress_logged_in_fixture=present', false ),
+			'Woo session'          => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, 'wp_woocommerce_session_fixture=present', false ),
+			'nonce'                => array( '/wp-json/linker/v1/library-index?lang=en', 'en', false, 'x-wp-nonce', false ),
 		);
 	}
 
@@ -62,7 +64,9 @@ final class LibraryIndexEndpointTest extends TestCase {
 		}
 		$request  = new \WP_REST_Request( 'GET', '/linker/v1/library-index' );
 		$response = new \WP_REST_Response( array() );
-		if ( '' !== $header ) {
+		if ( str_contains( $header, '=' ) ) {
+			$request->set_header( 'cookie', $header );
+		} elseif ( '' !== $header ) {
 			$request->set_header( $header, 'present' );
 		}
 		try {
