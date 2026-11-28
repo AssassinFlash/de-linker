@@ -89,8 +89,9 @@ final class GuideEquipmentMeshTest extends TestCase {
 		$body = '<section class="lk-faq-list"><h3>Which model?</h3><p>Model A</p><div hidden><h3>Hidden?</h3><p>Hidden</p></div></section>';
 		self::assertSame( '<p>No questions.</p>', $page->guide_faq( '<p>No questions.</p>' ) );
 		$html = $page->guide_faq( $body );
-		self::assertSame( 1, preg_match( '#<script[^>]*>(.*?)</script>#s', $html, $match ) );
-		self::assertArrayHasKey( 1, $match );
+		if ( 1 !== preg_match( '#<script[^>]*>(.*?)</script>#s', $html, $match ) ) {
+			self::fail( 'Missing FAQ schema script.' );
+		}
 		$faq = json_decode( $match[1], true, 512, JSON_THROW_ON_ERROR );
 		self::assertSame( 'FAQPage', $faq['@type'] );
 		self::assertCount( 1, $faq['mainEntity'] );
