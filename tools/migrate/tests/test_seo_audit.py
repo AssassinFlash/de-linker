@@ -204,7 +204,12 @@ def test_graph_and_organization_scope() -> None:
         assert [
             f.kind for f in audit_module.audit({url: document}, {}).findings
         ] == expected
-    for blocks in ((), ({"@type": "WebPage"},), ({"@graph": []}, {"@graph": []})):
+    invalid: tuple[tuple[object, ...], ...] = (
+        (),
+        ({"@type": "WebPage"},),
+        ({"@graph": []}, {"@graph": []}),
+    )
+    for blocks in invalid:
         document = page(url, jsonld=blocks)
         assert [f.kind for f in audit_module.audit({url: document}, {}).findings] == [
             "jsonld-graph"
