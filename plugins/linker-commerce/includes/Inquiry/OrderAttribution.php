@@ -48,7 +48,8 @@ final class OrderAttribution {
 
 	/** Read the existing page's tracking data without counting another page view. */
 	public static function hydrate_planner(): void {
-		foreach ( array( 'sourcebuster-js', 'wc-order-attribution' ) as $handle ) {
+		// WordPress checks the consent bridge as a dependent of the attribution scripts.
+		foreach ( array( 'sourcebuster-js', 'wc-order-attribution', 'wp-consent-api-integration' ) as $handle ) {
 			if ( wp_script_is( $handle, 'enqueued' ) ) {
 				wp_script_add_data( $handle, 'strategy', 'defer' );
 			}
@@ -56,7 +57,7 @@ final class OrderAttribution {
 		if ( wp_script_is( 'wc-order-attribution', 'enqueued' ) ) {
 			wp_add_inline_script(
 				'wc-order-attribution',
-				"document.addEventListener('linker:inquiry-form-mounted',function(event){const fields=event.target.querySelector('wc-order-attribution-inputs');const woo=window.wc_order_attribution;if(fields && woo?.params.allowTracking){fields.values=woo.getAttributionData();}});",
+				"document.addEventListener('linker:inquiry-form-mounted',function(event){const fields=event.target.querySelector('wc-order-attribution-inputs');const woo=window.wc_order_attribution;if(fields && woo?.params.allowTracking && woo.getAttributionData){fields.values=woo.getAttributionData();}});",
 				'before'
 			);
 		}
