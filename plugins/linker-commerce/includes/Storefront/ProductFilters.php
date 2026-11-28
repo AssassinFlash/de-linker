@@ -238,8 +238,7 @@ final class ProductFilters {
 		if ( (int) $query->get( 'paged' ) > 1 && ! $query->is_feed() ) {
 			// The LC grid pages families independently. Keep a first-page native
 			// query for the archive identity, including Polylang's head links.
-			$query->set( 'linker_family_paged', $query->get( 'paged' ) );
-			$query->set( 'paged', 1 );
+			$query->set( 'offset', 0 );
 			$query->is_paged = false;
 		}
 		if ( $query->is_tax( 'product_brand' ) ) {

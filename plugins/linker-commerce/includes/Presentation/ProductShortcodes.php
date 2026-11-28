@@ -718,7 +718,7 @@ final class ProductShortcodes {
 		}
 		$html .= '<div class="sf-card-price" data-card-price>';
 		if ( '' !== $card['price']['url'] ) {
-			$html .= '<a class="sf-card-price-login" href="' . esc_url( $card['price']['url'] ) . '">' . esc_html( $card['price']['html'] ) . '</a>';
+			$html .= '<a class="sf-card-price-login" rel="nofollow" href="' . esc_url( $card['price']['url'] ) . '">' . esc_html( $card['price']['html'] ) . '</a>';
 		} else {
 			$html .= '<span class="sf-card-price-net">' . wp_kses_post( $card['price']['html'] ) . '</span>';
 		}
@@ -729,7 +729,7 @@ final class ProductShortcodes {
 		$html .= '<button type="button" class="card-compare-checkbox" data-compare-product="' . esc_attr( (string) Publication::canonical_id( $product_id ) ) . '" aria-pressed="false" aria-label="'
 			. esc_attr( sprintf( /* translators: %s: product name. */ __( 'Compare: %s', 'linker-commerce' ), (string) $card['title'] ) ) . '">' . self::icon( 'compare' )
 			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span><svg class="compare-selected-mark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></button>';
-		$html .= '<a class="sf-card-atc tv-woo-card-action tv-woo-card-action--primary" data-card-atc' . ( '' === $card['cta_url'] ? ' hidden' : ' href="' . esc_url( $card['cta_url'] ) . '"' ) . '>' . esc_html__( 'Add to solution draft', 'linker-commerce' ) . '</a>';
+		$html .= '<a class="sf-card-atc tv-woo-card-action tv-woo-card-action--primary" rel="nofollow" data-card-atc' . ( '' === $card['cta_url'] ? ' hidden' : ' href="' . esc_url( $card['cta_url'] ) . '"' ) . '>' . esc_html__( 'Add to solution draft', 'linker-commerce' ) . '</a>';
 		if ( '' !== $card['price']['url'] ) {
 			$html .= '<a class="tv-woo-card-action tv-woo-card-action--secondary" data-card-gate href="' . esc_url( $card['price']['url'] ) . '">' . esc_html__( 'Log in for pricing', 'linker-commerce' ) . '</a>' . AccountLinks::create();
 		}
@@ -2014,7 +2014,7 @@ final class ProductShortcodes {
 	private function family_page(): FamilyPage {
 		if ( null === $this->family_page ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- FamilyPage validates the public page before arithmetic or output.
-			$requested         = array_key_exists( 'product-page', $_GET ) ? wp_unslash( $_GET['product-page'] ) : FamilyNavigation::native_page();
+			$requested         = array_key_exists( 'product-page', $_GET ) ? wp_unslash( $_GET['product-page'] ) : get_query_var( 'paged', 1 );
 			$this->family_page = new FamilyPage( $this->family_rows( array_values( $this->filters->filtered_product_ids() ) ), $requested, self::PER_PAGE_FAMILIES );
 		}
 		return $this->family_page;
@@ -2105,7 +2105,7 @@ final class ProductShortcodes {
 				'imageWidth'   => $image[1] ?? 0,
 				'imageHeight'  => $image[2] ?? 0,
 				'priceHtml'    => $gated
-					? '<a class="sf-card-price-login" href="' . esc_url( (string) $card['price']['url'] ) . '">' . esc_html( (string) $card['price']['html'] ) . '</a>'
+					? '<a class="sf-card-price-login" rel="nofollow" href="' . esc_url( (string) $card['price']['url'] ) . '">' . esc_html( (string) $card['price']['html'] ) . '</a>'
 					: '<span class="sf-card-price-net">' . esc_html( wp_strip_all_tags( (string) $card['price']['html'] ) ) . '</span>',
 				'availability' => (string) $card['availability'],
 				'canPurchase'  => ! $gated,

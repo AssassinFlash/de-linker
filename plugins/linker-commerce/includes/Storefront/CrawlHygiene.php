@@ -9,13 +9,44 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Presentation\PageUrls;
+
 /** Keep editorial feeds readable and point media pages at their published owner. */
 final class CrawlHygiene {
 	/** Resolve after the site's retired aliases and before core attachment handling. */
 	public function register(): void {
+		add_filter( 'the_content', array( $this, 'content_links' ), 8 );
 		add_filter( 'robots_txt', array( $this, 'robots_txt' ), 99, 2 );
 		add_filter( 'wp_headers', array( $this, 'headers' ) );
 		add_action( 'template_redirect', array( $this, 'respond' ), 2 );
+	}
+
+	/**
+	 * Mark utility links in the original LiveCanvas page and journal content.
+	 *
+	 * @param string $content Stored markup before shortcode expansion.
+	 */
+	public function content_links( string $content ): string {
+		if ( ! str_contains( $content, 'href' ) || is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			return $content;
+		}
+		$root = PageUrls::root();
+		$html = new \WP_HTML_Tag_Processor( $content );
+		while ( $html->next_tag( array( 'tag_name' => 'A' ) ) ) {
+			$href = $html->get_attribute( 'href' );
+			if ( ! is_string( $href ) ) {
+				continue;
+			}
+			$path = str_starts_with( $href, $root ) ? '/' . substr( $href, strlen( $root ) ) : $href;
+			if ( ! preg_match( '~^/(?:my-account|de/mein-konto|cart|de/loesungsentwurf|(?:de/)?genie)(?:/|$)|^/(?:contact|de/kontakt)/\?(?:[^#]*&)?(?:intent|linker_contact_selection)=~', $path ) ) {
+				continue;
+			}
+			$rel = (string) $html->get_attribute( 'rel' );
+			if ( ! in_array( 'nofollow', explode( ' ', strtolower( $rel ) ), true ) ) {
+				$html->set_attribute( 'rel', trim( $rel . ' nofollow' ) );
+			}
+		}
+		return $html->get_updated_html();
 	}
 
 	/**

@@ -137,6 +137,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_agent_ready_mcp_card', array( $markdown, 'mcp_card' ), 20 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_agent_ready_agent_skills', array( $markdown, 'clean_well_known_card' ), 20 ); // @phpstan-ignore argument.type
 		$crawl = new AnyInstance( \Linker\Commerce\Storefront\CrawlHygiene::class );
+		WP_Mock::expectFilterAdded( 'the_content', array( $crawl, 'content_links' ), 8 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'robots_txt', array( $crawl, 'robots_txt' ), 99, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_headers', array( $crawl, 'headers' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'template_redirect', array( $crawl, 'respond' ), 2 ); // @phpstan-ignore argument.type

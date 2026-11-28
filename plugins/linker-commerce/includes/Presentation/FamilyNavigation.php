@@ -67,7 +67,7 @@ final class FamilyNavigation {
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET pagination.
 		$present = array_key_exists( 'product-page', $_GET );
-		$native  = self::native_page();
+		$native  = (int) get_query_var( 'paged' );
 		if ( ! $present && $native < 1 ) {
 			return '';
 		}
@@ -88,11 +88,6 @@ final class FamilyNavigation {
 			}
 		}
 		return $target;
-	}
-
-	/** Requested native path page before the individual-product query is reset. */
-	public static function native_page(): int {
-		return (int) get_query_var( 'linker_family_paged', get_query_var( 'paged' ) );
 	}
 
 	/**
@@ -139,7 +134,7 @@ final class FamilyNavigation {
 	 * @param string      $language Target language.
 	 */
 	public function translated_page( ?string $url, string $language ): ?string {
-		$page = self::native_page();
+		$page = (int) get_query_var( 'paged' );
 		if ( null === $url || $page < 2 || ! $this->active() || str_contains( ( $this->base )(), '?' ) ) {
 			return $url;
 		}

@@ -355,7 +355,7 @@ final class Shortcodes {
 	 */
 	public static function form_assistant( $attributes = array() ): string {
 		$genie = sprintf(
-			'<a class="linker-form-assistant" href="%s" data-linker-genie-open aria-controls="linker-genie-mount" aria-expanded="false">%s</a>',
+			'<a class="linker-form-assistant" rel="nofollow" href="%s" data-linker-genie-open aria-controls="linker-genie-mount" aria-expanded="false">%s</a>',
 			esc_url( PageUrls::page( 'genie' ) ),
 			esc_html__( 'Ask Genie', 'linker-commerce' )
 		);

@@ -188,9 +188,7 @@ function entry( string $type, string $slug, string $field ): array {
 	$kind = 'product_cat' === $type ? State::TERM : State::POST;
 	$row  = compact( 'kind', 'ids', 'field' );
 	foreach ( $ids as $lang => $id ) {
-		if ( 'post_content' !== $field || 'en' === $lang ) {
-			$row['original'][ $lang ] = 'post_content' === $field ? get_post_field( $field, $id, 'raw' ) : meta( $kind, $id, $field );
-		}
+		$row['original'][ $lang ] = 'post_content' === $field ? get_post_field( $field, $id, 'raw' ) : meta( $kind, $id, $field );
 		foreach ( 'en' === $lang ? array( State::NOTE, State::STATUS ) : array( State::SOURCE_HASH, State::UNITS ) as $key ) {
 			$row['state'][ $lang ][ $key ] = meta( $kind, $id, $key );
 		}
@@ -245,7 +243,12 @@ function values( string $slug, array $row ): array {
 		return DESCRIPTIONS[ $slug ];
 	}
 	list( $from, $to ) = ARTICLES[ $slug ];
-	return array( 'en' => str_replace( "/product-category/residential-storage/$from/", "/product-category/$to/", $row['original']['en'] ) );
+	$old = "/product-category/residential-storage/$from/";
+	$de  = 'accessories' === $to ? '/de/produkt-kategorie/zubehoer/' : '/de/produkt-kategorie/heimspeicher/';
+	return array(
+		'en' => str_replace( $old, "/product-category/$to/", $row['original']['en'] ),
+		'de' => str_replace( $old, $de, $row['original']['de'] ),
+	);
 }
 
 function change_entry( string $slug, array $row, array $current, bool $apply, Translator $translator ): void {
@@ -292,6 +295,16 @@ function change_entry( string $slug, array $row, array $current, bool $apply, Tr
 
 function migrate( array $before, bool $apply ): void {
 	global $wpdb;
+	// A failed database transaction can leave its post and metadata reads in Redis.
+	foreach ( $before['entries'] as $row ) {
+		foreach ( $row['ids'] as $id ) {
+			if ( State::POST === $row['kind'] ) {
+				clean_post_cache( $id );
+			} else {
+				clean_term_cache( $id, 'product_cat' );
+			}
+		}
+	}
 	$current = snapshot();
 	$rules   = edge( $before );
 	if ( $current['home'] !== $before['home'] || ! in_array( $current['htaccess'], array( $before['htaccess'], $rules ), true ) || ! in_array( $current['paged'], array( $before['paged'], '' ), true ) ) {
@@ -331,7 +344,11 @@ $operation = $args[0] ?? '';
 if ( 'snapshot' === $operation ) {
 	WP_CLI::line( wp_json_encode( snapshot(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ) );
 } elseif ( in_array( $operation, array( 'apply', 'restore' ), true ) && isset( $args[1] ) ) {
-	migrate( json_decode( bytes( $args[1] ), true, 512, JSON_THROW_ON_ERROR ), 'apply' === $operation );
+	try {
+		migrate( json_decode( bytes( $args[1] ), true, 512, JSON_THROW_ON_ERROR ), 'apply' === $operation );
+	} catch ( \Throwable $failure ) {
+		WP_CLI::error( $failure->getMessage() );
+	}
 	WP_CLI::success( 'Crawl seal: ' . $operation );
 } else {
 	WP_CLI::error( 'Usage: snapshot | apply <snapshot> | restore <snapshot>' );

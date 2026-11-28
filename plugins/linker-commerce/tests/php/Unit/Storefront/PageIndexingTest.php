@@ -217,7 +217,9 @@ final class PageIndexingTest extends TestCase {
 		$this->assertSame( 'GoodWe Hybrid Inverters & Storage Systems | Linker', $policy->brand_title( 'GoodWe' ) );
 		$doc = new \DOMDocument();
 		$doc->loadHTML( $policy->brand_social_title( '<meta property="og:title" content="GoodWe">' ) );
-		$this->assertSame( 'GoodWe Hybrid Inverters & Storage Systems | Linker', $doc->getElementsByTagName( 'meta' )->item( 0 )->getAttribute( 'content' ) );
+		$meta = $doc->getElementsByTagName( 'meta' )->item( 0 );
+		$this->assertInstanceOf( \DOMElement::class, $meta );
+		$this->assertSame( 'GoodWe Hybrid Inverters & Storage Systems | Linker', $meta->getAttribute( 'content' ) );
 	}
 
 	/** Only brands that have products on this archive get a discovery description. */
