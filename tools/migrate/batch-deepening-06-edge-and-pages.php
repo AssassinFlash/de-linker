@@ -172,7 +172,7 @@ function published_body( string $body, int $en, bool $german ): string {
 		}
 		$photo = '/wp-content/uploads/2026/09/linker-linking-value-serving-you';
 		$alt   = $german ? 'Gewerbliche Photovoltaik- und Batteriespeicheranlage von Linker' : 'Commercial solar and battery energy storage installation supplied by Linker';
-		$image = '<img class="lk-hero-media" src="' . $photo . '.webp" srcset="' . $photo . '-768x576.webp 768w, ' . $photo . '.webp 1024w" sizes="(max-width: 600px) 768px, 100vw" width="1024" height="768" alt="' . $alt . '" fetchpriority="high" loading="eager" decoding="async" />';
+		$image = '<img class="lk-hero-media" src="' . $photo . '.webp" srcset="' . $photo . '-768x576.webp 768w, ' . $photo . '.webp 1024w" sizes="(max-width: 600px) 1024px, 100vw" width="1024" height="768" alt="' . $alt . '" fetchpriority="high" loading="eager" decoding="async" />';
 		return str_replace( $section, $section . $image, $body );
 	}
 

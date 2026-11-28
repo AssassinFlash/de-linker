@@ -135,7 +135,7 @@ final class Module {
 				$small = '/2026/09/linker-linking-value-serving-you-768x576.webp';
 				if ( is_file( $uploads['basedir'] . $small ) ) {
 					$image['imagesrcset'] = $uploads['baseurl'] . $small . ' 768w, ' . $image['href'] . ' 1024w';
-					$image['imagesizes']  = '(max-width: 600px) 768px, 100vw';
+					$image['imagesizes']  = '(max-width: 600px) 1024px, 100vw';
 				}
 				$resources[] = $image;
 			}
