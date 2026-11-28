@@ -115,7 +115,7 @@ test.describe('the FAQ + document library', () => {
 				}
 
 				const chips = page.locator(
-					'.linker-library-hero .linker-genie-chip'
+					'.linker-library-panel .linker-genie-chip'
 				);
 				await expect(chips).toHaveCount(3);
 				const input = page.locator('#linker-library-q');
@@ -154,74 +154,51 @@ test.describe('the FAQ + document library', () => {
 			});
 		}
 
-		test(`${locale}: the tab bar switches panels and writes the URL`, async ({
+		test(`${locale}: toolkit files, document links and both reading sections are present before search`, async ({
 			page,
 		}) => {
+			const indexRequests: string[] = [];
+			page.on('request', (request) => {
+				if (request.url().includes('/library-index'))
+					indexRequests.push(request.url());
+			});
 			await open(page, locale);
-			const faqTab = page.locator(
-				'#linker-faq-page [data-library-tab="faq"]'
-			);
-			const docTab = page.locator(
-				'#linker-faq-page [data-library-tab="documents"]'
-			);
-			await expect(faqTab).toHaveAttribute('aria-selected', 'true');
-			await expect(docTab).toHaveAttribute('aria-selected', 'false');
+			const toolkit = page.locator('#linker-engineering-toolkit');
+			await expect(toolkit.locator('.lk-toolkit-card')).toHaveCount(4);
 			await expect(
-				page.locator('#linker-faq-page [data-library-panel="faq"]')
+				toolkit.locator('a[href*="/downloads/engineering-toolkit/"]')
+			).toHaveCount(8);
+			await expect(
+				page.locator('[data-library-panel="documents"]')
 			).toBeVisible();
 			await expect(
-				page.locator(
-					'#linker-faq-page [data-library-panel="documents"]'
-				)
-			).toBeHidden();
-			// The FAQ tab is the default: no parameter for it.
-			expect(new URL(page.url()).searchParams.get('tab')).toBeNull();
-
-			await docTab.click();
-			await expect(docTab).toHaveAttribute('aria-selected', 'true');
-			await expect(
-				page.locator(
-					'#linker-faq-page [data-library-panel="documents"]'
-				)
+				page.locator('[data-library-panel="faq"]')
 			).toBeVisible();
-			await expect(
-				page.locator('#linker-faq-page [data-library-panel="faq"]')
-			).toBeHidden();
-			expect(new URL(page.url()).searchParams.get('tab')).toBe(
-				'documents'
-			);
-			// The rail and the chip row swap to the tab's own group.
-			await expect(
-				page
-					.locator(
-						'#linker-faq-page .linker-library-rail [data-library-nav="documents"]'
-					)
-					.first()
-			).toBeVisible();
-			await expect(
-				page
-					.locator(
-						'#linker-faq-page .linker-library-rail [data-library-nav="faq"]'
-					)
-					.first()
-			).toBeHidden();
-
-			// A reload lands on the tab the URL names, and going back lands on
-			// the one it named before.
-			await page.reload();
-			await expect(
-				page.locator('#linker-faq-page [data-library-tab="documents"]')
-			).toHaveAttribute('aria-selected', 'true');
+			expect(indexRequests).toHaveLength(0);
+			const faq = page.locator('[data-library-tab="faq"]');
+			await faq.click();
+			await expect(faq).toHaveAttribute('aria-selected', 'true');
+			await expect(page).toHaveURL(/tab=faq/);
 			await page
-				.locator('#linker-faq-page [data-library-tab="faq"]')
+				.locator(
+					'#linker-library-panel-faq [data-library-kind="answer"] [data-library-page="next"]'
+				)
+				.first()
 				.click();
-			expect(new URL(page.url()).searchParams.get('tab')).toBeNull();
+			await expect.poll(() => indexRequests.length).toBe(1);
+			await expect(
+				page
+					.locator(
+						'[data-library-kind="answer"] [aria-current="page"]'
+					)
+					.first()
+			).toHaveText('2');
 		});
 
 		test(`${locale}: the search lists hits and splits the tab counts`, async ({
 			page,
 		}) => {
-			await open(page, locale);
+			await open(page, locale, 'faq');
 			const input = page.locator('#linker-faq-page .linker-library-q');
 			const count = page.locator('#linker-library-result-count');
 			const before = (await count.textContent()) ?? '';
@@ -315,7 +292,7 @@ test.describe('the FAQ + document library', () => {
 				page.locator(
 					'#linker-faq-page [data-library-panel="documents"]'
 				)
-			).toBeHidden();
+			).toBeVisible();
 			await expect(count).toHaveText(before);
 		});
 
@@ -329,7 +306,11 @@ test.describe('the FAQ + document library', () => {
 			const panels = page.locator(
 				'#linker-faq-page [data-library-panel="documents"] [data-library-card]'
 			);
-			const last = panels.last();
+			const last = panels
+				.filter({
+					has: page.locator('[data-library-page="next"]:enabled'),
+				})
+				.first();
 			const cardId = (await last.getAttribute('id')) ?? '';
 			const rows = page.locator(`#${cardId} [data-library-item]`);
 			const total = await rows.count();
@@ -394,14 +375,28 @@ test.describe('the FAQ + document library', () => {
 				);
 			expect(Math.max(...pageSizes)).toBeLessThanOrEqual(20);
 
+			await expect(page.locator('head #linker-schema-graph')).toHaveCount(
+				1
+			);
+			await expect(
+				page.locator('body script[type="application/ld+json"]')
+			).toHaveCount(0);
 			const schemas = await page
-				.locator('script[type="application/ld+json"]')
-				.evaluateAll((scripts) =>
-					scripts.map(
-						(script) =>
-							JSON.parse(script.textContent ?? '') as unknown
-					)
+				.locator('head #linker-schema-graph')
+				.evaluate(
+					(script) =>
+						(JSON.parse(script.textContent || '{}')['@graph'] ??
+							[]) as Array<Record<string, unknown>>
 				);
+			expect(
+				schemas.filter((node) => node['@type'] === 'DataCatalog')
+			).toHaveLength(1);
+			expect(
+				schemas.filter((node) => node['@type'] === 'Dataset')
+			).toHaveLength(1);
+			expect(
+				schemas.filter((node) => node['@type'] === 'DigitalDocument')
+			).toHaveLength(4);
 			const faq = schemas.find(
 				(
 					schema
@@ -461,6 +456,9 @@ test.describe('the FAQ + document library', () => {
 						)
 					)
 				).toEqual(new Set(['manual']));
+				await expect(
+					page.locator('#linker-library-result-count')
+				).toHaveAttribute('aria-busy', 'false');
 				const faqCount = await page
 					.locator('[data-library-tab="faq"] .linker-library-n')
 					.innerText();
@@ -560,17 +558,7 @@ test.describe('the FAQ + document library', () => {
 				await page.setViewportSize({ width, height: 900 });
 				await open(page, locale);
 
-				// The rail's own link to the documents tab's zone (on the narrow
-				// viewport the rail is folded into the pinned chip row, whose
-				// chips carry the same hrefs).
-				// The rail carries this link above 1024px and the pinned chip
-				// row carries it below; the visible one is the reader's.
-				const link = page
-					.locator(
-						'#linker-faq-page a[data-library-spy-link][href="#linker-library-zone-answers"]'
-					)
-					.locator('visible=true')
-					.first();
+				const link = page.locator('[data-library-tab="faq"]');
 				await expect(link).toBeVisible();
 				await link.click();
 				await page.waitForTimeout(600);
@@ -578,7 +566,7 @@ test.describe('the FAQ + document library', () => {
 				const sticky = await stickyBottom(page);
 				const top = await page.evaluate(() => {
 					const zone = document.getElementById(
-						'linker-library-zone-answers'
+						'linker-library-panel-faq'
 					);
 					return zone
 						? Math.ceil(zone.getBoundingClientRect().top)

@@ -1,23 +1,9 @@
 /**
  * The FAQ + document library's interaction layer (/faq-download/).
  *
- * Progressive enhancement, never content: the page the server prints carries
- * every question, every document row and its own words, and this script only
- * narrows what is shown — the two tabs, the type chips, the search and the
- * pagination all hide or clone rows that are already in the HTML. With the
- * script absent the page is the full register, one tab after the other, and
- * every heading, row and download link still reads.
- *
- * The words the script itself renders — the counters, the search's empty
- * state, the pager's labels, the hint that marks a match found in a question's
- * answer body — come from the JSON config the page's own fragment prints
- * (`[linker_library_config]`, translated server-side), so no customer-visible
- * string is baked into this file.
- *
- * The prototype this page was accepted from is
- * docs/design/2026-10-15-faq-download-prototype (variant 5); the mapping from
- * its runtime-rendered states to this markup-first implementation is in
- * docs/specs/176-faq-download.md §2.
+ * The server prints all download links and the first page of cited answers.
+ * Searching or paging fetches the remaining answers and model aliases once.
+ * The same index powers the filters, suggestions and linked result rows.
  */
 (function (scope) {
 	"use strict";
@@ -140,12 +126,12 @@
 		return { page: current, pages: pages, items: items.slice(start, start + total) };
 	}
 
-	/** The tab a URL states; anything but `tab=documents` is the FAQ tab. */
+	/** Read the selected section; the document register opens by default. */
 	function tabFromSearch(search) {
 		return new URLSearchParams(search).get("tab") === "faq" ? "faq" : "documents";
 	}
 
-	/** The URL for a tab: the documents tab is named, the default is not. */
+	/** Set the requested reading section while retaining the filters. */
 	function tabUrl(pathname, search, hash, tab) {
 		var params = new URLSearchParams(search);
 		params.set("tab", tab);
@@ -359,6 +345,7 @@
 
 	function loadIndex() {
 		if (indexRequest) return indexRequest;
+		if (resultCount) resultCount.setAttribute("aria-busy", "true");
 		indexRequest = scope.fetch(config.indexUrl, {credentials: "omit"}).then(function (response) {
 			if (!response.ok) throw new Error(String(response.status));
 			return response.json();
@@ -374,11 +361,15 @@
 				(payload.extraFaqs[card.id] || []).forEach(function (answer) { addAnswer(card, answer); });
 			});
 			indexReady = true;
+			if (resultCount) resultCount.setAttribute("aria-busy", "false");
 			applySearch();
 			return true;
 		}).catch(function () {
 			indexRequest = null;
-			if (resultCount) resultCount.textContent = label("indexError");
+			if (resultCount) {
+				resultCount.setAttribute("aria-busy", "false");
+				resultCount.textContent = label("indexError");
+			}
 			return false;
 		});
 		return indexRequest;
@@ -454,9 +445,11 @@
 			}
 		}
 		var product = matchedProduct(hit, query);
-		var covers = clone.querySelector(".linker-library-doc-covers");
-		if (covers && product && i18n.coversProduct) {
+		if (product && i18n.coversProduct) {
+			var covers = document.createElement("small");
+			covers.className = "linker-library-doc-covers";
 			covers.textContent = label("coversProduct").replace("%s", function () { return product; });
+			clone.appendChild(covers);
 		}
 		mark(clone, query);
 		return clone;
@@ -1210,12 +1203,20 @@
 						return;
 					}
 					var asked = state.q.trim();
-					if (isQuestion(asked) || (asked.length >= 2 && !hitsOfTab(asked, state.tab).length)) {
-						event.preventDefault();
+					function askGenie() {
 						closeSuggestions();
 						scope.dispatchEvent(new scope.CustomEvent("linker-genie-ask", {
 							detail: { message: asked, opener: input },
 						}));
+					}
+					if (isQuestion(asked)) {
+						event.preventDefault();
+						askGenie();
+					} else if (asked.length >= 2 && !hitsOfTab(asked, state.tab).length) {
+						event.preventDefault();
+						loadIndex().then(function (ok) {
+							if (ok && state.q.trim() === asked && !hitsOfTab(asked, state.tab).length) askGenie();
+						});
 					}
 					return;
 				}

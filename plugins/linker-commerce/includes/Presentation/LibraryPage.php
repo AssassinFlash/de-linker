@@ -14,26 +14,9 @@ use Linker\Commerce\Products\ToolkitRegistry;
 use Linker\Commerce\Products\TradeRules;
 
 /**
- * The page's data fragments: the register's rail, its mobile chip row, the
- * two panels' cards and the counts, plus the interaction layer's translated
- * labels. The page around them — its hero, its tab bar, its layout and its
- * words — is the LiveCanvas dynamic template assigned to the page
- * (`content/livecanvas/faq_page.html` and its German twin); these shortcodes
- * print lists, counts and semantic markup with class names, no script and no
- * inline style, so the page is complete without JavaScript (docs/specs/176-
- * faq-download.md).
- *
- * One reading, one page: model() groups the documents and the answers by
- * brand once per request, so a card's count, the rail's count and the tab's
- * count cannot disagree with the rows under them. The trade rules are the
- * page's own frozen content (`data/faq-trade.json`, read by TradeRules); the
- * answers and the documents come from the products' own readings
- * (DocumentLibrary), the same ones the product pages use.
- *
- * The interaction layer (assets/library-ui.js) only ever toggles this markup:
- * it paginates the rows the server printed, filters them by the type chips,
- * and builds the search's result list by cloning the rows that match. Nothing
- * it renders is content the HTML does not already carry.
+ * Render the bilingual toolkit, published document register and first page
+ * of product answers. The library index supplies additional answers and model
+ * aliases when a visitor searches or continues to another page.
  */
 final class LibraryPage {
 
@@ -367,9 +350,7 @@ final class LibraryPage {
 	}
 
 	/**
-	 * The documents tab: the type chips, then the register, one card per
-	 * brand. A row carries its first-page thumbnail where the build shipped
-	 * one and the type tile where it did not.
+	 * The document filters and register, grouped by manufacturer.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes, unused.
 	 */
@@ -642,18 +623,7 @@ final class LibraryPage {
 		return BrandLogo::image( sanitize_title( $brand ), self::LOGO_HEIGHT );
 	}
 
-	/**
-	 * Prints the page's FAQPage block, or nothing when this request is not
-	 * the library page in either language.
-	 *
-	 * The block states exactly what the FAQ tab prints: every trade-rule
-	 * question and every brand answer of the page's own language, from the
-	 * same model() the rows come from, so a search engine and a reader can
-	 * never see different answers. Both language twins get the block from
-	 * this one code path (the English page's other head blocks come from
-	 * SEOPress templates the German twin does not match, measured
-	 * 2026-10-29; this one is ours and stays symmetric).
-	 */
+	/** Describe the library, its primary toolkit editions and all server-rendered answers. */
 	public function print_schema(): void {
 		$page = get_queried_object();
 		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type || ! self::is_library_page( $page ) ) {

@@ -313,6 +313,15 @@ final class DocumentLibraryTest extends TestCase {
 			),
 			$documents['ESA battery datasheet (EN)']['skus']
 		);
+		$this->assertSame(
+			array(
+				array(
+					'title' => 'GoodWe GW5.1-BAT-D-G21',
+					'url'   => 'https://de-linker.test/produkt/6521/',
+				),
+			),
+			$documents['ESA battery manual (DE)']['product_links']
+		);
 		$this->assertSame( array( 'GoodWe GW5.1-BAT-D-G21' ), $documents['ESA battery manual (DE)']['covers'] );
 		$this->assertSame( 'GoodWe', $documents['ESA battery manual (DE)']['brand'] );
 	}

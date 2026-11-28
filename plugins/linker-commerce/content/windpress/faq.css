@@ -303,7 +303,7 @@
 #linker-faq-page .lk-toolkit-grid { grid-area: cards; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
 #linker-faq-page .lk-toolkit-card { display: flex; flex-direction: column; align-items: stretch; gap: 12px; min-width: 0; padding: 24px; background: #fff; border: 1px solid #d7dde4; border-radius: 22px; box-shadow: var(--ll-shadow); }
 #linker-faq-page .lk-toolkit-card h3 { font-size: clamp(18px,1.5vw,22px); line-height: 1.2; letter-spacing: -.03em; overflow-wrap: anywhere; }
-#linker-faq-page .lk-toolkit-card > p { color: var(--ll-muted); font-size: 14px; line-height: 1.5; }
+#linker-faq-page .lk-toolkit-card > p { color: var(--ll-muted); font-size: 13px; line-height: 1.55; letter-spacing: -.012em; hyphens: auto; }
 #linker-faq-page .lk-file-meta,#linker-faq-page .lk-file-revision,#linker-faq-page .lk-file-links { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 #linker-faq-page .lk-file-meta,#linker-faq-page .lk-file-revision { font: 500 11px/1.45 ui-monospace,monospace; font-variant-numeric: tabular-nums; color: var(--ll-accent-dark); }
 #linker-faq-page .lk-file-meta { justify-content: space-between; }
@@ -335,6 +335,10 @@
 #linker-faq-page .linker-library-help { margin-top: 16px; }
 #linker-faq-page .linker-library-panel .linker-genie-chips { margin-top: 16px; }
 #linker-faq-page .linker-library-help a,#linker-faq-page .linker-library-toc a,#linker-faq-page .linker-library-rail-label a { display: inline-flex; align-items: center; min-height: 44px; }
+@media (min-width:1200px) {
+	#linker-faq-page { --ll-container: 1512px; --ll-pad: clamp(20px,2vw,40px); }
+	#linker-faq-page .lk-toolkit-grid { gap: 12px; }
+}
 @media (max-width:1199px) { #linker-faq-page .lk-toolkit-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width:719px) {
 	#linker-faq-page .lk-toolkit-grid { grid-template-columns: minmax(0,1fr); }

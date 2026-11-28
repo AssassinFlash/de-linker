@@ -16,8 +16,6 @@ const navigationOutput = join(
 	new Date().toISOString().replaceAll(/[-:.]/g, '')
 );
 const paths = { en: '/faq-download/', de: '/de/faq-dokumente/' };
-const thumbnail =
-	'<svg xmlns="http://www.w3.org/2000/svg" width="160" height="220"><rect width="160" height="220" fill="white"/><path d="M20 30h120M20 50h80M20 70h110" stroke="#0c7f73" stroke-width="8"/></svg>';
 
 async function dismissConsent(page: Page) {
 	const reject = page.getByRole('button', {
@@ -166,7 +164,7 @@ for (const locale of ['en', 'de'] as const) {
 				).toBeVisible();
 				await expect(
 					root.locator('[data-library-panel="faq"]')
-				).toBeHidden();
+				).toBeVisible();
 				await expect(page).toHaveURL(
 					/#linker-library-panel-documents$/
 				);
@@ -224,19 +222,7 @@ for (const locale of ['en', 'de'] as const) {
 				separation,
 				'the contact line clears the Genie button'
 			).toBeGreaterThanOrEqual(12);
-			// A directory click must identify its destination immediately; a
-			// reduced-motion jump may finish before the scroll-spy lock expires.
-			const directory = root.locator(
-				width === 1440
-					? '.linker-library-rail [data-library-nav="faq"]'
-					: '.linker-library-chips [data-library-nav="faq"]'
-			);
-			await directory
-				.locator('a[href="#linker-library-answers-saj"]')
-				.click();
-			await expect(
-				directory.locator('a[href="#linker-library-answers-saj"]')
-			).toHaveAttribute('aria-current', 'location');
+			await root.locator('[data-library-tab="faq"]').click();
 			await input.fill('AIO3');
 			await input.press('ArrowDown');
 			await input.press('Enter');
@@ -247,17 +233,6 @@ for (const locale of ['en', 'de'] as const) {
 			await expect
 				.poll(async () => (await focusGeometry(page)).inReader)
 				.toBe(true);
-			const navigation = root.locator(
-				width === 1440
-					? '.linker-library-rail [data-library-nav="faq"]'
-					: '.linker-library-chips [data-library-nav="faq"]'
-			);
-			await expect(
-				navigation.locator('a[href="#linker-library-answers-saj"]')
-			).toHaveAttribute('aria-current', 'location');
-			await expect(
-				navigation.locator('a[href="#linker-library-answers-goodwe"]')
-			).not.toHaveClass(/is-active/);
 			await captureNavigation(
 				page,
 				`${locale}-${width}-saj-visible-brand`
@@ -316,7 +291,7 @@ for (const locale of ['en', 'de'] as const) {
 			expect(Math.abs(after.scrollY - before)).toBeLessThanOrEqual(1);
 		});
 
-		test(`${locale} ${width}: native details and real document thumbnails remain usable without JavaScript`, async ({
+		test(`${locale} ${width}: native details, PDF and associated product links remain usable without JavaScript`, async ({
 			browser,
 		}) => {
 			const context = await browser.newContext({
@@ -342,28 +317,15 @@ for (const locale of ['en', 'de'] as const) {
 				await expect(
 					question.locator('.linker-library-qa-product')
 				).toBeVisible();
-				const document = root.locator('.linker-library-doc').first();
-				await document.evaluate((e) =>
-					e.scrollIntoView({ block: 'center', behavior: 'instant' })
+				const row = root.locator('li[data-t]').first();
+				const download = row.locator('a').first();
+				const title = await download.innerText();
+				await expect(download).toHaveAttribute('href', /\.pdf$/i);
+				await expect(row.locator('a').nth(1)).toHaveAttribute(
+					'href',
+					/\/(produkt|product)\//
 				);
-				const image = document.locator('.linker-library-thumb img');
-				await expect(image).toBeVisible();
-				await expect
-					.poll(() =>
-						image.evaluate(
-							(e) => (e as HTMLImageElement).naturalWidth
-						)
-					)
-					.toBeGreaterThan(0);
-				await expect(image).toHaveCSS('opacity', '1');
-				const title = await document
-					.locator('.linker-library-doc-title')
-					.innerText();
-				await expect(
-					document.locator('.linker-library-dl')
-				).toHaveAccessibleName(
-					new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-				);
+				await expect(row.locator('img')).toHaveCount(0);
 				mkdirSync(output, { recursive: true });
 				await page.screenshot({
 					path: join(
@@ -374,130 +336,55 @@ for (const locale of ['en', 'de'] as const) {
 				evidence.push({
 					locale,
 					width,
-					state: 'no-js-native-details-and-real-thumbnail',
+					state: 'no-js-native-details-and-links',
 					title,
 					path: page.url(),
-					source: 'native library fragments and real thumbnail bytes; no network intercept',
+					source: 'server-rendered answer, PDF and product links',
 				});
 			} finally {
 				await context.close();
 			}
 		});
 
-		test(`${locale} ${width}: search clone loads after the source and file actions stay readable`, async ({
+		test(`${locale} ${width}: brand and document type refine model results without additional requests`, async ({
 			page,
 		}) => {
-			await page.setViewportSize({ width, height: 1000 });
-			let release!: () => void;
-			const held = new Promise<void>((resolve) => {
-				release = resolve;
+			await page.setViewportSize({ width, height: 900 });
+			const requests: string[] = [];
+			page.on('request', (request) => {
+				if (request.url().includes('/library-index'))
+					requests.push(request.url());
 			});
-			await page.route('**/faq-thumbs/**', async (route) => {
-				await held;
-				await route.fulfill({
-					contentType: 'image/svg+xml',
-					body: thumbnail,
-				});
-			});
-			try {
-				await page.goto(
-					`${instance().url}${paths[locale]}?tab=documents`,
-					{ waitUntil: 'domcontentloaded' }
-				);
-				await dismissConsent(page);
-				const input = page.locator('#linker-library-q');
-				await input.fill('AIO3');
-				await input.press('Escape');
-				const rows = page.locator(
-					'[data-library-results] .linker-library-doc'
-				);
-				await expect(rows).toHaveCount(3);
-				const images = rows.locator('img');
-				await expect(images).toHaveCount(3);
-				// All result clones exist before any image response is delivered.
-				expect(
-					await images.evaluateAll((es) =>
-						es.every((e) => !(e as HTMLImageElement).naturalWidth)
+			await page.goto(`${instance().url}${paths[locale]}`);
+			await dismissConsent(page);
+			await page.locator('button[data-library-brand="saj"]').click();
+			await page.locator('button[data-library-type="datasheet"]').click();
+			expect(requests).toHaveLength(0);
+			await page.locator('#linker-library-q').fill('SAJ');
+			const rows = page.locator('[data-library-results] li[data-t]');
+			await expect(rows.first()).toBeVisible();
+			expect(
+				await rows.evaluateAll((es) =>
+					es.every(
+						(e) =>
+							e.getAttribute('data-t') === 'datasheet' &&
+							e.getAttribute('data-library-brand') === 'saj'
 					)
-				).toBe(true);
-				release();
-				for (const image of await images.all()) {
-					await image.scrollIntoViewIfNeeded();
-					await expect
-						.poll(() =>
-							image.evaluate(
-								(e) => (e as HTMLImageElement).naturalWidth
-							)
-						)
-						.toBeGreaterThan(0);
-					await expect(image.locator('..')).toHaveClass(/has-img/);
-					await expect
-						.poll(() =>
-							image.evaluate((e) => getComputedStyle(e).opacity)
-						)
-						.toBe('1');
-				}
-				for (const row of await rows.all()) {
-					const title = await row
-						.locator('.linker-library-doc-title')
-						.innerText();
-					const download = row.locator('.linker-library-dl');
-					await expect(download).toHaveAccessibleName(
-						new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-					);
-					const geometry = await row.evaluate((e) => ({
-						row: e.getBoundingClientRect().toJSON(),
-						title: e
-							.querySelector('.linker-library-doc-title')!
-							.getBoundingClientRect()
-							.toJSON(),
-						action: e
-							.querySelector('.linker-library-dl')!
-							.getBoundingClientRect()
-							.toJSON(),
-					}));
-					expect(geometry.action.height).toBeGreaterThanOrEqual(44);
-					if (width === 390) {
-						expect(geometry.title.width).toBeGreaterThan(180);
-						expect(geometry.action.top).toBeGreaterThanOrEqual(
-							geometry.title.bottom
-						);
-					}
-					evidence.push({
-						locale,
-						width,
-						state: 'search-document',
-						title,
-						geometry,
-					});
-				}
-				await rows.first().evaluate((e) => {
-					const bar = document.querySelector(
-						'.linker-library-tabbar'
-					)!;
-					window.scrollTo({
-						top:
-							e.getBoundingClientRect().top +
-							scrollY -
-							bar.getBoundingClientRect().bottom -
-							12,
-						behavior: 'instant',
-					});
-				});
-				await page.screenshot({
-					path: join(
-						output,
-						`${locale}-${width}-loaded-documents.png`
-					),
-				});
-				expect(
-					await page.evaluate(
-						() => document.documentElement.scrollWidth <= innerWidth
-					)
-				).toBe(true);
-			} finally {
-				release();
-			}
+				)
+			).toBe(true);
+			await expect.poll(() => requests.length).toBe(1);
+			expect(
+				await rows
+					.first()
+					.locator('a')
+					.first()
+					.evaluate((a) => a.getBoundingClientRect().height)
+			).toBeGreaterThanOrEqual(44);
+			expect(
+				await page.evaluate(
+					() => document.documentElement.scrollWidth <= innerWidth
+				)
+			).toBe(true);
 		});
 
 		test(`${locale} ${width}: identified FAQ, keyboard result selection and paging preserve a useful focus`, async ({
@@ -510,7 +397,8 @@ for (const locale of ['en', 'de'] as const) {
 			const products = page.locator(
 				'[data-library-kind="answer"] summary .linker-library-qa-product'
 			);
-			expect(await products.count()).toBeGreaterThan(200);
+			expect(await products.count()).toBeGreaterThan(0);
+			expect(await products.count()).toBeLessThan(200);
 			expect(
 				(await products.allTextContents()).every(
 					(text) => text.trim().length > 0

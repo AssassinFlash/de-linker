@@ -165,7 +165,7 @@ final class ModuleTest extends TestCase {
 		// Data shortcodes across the product, checkout, comparison,
 		// library, account and blog families, including the product's configurator
 		// entry and the FAQ section's scoped rows.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 87 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 88 ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_loop_add_to_cart_args', array( $products, 'loop_cart_attributes' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $blog, 'empty_search_title' ), 60 );
@@ -183,6 +183,7 @@ final class ModuleTest extends TestCase {
 		);
 		WP_Mock::expectActionAdded( 'template_redirect', array( $compare, 'canonical_address' ), 5 );
 		WP_Mock::expectActionAdded( 'wp_head', array( $library, 'print_schema' ) );
+		WP_Mock::expectActionAdded( 'rest_api_init', array( \Linker\Commerce\Presentation\LibraryIndexEndpoint::class, 'register' ) );
 		$families     = new AnyInstance( FamilyNavigation::class );
 		$family_hooks = array(
 			array( 'action', 'template_redirect', 'redirect', 0 ),
