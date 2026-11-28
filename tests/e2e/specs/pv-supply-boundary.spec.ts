@@ -102,7 +102,7 @@ for (const locale of ['en', 'de'] as const) {
 					german ? 'Produktnr.' : 'Item number'
 				);
 				const archive = await page.goto(
-					origin + prefix + '/brand/trina-solar/'
+					origin + (german ? '/de/marke/' : '/brand/') + 'trina-solar/'
 				);
 				expect(archive?.status()).toBe(404);
 				await page.goto(origin + shop + '?brand=trina-solar');

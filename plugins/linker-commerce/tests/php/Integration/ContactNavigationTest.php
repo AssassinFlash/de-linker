@@ -21,8 +21,8 @@ final class ContactNavigationTest extends IntegrationTestCase {
 	 *
 	 * @testWith ["en", "/products/", "/de/produkte/"]
 	 *           ["de", "/de/produkte/", "/products/"]
-	 *           ["en", "/brand/saj/", "/de/brand/saj/"]
-	 *           ["de", "/de/brand/saj/", "/brand/saj/"]
+	 *           ["en", "/brand/saj/", "/de/marke/saj/"]
+	 *           ["de", "/de/marke/saj/", "/brand/saj/"]
 	 *           ["en", "/product-category/inverters/", "/de/produkt-kategorie/wechselrichter/"]
 	 *           ["de", "/de/produkt-kategorie/wechselrichter/", "/product-category/inverters/"]
 	 * @param string $language Initial language.

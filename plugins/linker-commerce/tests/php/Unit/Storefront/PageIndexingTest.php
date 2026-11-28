@@ -65,6 +65,7 @@ final class PageIndexingTest extends TestCase {
 		$this->assertSame( $transactional ? array( 'noindex', 'follow' ) : array( 'index' ), $index->robots( array( 'index' ) ) );
 		$this->assertSame( $transactional ? array() : array( 'de' => '/' ), $index->alternates( array( 'de' => '/' ) ) );
 		$this->assertSame( ! $transactional, $index->canonical( true ) );
+		$this->assertSame( $transactional ? array( 'X-Robots-Tag' => 'noindex, follow' ) : array(), $index->headers( array() ) );
 		$this->assertSame( $listed ? 'url' : null, $index->sitemap( 'url', $page ) );
 	}
 
@@ -79,9 +80,10 @@ final class PageIndexingTest extends TestCase {
 	 */
 	public function test_discovery_policy( string $path, string $query, bool $selected, bool $empty_brand = false ): void {
 		$shop    = in_array( $path, array( '/products/', '/de/produkte/' ), true );
-		$brand   = str_starts_with( $path, '/brand/' );
+		$brand   = str_starts_with( $path, '/brand/' ) || str_starts_with( $path, '/de/marke/' );
 		$term    = $brand || str_starts_with( $path, '/product-category/' );
-		$compare = ! $shop && ! $term;
+		$contact = in_array( $path, array( '/contact/', '/de/kontakt/' ), true );
+		$compare = ! $shop && ! $term && ! $contact;
 		$post    = new WP_Post(
 			(object) array(
 				'ID'        => 71,
@@ -96,10 +98,11 @@ final class PageIndexingTest extends TestCase {
 		WP_Mock::userFunction( 'is_product_taxonomy', array( 'return' => $term ) );
 		WP_Mock::userFunction( 'is_shop', array( 'return' => $shop ) );
 		WP_Mock::userFunction( 'have_posts', array( 'return' => ! $empty_brand ) );
-		WP_Mock::userFunction( 'is_page', array( 'return' => '/compare-products/' === $path ) );
+		WP_Mock::userFunction( 'is_page', array( 'return' => static fn( $slug = '' ) => '' === $slug ? $contact : '/compare-products/' === $path ) );
+		WP_Mock::userFunction( 'get_page_by_path' )->with( 'contact' )->andReturn( new WP_Post( (object) array( 'ID' => '/contact/' === $path ? 71 : 70 ) ) );
 		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ? new \WP_Term( (object) array( 'term_id' => 11 ) ) : $post ) );
 		WP_Mock::userFunction( 'get_option', array( 'return' => 0 ) );
-		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 70 ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( $id, $lang ) => 'de' === $lang ? 71 : 70 ) );
 		WP_Mock::userFunction(
 			'get_post',
 			array(
@@ -139,8 +142,11 @@ final class PageIndexingTest extends TestCase {
 			$this->assertSame( $excluded ? array( 'noindex', 'follow' ) : array( 'index', 'nofollow' ), $policy->robots( array( 'index', 'nofollow' ) ) );
 			$this->assertSame( $excluded ? array( 'X-Robots-Tag' => 'noindex, follow' ) : array(), $policy->headers( array() ) );
 			$this->assertSame( $excluded ? array() : array( 'de' => '/' ), $policy->alternates( array( 'de' => '/' ) ) );
-			$this->assertSame( $selected, $policy->canonical( false ) );
-			$this->assertSame( $selected ? '<link rel="canonical" href="' . $url . '">' : 'native', $policy->canonical_tag( 'native' ) );
+			$handoff = $selected && $contact;
+			$this->assertSame( $handoff, $policy->canonical( false ) );
+			$this->assertSame( ! $selected || $handoff, $policy->canonical( true ) );
+			$canonical = $handoff ? '<link rel="canonical" href="' . $url . '">' : ( $selected ? '' : 'native' );
+			$this->assertSame( $canonical, $policy->canonical_tag( 'native' ) );
 		} finally {
 			$_GET = $before;
 		}
@@ -153,6 +159,12 @@ final class PageIndexingTest extends TestCase {
 	 */
 	public static function discovery_urls(): array {
 		return array(
+			array( '/contact/', '', false ),
+			array( '/de/kontakt/', '', false ),
+			array( '/contact/', 'intent=product', true ),
+			array( '/de/kontakt/', 'sku=X', true ),
+			array( '/contact/', 'utm_source=journal', false ),
+			array( '/de/marke/ecoflow/', '', false, true ),
 			array( '/products/', '', false ),
 			array( '/products/', 'product-page=2', false ),
 			array( '/products/', 'brand=goodwe', true ),
@@ -186,6 +198,28 @@ final class PageIndexingTest extends TestCase {
 			'content' => array( 15, false, true ),
 		);
 	}
+	/** Active brand titles use the equipment name in document and social metadata. */
+	public function test_active_brand_titles(): void {
+		$term = new \WP_Term(
+			(object) array(
+				'taxonomy' => 'product_brand',
+				'slug'     => 'goodwe',
+			)
+		);
+		WP_Mock::userFunction( 'get_queried_object' )->andReturn( $term );
+		WP_Mock::userFunction( 'is_tax' )->andReturn( true );
+		WP_Mock::userFunction( 'is_main_query' )->andReturn( true );
+		WP_Mock::userFunction( 'is_404' )->andReturn( false );
+		WP_Mock::userFunction( 'have_posts' )->andReturn( true );
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'get_bloginfo' )->with( 'name' )->andReturn( 'Linker' );
+		$policy = new PageIndexing();
+		$this->assertSame( 'GoodWe Hybrid Inverters & Storage Systems | Linker', $policy->brand_title( 'GoodWe' ) );
+		$doc = new \DOMDocument();
+		$doc->loadHTML( $policy->brand_social_title( '<meta property="og:title" content="GoodWe">' ) );
+		$this->assertSame( 'GoodWe Hybrid Inverters & Storage Systems | Linker', $doc->getElementsByTagName( 'meta' )->item( 0 )->getAttribute( 'content' ) );
+	}
+
 	/** Only brands that have products on this archive get a discovery description. */
 	public function test_brand_description_uses_the_visible_manufacturer(): void {
 		$term = new \WP_Term(

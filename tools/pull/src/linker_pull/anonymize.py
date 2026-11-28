@@ -525,7 +525,7 @@ class Anonymizer:
             rewritten = phpserial.rewrite(text, member)
             if rewritten is not None:
                 return rewritten
-        if text[:1] in ("{", "["):
+        if text[:1] in ("{", "[") or "<script" in text.lower():
             text = JSON_MEMBER.sub(self._json_member, text)
         text = self.emails.replace_all(text, public_company_email=public_company_email)
         text, hashes = HASH.subn("", text)

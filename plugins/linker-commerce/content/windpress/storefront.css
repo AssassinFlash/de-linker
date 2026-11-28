@@ -2682,3 +2682,20 @@ body.woocommerce-checkout #payment li.wc_payment_method {
 #linker-products [data-catalog-search-status]:not(:empty) { grid-column: 1 / -1; color: var(--proto-neutral-700); }
 
 .rail-help .linker-whatsapp { margin-top: .6rem; }
+
+#linker-products .wb-scope.wb-brands {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding-block: 0.5rem;
+}
+#linker-products .wb-brands a {
+	padding: 0.35rem 0.8rem;
+	border: 1px solid var(--proto-neutral-200);
+	border-radius: 100px;
+	color: var(--proto-teal-700);
+}
+#linker-products .wb-brands a[aria-current="page"] {
+	background: var(--proto-teal-700);
+	color: white;
+}

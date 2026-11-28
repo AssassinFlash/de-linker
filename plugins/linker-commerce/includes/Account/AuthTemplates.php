@@ -262,7 +262,7 @@ final class AuthTemplates {
 			$signin = wp_logout_url( AccountLink::continue_at( $account ) );
 			wc_add_notice(
 				esc_html__( 'This document is available to the account it belongs to. Please log in with that account.', 'linker-commerce' )
-				. ' <a href="' . esc_url( $signin ) . '">' . esc_html__( 'Sign in with another account', 'linker-commerce' ) . '</a>',
+				. ' <a rel="nofollow" href="' . esc_url( $signin ) . '">' . esc_html__( 'Sign in with another account', 'linker-commerce' ) . '</a>',
 				'error'
 			);
 		}

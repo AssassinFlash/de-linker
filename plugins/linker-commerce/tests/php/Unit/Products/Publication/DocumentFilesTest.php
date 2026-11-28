@@ -260,6 +260,7 @@ final class DocumentFilesTest extends TestCase {
 		$response = ( new DocumentAccess() )->response( $file, 'GET' );
 		self::assertSame( 503, $response['status'] );
 		self::assertArrayNotHasKey( 'Link', $response['headers'] );
+		self::assertArrayNotHasKey( 'X-Robots-Tag', $response['headers'] );
 		self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
 		self::assertSame( 0, $response['length'] );
 	}
@@ -269,10 +270,19 @@ final class DocumentFilesTest extends TestCase {
 		$file = DocumentFiles::resolve( rtrim( home_url(), '/' ) . '/wp-content/uploads/2026/manual.pdf' );
 		self::assertNotNull( $file );
 		$access = new DocumentAccess();
+		foreach ( array( array( null, 'GET', 410 ), array( $file, 'POST', 405 ) ) as list( $requested, $method, $status ) ) {
+			$response = $access->response( $requested, $method );
+			self::assertSame( $status, $response['status'] );
+			self::assertSame( '0', $response['headers']['Content-Length'] );
+			foreach ( array( 'X-Robots-Tag', 'Content-Disposition', 'Link' ) as $header ) {
+				self::assertArrayNotHasKey( $header, $response['headers'] );
+			}
+		}
 		foreach ( array( str_repeat( '0', 64 ), 'invalid' ) as $sha ) {
 			$response = $access->response( $file, 'GET', '', $sha );
 			self::assertSame( 410, $response['status'] );
 			self::assertArrayNotHasKey( 'Link', $response['headers'] );
+			self::assertArrayNotHasKey( 'X-Robots-Tag', $response['headers'] );
 			self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
 			self::assertSame( 0, $response['length'] );
 		}

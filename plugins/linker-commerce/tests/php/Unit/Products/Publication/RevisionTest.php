@@ -66,14 +66,15 @@ final class RevisionTest extends TestCase {
 		self::assertSame( array( 12 ), Publication::authorize_document( $file )['owner_ids'] ?? array() );
 	}
 
-	/** A single source product identifies full, HEAD and partial public downloads. */
-	public function test_single_product_canonical_and_inline_name_follow_the_authorized_bytes(): void {
+	/** Full, HEAD and partial reads advertise the same clean public document URL. */
+	public function test_public_document_is_self_canonical_and_indexable(): void {
 		$file = DocumentFiles::resolve( 'https://de-linker.com/wp-content/uploads/2026/manual.pdf' );
 		self::assertNotNull( $file );
 		foreach ( array( array( 'GET', '', 200 ), array( 'HEAD', '', 200 ), array( 'GET', 'bytes=0-9', 206 ) ) as list( $method, $range, $status ) ) {
 			$response = ( new DocumentAccess() )->response( $file, $method, $range );
 			self::assertSame( $status, $response['status'] );
-			self::assertSame( '<https://de-linker.com/product/model-12/>; rel="canonical"', $response['headers']['Link'] ?? null );
+			self::assertSame( 'index, follow', $response['headers']['X-Robots-Tag'] ?? null );
+			self::assertSame( '<https://de-linker.com/wp-content/uploads/2026/manual.pdf>; rel="canonical"', $response['headers']['Link'] ?? null );
 			self::assertSame( 'inline; filename="manual.pdf"', $response['headers']['Content-Disposition'] ?? null );
 		}
 		foreach ( array( 'bytes=9999999-', 'bytes=-' ) as $invalid_range ) {
@@ -81,12 +82,13 @@ final class RevisionTest extends TestCase {
 			self::assertSame( 416, $response['status'] );
 			self::assertSame( 'bytes', $response['headers']['Accept-Ranges'] ?? null );
 			self::assertArrayNotHasKey( 'Link', $response['headers'] );
+			self::assertArrayNotHasKey( 'X-Robots-Tag', $response['headers'] );
 			self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
 		}
 	}
 
-	/** A shared same-series manual uses its lowest sales ID; another series goes to the library. */
-	public function test_shared_pdf_canonical_follows_its_current_published_sales_owners(): void {
+	/** Changes in the sales owners of a shared manual preserve its canonical URL. */
+	public function test_shared_pdf_keeps_its_canonical_across_sales_owners(): void {
 		$file = DocumentFiles::resolve( 'https://de-linker.com/wp-content/uploads/2026/manual.pdf' );
 		self::assertNotNull( $file );
 		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 13, 12 ) );
@@ -98,15 +100,6 @@ final class RevisionTest extends TestCase {
 				return \Linker\Commerce\Products\EngineeringReference::ROLE_META_KEY === $key ? $role : ( $this->current_faq_meta[ $key ] ?? '' );
 			}
 		);
-		$series = array(
-			12 => 'H2',
-			13 => 'H2',
-		);
-		WP_Mock::userFunction( 'get_the_terms' )->andReturnUsing(
-			static function ( int $id, string $taxonomy ) use ( &$series ): array {
-				return array( (object) array( 'name' => 'pa_series' === $taxonomy ? $series[ $id ] : 'SAJ' ) );
-			}
-		);
 		$access = new DocumentAccess();
 		self::assertSame(
 			array(
@@ -115,22 +108,7 @@ final class RevisionTest extends TestCase {
 			),
 			Publication::authorize_document( $file )
 		);
-		self::assertSame( '<https://de-linker.com/product/model-12/>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
-		$series[13] = 'HS2';
-		self::assertSame( '<https://de-linker.com/faq-download/>; rel="canonical"', $access->response( $file, 'GET' )['headers']['Link'] );
-		WP_Mock::userFunction( 'get_option' )->with( 'linker_document_library_page_id' )->andReturn( 25 );
-		WP_Mock::userFunction( 'get_post_type' )->with( 25 )->andReturn( 'page' );
-		$status = 'publish';
-		WP_Mock::userFunction( 'get_post_status' )->with( 25 )->andReturnUsing(
-			static function () use ( &$status ): string {
-				return $status;
-			}
-		);
-		WP_Mock::userFunction( 'get_post_meta' )->with( 25, 'lc_use_template_of_slug', true )->andReturn( 'linker-faq' );
-		WP_Mock::userFunction( 'get_permalink' )->with( 25 )->andReturn( 'https://de-linker.com/library/' );
-		self::assertSame( '<https://de-linker.com/library/>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
-		$status = 'draft';
-		self::assertSame( '<https://de-linker.com/faq-download/>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
+		self::assertSame( '<https://de-linker.com/wp-content/uploads/2026/manual.pdf>; rel="canonical"', $access->response( $file, 'HEAD' )['headers']['Link'] );
 		$role = \Linker\Commerce\Products\EngineeringReference::CABLE;
 		self::assertSame(
 			array(
@@ -139,7 +117,7 @@ final class RevisionTest extends TestCase {
 			),
 			Publication::authorize_document( $file )
 		);
-		self::assertSame( '<https://de-linker.com/product/model-12/>; rel="canonical"', $access->response( $file, 'GET' )['headers']['Link'] );
+		self::assertSame( '<https://de-linker.com/wp-content/uploads/2026/manual.pdf>; rel="canonical"', $access->response( $file, 'GET' )['headers']['Link'] );
 	}
 
 	/** Legacy downloads from multiple published products share one attachment batch per fresh access check. */

@@ -99,8 +99,9 @@ final class GermanRoutes {
 	 * Polylang has no translation URL for an unknown page.
 	 *
 	 * @param string|null $url Native language-switch destination.
+	 * @param string      $language Target language slug.
 	 */
-	public function translation_url( ?string $url ): ?string {
+	public function translation_url( ?string $url, string $language ): ?string {
 		if ( null === $url || ! get_option( GermanUrlMigration::ACTIVE ) ) {
 			return $url;
 		}
@@ -108,9 +109,11 @@ final class GermanRoutes {
 		// Polylang resolves the translated archive identity without its page number.
 		$page = (int) get_query_var( 'paged' );
 		if ( $page > 1 ) {
-			$parts = preg_split( '/(?=[?#])/', $url, 2 );
-			$base  = (string) preg_replace( '#/(?:page|seite)/[0-9]+/?$#', '/', $parts[0] ?? $url );
-			$url   = trailingslashit( $base ) . 'page/' . $page . '/' . ( $parts[1] ?? '' );
+			$parts     = preg_split( '/(?=[?#])/', $url, 2 );
+			$base      = (string) preg_replace( '#/(?:page|seite)/[0-9]+/?$#', '/', $parts[0] ?? $url );
+			$per_page  = (int) get_query_var( 'posts_per_page' );
+			$available = ! is_home() || $per_page <= 0 || pll_count_posts( $language, array( 'post_type' => 'post' ) ) > ( $page - 1 ) * $per_page;
+			$url       = trailingslashit( $base ) . ( $available ? 'page/' . $page . '/' : '' ) . ( $parts[1] ?? '' );
 		}
 		return $this->link( $url );
 	}
@@ -141,9 +144,11 @@ final class GermanRoutes {
 		$path   = is_array( $parts ) ? $parts[0] : '';
 		$german = str_starts_with( $path, '/de/' );
 		if ( $german ) {
+			$path = (string) preg_replace( '#^/de/brand/#', '/de/marke/', $path );
 			$path = (string) preg_replace( '#^/de/category/#', '/de/kategorie/', $path );
 			$path = (string) preg_replace( '#/page/([0-9]+)(/|$)#', '/seite/$1$2', $path );
 		} else {
+			$path = (string) preg_replace( '#^/marke/#', '/brand/', $path );
 			$path = (string) preg_replace( '#/seite/([0-9]+)(/|$)#', '/page/$1$2', $path );
 		}
 		foreach ( array( 'woocommerce_myaccount_page_id', 'woocommerce_checkout_page_id' ) as $option ) {
@@ -181,7 +186,7 @@ final class GermanRoutes {
 		$segments = explode( '/', is_array( $parts ) ? $parts[0] : '' );
 		foreach ( $segments as &$segment ) {
 			$segment = match ( $segment ) {
-				'category' => 'kategorie', 'page' => 'seite', default => GermanSlugs::translated( $segment ) };
+				'category' => 'kategorie', 'brand' => UrlSegments::PRODUCT_BRAND, 'page' => 'seite', default => GermanSlugs::translated( $segment ) };
 		}
 		unset( $segment );
 		$translated = $this->translated_link( $home . implode( '/', $segments ) . ( $parts[1] ?? '' ) );

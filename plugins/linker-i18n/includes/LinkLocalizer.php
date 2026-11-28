@@ -120,10 +120,7 @@ final class LinkLocalizer {
 				if ( ! array_key_exists( $key, $this->resolved ) ) {
 					$this->resolved[ $key ] = $this->resolve( $source, $language, true );
 				}
-				$target = $this->resolved[ $key ];
-				if ( $target !== $source ) {
-					$field = $pair[0] . '=' . rawurlencode( $target );
-				}
+				$field = $pair[0] . '=' . rawurlencode( $this->resolved[ $key ] );
 			}
 		}
 		unset( $field );

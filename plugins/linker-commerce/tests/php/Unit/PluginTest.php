@@ -119,6 +119,12 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_schemas_auto_custom_html', array( new AnyInstance( PageSchema::class ), 'about_publisher' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( PageSchema::class ), 'print_blocks' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'wp_head', array( new AnyInstance( PageSchema::class ), 'print_organization' ) ); // @phpstan-ignore argument.type
+		foreach ( array( 'seopress_titles_title', 'pre_get_document_title' ) as $hook ) {
+			WP_Mock::expectFilterAdded( $hook, array( new AnyInstance( PageIndexing::class ), 'brand_title' ), 35 ); // @phpstan-ignore argument.type
+		}
+		foreach ( array( 'seopress_social_og_title', 'seopress_social_twitter_card_title' ) as $hook ) {
+			WP_Mock::expectFilterAdded( $hook, array( new AnyInstance( PageIndexing::class ), 'brand_social_title' ), 35 ); // @phpstan-ignore argument.type
+		}
 		WP_Mock::expectFilterAdded( 'seopress_titles_noindex_bypass', array( new AnyInstance( PageIndexing::class ), 'noindex' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_robots_attrs', array( new AnyInstance( PageIndexing::class ), 'robots' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_robots', array( new AnyInstance( PageIndexing::class ), 'native_robots' ) ); // @phpstan-ignore argument.type
@@ -131,6 +137,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_agent_ready_mcp_card', array( $markdown, 'mcp_card' ), 20 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_agent_ready_agent_skills', array( $markdown, 'clean_well_known_card' ), 20 ); // @phpstan-ignore argument.type
 		$crawl = new AnyInstance( \Linker\Commerce\Storefront\CrawlHygiene::class );
+		WP_Mock::expectFilterAdded( 'robots_txt', array( $crawl, 'robots_txt' ), 99, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_headers', array( $crawl, 'headers' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'template_redirect', array( $crawl, 'respond' ), 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_headers', array( new AnyInstance( PageIndexing::class ), 'headers' ) ); // @phpstan-ignore argument.type
@@ -138,9 +145,16 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'seopress_titles_canonical_on_noindex', array( new AnyInstance( PageIndexing::class ), 'canonical' ), 50 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_canonical', array( new AnyInstance( PageIndexing::class ), 'canonical_tag' ), 20 ); // @phpstan-ignore argument.type
 		$sync = new AnyInstance( \Linker\Commerce\Storefront\SitemapSync::class );
-		WP_Mock::expectFilterAdded( 'seopress_sitemaps_term_single_url', array( $sync, 'brand_urls' ), 20, 2 ); // @phpstan-ignore argument.type
-		WP_Mock::expectFilterAdded( 'seopress_sitemaps_url', array( $sync, 'brand_xml' ), 20, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_urlset', array( $sync, 'xmlns' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_url', array( $sync, 'post_entry' ), 30, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_term_single_url', array( $sync, 'term_entry' ), 30, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_no_archive_link', array( $sync, 'archive_xml' ), 20, 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_xml_index', array( $sync, 'index_xml' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_url', array( $sync, 'entry_xml' ), 20, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_sitemaps_cache_duration', array( $sync, 'cache_duration' ) ); // @phpstan-ignore argument.type
+		foreach ( array( 'clean_term_cache', 'set_object_terms' ) as $hook ) {
+			WP_Mock::expectActionAdded( $hook, array( $sync, 'clear_dates' ), 10, 0 ); // @phpstan-ignore argument.type
+		}
 		foreach ( array( 'save_post', 'deleted_post' ) as $hook ) {
 			WP_Mock::expectActionAdded( $hook, array( $sync, 'post_changed' ), 10, 2 ); // @phpstan-ignore argument.type
 		}

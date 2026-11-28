@@ -1,145 +1,78 @@
-# de-linker · 工作规则
+- # de-linker · 工作规范
 
-本文件记录现行约束与按需读取的依据。业主当期明确裁定优先于旧记录；运行配置、工具能力和版本以实际环境为准。发现冲突时核对来源，在原位置修正，不叠加相反的“最高规则”。权限、密钥和生产写入边界继续生效。
+  ## 1. 工作原则
 
-## 0.0 完整目标与并行执行
+  - **直接解决问题**：基于真实需求和已核实的事实设计方案，保持实现简洁。多个方案均合理时直接选定并说明取舍；仅在涉及不可逆风险、权限边界或缺少业务事实时向业主确认。
+  - **按客户结果交付**：从真实用户入口走通完整链路，按“七岁孩子首次使用即可无指导完成”的标准设计界面与交互。核心任务最多 3 步完成（同页填写并提交算 1 步），系统自动保存状态。配置器、Genie、报告和导出中的光伏组件均使用项目参数，询盘供货项取自 WooCommerce。
+  - **干净交付**：代码、注释、commit、PR 描述与工作汇报只呈现最终正确结果，贴合项目现有风格，不留试错过程与 AI 署名。
+  - **工具链执行**：
+    - 任务启动、阶段切换与交付前，实际调用 `stop-that-shit:stop-that-shit`（按任务选 `change` 或只读）及 `stop-that-shit:stss`。
+    - 工程环节按需使用 Matt Pocock skills：`domain-modeling` / `codebase-design`（设计）、`tdd`（实现与验证）、`code-review`（Spec + Standards 双轴评审）。
+  - **有效验证**：先用源码、接口与现成测试定位问题；涉及界面与交互时，在真实页面实操并核看 EN/DE 及 1440/390 截图。页面复刻按同视口、资源就绪、禁动画条件验收动态区外像素一致（重设计模块除外）。未变更且仍有效的测试结果直接复用。
 
-- **从客户要办成的事出发。** 按完整客户链路或组件族交付，共享候选、构建、评审、发布和有效验证结果。先明确客户从哪里进入、已有何种资料、最终要拿到什么。此标准覆盖全站所有面向客户的入口、页面和操作，包括导航、搜索、内容和资料、商品、语言切换、账户、商务流程及各项工具。每条链路按七岁孩子第一次使用的理解水平设计：给定办理所需资料，只看界面就能知道要填什么、下一步点哪里、何时已经完成。验收从真实入口无指导操作；取得的结果不符合客户目标，或需要人教、猜按钮、懂系统内部流程才能完成，就推翻这条链路，从客户目标和业务事实重做。视觉沿用已批准原型，技术实现保留数据合同、鉴权、隐私、恢复和兼容保证。
-- 客户的有效修改随下一动作生效，版本记录与故障恢复由系统处理。从真实入口用界面走到结果；需要额外保存、重复录入、重开页面或脚本预造中间状态才能走通，按产品缺陷修复。
-- **操作上限。** 以客户已有资料和要取得的结果设计每条任务，最多三步。逐个数客户必须单独发起的动作：同表填资料、勾选同意后提交算一步，另外点击继续、确认或交接各算一步。客户无需手动保存。可选操作只有在跳过后仍能取得结果时才排除。配置器按“填项目并比较 → 选方案 → 核对并提交询盘”验收；其他任务到客户取得所需结果即结束。超出上限就改流程。
-- **独立工作必须并行。** 主线做集成与解阻，独立工作线由明确负责人推进；有真实依赖或同一文件写入冲突的部分串行。等待一条线时推进其他已可执行部分，不重复启动只回复待命的代理。并行受资源、权限与模型可用性约束。
-- **代理隔离。** 每个并行子代理使用自己的 git worktree，禁止共享写入主树。依赖各自安装，禁止把子树的 `node_modules` 链接到主树。提交使用显式路径；未经授权不提交、推送、合并或部署。
-- **实际调用两个 skill。** 每轮任务开始、中断恢复、转入实现、评审或验收时，主线和承担该阶段的代理都实际调用 `stop-that-shit:stop-that-shit`，按任务选择 `change` 或只读模式；同时调用 `stop-that-shit:stss`，约束文案和汇报。不得以记得名称、旧摘要或口头声称遵守代替调用。实现取舍、追加机制和重试按 Stop Ladder；文案与汇报交付前按 Sentence Consumer Test 删改。技能不可用时明确说明，不能假称已执行。
-- **工程流程。** 使用当前可用的 Matt Pocock engineering skills：设计时按需使用 `domain-modeling` / `codebase-design`；实现复用已确认的公开接口，以 `tdd` 做红绿验证；最终候选按 `code-review` 做 Spec + Standards 双轴评审。业主已批准目标和方向时直接执行，不重新进行原型审批或无事实缺口的访谈。
-- **原生能力优先。** 当前会话能直接看图就直接看图；独立审查或确有能力缺口才委派。能力以当前工具为准，不能根据历史模型印象决定。
-- **父线核验交付。** 子代理汇报是线索，不是完成证据。采纳前检查实际 diff、对应测试或 CI、消费者读回；声称失败或阻塞也核对原始错误。复核一次有效证据即可，不让多个代理反复检查同一结果。
-- **真实缺陷在目标内闭环。** 开发与评审确认的目标内缺陷及必要后果随本批修复，不用 TODO 或另开 follow-up 转移责任。无关问题不自动扩大本轮写入权限；只读任务不因发现问题转为修改。真实阻塞和未完成范围必须如实报告，不能把它们包装成已完成。
-- **依据优先。** 代码、旧文档、测试断言和 AI 结论不是业务事实。产品规则追到托管原厂资料、Woo 真实数据、行业来源或业主裁定；已证明无依据的规则直接修正，不再叠兼容层。既有鉴权、数据完整性、恢复和兼容保证未查清前保持。
-- **正常客户能继续。** 询盘防滥用与真人通行同时成立；持续会话不反复验证，新身份才走挑战，失败给可恢复路径。通过真实客户入口验证，不以内部接口通过冒充客户能用。
+  全站各批次按[业主确认的整站蓝图](https://github.com/AssassinFlash/de-linker/issues/1167#issuecomment-7018452827)推进，验收范围写回[整站总图](https://github.com/AssassinFlash/de-linker/issues/548)。
 
-## 0. 本地存储与资源
+  ## 2. 业务边界与核心流程
 
-创建、刷新、删除备份、实例、工作树或临时资源，以及交付收尾前，读取 [本地存储保留与回收规则](docs/agents/local-storage.md)。
+  - **站点定位**：`de-linker.com`（Linker Technology GmbH），WordPress + WooCommerce 搭建的 B2B 光伏储能询盘站，面向安装商、EPC 与经销商，英德双语同等。
+  - **核心商务链**：产品或系统方案 → Solution draft / Lösungsentwurf → 询盘 → 报价单（Quotation / Angebot，有效期 30 天，无银行账号及付款指令）→ 线下交易（发票、收款、采购、发货全在线下完成）。询盘承诺 1 个工作日内回复，支持无产品、无账号直接留言。
+  - **客户工具**：
+    - **Genie - Linker's AI assistant**（德语：**Genie – der KI-Assistent von Linker**）：首条消息明示 AI 身份，不注册商标；公司、服务、物流类问题一句话转 `sales@de-linker.com`。规格见 [docs/specs/13-genie.md](docs/specs/13-genie.md)。
+    - **Solution Configurator / Lösungskonfigurator**：覆盖全欧洲、新建光储、已知光伏规模、旧系统改造、已选设备、纯储能及大型项目（屋顶描绘可选）；输出整套方案、选型依据、兼容与资料引用、Stückliste 及可带 Logo 的 PDF。能源指标须有计算依据，不含回本期。按“比较初步方案 → 选方案 → 核对并提交询盘”验收。完整目标与视觉裁定见 [Issue #1132](https://github.com/AssassinFlash/de-linker/issues/1132) 和 [Issue #1153](https://github.com/AssassinFlash/de-linker/issues/1153)（视觉参照业主指定的 Preline 风格）。
 
-- 先复用再新增；创建前明确用途、负责人、保留上限和回收条件。并行不得突破内存、磁盘和文件句柄边界。
-- 按保留规则滚动回收已确认过时的副本。保护未提交改动、唯一原件、唯一有效证据和恢复点；先验证保留版本，再删除冗余版本。不得通过换目录或任务编号绕过上限。
-- 用途结束即停止本任务的进程、浏览器页面并回收可重建临时副本；暂停同样适用。不得清理其他会话仍在使用的资源。
-- 服务维护先核对在跑版本、磁盘可执行文件、启动定义与数据兼容性，再重启；随后读回版本、监听地址和实际站点，通知协作方。
-- 汇报附实际磁盘占用与可用空间、本轮新增和回收内容、实际释放量，以及仍保留资源的用途。未完成回收不能宣称收尾完成。
+  ## 3. 产品、账号、邮件与多语言
 
-## 0.1 验证与收敛
+  - **产品与库存**：
+    - WooCommerce 为唯一商品与库存事实源。保留原产品与 SKU，系统组合由工具按兼容规则实时计算。
+    - **光伏组件边界**：站点不销售光伏组件，产品目录不含光伏组件；系统配置与报价中的组件统一设为通用参数，不带任何品牌或具体型号。
+    - 产品参数以托管的原厂数据手册为准；资料缺失时标注待核实并保留现值。对外统一使用 `Product / Model / Series`（`Produkt / Modell / Serie`），不出现 Incoterms。发布与资料变更读 [docs/specs/609-product-publication.md](docs/specs/609-product-publication.md)。
+    - 开启库存管理的商品按数量推导状态，前端仅展示“有货 / 暂时无货”（`woocommerce_stock_format = no_amount`）。
+  - **账号与询盘**：
+    - 全球国家开放注册（欧洲为主），分两步：① 公司名、业务类型、国家、网站或 VAT ID（至少填一项）；② 名、姓、邮箱、密码（不收地址与电话）。
+    - 待审账号保持登录、隐藏价格、可询盘；限制账号展示原因并可询盘；拒绝账号无法登录。
+    - 访客询盘仅收姓名、邮箱、公司（选填）、留言与隐私同意，自动带入草稿产品。页面左表单、右草稿；登录信息折叠为一行。联系留言与产品询盘共用一套存储。
+    - 四个询盘状态：`Inquiry received / Anfrage eingegangen`、`Quotation in preparation / Angebot in Vorbereitung`、`Completed / Abgeschlossen`、`Cancelled / Storniert`。报价单在账户 Documents 下载。详细流程见 [docs/specs/11-commerce.md](docs/specs/11-commerce.md)。
+  - **邮件路由**：
+    - 客户可见发件与联系地址为 `sales@de-linker.com`（走既有 PHP `mail()`）；内部通知暂发 `sales@sunriverinverter.com`（走独立认证 SMTP），`chester@de-linker.com` 确认收信后抄送。
+    - 测试发信只向单个测试邮箱发送（重写 To/Cc/Bcc），多收件路由通过 Outbox 队列断言。经授权的线上注册实测仅发通知、已收到、已批准三封，收件人限定 `sales@sunriverinverter.com` 与业主测试邮箱，测完关闭测试模式。
+  - **多语言与文案**：
+    - 德语统一使用 `de_DE_formal`（Sie），术语以 [tools/checks/commerce-terms.txt](tools/checks/commerce-terms.txt) 为准（校验命令：`just commerce-terms`）。
+    - Polylang 免费版负责多语言基座，翻译目录用 `.po/.mo` 与 WordPress JSON。德语自动同步覆盖页面、产品、博客及可翻译词项并自动生效，同时保留人工德语；仓库模板经 `present` 发布并保持 Polylang 配对。
+    - 商业文案使用 `linker-copywriting`，以业主确认原稿为底稿，追求自然流畅的 EN 与正式 DE。客户可见新文案（含事务邮件）走初稿 → 对抗评审 → 定稿并记入任务记录，参考 [docs/acceptance/2026-10-10/12/copy-review.md](docs/acceptance/2026-10-10/12/copy-review.md)。
 
-- 检查须回答具体问题或满足明确验收义务。优先直接观察、读源码和现成 WP/Woo/服务接口；浏览器用于客户交互与视觉验证；重复批量劳动才写脚本，不生成无人消费的中间报告。
-- 复用仍有效的结果。只有相关代码、输入、运行条件改变，出现新失败或原证据无效时才补测；换会话或无关修改不使旧结果失效。通过后停止该项验证。
-- 首次失败保留去密的状态码、原始错误、调用边界、时间及进程身份，从同一次证据诊断。连续两次尝试无新增信息时停止原方法，区分产品、工具与环境问题，再换能验证原因的最小动作；不重复有副作用的操作碰运气。
-- 最终候选完整评审；修复后只补审增量与受影响上下文。首次要求全站覆盖时仍须覆盖全部页型，代表页通过不能冒充其他页面通过。测试、构建、截图的数量不代表完成度，交付按客户已经能完成的操作汇报。
-- 视觉与可用性结论必须实看截图并操作。原型复刻按相同入口、项目状态、语言和视口逐屏对照已批准原型，实看层级、间距、换行和操作位置，并实际完成该步。首屏包括初次访问和回访。DOM 和网络用于定位，不能单独证明画面正确。浮层能通过正常滚动避让时，不仅凭矩形相交判为阻断。
-- 指标先说明测量面：CLI 与 Web worker 的缓存不同；绕缓存请求不代表正常访客；本机网络延迟不等于服务端渲染时间。用同条件静态资源和冷热对照判断，不把一次 RTT 写成永久常量。可访问名称同时考虑 `aria-labelledby`、关联 label、`alt` 等实际来源，不能只查一两个属性。
-- 纯文档改动检查差异、语义和引用，不启动站点、构建或全业务测试。读取与问答保持只读。
+  ## 4. 技术架构与模型
 
-## 0.2 文案
+  - **前端与样式**：
+    - 双运行时隔离：经典插件使用 WordPress React + `@wordpress/scripts`；`apps/planner` 为独立 React/Vite 应用（见 [docs/adr/0002-isolated-planner-runtime.md](docs/adr/0002-isolated-planner-runtime.md)）。
+    - 页面排版在 LiveCanvas 动态模板，样式统一走 WindPress / Tailwind 单份 tokens（`apps/planner` 共用同一样式管线），PHP 只装配语义数据片段。已有付费许可为 LiveCanvas 与 SEOPress PRO，不新增付费插件或服务。
+    - 前端源码修改须重建对应产物（planner 输出至 `plugins/linker-tools/build/planner/`），提交前运行 `build:check` 核对同步。
+  - **后端与工具**：
+    - PHP：Composer / PSR-4、WP_Mock / PHPUnit、PHPStan、WPCS + Woo sniffs。
+    - Python：uv、FastAPI、ruff、mypy、pytest、Pydantic AI。具体版本以 `composer.json`、`pyproject.toml` 及锁文件为准。
+  - **AI 模型与检索**：
+    - Genie 对话、铭牌/附件识别、德语自动翻译、Jev 级联判分：`deepseek-flash` 官方通道。
+    - Jev：`typesafe/jev-1.13`（OpenRouter 原生 `/v1/systemone`）。
+    - Embedding：`gemini-embedding-2`（OpenRouter；仅在业主指定时启用 aihubmix 备用，异常显式抛出）。
+    - PDF 检索：Docling 解析 + SQLite FTS5 + sqlite-vec（服务读取 `current/index.sqlite`），模型仅引用检索块 ID，数值由服务端回填。
+  - **地图与外部底图**：
+    - 仅在用户同意后加载外部底图，遵循服务端返回的 origin 白名单；用户撤回同意即停止加载外部资源。
 
-- 营销正文修复以可确认的业主原稿为底稿。旧提交或 AI 评审不能证明业主认可；来源不明时列候选差异，不把新拟文字称为还原。明确授权跨页改写后，在该范围执行，不逐句重复请示。
-- 保留有效卖点、语气、节奏与联系意愿。修正错误事实只改命中部分；不用身份辩解、资料清单或报价流程占据宣传客户收益的标题。
-- 使用客户自然的行业语言，EN 与正式 DE 均须自然顺畅。`linker-copywriting` 管理商业文案，STSS 去除无决策用途的防御措辞；不以机械禁词削弱已认可原稿。
-- 新写或主动修改的客户可见文案，包括事务邮件主题与正文，按初稿→对抗评审→定稿留下现有任务记录；参考 [文案评审先例](docs/acceptance/2026-10-10/12/copy-review.md)。人工 EN/DE 独立表达；自动翻译按第 2 节的专门规则运行，不额外加人工审批。FAQ 答案逐产品核实，不能把历史未核实稿当事实，也不能把已经核实的内容一概判为编造。
+  ## 5. 协作、部署与按需文档
 
-## 1. 网站与业务边界
-
-- de-linker.com 是 Linker Technology GmbH 的 B2B 光伏储能询盘站，WordPress + WooCommerce，英德同等。客户是安装商、EPC、经销商。
-- 客户链：产品或系统方案 → Solution draft / Lösungsentwurf → 询盘 → 报价单（Quotation / Angebot）→ 线下确认与后续交易。询盘允许无产品留言，不强制先有草稿或账号。
-- 站点在线出具报价单，有效期 30 天；无银行账户、无付款指令。发票、收款、采购、发货等交易后续在线下，网站不建设这些流程。一个工作日内回复询盘的承诺保留。
-- 客户可见工具：**Genie - Linker's AI assistant**，德语 **Genie – der KI-Assistent von Linker**，首条消息明说是 AI，不注册商标；**Solution Configurator / Lösungskonfigurator**，由输入形成整套方案、选型依据、兼容与资料引用、Stückliste、可带 Logo 的 PDF。能源指标有计算依据才给出，不给回本期。
-- 配置器屋顶描绘可选。全欧洲、新建光储、已知光伏规模、已有系统改造、已选设备、纯储能和大型项目按已批准目标交付，不把工具缩为地图或屋顶演示。现行完整目标：[正式落地并接入 Linker 客户链路](https://github.com/AssassinFlash/de-linker/issues/1132)。地图、能源、设备、比较、报告和询盘沿用同一项目。
-
-## 2. 产品、账号、语言与设计裁定
-
-### 产品与库存
-
-- 产品与 SKU 原样保留，不建套装 SKU；组合由工具按兼容合同计算。光伏组件只作无品牌、无型号的项目参数。配置器、Genie、报告和导出按客户项目的数量、尺寸和功率展示，询盘中的供货商品来自 Woo。对客户使用 Product / Model / Series（Produkt / Modell / Serie），不说 Incoterms。
-- 产品事实冲突时以我们托管的原厂数据手册为准；手册取不到就标记无法核实，保持现值，不编参数。用途按厂商说法。发布、撤下、共享资料及派生数据变更先读 [统一产品与资料发布规则](docs/specs/609-product-publication.md)。
-- Woo 原生库存是唯一权威，无 TTL 或状态衰减。开启管理库存的商品以数量推导状态；独立状态输入只适用于不管理数量的商品。对客户只显示有货／暂时无货，不显示数量（`woocommerce_stock_format = no_amount`）。ERP 接入不能建立第二份手工权威。
-
-### 账号、询盘与报价
-
-- 注册国家全部开放，欧洲为重点。两步注册：公司名、业务类型、国家、网站或 VAT ID 至少一项；随后名、姓、邮箱、密码。不收地址和电话。
-- 业主按注册资料自行查证，属实即批准。待审保持登录、不显示价格、可以询盘；限制须给客户可读原因，也可询盘；拒绝阻止登录。审批入口与邮件沿用现有后台链。
-- 访客询盘只收姓名、邮箱、公司（选填）、留言与隐私同意，不要求国家、地址、电话或 VAT；草稿产品一并带上。左表单、右草稿；登录资料折叠为一行。报价所需地址/VAT 从账号预填或团队补齐。联系留言与产品询盘共用记录链，不再建第二套存储。
-- Woo 将客户从 `/wp-admin` 转到账户是保护行为，保留并解释；员工视角测试复用 User Switching。
-- 当前流程见 [商务链规格](docs/specs/11-commerce.md)。2026-11-08 的 Quotation 裁定取代旧 Proforma 产品语义；历史 URL、meta 和存量文件不能因此未经迁移直接删除或改名。
-
-### 通知与邮件
-
-- 内部通知收件人暂为 `sales@sunriverinverter.com`，不发老板的 `sales@de-linker.com`；`chester@de-linker.com` 只有确认能收后才保留抄送。客户可见地址与客户发件身份仍为 `sales@de-linker.com`。Genie 遇到公司、服务、物流类问题，一句话转团队邮箱 `sales@de-linker.com`。
-- 客户邮件走既有 PHP `mail()`；内部通知有独立认证 SMTP 与可观测回退链，不把全站误写成单一 `mail()` 通道。传输、配额、身份和凭据边界按 [商务链邮件章节](docs/specs/11-commerce.md) 及实际配置核实，不从收件人猜内部身份。
-- 测试默认不向生产真实收件人发信。投递验证只发一封到 tester，To/Cc/Bcc 全部重写；多收件路由以 Outbox 队列数据断言。业主明确授权的线上注册实走例外仅允许通知、已收到、已批准三封，收件人限定 `sales@sunriverinverter.com` 与业主指定测试邮箱。验证后撤销测试模式。
-
-### 语言与文案保护
-
-- DE 使用 `de_DE_formal` / Sie；语言切换包括地址、标题和正文。客户术语以 [commerce-terms.txt](tools/checks/commerce-terms.txt) 为准（`just commerce-terms`）。
-- 四个询盘状态：Inquiry received / Anfrage eingegangen；Quotation in preparation / Angebot in Vorbereitung；Completed / Abgeschlossen；Cancelled / Storniert。报价文件在账户 Documents 下载；不恢复旧 Proforma 状态文案。
-- 自动德语同步覆盖页面、产品、博客和可翻译词项，使用第 4 节规定的业务模型，译文自动生效。保留已有人工德语；无英文基线时只记基线，以后只翻能对齐的英文改句。结构不对应或失败时保留上一版德语，在后台与每日摘要报告异常。仓库模板由 `present` 发布并保持 Polylang 配对，不送机器翻译；不增待审、营销冻结名单或全站重译。
-
-### 页面与工具
-
-- 全站页面、组件、客户链路与各批次顺序以[业主确认的整站蓝图](https://github.com/AssassinFlash/de-linker/issues/1167#issuecomment-7018452827)为准。原型与 Preline 用于逐屏核对。每一批的通过范围写回[整站总图](https://github.com/AssassinFlash/de-linker/issues/548)。
-- UI 开发/验收实例先装入线上主题、uploads 和数据快照，再施加本地密钥与待验改动；裸 WordPress 只作管线冒烟。按受影响页型逐一对照，首页不能代表商务全链。
-- 首页 hero 未交互时保持既有外观；输入、胶囊、拍照、附件、语音之后的交互可改。Genie 继续改造，不换成 Knocket；读 [Genie 目标](docs/specs/13-genie.md) 与 [既有对照](docs/research/2026-10-17-knocket/TRIAL.md)。
-- Genie、配置器与屋顶工具以成熟模式复刻为先：先读该工具的规格、原型、验收与 `docs/research/` 对应研究；已有合适模式就复用，无先例才说明设计理由。业主已批准的完整目标不重新缩减。
-- 全拆范围内不复制旧仓库自定义代码；只带内容、数据、裁定、证据和已核实规格。评审检查旧标识符与被改动高风险区的结构，初次全站切换须全树审计；命中旧标识须区分合法保留数据与回流代码，不能机械删除产品 SKU。移除旧通道前必须证明新通道实际承载外观和行为，登记或声明不算生效。旧仓库编号不得作为本仓库规则依据，旧行为只作中性证据。
-- 不买新的付费插件；已有 LiveCanvas、SEOPress PRO 许可可继续用。凭据、授权与免费额度先查既有账号状态；免费额度不等于无条件免费，不擅自新增付费服务。
-
-## 3. 任务责任与权限
-
-- 主线是当前用户指定的执行会话，不绑定某个历史客户端或模型。主线负责整合、评审、发布与读回；子代理在分配的树和文件范围实现验证，默认不合并、不部署、不写生产。只在需要真实运行验证时使用本地实例，不为纯文档代理创建站点。
-- 业主回答只有业主知道的业务事实。技术方案、措辞与普通实现选择由执行者依据现有目标、成熟做法和实际状态决定；真实权限、不可逆风险或事实缺口才询问，不反复请求已给出的授权。
-- 目标内生产部署与必要数据写入已有 2026-10-18 授权，仍须备份、回滚方案和消费者读回。超出目标的不可逆操作单独确认。平台权限拒绝不能通过其他工具、代理或更改全局设置绕过。
-- 更改全局代理、MCP、插件、shell 或模型设置前，读取活动配置并留一份小型恢复点；先定位故障原因。密钥、令牌不得进入仓库、报告或日志。
-
-## 4. 技术与业务模型
-
-- **前端有两种运行时。** 经典插件入口沿用 WordPress React 与 `@wordpress/scripts`；`apps/planner` 使用独立 React/Vite 模块图，见 [隔离 planner 运行时](docs/adr/0002-isolated-planner-runtime.md)。不能把两者混为一个构建包或一个 React root。具体版本、脚本、依赖以各包及锁文件为准。
-- PHP 使用 Composer / PSR-4、WP_Mock / PHPUnit、PHPStan、WPCS + Woo sniffs；Python 服务使用 uv、FastAPI、ruff、mypy、pytest，Genie 的模型编排使用 Pydantic AI。语言与依赖版本读取 `composer.json`、`pyproject.toml` 和锁文件，不照搬历史版本数字。
-- Polylang 免费版为多语言基座，窄插件处理同 slug、URL 段、保存翻译、REST lang 与 Woo 同步。翻译目录使用 `.po/.mo` 与 WordPress JSON 机制。
-- Woo 商品为唯一手工事实源；兼容合同与工程参考覆盖层为数据，引擎读发布 feed。不把某次参考产品数量写成永久上限。
-- 页面组成在 LiveCanvas 动态模板，样式在 WindPress；PHP 只装配语义数据片段，不内联设计、不写整页布局、不经 Code Snippets 加代码。planner 布局在其 React 应用，仍用同一 WindPress 样式管线。tokens 保持单份；扫描 provider 覆盖插件与工具，发布含必要的缓存重编译，不另建 Tailwind 通道。
-- 原生能力优先：LC tags、Woo 机制、WindPress 各司其职；自定义代码只填真实能力缺口，记录被影响行为及为何原生机制不足。模块按职责与框架约定组织，不按行数；业务阈值注明依据。
-- **网站业务模型。** Genie 对话、铭牌/附件理解、德语自动翻译与 Jev 级联判分使用 `deepseek-flash` 官方通道；Jev 使用 OpenRouter 原生 `/v1/systemone` 的 `typesafe/jev-1.13`；`gemini-embedding-2` 仅经 OpenRouter。OpenRouter 不增其他业务模型；aihubmix 只在业主明确指定时作 embedding 备用，失败显性暴露，不静默切换。
-- 托管 PDF 按页检索，Docling 解析，SQLite FTS5 + sqlite-vec 索引随 Genie 发布，服务读 `current/index.sqlite`。查询编码器与索引模型一致；BM25 仅按既定无编码器部署条件回退，模型只引用检索块 ID，数字由服务端填入。修改先读对应索引规格与实际发布配置，不猜当前编码方式。
-
-## 5. 交付与排障
-
-### 交付门槛
-
-- 实现按本地 → 评审站 → 线上推进；线上不是功能首次验收场所。目标包含发布时，远程部署与真实入口读回成功才算交付；本地通过仅是候选。纯文档/只读工作按第 0.1 节完成，不机械部署。
-- 分支 → PR → 对应候选 CI 绿 → 主线 review → 合并。实现和界面变更须有最终 Spec + Standards 双评审、改动层的真实夹具验证，以及受影响页型/交互的 EN/DE、1440/390 实看验收；复用未受影响的有效证据。
-- 复刻面的像素标准保留：同机同浏览器同视口、字体图片就绪、禁动画，掩膜外差异为零。掩膜只用于逐项申报的真实动态区；批准的工具改名、重设计或 bug 修复记入变更依据。工具内部重设计不适用旧像素门。
-- 前端源码变化必须按所属包重建并显式纳入对应产物；planner 输出在 `plugins/linker-tools/build/planner/`，不能只提交 `apps/planner`。使用已有 `build:check` 核对源码与产物，提交后再核对提交内容，不能在提交前要求旧 HEAD 已含新产物。线上核对实际服务的资源版本/字节，不靠时间戳。
-
-### 发布与恢复
-
-- 操作前读 [切换与发布规格](docs/specs/17-cutover.md)。Hostinger 用 `ssh hostinger-de-linker`，WP-CLI 为 `/usr/local/bin/wp`。代码部署先流式保存数据库快照到本机，原子切换保留上一版；数据导入、批量修改、迁移前做完整增量备份，完整备份另每周一次。备份按第 0 节回收，主机只留原子回滚所需上一批代码，不存全站备份。
-- `.prev` / `.prev-absent` / `.failed` 表示可能未完成的发布。先核对同批 manifest、当前文件与恢复点，再按 `resume-deploy` / `rollback-deploy` 流程处理；不能为了通过预检一律删空，也不能仅凭大小和时间判定安全。管理员登录被邮箱确认页拦截时，核实 `admin_email_lifespan` 与核心检查机制，不把登录重定向误判为编译失败。
-- 收尾 `IncompleteRead` 不等于所有切换失败，也不等于发布成功。保留错误信号，核对生产文件、关键资源与真实页面，按同一批次恢复验证和归档；不要吞异常或重建未变候选来刷绿。
-- Engine 与 planner 独立发布。先核对实际 service、监听端口、release selection 与读写合同，再点名目标；planner 发布入口为 `tools/planner/publish/cli.sh`。服务激活、前后端持久输入兼容和预期响应字段均须读回。保留范围以对应发布工具与第 0 节为准；大体积地理数据按实际内存预算流式处理，磁盘缓存有界。
-
-### 地图与客户链路
-
-- 排查地图先核对：已打开实际项目及地图视图；编辑表单是否占用切换操作；客户是否同意加载当前外部底图。按钮名称、默认视图和入口以当前实现为准，不按已退役 Quick Start 的操作顺序判断。截图确认真实影像，attribution 存在不证明瓦片加载。
-- 地图请求保留显式 origin 白名单。服务端返回的影像源只授予对应 origin；style 不能扩大授权，协议、端口、凭据及相似域名仍受限制。撤回 consent 时停止对应外部资源。
-- 表单提交自身确保必要解析完成，不能只靠 blur。国家是区分重复邮编的真实信息。站点坐标可用作地图显示中心，但不自动成为测量锚点或真北；屋面方向与精度有独立来源。
-- 大数据 RPC 的超时预算与缓存按真实请求耗时配置。先对照网关和引擎日志；后端 200、前端超时可发生在不同边界。现有 `Transport` 已有轮廓专用预算，不能按旧故障记录重复加机制。
-- 外部地图源逐服务实测。GetCapabilities 成功不代表 GetMap 能出图；检查实际响应类型、图像内容和必要参数，不把一国某个服务失败推断为该国无数据。
-
-## 6. 研究与按需文档
-
-- 外部搜索、资料获取、竞品与行业核实优先 Apify，令牌只从既有安全配置读取，不进仓库；网站、插件、CI 与后台任务不集成 Apify。
-- Apify 失败先诊断 Token、Actor、参数、权限、网络、Dataset 与限额，不能单次失败就宣布无法确认。配合现有浏览器、官方 API、Firecrawl、Crawl4AI 等补齐证据，同时遵守第 0.1 节的止损与并行要求。不得绕过权限、购买额度或通过反复重试掩盖失败。任何情况下不向厂商发邮件、拟索件邮件或请人代索。
-- 议题与工程任务用 GitHub Issues / `gh`，读取 [issue tracker](docs/agents/issue-tracker.md)；分诊标签读取 [triage labels](docs/agents/triage-labels.md)。
-- 设计与实现先读 [CONTEXT.md](CONTEXT.md) 和相关 `docs/adr/`，读取规则见 [domain docs](docs/agents/domain.md)。已被新裁定替代的历史规格只作历史证据，不反过来覆盖当前约束。
-
-## 本次校正依据（2026-11-17）
-
-- 业主本轮要求持续实际使用 Stop That Shit、STSS 与 Matt Pocock engineering skills。
-- `docs/adr/0002-isolated-planner-runtime.md` 与两套 `package.json` 确认 planner 独立运行时；`docs/specs/11-commerce.md` 记录 2026-11-08 报价裁定与内部 SMTP 分流；`docs/specs/17-cutover.md`、`atomic.py` 确认残留发布必须先恢复、不能盲清。
-- 范围、验证与资源要求依照当前全局指导、Stop Ladder 及本文件已有收敛规则统一；移除已被取代的流程、固定模型池和把某次测量当永久事实的表述。这里的代码核对证明当前机制，不替代产品事实或业主业务裁定。
+  - **并行与隔离**：
+    - 独立任务并行推进；每个并行子代理使用独立 git worktree 与独立 `node_modules`。
+    - 主线负责集成、核验实际 diff 与测试、合并及发布。未经授权不执行提交、推送、合并或部署。
+  - **环境与部署**：
+    - 推进顺序：本地 → 评审站 → 线上。UI 验收实例先载入线上主题、uploads 与数据快照。
+    - 部署前读 [docs/specs/17-cutover.md](docs/specs/17-cutover.md)。Hostinger 通过 `ssh hostinger-de-linker` 连接，WP-CLI 路径为 `/usr/local/bin/wp`。
+    - 代码部署前留存本机数据库快照并原子切换；发现 `.prev` / `.failed` 残留时，核对 manifest 后按 `resume-deploy` / `rollback-deploy` 处理。
+    - Engine 与 planner 独立发布（planner 入口：`tools/planner/publish/cli.sh`）。目标内生产部署与数据写入已有 2026-10-18 授权，操作须包含备份、回滚预案与线上读回验证。
+  - **本地资源**：操作备份、实例与 worktree 前先读 [docs/agents/local-storage.md](docs/agents/local-storage.md)。任务结束即停用临时进程与浏览器、回收可重建副本，并汇报磁盘空间。
+  - **外部调研**：优先使用 Apify（令牌仅从本地安全配置读取，不入库），配合浏览器、官方 API、Firecrawl、Crawl4AI 核实；不向厂商发送或代拟索件邮件。
+  - **按需文档索引**：
+    - 全局背景与架构决策：[CONTEXT.md](CONTEXT.md) · [docs/agents/domain.md](docs/agents/domain.md)
+    - 议题与分诊：[docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) · [docs/agents/triage-labels.md](docs/agents/triage-labels.md)
+    - 商务与邮件规格：[docs/specs/11-commerce.md](docs/specs/11-commerce.md)
+    - Genie 规格：[docs/specs/13-genie.md](docs/specs/13-genie.md)
+    - 产品与资料发布：[docs/specs/609-product-publication.md](docs/specs/609-product-publication.md)
+    - 切换与发布：[docs/specs/17-cutover.md](docs/specs/17-cutover.md)

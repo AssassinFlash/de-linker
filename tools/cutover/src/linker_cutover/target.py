@@ -695,7 +695,15 @@ class Target:
         if cache_buster:
             separator = "&" if "?" in url else "?"
             url = f"{url}{separator}cbq={cache_buster}"
-        request = urllib.request.Request(url, headers={"User-Agent": "linker-cutover"})
+        request = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+                )
+            },
+        )
         try:
             try:
                 response = OPENER.open(request, timeout=30)

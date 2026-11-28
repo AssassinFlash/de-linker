@@ -9,9 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Products\Publication;
 
-use Linker\Commerce\Abilities\ProductText;
-use Linker\Commerce\Presentation\PageUrls;
-use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
 
 /** No redirect back to a static URL, and no public cache of an allowed result. */
@@ -61,22 +58,29 @@ final class DocumentAccess {
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WordPress cache convention.
 		}
+		global $wp_query;
+		$error_response = $response['status'] >= 400;
+		if ( ! $error_response && $wp_query instanceof \WP_Query ) {
+			$wp_query->is_404 = false;
+		}
 		status_header( $response['status'] );
 		nocache_headers();
 		header( 'Cache-Control: no-store, private, max-age=0' );
 		// LiteSpeed finalizes its header when the output buffer is flushed.
-		$error_response = $response['status'] >= 400;
 		header_register_callback(
 			static function () use ( $error_response ): void {
 				header( 'X-LiteSpeed-Cache-Control: no-cache,no-store' );
+				header_remove( 'X-LiteSpeed-Tag' );
 				if ( $error_response ) {
 					header_remove( 'Link' );
+					header_remove( 'X-Robots-Tag' );
+					header_remove( 'Content-Disposition' );
 				}
 			}
 		);
 		header( 'X-Content-Type-Options: nosniff' );
 		foreach ( $response['headers'] as $name => $content ) {
-			header( $name . ': ' . $content, 'Link' !== $name );
+			header( $name . ': ' . $content );
 		}
 		if ( $response['length'] > 0 && 'HEAD' !== $method && null !== $file ) {
 			$stream = fopen( $file['path'], 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- authorized local PDF byte stream.
@@ -187,7 +191,8 @@ final class DocumentAccess {
 		$name                           = preg_replace( '/[^A-Za-z0-9._-]+/', '-', pathinfo( $file['path'], PATHINFO_FILENAME ) );
 		$name                           = trim( (string) $name, '.-' );
 		$headers['Content-Disposition'] = 'inline; filename="' . ( '' !== $name ? $name : 'document' ) . '.pdf"';
-		$headers['Link']                = '<' . self::canonical_url( $authorization['owner_ids'] ) . '>; rel="canonical"';
+		$headers['X-Robots-Tag']        = 'index, follow';
+		$headers['Link']                = '<' . $file['url'] . '>; rel="canonical"';
 		$length                         = $end - $start + 1;
 		$headers['Content-Length']      = (string) $length;
 		return array(
@@ -196,41 +201,5 @@ final class DocumentAccess {
 			'start'   => $start,
 			'length'  => $length,
 		);
-	}
-
-	/**
-	 * A shared manual points to its first published model only within one manufacturer's series.
-	 *
-	 * @param int[] $ids Sorted sales product IDs from this authorization.
-	 */
-	private static function canonical_url( array $ids ): string {
-		$lead = $ids[0] ?? 0;
-		if ( count( $ids ) > 1 ) {
-			$series = null;
-			foreach ( $ids as $id ) {
-				$brand = ProductText::term_name( $id, 'pa_brand' ) ?? '';
-				$name  = ProductText::term_name( $id, 'pa_series' ) ?? trim( (string) ( Materials::english_acf( $id )['product_series'] ?? '' ) );
-				$key   = array( strtolower( $brand ), strtolower( $name ) );
-				if ( '' === $brand || '' === $name || 0 === strcasecmp( $brand, $name ) || ( null !== $series && $key !== $series ) ) {
-					$lead = 0;
-					break;
-				}
-				$series = $key;
-			}
-		}
-		if ( $lead ) {
-			$url = get_permalink( $lead );
-			if ( is_string( $url ) && preg_match( '~^https?://~i', $url ) ) {
-				return trailingslashit( $url );
-			}
-		}
-		$library_id = (int) get_option( Publication::LIBRARY_PAGE_OPTION );
-		if ( $library_id > 0 && 'page' === get_post_type( $library_id ) && 'publish' === get_post_status( $library_id ) && 'linker-faq' === get_post_meta( $library_id, 'lc_use_template_of_slug', true ) ) {
-			$url = get_permalink( $library_id );
-		} else {
-			$page = get_page_by_path( 'faq-download' );
-			$url  = $page instanceof \WP_Post && 'publish' === $page->post_status ? get_permalink( $page ) : false;
-		}
-		return is_string( $url ) && preg_match( '~^https?://~i', $url ) ? trailingslashit( $url ) : PageUrls::root() . 'faq-download/';
 	}
 }

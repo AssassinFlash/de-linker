@@ -136,7 +136,7 @@ final class Plugin {
 		add_filter( 'get_pagenum_link', array( $german_routes, 'link' ) );
 		add_filter( 'woocommerce_get_endpoint_url', array( $german_routes, 'link' ), 40 );
 		add_filter( 'woocommerce_edit_address_slugs', array( $german_routes, 'addresses' ) );
-		add_filter( 'pll_translation_url', array( $german_routes, 'translation_url' ), 40 );
+		add_filter( 'pll_translation_url', array( $german_routes, 'translation_url' ), 40, 2 );
 		add_filter( 'pll_rel_hreflang_attributes', array( $german_routes, 'hreflangs' ), 40 );
 
 		// A same-site address in a query value keeps its /de/ through the

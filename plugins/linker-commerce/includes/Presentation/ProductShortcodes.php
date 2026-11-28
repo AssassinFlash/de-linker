@@ -119,6 +119,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_pdp_price', array( $this, 'pdp_price' ) );
 		add_shortcode( 'linker_pdp_key_stats', array( $this, 'pdp_key_stats' ) );
 		add_shortcode( 'linker_pdp_availability', array( $this, 'pdp_availability' ) );
+		add_filter( 'woocommerce_loop_add_to_cart_args', array( $this, 'loop_cart_attributes' ), 10, 2 );
 		add_shortcode( 'linker_pdp_cta', array( $this, 'pdp_cta' ) );
 		add_shortcode( 'linker_pdp_ask', array( $this, 'pdp_ask' ) );
 		add_shortcode( 'linker_pdp_tools', array( $this, 'pdp_tools' ) );
@@ -142,6 +143,20 @@ final class ProductShortcodes {
 			10,
 			3,
 		);
+	}
+
+	/**
+	 * Keep related-product actions out of the crawl graph.
+	 *
+	 * @param array<string,mixed> $args WooCommerce loop button arguments.
+	 * @param \WC_Product         $product Product shown by the button.
+	 * @return array<string,mixed>
+	 */
+	public function loop_cart_attributes( array $args, \WC_Product $product ): array {
+		if ( str_contains( $product->add_to_cart_url(), 'add-to-cart=' ) ) {
+			$args['attributes']['rel'] = 'nofollow';
+		}
+		return $args;
 	}
 
 	/**
@@ -230,6 +245,7 @@ final class ProductShortcodes {
 		$html .= '<div class="wb-acts">' . do_shortcode( '[linker_genie_chips page_type="category"]' ) . do_shortcode( '[linker_genie_ask]' ) . '</div>';
 		$html .= '</div>';
 		$html .= $this->scope_nav( $shop_url, $is_term ? $queried->term_id : 0 );
+		$html .= do_shortcode( '[linker_brand_links variant="scope"]' );
 		$html .= '</div>';
 		return $html;
 	}
@@ -829,21 +845,29 @@ final class ProductShortcodes {
 		if ( null === $view ) {
 			return '';
 		}
+		$terms = get_the_terms( (int) $view['id'], 'product_brand' );
+		$term  = is_array( $terms ) ? reset( $terms ) : false;
+		if ( ! $term && '' !== $view['brand_slug'] ) {
+			$term = get_term_by( 'slug', $view['brand_slug'], 'product_brand' );
+		}
+		$link  = $term instanceof WP_Term ? get_term_link( $term ) : false;
+		$open  = is_string( $link ) ? '<a class="pdp-brand-link" href="' . esc_url( $link ) . '" aria-label="' . esc_attr( $term->name ) . '">' : '';
+		$close = '' !== $open ? '</a>' : '';
 		if ( \is_array( $view['brand_logo'] ) ) {
 			$logo = $view['brand_logo'];
-			$html = '<div class="pdp-brand pdp-brand--logo"><img class="pdp-brand-logo" src="' . esc_url( (string) $logo['src'] ) . '"';
+			$html = '<div class="pdp-brand pdp-brand--logo">' . $open . '<img class="pdp-brand-logo" src="' . esc_url( (string) $logo['src'] ) . '"';
 			if ( '' !== (string) $logo['srcset'] ) {
 				$html .= ' srcset="' . esc_attr( (string) $logo['srcset'] ) . '"';
 				if ( '' !== (string) ( $logo['sizes'] ?? '' ) ) {
 					$html .= ' sizes="' . esc_attr( (string) $logo['sizes'] ) . '"';
 				}
 			}
-			return $html . ' width="' . (int) $logo['width'] . '" height="' . (int) $logo['height'] . '" alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" /></div>';
+			return $html . ' width="' . (int) $logo['width'] . '" height="' . (int) $logo['height'] . '" alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" />' . $close . '</div>';
 		}
 		if ( '' === (string) $view['brand'] ) {
 			return '';
 		}
-		return '<div class="pdp-brand"><span class="pdp-brand-text">' . esc_html( (string) $view['brand'] ) . '</span></div>';
+		return '<div class="pdp-brand">' . $open . '<span class="pdp-brand-text">' . esc_html( (string) $view['brand'] ) . '</span>' . $close . '</div>';
 	}
 
 	/**
@@ -883,7 +907,7 @@ final class ProductShortcodes {
 			return '';
 		}
 		if ( '' !== (string) $view['price']['url'] ) {
-			return '<a class="pdp-price-login" href="' . esc_url( (string) $view['price']['url'] ) . '">' . esc_html( (string) $view['price']['html'] ) . '</a>' . AccountLinks::create();
+			return '<a class="pdp-price-login" rel="nofollow" href="' . esc_url( (string) $view['price']['url'] ) . '">' . esc_html( (string) $view['price']['html'] ) . '</a>' . AccountLinks::create();
 		}
 		return '<span class="pdp-price-net">' . wp_kses_post( (string) $view['price']['html'] ) . '</span>';
 	}
@@ -985,7 +1009,7 @@ final class ProductShortcodes {
 		if ( null === $view || '' === $view['cta_url'] ) {
 			return '';
 		}
-		return '<a class="pdp-btn pdp-btn-dark" href="' . esc_url( (string) $view['cta_url'] ) . '">' . esc_html( (string) $view['cta_label'] ) . '</a>';
+		return '<a class="pdp-btn pdp-btn-dark" rel="nofollow" href="' . esc_url( (string) $view['cta_url'] ) . '">' . esc_html( (string) $view['cta_label'] ) . '</a>';
 	}
 
 	/**
@@ -1008,7 +1032,7 @@ final class ProductShortcodes {
 			'product_id' => (int) $view['id'],
 			'intent'     => 'product',
 		);
-		return '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( (string) $view['ask_url'] ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $contact ) ) . '">'
+		return '<a class="pdp-btn pdp-btn-secondary" rel="nofollow" href="' . esc_url( (string) $view['ask_url'] ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $contact ) ) . '">'
 			. esc_html__( 'Ask about this product', 'linker-commerce' ) . '</a>';
 	}
 
@@ -1064,7 +1088,7 @@ final class ProductShortcodes {
 		if ( $canonical < 1 ) {
 			return '';
 		}
-		return '<a class="pdp-project-choice" href="' . esc_url(
+		return '<a class="pdp-project-choice" rel="nofollow" href="' . esc_url(
 			add_query_arg(
 				array(
 					'step'       => 'equipment',
@@ -1648,8 +1672,8 @@ final class ProductShortcodes {
 		return '<section class="pdp-block sf-container pdp-compatibility-check"><h2 class="pdp-section-title">' . esc_html( $title ) . '</h2>'
 			. '<p>' . esc_html( $intro ) . '</p><div class="pdp-compatibility-actions">'
 			. '<button type="button" class="pdp-btn pdp-btn-secondary" data-pdp-ask data-ask-message="' . esc_attr( $prompt ) . '">' . esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>'
-			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( $plan ) . '">' . esc_html__( 'Open configurator', 'linker-commerce' ) . '</a>'
-			. '<a class="pdp-btn pdp-btn-secondary" href="' . esc_url( (string) $view['ask_url'] ) . '">' . esc_html__( 'Contact our team', 'linker-commerce' ) . '</a>' . self::matrix_link() . '</div></section>';
+			. '<a class="pdp-btn pdp-btn-secondary" rel="nofollow" href="' . esc_url( $plan ) . '">' . esc_html__( 'Open configurator', 'linker-commerce' ) . '</a>'
+			. '<a class="pdp-btn pdp-btn-secondary" rel="nofollow" href="' . esc_url( (string) $view['ask_url'] ) . '">' . esc_html__( 'Contact our team', 'linker-commerce' ) . '</a>' . self::matrix_link() . '</div></section>';
 	}
 
 	/**
@@ -1781,18 +1805,18 @@ final class ProductShortcodes {
 		$page = $state->current;
 		$base = $this->archive_base_url();
 		$html = '<nav class="tv-woo-pagination" aria-label="' . esc_attr__( 'Product pagination', 'linker-commerce' ) . '">';
-		// Page one uses the native root; later slices retain product-page.
+		$rel  = str_contains( $base, '?' ) ? ' rel="nofollow"' : '';
 		if ( $page > 1 ) {
-			$html .= '<a class="prev page-numbers" href="' . esc_url( $page > 2 ? add_query_arg( 'product-page', $page - 1, $base ) : $base ) . '">' . esc_html__( 'Previous', 'linker-commerce' ) . '</a>';
+			$html .= '<a class="prev page-numbers"' . $rel . ' href="' . esc_url( FamilyNavigation::page_url( $base, $page - 1 ) ) . '">' . esc_html__( 'Previous', 'linker-commerce' ) . '</a>';
 		}
 		for ( $i = 1; $i <= $pages; $i++ ) {
-			$url   = $i > 1 ? add_query_arg( 'product-page', $i, $base ) : $base;
+			$url   = FamilyNavigation::page_url( $base, $i );
 			$html .= $i === $page
 				? '<span aria-current="page" class="page-numbers current">' . esc_html( (string) $i ) . '</span>'
-				: '<a class="page-numbers" href="' . esc_url( $url ) . '">' . esc_html( (string) $i ) . '</a>';
+				: '<a class="page-numbers"' . $rel . ' href="' . esc_url( $url ) . '">' . esc_html( (string) $i ) . '</a>';
 		}
 		if ( $page < $pages ) {
-			$html .= '<a class="next page-numbers" href="' . esc_url( add_query_arg( 'product-page', $page + 1, $base ) ) . '">' . esc_html__( 'Next', 'linker-commerce' ) . '</a>';
+			$html .= '<a class="next page-numbers"' . $rel . ' href="' . esc_url( FamilyNavigation::page_url( $base, $page + 1 ) ) . '">' . esc_html__( 'Next', 'linker-commerce' ) . '</a>';
 		}
 		return $html . '</nav>';
 	}
@@ -1864,7 +1888,7 @@ final class ProductShortcodes {
 		$html .= '<p>' . esc_html__( 'Your question includes this page as context. You can remove it before sending.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-invitation-actions">';
-		$html .= '<a class="linker-contact-primary" href="' . esc_url( $url ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $contact ) ) . '">' . esc_html__( 'Need help choosing?', 'linker-commerce' ) . '</a>';
+		$html .= '<a class="linker-contact-primary" rel="nofollow" href="' . esc_url( $url ) . '" data-linker-contact="' . esc_attr( (string) wp_json_encode( $contact ) ) . '">' . esc_html__( 'Need help choosing?', 'linker-commerce' ) . '</a>';
 		$html .= '<a class="linker-contact-email" href="mailto:' . esc_attr( ( new Options() )->team_mailbox() ) . '">' . esc_html( ( new Options() )->team_mailbox() ) . '</a>';
 		$html .= '</div>';
 		return $html . '</section>';
@@ -1976,6 +2000,10 @@ final class ProductShortcodes {
 	private function selection_parameters(): array {
 		$selected = $this->filters->requested();
 		$sort     = $this->filters->requested_sort();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Native catalog ordering is a public GET selection.
+		if ( isset( $_GET['orderby'] ) && is_string( $_GET['orderby'] ) ) {
+			$selected['orderby'] = sanitize_key( wp_unslash( $_GET['orderby'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
 		if ( 'recommended' !== $sort ) {
 			$selected['sort'] = $sort;
 		}
@@ -1986,7 +2014,7 @@ final class ProductShortcodes {
 	private function family_page(): FamilyPage {
 		if ( null === $this->family_page ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- FamilyPage validates the public page before arithmetic or output.
-			$requested         = array_key_exists( 'product-page', $_GET ) ? wp_unslash( $_GET['product-page'] ) : get_query_var( 'paged', 1 );
+			$requested         = array_key_exists( 'product-page', $_GET ) ? wp_unslash( $_GET['product-page'] ) : FamilyNavigation::native_page();
 			$this->family_page = new FamilyPage( $this->family_rows( array_values( $this->filters->filtered_product_ids() ) ), $requested, self::PER_PAGE_FAMILIES );
 		}
 		return $this->family_page;
@@ -2135,10 +2163,10 @@ final class ProductShortcodes {
 		$html          = '<a href="' . esc_url( $shop . '#search-box' ) . '" class="tv-header-utility tv-header-search" data-tv-header-search data-search-min="' . \Linker\Commerce\Products\ProductSearch::MIN_LENGTH . '" data-search-url="' . esc_url( rest_url( 'linker/v1/catalog-search' ) ) . '" aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">' . $search_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Search', 'linker-commerce' ) . '</span></a>';
 		$count_url     = esc_url( rest_url( 'wc/store/v1/cart' ) );
 		$badge         = $count > 0 ? '<span class="tv-b2b-acct-count">' . esc_html( (string) $count ) . '</span>' : '';
-		$html         .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" data-cart-count-url="' . $count_url . '" aria-label="' . esc_attr__( 'Solution draft', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</span>' . $badge . '</a>';
+		$html         .= '<a href="' . esc_url( $cart_url ) . '" class="tv-header-utility tv-header-cart-link" rel="nofollow" data-cart-count-url="' . $count_url . '" aria-label="' . esc_attr__( 'Solution draft', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</span>' . $badge . '</a>';
 		if ( 'mobile' === $attributes['part'] ) {
 			$account_label = $logged_in ? $account_label : __( 'Sign in', 'linker-commerce' );
-			return '<a href="' . esc_url( $cart_url ) . '" class="tv-mobile-utility tv-header-cart-link" data-cart-count-url="' . $count_url . '" aria-label="' . esc_attr__( 'Solution draft', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</span>' . $badge . '</a><a href="' . esc_url( $account ) . '" class="tv-mobile-utility tv-b2b-mobile-portal-link" aria-label="' . esc_attr( $account_label ) . '">' . $user_icon . '<span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span></a>' . AccountLinks::create();
+			return '<a href="' . esc_url( $cart_url ) . '" class="tv-mobile-utility tv-header-cart-link" rel="nofollow" data-cart-count-url="' . $count_url . '" aria-label="' . esc_attr__( 'Solution draft', 'linker-commerce' ) . '">' . $cart_icon . '<span class="tv-header-utility-label">' . esc_html__( 'Solution draft', 'linker-commerce' ) . '</span>' . $badge . '</a><a href="' . esc_url( $account ) . '" class="tv-mobile-utility tv-b2b-mobile-portal-link" rel="nofollow" aria-label="' . esc_attr( $account_label ) . '">' . $user_icon . '<span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span></a>' . AccountLinks::create();
 		}
 		$html .= '<div class="tv-b2b-acct"><button type="button" class="tv-b2b-acct-btn" aria-haspopup="true" aria-controls="linker-header-account-menu" aria-expanded="false" aria-label="' . esc_attr( $account_label ) . '"><span class="tv-b2b-acct-avatar">' . $user_icon . '</span><span class="tv-header-utility-label">' . esc_html( $account_label ) . '</span><span class="tv-b2b-acct-chev"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>';
 		$html .= '<div id="linker-header-account-menu" class="tv-b2b-acct-menu" hidden>';
@@ -2148,10 +2176,10 @@ final class ProductShortcodes {
 			// #184); the plain endpoint URL would ask for confirmation first.
 			foreach ( wc_get_account_menu_items() as $endpoint => $label ) {
 				$url   = 'customer-logout' === $endpoint && function_exists( 'linker_commerce_logout_url' ) ? linker_commerce_logout_url() : esc_url_raw( wc_get_account_endpoint_url( $endpoint ) );
-				$html .= '<a class="tv-b2b-acct-link' . ( 'customer-logout' === $endpoint ? ' is-out' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
+				$html .= '<a class="tv-b2b-acct-link' . ( 'customer-logout' === $endpoint ? ' is-out' : '' ) . '" rel="nofollow" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
 			}
 		} else {
-			$html .= '<a class="tv-b2b-acct-link" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>' . AccountLinks::create();
+			$html .= '<a class="tv-b2b-acct-link" rel="nofollow" href="' . esc_url( $account ) . '">' . esc_html__( 'Sign in', 'linker-commerce' ) . '</a>' . AccountLinks::create();
 		}
 		$html .= '</div></div>';
 		return $html . $this->language_toggle( 'lnk-lang-toggle--desktop' );

@@ -373,10 +373,11 @@ final class SupplyBrandsTest extends TestCase {
 		}
 	}
 
-	/** The presentation module owns one native shortcode registration. */
+	/** Supply copy and archive links have separate shortcode registrations. */
 	public function test_registers_native_shortcode_callback(): void {
 		$reader = new SupplyBrands();
 		WP_Mock::userFunction( 'add_shortcode' )->once()->with( 'linker_supply_brands', array( $reader, 'render' ) );
+		WP_Mock::userFunction( 'add_shortcode' )->once()->with( 'linker_brand_links', array( $reader, 'links' ) );
 		$reader->register();
 		$this->assertConditionsMet();
 	}

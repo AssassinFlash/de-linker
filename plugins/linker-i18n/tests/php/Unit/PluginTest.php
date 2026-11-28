@@ -82,7 +82,7 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'get_pagenum_link', GermanRoutes::class, 'link', 10, 1 ),
 		array( 'filter', 'woocommerce_get_endpoint_url', GermanRoutes::class, 'link', 40, 1 ),
 		array( 'filter', 'woocommerce_edit_address_slugs', GermanRoutes::class, 'addresses', 10, 1 ),
-		array( 'filter', 'pll_translation_url', GermanRoutes::class, 'translation_url', 40, 1 ),
+		array( 'filter', 'pll_translation_url', GermanRoutes::class, 'translation_url', 40, 2 ),
 		array( 'filter', 'pll_rel_hreflang_attributes', GermanRoutes::class, 'hreflangs', 40, 1 ),
 		array( 'filter', 'old_slug_redirect_post_id', GermanUrlMigration::class, 'old_post', 10, 1 ),
 		array( 'filter', 'old_slug_redirect_url', GermanUrlMigration::class, 'old_url', 10, 1 ),

@@ -148,8 +148,8 @@ final class PriceDisplayTest extends TestCase {
 	 */
 	public function test_texts_instead_of_prices(): void {
 		$guest = $this->visitor( false )->empty_price_html( '', $this->product() );
-		$this->assertStringContainsString( '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>', $guest );
-		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">Create account</a>', $guest );
+		$this->assertStringContainsString( '<a class="linker-price-login" href="https://example.test/my-account/" rel="nofollow">Log in for prices</a>', $guest );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/" rel="nofollow">Create account</a>', $guest );
 		$this->assertSame( '<span class="linker-price-note">Account under review. Prices after approval.</span>', $this->visitor( true, 'orderable', false )->empty_price_html( '', $this->product() ) );
 		$this->assertSame( '<span class="linker-price-note">Quoted per project</span>', $this->visitor( true, 'rfq_only' )->empty_price_html( '', $this->product( '22350' ) ) );
 		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $this->visitor( true )->empty_price_html( '', $this->product( '' ) ) );

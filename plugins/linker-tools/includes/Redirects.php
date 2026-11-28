@@ -78,8 +78,7 @@ final class Redirects {
 			function (): void {
 				$target = $this->target( $this->request_path() );
 				if ( null !== $target ) {
-					// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- the target is built from this site's own home_url(), never visitor input.
-					wp_redirect( $target, 301 );
+					$this->send( $target );
 					exit;
 				}
 			},
@@ -90,9 +89,21 @@ final class Redirects {
 	/** Resolve mixed-case public paths before the native canonical redirect. */
 	public function normalize_case(): void {
 		$target = $this->lowercase_target();
-		if ( null !== $target && wp_safe_redirect( $target, 301 ) ) {
+		if ( null !== $target ) {
+			$this->send( $target );
 			exit;
 		}
+	}
+
+	/**
+	 * Cache public redirects while keeping private Woo endpoints and signed URLs private.
+	 *
+	 * @param string $target Canonical destination on this site.
+	 */
+	private function send( string $target ): void {
+		$private = is_user_logged_in() || preg_match( '#/(?:checkout|kasse|proforma-request|proforma-anfrage|order-received|inquiry-received)(?:/|$)#', $target ) || str_contains( $target, 'key=' );
+		header( $private ? 'Cache-Control: private, no-store' : 'Cache-Control: public, max-age=3600' );
+		wp_safe_redirect( $target, 301 );
 	}
 
 	/** The lowercase public path. Preserve the bytes of escapes, assets and query values. */

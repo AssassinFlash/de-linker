@@ -268,7 +268,7 @@ final class Form {
 		$html .= '</div>';
 		$html .= '<div class="linker-contact-rail-card linker-contact-explore">';
 		$html .= '<p>' . esc_html__( 'Use Genie to explore the options, then return to your question.', 'linker-commerce' ) . '</p>';
-		$html .= '<a href="' . esc_url( $this->genie_url() ) . '">' . esc_html__( 'Explore with Genie', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></a>';
+		$html .= '<a rel="nofollow" href="' . esc_url( $this->genie_url() ) . '">' . esc_html__( 'Explore with Genie', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></a>';
 		$html .= '</div>';
 		$html .= '</aside>';
 		return $html;

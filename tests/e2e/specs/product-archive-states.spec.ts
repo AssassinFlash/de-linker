@@ -571,9 +571,16 @@ for (const [locale, width] of [
 		const pageSize = open.cards;
 		expect(open.lastPage, 'the open archive paginates').not.toBeNull();
 		const openPages = open.lastPage!;
+		const pageSegment = locale === 'de' ? 'seite' : 'page';
+		expect(open.nextHref).toBe(`${base}${pageSegment}/2/`);
 
 		// The last page of the open archive is the remainder, not a full page.
 		await page.goto(`${base}?product-page=${openPages}`);
+		await expect(page).toHaveURL(`${base}${pageSegment}/${openPages}/`);
+		await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+			'href',
+			page.url()
+		);
 		const openLast = await archiveFacts(page);
 		expect(openLast.cards, 'the last page carries cards').toBeGreaterThan(
 			0
@@ -602,6 +609,10 @@ for (const [locale, width] of [
 			'the next link carries the filter'
 		).toContain('application=home');
 
+		await expect(page.locator('.tv-woo-pagination a.next')).toHaveAttribute(
+			'rel',
+			'nofollow'
+		);
 		const filteredPages = first.lastPage!;
 		expect(
 			filteredPages,

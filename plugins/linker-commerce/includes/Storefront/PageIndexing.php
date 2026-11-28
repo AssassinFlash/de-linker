@@ -9,12 +9,20 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Contact\Module as Contact;
+use Linker\Commerce\Contact\SelectionContext;
 use Linker\Commerce\Presentation\ComparePage;
 
 /** Woo page assignments and their translations own the public URLs. */
 final class PageIndexing {
+	private const CONTACT_QUERY_KEYS = array( 'intent', 'kind', 'title', 'source_id', 'product', 'product_id', 'source', 'sku', 'model', SelectionContext::FIELD, 'contact', 'contact_order' );
+
 	/** Register the SEOPress and core robots policies. */
 	public function register(): void {
+		add_filter( 'seopress_titles_title', array( $this, 'brand_title' ), 35 );
+		add_filter( 'pre_get_document_title', array( $this, 'brand_title' ), 35 );
+		add_filter( 'seopress_social_og_title', array( $this, 'brand_social_title' ), 35 );
+		add_filter( 'seopress_social_twitter_card_title', array( $this, 'brand_social_title' ), 35 );
 		add_filter( 'seopress_titles_desc', array( $this, 'description' ), 45 );
 		add_filter( 'seopress_titles_noindex_bypass', array( $this, 'noindex' ) );
 		add_filter( 'seopress_titles_robots_attrs', array( $this, 'robots' ) );
@@ -24,6 +32,46 @@ final class PageIndexing {
 		add_filter( 'seopress_titles_canonical_on_noindex', array( $this, 'canonical' ), 50 );
 		add_filter( 'seopress_titles_canonical', array( $this, 'canonical_tag' ), 20 );
 		add_filter( 'seopress_sitemaps_single_url', array( $this, 'sitemap' ), 20, 2 );
+	}
+
+	/**
+	 * Name the equipment available in each published manufacturer archive.
+	 *
+	 * @param string $existing Current document title.
+	 */
+	public function brand_title( string $existing ): string {
+		$term = get_queried_object();
+		if ( ! $term instanceof \WP_Term || 'product_brand' !== $term->taxonomy || $this->empty_brand_archive() ) {
+			return $existing;
+		}
+		$title = match ( $term->slug ) {
+			'goodwe' => __( 'GoodWe Hybrid Inverters & Storage Systems', 'linker-commerce' ),
+			'saj' => __( 'SAJ Hybrid Inverters & Energy Storage', 'linker-commerce' ),
+			'pylontech' => __( 'Pylontech LFP Batteries & Storage Systems', 'linker-commerce' ),
+			'chint' => __( 'Chint Smart Meters & Energy Monitoring', 'linker-commerce' ),
+			/* translators: %s: manufacturer brand name. */
+			default => sprintf( __( '%s Solar & Storage Equipment', 'linker-commerce' ), wp_strip_all_tags( $term->name ) ),
+		};
+		return $title . ' | ' . get_bloginfo( 'name' );
+	}
+
+	/**
+	 * SEOPress uses the social title filter for both field values and HTML tags.
+	 *
+	 * @param string $value Title field or social metadata tag.
+	 */
+	public function brand_social_title( string $value ): string {
+		$title = $this->brand_title( '' );
+		if ( '' === $title ) {
+			return $value;
+		}
+		if ( ! str_starts_with( ltrim( $value ), '<meta' ) ) {
+			return $title;
+		}
+		$html = new \WP_HTML_Tag_Processor( $value );
+		$html->next_tag( array( 'tag_name' => 'META' ) );
+		$html->set_attribute( 'content', $title );
+		return $html->get_updated_html();
 	}
 
 	/**
@@ -113,27 +161,22 @@ final class PageIndexing {
 	 * @param bool $allow Canonical on noindex.
 	 */
 	public function canonical( bool $allow ): bool {
-		return ! $this->transaction() && ( $allow || $this->parameterized_view() );
+		return ! $this->transaction() && ! $this->parameterized_view() && ( $allow || $this->parameterized_contact() );
 	}
 
 	/**
-	 * Point every filtered or compared selection at its localized landing page.
+	 * Contact handoffs share their localized form's canonical address.
 	 *
 	 * @param string $tag SEOPress canonical element.
 	 */
 	public function canonical_tag( string $tag ): string {
-		if ( ! $this->parameterized_view() ) {
+		if ( $this->parameterized_view() || $this->transaction() ) {
+			return '';
+		}
+		if ( ! $this->parameterized_contact() ) {
 			return $tag;
 		}
-		if ( ComparePage::is_comparison_page() ) {
-			$url = get_permalink( get_queried_object_id() );
-		} elseif ( is_shop() ) {
-			$url = wc_get_page_permalink( 'shop' );
-		} else {
-			$term = get_queried_object();
-			$url  = $term instanceof \WP_Term ? get_term_link( $term ) : false;
-		}
-		return is_string( $url ) ? '<link rel="canonical" href="' . esc_url( explode( '?', $url, 2 )[0] ) . '">' : $tag;
+		return '<link rel="canonical" href="' . esc_url( (string) get_permalink( get_queried_object_id() ) ) . '">';
 	}
 
 	/**
@@ -143,7 +186,7 @@ final class PageIndexing {
 	 * @return array<string,string|false>
 	 */
 	public function headers( array $headers ): array {
-		if ( $this->parameterized_view() || $this->empty_brand_archive() ) {
+		if ( $this->excluded() ) {
 			$headers['X-Robots-Tag'] = 'noindex, follow';
 		}
 		return $headers;
@@ -151,7 +194,16 @@ final class PageIndexing {
 
 	/** WordPress and SEOPress use the same indexing policy. */
 	private function excluded(): bool {
-		return $this->transaction() || $this->parameterized_view() || $this->empty_brand_archive();
+		return $this->transaction() || $this->parameterized_view() || $this->parameterized_contact() || $this->empty_brand_archive();
+	}
+
+	/** A handoff or receipt opened on either native contact page. */
+	private function parameterized_contact(): bool {
+		if ( ! array_intersect( self::CONTACT_QUERY_KEYS, array_keys( $_GET ) ) || ! in_array( $_SERVER['REQUEST_METHOD'] ?? 'GET', array( 'GET', 'HEAD' ), true ) || is_admin() || ! is_page() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Read-only request classification.
+			return false;
+		}
+		$page = get_queried_object();
+		return $page instanceof \WP_Post && Contact::is_contact_page( $page );
 	}
 
 	/** Query keys identify selections even if the visitor supplies an empty value. */

@@ -341,9 +341,9 @@ final class RedirectsTest extends TestCase {
 	public function test_the_maps_load_with_the_ticket_counts(): void {
 		$maps = Redirects::maps();
 		$this->assertNotNull( $maps );
-		$this->assertCount( 305, $maps['products'] );
-		$this->assertCount( 31, $maps['categories'] );
-		$this->assertCount( 22, $maps['retired_tools'] );
+		$this->assertCount( 309, $maps['products'] );
+		$this->assertCount( 33, $maps['categories'] );
+		$this->assertCount( 29, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
 	}
@@ -455,6 +455,41 @@ final class RedirectsTest extends TestCase {
 		unlink( $file );
 	}
 
+	/** Exact legacy addresses lead directly to their localized destinations. */
+	public function test_crawl_seal_page_destinations(): void {
+		$this->wordpress();
+		$redirects = new Redirects();
+		foreach ( array(
+			'/product/'                           => '/products/',
+			'/produkte/'                          => '/de/produkte/',
+			'/de/loesung/nutzspeicher/'           => '/de/loesung/grossspeicher/',
+			'/de/produkt-kategorie/heimspeicher/res-zubehoer/' => '/de/produkt-kategorie/zubehoer/',
+			'/de/produkt-kategorie/res-zubehoer/' => '/de/produkt-kategorie/zubehoer/',
+			'/de/produkt-kategorie/ci-speicher/'  => '/de/produkt-kategorie/gewerbespeicher/',
+			'/my-account/projects/'               => '/my-account/',
+			'/de/mein-konto/projects/'            => '/de/mein-konto/',
+		) as $path => $expected ) {
+			$this->assertSame( self::HOME . $expected, $redirects->target( $path ) );
+		}
+	}
+
+	/** The replaced Chint meter resolves to the published product in each language. */
+	public function test_chint_meter_replacement(): void {
+		$this->wordpress();
+		$this->product          = 'chint-dtsu666-ct';
+		$this->default_language = 'en';
+		$this->languages        = array( 'en', 'de' );
+		$en                     = self::HOME . '/product/chint-dtsu666/';
+		$de                     = self::HOME . '/de/produkt/chint-dtsu666/';
+		$this->post_ids[ $en ]  = 61;
+		$this->post_twins[61]   = array( 'de' => 62 );
+		$this->permalinks[62]   = $de;
+		$routes                 = new Redirects();
+		$this->assertSame( $en, $routes->target( '/product/chint-dtsu666-ct/' ) );
+		$this->current_language = 'de';
+		$this->assertSame( $de, $routes->target( '/de/produkt/chint-dtsu666-ct/' ) );
+	}
+
 	/**
 	 * A withdrawn product's address goes to the shelf it was filed under.
 	 */
@@ -504,6 +539,9 @@ final class RedirectsTest extends TestCase {
 			array( 'ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship', 'inverters', 'wechselrichter' ),
 			array( 'ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell', 'inverters', 'wechselrichter' ),
 			array( 'ecoflow-ef-bd-jc-s1', 'accessories', 'zubehoer' ),
+			array( 'goodwe-lynx-home-a-g4-stackable-lfp-battery-module-3-3-kwh', 'home-storage', 'heimspeicher' ),
+			array( 'mbs-kbu-58-800-5-a-split-core-current-transformer-class-0-5', 'meters-current-transformers', 'zubehoer/energiezaehler-stromwandler' ),
+			array( 'mbs-kbu-58-1000-5-a-split-core-current-transformer-class-0-5', 'meters-current-transformers', 'zubehoer/energiezaehler-stromwandler' ),
 			array( 'saj-ch3-125k-t8', 'inverters', 'wechselrichter' ),
 		);
 	}

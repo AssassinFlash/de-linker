@@ -37,7 +37,7 @@ final class PageUrls {
 					'title'      => rawurlencode( html_entity_decode( $product->get_name(), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ),
 					'source_id'  => $product->get_id(),
 					'product_id' => $product->get_id(),
-					'source'     => $product->get_permalink(),
+					'source'     => rawurlencode( $product->get_permalink() ),
 				),
 				self::page( 'contact' )
 			)
