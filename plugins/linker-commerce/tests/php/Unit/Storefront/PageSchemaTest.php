@@ -151,6 +151,7 @@ final class PageSchemaTest extends TestCase {
 		$this->assertSame( $language, $website['inLanguage'] );
 		$this->assertStringContainsString( 'de' === $language ? 'PV- und Batteriespeichersysteme' : 'Residential and C&I', $website['description'] );
 		$this->assertStringNotContainsString( 'EcoFlow', $website['description'] );
+		WP_Mock::userFunction( 'get_queried_object' )->andReturn( null );
 		$node = $schema->article_schema(
 			array(
 				'author'    => array( 'name' => 'Chester John' ),

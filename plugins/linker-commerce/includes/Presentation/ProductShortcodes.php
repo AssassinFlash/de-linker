@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Storefront\GuideEquipmentMesh;
+
 use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\Materials;
@@ -96,6 +98,8 @@ final class ProductShortcodes {
 	 */
 	public function register(): void {
 		( new FamilyNavigation( $this->family_page( ... ), $this->archive_base_url( ... ) ) )->register();
+		add_shortcode( 'linker_pdp_guides', array( $this, 'pdp_guides' ) );
+		add_shortcode( 'linker_archive_guides', array( $this, 'archive_guides' ) );
 		add_shortcode( 'linker_products_head', array( $this, 'products_head' ) );
 		add_shortcode( 'linker_products_filters', array( $this, 'products_filters' ) );
 		add_shortcode( 'linker_products_sort', array( $this, 'products_sort' ) );
@@ -780,6 +784,20 @@ final class ProductShortcodes {
 		return null === $view ? '' : esc_html( (string) $view['model'] );
 	}
 
+	/** Planning guides matching the displayed product. */
+	public function pdp_guides(): string {
+		return BlogShortcodes::guide_links( GuideEquipmentMesh::for_product( get_queried_object_id() ) );
+	}
+
+	/** Planning guides on the first unfiltered shop, category or manufacturer page. */
+	public function archive_guides(): string {
+		if ( $this->selection_parameters() || $this->family_page()->current > 1 ) {
+			return '';
+		}
+		$term = get_queried_object();
+		return BlogShortcodes::guide_links( GuideEquipmentMesh::for_archive( $term instanceof WP_Term ? $term : null ) );
+	}
+
 	/** Published sibling links on the current product page. */
 	public function pdp_family(): string {
 		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- A published sibling or its translation can change this page.
@@ -831,7 +849,7 @@ final class ProductShortcodes {
 	 * @param list<array{id:int,name:string,url:string,rating:string}> $rows Model links.
 	 * @param int                                                      $current Current PDP, if any.
 	 */
-	private static function model_links( array $rows, int $current = 0 ): string {
+	public static function model_links( array $rows, int $current = 0 ): string {
 		$html = '<ul class="lk-model-links">';
 		foreach ( $rows as $row ) {
 			$html .= '<li><a href="' . esc_url( $row['url'] ) . '"' . ( $current === $row['id'] ? ' aria-current="page"' : '' ) . '>' . esc_html( $row['name'] ) . ( '' !== $row['rating'] ? ' <small>' . esc_html( $row['rating'] ) . '</small>' : '' ) . '</a></li>';

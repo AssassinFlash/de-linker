@@ -235,3 +235,9 @@ html:has(.reader-author-dialog[open]) { overflow: hidden; }
 	color: var(--proto-ink-deep);
 }
 #tv-blog-single-v1 .reader-author-socials a:is(:hover,:focus-visible) { color: var(--proto-teal-700); background: var(--proto-teal-50); }
+#tv-blog-single-body .lk-blog-equipment {
+	margin-block: 2rem;
+	padding-block: 1.5rem;
+	border-block: 1px solid var(--proto-color-line);
+}
+#tv-blog-single-body .lk-blog-equipment .lk-solution-categories { margin-block: 1rem; }

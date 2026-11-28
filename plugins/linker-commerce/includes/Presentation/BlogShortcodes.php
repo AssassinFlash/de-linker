@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Storefront\GuideEquipmentMesh;
+
 use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Products\SearchScope;
 use Linker\I18n\CoverAlt;
@@ -70,11 +72,45 @@ final class BlogShortcodes {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_author_dialog' ) );
 		add_action( 'template_redirect', array( $this, 'redirect_chester_archive' ), -1 );
 		add_filter( 'seopress_disable_archives_redirect_url', array( $this, 'archive_destination' ) );
+		add_shortcode( 'linker_blog_equipment_links', array( $this, 'equipment_links' ) );
 		add_shortcode( 'linker_blog_post_categories', array( $this, 'post_categories' ) );
 		add_shortcode( 'linker_blog_cover_image', array( $this, 'cover_image' ) );
 		add_shortcode( 'linker_blog_related_posts', array( $this, 'related_posts' ) );
 		add_shortcode( 'linker_blog_share', array( $this, 'share' ) );
 		add_shortcode( 'linker_blog_author', array( $this, 'author' ) );
+	}
+
+	/** Models and engineering references for the current guide. */
+	public function equipment_links(): string {
+		$post  = get_queried_object();
+		$entry = $post instanceof WP_Post ? GuideEquipmentMesh::for_post( $post ) : array();
+		if ( ! $entry ) {
+			return '';
+		}
+		$html = '<section class="lk-blog-equipment"><h2>' . esc_html__( 'Related Systems & Compatibility', 'linker-commerce' ) . '</h2><div class="lk-solution-categories">';
+		foreach ( $entry['categories'] as $category ) {
+			$html .= '<a href="' . esc_url( $category['url'] ) . '">' . esc_html( $category['name'] ) . '</a>';
+		}
+		$html .= '</div>' . ProductShortcodes::model_links( $entry['products'] );
+		if ( '' !== $entry['matrix'] ) {
+			$html .= '<a class="lk-guide-matrix" href="' . esc_url( $entry['matrix'] ) . '">' . esc_html__( 'Compatibility matrix', 'linker-commerce' ) . '</a>';
+		}
+		return $html . '</section>';
+	}
+
+	/** Guide links shared by equipment, archives and the compatibility matrix.
+	 *
+	 * @param WP_Post[] $guides Published language-specific posts.
+	 */
+	public static function guide_links( array $guides ): string {
+		if ( ! $guides ) {
+			return '';
+		}
+		$html = '<section class="lk-guide-mesh"><h2>' . esc_html__( 'Planning & Commissioning Guides', 'linker-commerce' ) . '</h2><ul>';
+		foreach ( $guides as $post ) {
+			$html .= '<li><a href="' . esc_url( (string) get_permalink( $post ) ) . '">' . esc_html( JournalTitles::label( $post ) ) . '</a></li>';
+		}
+		return $html . '</ul></section>';
 	}
 
 	/** Redirect Chester's public author aliases before SEOPress disables archives at priority zero. */

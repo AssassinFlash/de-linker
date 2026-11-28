@@ -113,6 +113,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_structured_data_type_for_page', array( new AnyInstance( PageSchema::class ), 'strip_online_store_type' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'woocommerce_structured_data_online_store', '__return_false' );
 		WP_Mock::expectFilterAdded( 'seopress_schemas_website', array( new AnyInstance( PageSchema::class ), 'website' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'the_content', array( new AnyInstance( PageSchema::class ), 'guide_faq' ), 99 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_schemas_auto_article_json', array( new AnyInstance( PageSchema::class ), 'article_schema' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_pro_get_json_data_author', array( new AnyInstance( PageSchema::class ), 'author_schema' ), 10, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_get_json_data_organization', array( new AnyInstance( PageSchema::class ), 'organization' ) ); // @phpstan-ignore argument.type

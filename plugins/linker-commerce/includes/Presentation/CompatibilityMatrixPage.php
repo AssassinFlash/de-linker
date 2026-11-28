@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Storefront\GuideEquipmentMesh;
+
 use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
@@ -240,7 +242,7 @@ final class CompatibilityMatrixPage {
 			}
 			$html .= '</section>';
 		}
-		return $html . self::destinations() . '</div>';
+		return $html . BlogShortcodes::guide_links( GuideEquipmentMesh::for_matrix() ) . self::destinations() . '</div>';
 	}
 
 	/**

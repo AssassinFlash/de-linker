@@ -1,0 +1,258 @@
+{
+  "ci-storage-peak-shaving-backup-scalability": {
+    "technical": true,
+    "categories": [
+      "commercial-storage",
+      "all-in-one-systems"
+    ],
+    "brands": [
+      "goodwe",
+      "pylontech",
+      "saj"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW125261ESALCNG10",
+      "DLK-PYLONTECH-OPTIMUSL260OMNI",
+      "DLK-GOODWE-ETR125",
+      "DLK-GOODWE-GW2612BATLCDG10",
+      "DLK-SAJ-CHS250KT6X",
+      "DLK-GOODWE-SEC3000C"
+    ],
+    "topics": [
+      "Peak shaving",
+      "Backup power"
+    ],
+    "matrix": true
+  },
+  "hybrid-inverter-vs-ac-coupled-storage": {
+    "technical": true,
+    "categories": [
+      "inverters",
+      "commercial-storage"
+    ],
+    "brands": [
+      "goodwe",
+      "saj",
+      "pylontech"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW10KETAG20",
+      "DLK-SAJ-H215KT3",
+      "DLK-GOODWE-GW100KETRG10",
+      "DLK-PYLONTECH-OPTIMUSL260OMNI",
+      "DLK-GOODWE-GW1126BATACG10"
+    ],
+    "topics": [
+      "Hybrid inverters",
+      "AC-coupled storage"
+    ],
+    "matrix": true
+  },
+  "ecoflow-goodwe-saj-pylontech-europe-storage-2026": {
+    "technical": false,
+    "categories": [
+      "commercial-storage",
+      "inverters"
+    ],
+    "brands": [
+      "goodwe",
+      "saj",
+      "pylontech"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW125261ESALCNG10",
+      "DLK-GOODWE-GW29999KETAG20",
+      "DLK-SAJ-CHS2299KT4X",
+      "DLK-SAJ-H230KT3DE",
+      "DLK-PYLONTECH-OPTIMUSL260OMNI"
+    ],
+    "topics": [
+      "European energy storage market"
+    ],
+    "matrix": true
+  },
+  "size-battery-storage-residential-backup": {
+    "technical": true,
+    "categories": [
+      "home-storage",
+      "inverters"
+    ],
+    "brands": [
+      "goodwe",
+      "saj"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW10KETAG20",
+      "DLK-GOODWE-GW90BATDG20",
+      "DLK-SAJ-HS310KT2WP",
+      "DLK-SAJ-B2150HV1",
+      "DLK-SAJ-BU350TV2PRO"
+    ],
+    "topics": [
+      "Residential backup sizing"
+    ],
+    "matrix": true
+  },
+  "residential-storage-backup-self-consumption": {
+    "technical": true,
+    "categories": [
+      "home-storage",
+      "backup-power"
+    ],
+    "brands": [
+      "goodwe",
+      "saj"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW15KETAG20",
+      "DLK-GOODWE-GW83BATDG21",
+      "DLK-SAJ-H210KT3",
+      "DLK-SAJ-B2200HV1",
+      "DLK-GOODWE-GW30KSTSG10"
+    ],
+    "topics": [
+      "Self-consumption",
+      "Residential backup"
+    ],
+    "matrix": true
+  },
+  "indoor-vs-outdoor-battery-storage-planning": {
+    "technical": true,
+    "categories": [
+      "battery-systems",
+      "all-in-one-systems"
+    ],
+    "brands": [
+      "goodwe",
+      "saj"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW125261ESALCNG10",
+      "DLK-GOODWE-GW2612BATLCDG10",
+      "DLK-GOODWE-LXC15610",
+      "DLK-SAJ-CHS230KT4X",
+      "DLK-GOODWE-GW90BATDG20"
+    ],
+    "topics": [
+      "Battery enclosure and siting"
+    ],
+    "matrix": true
+  },
+  "installer-checklist-inverter-battery-pairing": {
+    "technical": true,
+    "categories": [
+      "inverters",
+      "battery-systems"
+    ],
+    "brands": [
+      "goodwe",
+      "saj"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW29999KETAG20",
+      "DLK-GOODWE-GW12499KETRG10",
+      "DLK-SAJ-H230KT3DE",
+      "DLK-SAJ-CHS2299KT4X",
+      "DLK-GOODWE-GW2089BATLCDG10"
+    ],
+    "topics": [
+      "Inverter and battery compatibility",
+      "Battery management systems"
+    ],
+    "matrix": true
+  },
+  "solar-plus-storage-commissioning-checklist": {
+    "technical": true,
+    "categories": [
+      "inverters",
+      "backup-power"
+    ],
+    "brands": [
+      "goodwe",
+      "saj"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW100KETG10",
+      "DLK-GOODWE-GW125KSTSG10",
+      "DLK-SAJ-H225KT3",
+      "DLK-SAJ-ATS1T63A",
+      "DLK-GOODWE-GM330"
+    ],
+    "topics": [
+      "System commissioning",
+      "Grid connection"
+    ],
+    "matrix": true
+  },
+  "gateway-meter-cloud-monitoring-data-layer": {
+    "technical": true,
+    "categories": [
+      "ems-monitoring",
+      "meters-current-transformers"
+    ],
+    "brands": [
+      "goodwe",
+      "saj",
+      "chint"
+    ],
+    "skus": [
+      "DLK-GOODWE-SEC3000C",
+      "DLK-GOODWE-EZMANAGER3000",
+      "DLK-GOODWE-GM330",
+      "DLK-SAJ-EMANAGERC1PRO",
+      "DLK-CHINT-DTSU666"
+    ],
+    "topics": [
+      "Energy meters",
+      "Data loggers"
+    ],
+    "matrix": true
+  },
+  "remote-monitoring-after-installation": {
+    "technical": true,
+    "categories": [
+      "ems-monitoring",
+      "accessories"
+    ],
+    "brands": [
+      "saj",
+      "goodwe"
+    ],
+    "skus": [
+      "DLK-SAJ-ESOLAR-AIO3",
+      "DLK-SAJ-EMANAGER",
+      "DLK-GOODWE-EZMANAGER3000",
+      "DLK-GOODWE-SEC3000C",
+      "DLK-GOODWE-GMK330"
+    ],
+    "topics": [
+      "Remote monitoring",
+      "Fault detection"
+    ],
+    "matrix": true
+  },
+  "installer-handover-documentation-checklist": {
+    "technical": true,
+    "categories": [
+      "commercial-storage",
+      "battery-systems"
+    ],
+    "brands": [
+      "goodwe",
+      "saj",
+      "pylontech"
+    ],
+    "skus": [
+      "DLK-GOODWE-GW9999KETRG10",
+      "DLK-GOODWE-GW12499KETRG10",
+      "DLK-SAJ-CHS2299KT4X",
+      "DLK-GOODWE-LXC10110",
+      "DLK-PYLONTECH-OPTIMUSL260OMNI"
+    ],
+    "topics": [
+      "Commissioning reports",
+      "Handover documentation"
+    ],
+    "matrix": true
+  }
+}

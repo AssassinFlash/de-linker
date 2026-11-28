@@ -8395,3 +8395,9 @@ msgstr ""
 
 msgid "See how Linker handles pre-delivery checks, certificates, and project supply from Barleben →"
 msgstr "So begleitet Linker aus Barleben Systemprüfung, Zertifikate und Lieferung →"
+
+msgid "Related Systems & Compatibility"
+msgstr "Passende Systeme & Kompatibilitätsmatrix"
+
+msgid "Planning & Commissioning Guides"
+msgstr "Planungs- & Installationsleitfäden"
