@@ -129,6 +129,39 @@ final class PublicationEvidenceTest extends IntegrationTestCase {
 		);
 	}
 
+	/** The edge tags for a shared PDF are invalidated by each native writer. */
+	public function test_shared_document_tags_follow_both_products_to_final_withdrawal(): void {
+		$first  = $this->published_product();
+		$second = $this->published_product();
+		$url    = $this->files( array( 'shared' ) )['shared']['url'];
+		$rows   = array( array( 'url' => $url ) );
+		update_post_meta( $first->get_id(), EngineeringData::DOCUMENTS_META_KEY, $rows );
+		update_post_meta( $second->get_id(), EngineeringData::DOCUMENTS_META_KEY, $rows );
+		$response = ( new DocumentAccess() )->response( DocumentFiles::resolve( $url ), 'GET' );
+		$this->assertTrue( $response['cacheable'] );
+		$this->assertContains( 'LK.prod.' . $first->get_id(), $response['tags'] );
+		$this->assertContains( 'LK.prod.' . $second->get_id(), $response['tags'] );
+		$purges  = array();
+		$observe = static function ( $tag ) use ( &$purges ): void {
+			$purges[] = $tag;
+		};
+		add_action( 'litespeed_purge', $observe );
+		try {
+			$first->set_status( 'draft' );
+			$first->save();
+			$this->assertContains( 'LK.prod.' . $first->get_id(), $purges );
+			$this->assertContains( 'LK.pdf.sitemap', $purges );
+			$this->assertSame( 200, $this->download_status( $url ) );
+			$purges = array();
+			delete_post_meta( $second->get_id(), EngineeringData::DOCUMENTS_META_KEY );
+			$this->assertContains( 'LK.prod.' . $second->get_id(), $purges );
+			$this->assertContains( 'LK.pdf.sitemap', $purges );
+			$this->assertSame( 410, $this->download_status( $url ) );
+		} finally {
+			remove_action( 'litespeed_purge', $observe );
+		}
+	}
+
 	/** One full catalogue read primes the PDF batch. A subsequent read honors a native withdrawal. */
 	public function test_full_catalog_primes_pdf_attachments_and_reads_current_permission(): void {
 		$product = $this->product( '100' );

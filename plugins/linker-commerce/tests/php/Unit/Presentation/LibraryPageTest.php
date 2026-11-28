@@ -11,7 +11,6 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\LibraryPage;
 use Linker\Commerce\Products\DocumentLibrary;
-use Linker\Commerce\Products\DocumentThumbnails;
 use Linker\Commerce\Products\TradeRules;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
@@ -65,18 +64,15 @@ final class LibraryPageTest extends TestCase {
 	private int $authority_reads = 0;
 
 	/**
-	 * Thumbnail-manifest fixtures this test wrote.
-	 *
-	 * @var list<string>
-	 */
-	private array $thumb_paths = array();
-
-	/**
 	 * A product of one brand with two files and one answer, the shape the
 	 * register reads.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( 'https://de-linker.test' );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnUsing( static fn( string $url ): string => rtrim( $url, '/' ) . '/' );
+		WP_Mock::userFunction( 'rest_url' )->andReturn( 'https://de-linker.test/wp-json/linker/v1/library-index' );
+		WP_Mock::userFunction( 'add_query_arg' )->andReturnUsing( static fn( string $key, string $value, string $url ): string => $url . '?' . $key . '=' . $value );
 		$this->plain_text();
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
@@ -203,17 +199,6 @@ final class LibraryPageTest extends TestCase {
 	}
 
 	/**
-	 * Removes the fixtures.
-	 */
-	public function tearDown(): void {
-		foreach ( $this->thumb_paths as $path ) {
-			unlink( $path );
-		}
-		$this->thumb_paths = array();
-		parent::tearDown();
-	}
-
-	/**
 	 * The FAQ tab: the trade rules from the page's own data file, then the
 	 * products' answers — each as a card with its own count, all open to
 	 * search-engine and no-JS readers.
@@ -230,9 +215,9 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( 'id="linker-library-zone-answers"', $html );
 		$this->assertStringContainsString( 'Is the module stackable?', $html );
 		$this->assertStringContainsString( 'Yes, up to four modules.', $html );
-		$this->assertStringContainsString( '<a href="https://de-linker.test/produkt/goodwe-gw5-1/">GoodWe GW5.1-BAT-D-G21</a>', $html );
+		$this->assertStringContainsString( '<a href="/produkt/goodwe-gw5-1/">GoodWe GW5.1-BAT-D-G21</a>', $html );
 		$this->assertStringContainsString( 'ESA battery manual, p. 12', $html );
-		$this->assertStringContainsString( 'href="https://de-linker.test/media/901.pdf#page=12"', $html );
+		$this->assertStringContainsString( 'href="/media/901.pdf#page=12"', $html );
 		$this->assertStringContainsString( 'data-library-card-count', $html );
 		$this->assertStringNotContainsString( 'data-library-group=', $html );
 		$this->assertStringNotContainsString( 'linker-library-qa-where', $html );
@@ -258,77 +243,21 @@ final class LibraryPageTest extends TestCase {
 
 		$this->assertStringContainsString( 'data-library-filters', $html );
 		self::assertStringNotContainsString( '<svg', $html );
-		self::assertStringContainsString( 'class="linker-library-thumb', $html );
-		$this->assertStringContainsString( 'data-library-skus=', $html );
-		$this->assertStringContainsString( 'DLK-EXAMPLE', $html );
-		$this->assertStringContainsString( 'aria-label="Document type"', $html );
+		$this->assertStringNotContainsString( 'data-library-skus=', $html );
+		$this->assertStringNotContainsString( 'faq-thumbs', $html );
+		$this->assertStringContainsString( 'data-library-brand="goodwe"', $html );
 		$this->assertStringContainsString( 'data-library-type="datasheet" aria-pressed="false"', $html );
-		$this->assertStringContainsString( 'Datasheet', $html );
-		$this->assertStringContainsString( 'Certificate', $html );
-		$this->assertStringContainsString( 'id="linker-library-zone-documents"', $html );
-		$this->assertStringContainsString( 'id="linker-library-docs-goodwe"', $html );
-		$this->assertStringContainsString( 'linker-library-doc-list', $html );
-		$this->assertStringContainsString( 'data-library-item data-library-type="datasheet"', $html );
-		$this->assertStringContainsString( 'ESA battery datasheet (EN)', $html );
-		$this->assertStringContainsString( 'covers GoodWe GW5.1-BAT-D-G21', $html );
-		$this->assertStringContainsString( 'href="https://de-linker.test/media/900.pdf"', $html );
-		$this->assertStringContainsString( 'Download', $html );
-		$this->assertStringContainsString( 'linker-library-lang', $html );
-		$this->assertStringNotContainsString( '<script', $html );
+		$this->assertStringContainsString( 'Grid Certificate (VDE · ZEREZ)', $html );
+		$this->assertStringContainsString( '<a href="/media/900.pdf"', $html );
+		$this->assertStringContainsString( '<a href="/produkt/goodwe-gw5-1/">GoodWe GW5.1-BAT-D-G21</a>', $html );
 	}
 
-	/**
-	 * Every document row carries the tile slot (the design gives each one a
-	 * 52x72 column): a row without a shipped thumbnail keeps the type tile
-	 * inside it, and the rows never change their shape between the two.
-	 */
-	public function test_a_document_without_a_thumbnail_keeps_its_type_tile(): void {
-		$html = ( new LibraryPage( $this->library() ) )->documents();
-
-		$this->assertSame( 2, substr_count( $html, '<li class="linker-library-doc has-tile"' ), 'one row class for every row' );
-		$this->assertStringContainsString( 'linker-library-thumb is-type is-datasheet', $html );
-		$this->assertStringNotContainsString( 'has-src', $html );
-		$this->assertStringNotContainsString( '<img src="https://de-linker.test/wp-content/plugins/linker-commerce/assets/faq-thumbs/', $html );
-	}
-
-	/**
-	 * A manifest hit: the row's tile carries the page image (`has-src` hides the
-	 * type icon while it is there) and the image states the size the pipeline
-	 * recorded.
-	 */
-	public function test_a_document_with_a_thumbnail_prints_its_page_image(): void {
-		$page = new LibraryPage( $this->library(), null, new DocumentThumbnails( $this->manifest() ) );
-		$html = $page->documents();
-
-		$this->assertStringContainsString(
-			'<span class="linker-library-thumb has-src" aria-hidden="true"><img src="https://de-linker.test/wp-content/plugins/linker-commerce/assets/faq-thumbs/0123456789abcdef0123456789abcdef01234567.webp" alt="" width="153" height="216" loading="lazy" decoding="async">',
-			$html
-		);
-		$this->assertStringContainsString( 'has-tile', $html, "the tile slot is the row's, thumbnail or not" );
-		$this->assertStringContainsString( 'linker-library-thumb is-type is-certificate', $html, 'the file with no manifest entry keeps its type tile' );
-	}
-
-	/**
-	 * A manifest carrying the two files the register lists: one entry, and the
-	 * certificate left out.
-	 */
-	private function manifest(): string {
-		$path = sys_get_temp_dir() . '/linker-commerce-library-thumbs-' . bin2hex( random_bytes( 6 ) ) . '.json';
-		file_put_contents( // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a temp fixture on this machine.
-			$path,
-			(string) json_encode(
-				array(
-					'/media/900.pdf' => array(
-						'file'   => '0123456789abcdef0123456789abcdef01234567.webp',
-						'width'  => 153,
-						'height' => 216,
-					),
-				)
-			)
-		);
-		$this->thumb_paths[] = $path;
-
-		return $path;
+	/** Each primary planning file and its counterpart are linked in the static page. */
+	public function test_toolkit_links_both_editions_of_every_resource(): void {
+		$html = ( new LibraryPage() )->toolkit();
+		$this->assertSame( 4, substr_count( $html, 'class="lk-toolkit-card"' ) );
+		$this->assertSame( 8, substr_count( $html, 'href="https://de-linker.test/downloads/engineering-toolkit/' ) );
+		$this->assertSame( 2, substr_count( $html, ' download>' ) );
 	}
 
 	/**
@@ -421,14 +350,16 @@ final class LibraryPageTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'tab'  => 'documents',
-				'type' => 'certificate',
+				'tab'   => 'documents',
+				'brand' => 'goodwe',
+				'type'  => 'certificate',
 			),
 			LibraryPage::language_query(
 				array(
 					'q'       => 'GW10K-EHA-G20',
 					'tab'     => 'documents',
 					'type'    => 'certificate',
+					'brand'   => 'goodwe',
 					'private' => 'discard',
 				)
 			)
@@ -492,7 +423,7 @@ final class LibraryPageTest extends TestCase {
 			array(),
 			LibraryPage::language_query(
 				array(
-					'tab'  => 'faq',
+					'tab'  => 'other',
 					'type' => 'all',
 				)
 			)
@@ -693,7 +624,7 @@ final class LibraryPageTest extends TestCase {
 					),
 				)
 			);
-			WP_Mock::userFunction( 'get_option', array( 'return' => array() ) );
+			WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
 
 			ob_start();
 			( new LibraryPage( $this->library(), new TradeRules( $path ) ) )->print_schema();
@@ -703,14 +634,19 @@ final class LibraryPageTest extends TestCase {
 			$this->assertNotSame( '', $encoded );
 			$schema = json_decode( $encoded, true, 512, JSON_THROW_ON_ERROR );
 			$this->assertIsArray( $schema );
+			$nodes = array_column( $schema['@graph'], null, '@type' );
+			$this->assertArrayHasKey( 'DataCatalog', $nodes );
+			$this->assertArrayHasKey( 'Dataset', $nodes );
+			$this->assertSame( 4, count( $nodes['DataCatalog']['hasPart'] ) );
+			$schema    = $nodes['FAQPage'];
 			$questions = array_column( $schema['mainEntity'], 'name' );
 			$this->assertContains( $prefix . '1', $questions );
 			$this->assertContains( $prefix . '20', $questions );
-			$this->assertNotContains( $prefix . '21', $questions );
+			$this->assertContains( $prefix . '21', $questions );
 			$this->assertSame( $answer, $schema['mainEntity'][0]['acceptedAnswer']['text'] );
 			$this->assertStringNotContainsString( '<a ', $schema['mainEntity'][0]['acceptedAnswer']['text'] );
 			$this->assertSame(
-				20,
+				21,
 				count(
 					array_filter(
 						$questions,

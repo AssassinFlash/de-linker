@@ -250,6 +250,7 @@ final class DocumentFilesTest extends TestCase {
 		$rules = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule . /index.php [L]\n";
 		$after = ( new DocumentAccess() )->rewrite_rules( $rules );
 		self::assertStringContainsString( 'linker_public_document=$1 [END,NC,QSA]', $after );
+		self::assertStringNotContainsString( 'Cache-Control:no-cache', $after );
 		self::assertLessThan( strpos( $after, 'REQUEST_FILENAME' ), strpos( $after, 'linker_public_document=' ) );
 	}
 
@@ -260,7 +261,7 @@ final class DocumentFilesTest extends TestCase {
 		$response = ( new DocumentAccess() )->response( $file, 'GET' );
 		self::assertSame( 503, $response['status'] );
 		self::assertArrayNotHasKey( 'Link', $response['headers'] );
-		self::assertArrayNotHasKey( 'X-Robots-Tag', $response['headers'] );
+		self::assertSame( 'noindex, nofollow', $response['headers']['X-Robots-Tag'] );
 		self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
 		self::assertSame( 0, $response['length'] );
 	}
@@ -274,7 +275,9 @@ final class DocumentFilesTest extends TestCase {
 			$response = $access->response( $requested, $method );
 			self::assertSame( $status, $response['status'] );
 			self::assertSame( '0', $response['headers']['Content-Length'] );
-			foreach ( array( 'X-Robots-Tag', 'Content-Disposition', 'Link' ) as $header ) {
+			self::assertSame( 'noindex, nofollow', $response['headers']['X-Robots-Tag'] );
+			self::assertFalse( $response['cacheable'] );
+			foreach ( array( 'Content-Disposition', 'Link' ) as $header ) {
 				self::assertArrayNotHasKey( $header, $response['headers'] );
 			}
 		}
@@ -282,7 +285,7 @@ final class DocumentFilesTest extends TestCase {
 			$response = $access->response( $file, 'GET', '', $sha );
 			self::assertSame( 410, $response['status'] );
 			self::assertArrayNotHasKey( 'Link', $response['headers'] );
-			self::assertArrayNotHasKey( 'X-Robots-Tag', $response['headers'] );
+			self::assertSame( 'noindex, nofollow', $response['headers']['X-Robots-Tag'] );
 			self::assertArrayNotHasKey( 'Content-Disposition', $response['headers'] );
 			self::assertSame( 0, $response['length'] );
 		}

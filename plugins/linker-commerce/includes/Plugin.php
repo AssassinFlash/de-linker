@@ -103,6 +103,8 @@ final class Plugin {
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
 		( new Storefront\SitemapSync() )->register();
+		( new Storefront\PdfSitemap() )->register();
+		( new Products\ToolkitEndpoint() )->register();
 		( new Consent\BasicMode() )->register();
 		( new Presentation\BlockStyles() )->register();
 		( new Products\Publication\Module() )->register();

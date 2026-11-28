@@ -161,7 +161,7 @@
 #linker-faq-page .linker-library-card-head > .linker-library-n { flex: none; font-size: 13px; }
 #linker-faq-page .linker-library-logo { flex: 0 1 auto; display: flex; align-items: center; height: 34px; max-width: min(200px, 46%); }
 #linker-faq-page .linker-library-logo img { height: 34px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; }
-#linker-faq-page .linker-library-mark { display: inline-flex; align-items: center; justify-content: center; flex: none; min-width: 32px; height: 32px; padding: 0 6px; border-radius: 9px; background: #e7f3f1; color: var(--ll-accent-dark); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
+#linker-faq-page .linker-library-mark { display: inline-flex; align-items: center; justify-content: center; flex: none; min-width: 44px; min-height: 44px; padding: 0 6px; border-radius: 9px; background: #e7f3f1; color: var(--ll-accent-dark); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
 
 /* ---- question rows ---- */
 #linker-faq-page .linker-library-qa { border-bottom: 1px solid var(--ll-mist); scroll-margin-top: calc(var(--ll-header-h) + var(--ll-sticky) + 12px); }
@@ -187,71 +187,11 @@
 /* ---- document rows ---- */
 #linker-faq-page .linker-library-filters { display: flex; gap: 4px; align-items: center; margin: 16px 0 2px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 #linker-faq-page .linker-library-filters::-webkit-scrollbar { display: none; }
-#linker-faq-page .linker-library-chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--ll-muted); text-decoration: none; font-family: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+#linker-faq-page .linker-library-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--ll-muted); text-decoration: none; font-family: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
 #linker-faq-page .linker-library-chip:hover { background: rgba(21, 53, 47, 0.05); color: var(--ll-ink); }
 #linker-faq-page .linker-library-chip[aria-pressed="true"] { background: #fff; color: var(--ll-ink); border-color: var(--ll-line); box-shadow: 0 1px 2px rgba(21, 53, 47, 0.06); }
 #linker-faq-page .linker-library-chip .linker-library-n { font-size: 11px; }
 #linker-faq-page .linker-library-chip[aria-pressed="true"] .linker-library-n { color: var(--ll-muted); }
-#linker-faq-page .linker-library-doc { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "lead dl" "meta dl"; gap: 4px 14px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--ll-mist); transition: background 0.12s ease; }
-#linker-faq-page .linker-library-doc:last-child { border-bottom: 0; }
-#linker-faq-page .linker-library-doc:hover { background: rgba(255, 255, 255, 0.38); }
-#linker-faq-page .linker-library-doc-lead { grid-area: lead; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: flex-start; min-width: 0; }
-#linker-faq-page .linker-library-doc-title { flex: 1 1 180px; min-width: 0; font-size: 15px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
-#linker-faq-page .linker-library-doc-meta { grid-area: meta; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; color: var(--ll-muted); }
-#linker-faq-page .linker-library-lang { display: inline-flex; align-items: center; min-height: 22px; padding: 0 8px; border: 1px solid var(--ll-line); border-radius: 999px; background: var(--ll-mist); color: var(--ll-ink); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
-#linker-faq-page .linker-library-dl { grid-area: dl; align-self: center; justify-self: end; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 8px 12px; border: 1px solid var(--ll-line); border-radius: 8px; background: #fff; color: var(--ll-accent-dark); text-decoration: none; font-size: 13px; font-weight: 700; white-space: nowrap; }
-#linker-faq-page .linker-library-dl:hover { border-color: var(--ll-accent); background: #f3fbfa; }
-#linker-faq-page .linker-library-dl:active { background: var(--ll-accent); color: #fff; border-color: var(--ll-accent); }
-#linker-faq-page .linker-library-badge { display: inline-flex; align-items: center; min-height: 22px; padding: 0 8px; border: 1px solid var(--ll-line); border-radius: 999px; background: var(--ll-mist); color: var(--ll-ink); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
-#linker-faq-page .linker-library-badge.is-datasheet { background: #e5f4f2; color: var(--ll-accent-dark); }
-#linker-faq-page .linker-library-badge.is-manual { background: #e8eef2; color: #1d3d4a; }
-#linker-faq-page .linker-library-badge.is-certificate { background: #f3efe4; color: #6a5420; }
-#linker-faq-page .linker-library-badge.is-compatibility { background: #e7eef6; color: #1e3f66; }
-#linker-faq-page .linker-library-badge.is-warranty { background: #f6ebe6; color: #7a3e2e; }
-#linker-faq-page .linker-library-badge.is-brochure { background: #eeeaf4; color: #3d3560; }
-#linker-faq-page .linker-library-thumb { grid-area: thumb; width: 52px; height: 72px; flex: none; display: grid; place-items: center; overflow: hidden; position: relative; border: 1px solid rgba(21, 53, 47, 0.14); border-radius: 3px; background: #fff; color: var(--ll-muted); box-shadow: 0 1px 2px rgba(21, 53, 47, 0.05), 0 4px 12px rgba(21, 53, 47, 0.07); }
-#linker-faq-page .linker-library-thumb::before {
-	content: "";
-	display: block;
-	flex: none;
-	width: 18px;
-	height: 18px;
-	background-color: currentColor;
-	--library-mask: url("data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22black%22 stroke-width%3D%221.8%22%3E%3Cpath d%3D%22M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z%22%2F%3E%3Cpath d%3D%22M14 3v6h6%22%2F%3E%3C%2Fsvg%3E");
-	-webkit-mask: var(--library-mask) center / contain no-repeat;
-	mask: var(--library-mask) center / contain no-repeat;
-}
-#linker-faq-page .linker-library-dl::after {
-	content: "";
-	display: block;
-	flex: none;
-	width: 14px;
-	height: 14px;
-	background-color: currentColor;
-	--library-mask: url("data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22black%22 stroke-width%3D%222%22%3E%3Cpath d%3D%22M12 3v12m0 0l-4-4m4 4l4-4M4 21h16%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
-	-webkit-mask: var(--library-mask) center / contain no-repeat;
-	mask: var(--library-mask) center / contain no-repeat;
-}
-#linker-faq-page .linker-library-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-/* Keep a type icon until this particular image has loaded. A search clone
- * may have a source URL before its own readiness listener has completed. */
-#linker-faq-page:not(.is-enhanced) .linker-library-thumb.has-src::before,
-#linker-faq-page .linker-library-thumb.has-img::before { visibility: hidden; }
-#linker-faq-page.is-enhanced .linker-library-thumb.has-src img { opacity: 0; transition: opacity 0.16s linear; }
-#linker-faq-page.is-enhanced .linker-library-thumb.has-img img { opacity: 1; }
-#linker-faq-page .linker-library-thumb.is-type.is-datasheet { background: #e5f4f2; color: var(--ll-accent-dark); }
-#linker-faq-page .linker-library-thumb.is-type.is-manual { background: #e8eef2; color: #1d3d4a; }
-#linker-faq-page .linker-library-thumb.is-type.is-certificate { background: #f3efe4; color: #6a5420; }
-#linker-faq-page .linker-library-thumb.is-type.is-compatibility { background: #e7eef6; color: #1e3f66; }
-#linker-faq-page .linker-library-thumb.is-type.is-warranty { background: #f6ebe6; color: #7a3e2e; }
-#linker-faq-page .linker-library-thumb.is-type.is-brochure { background: #eeeaf4; color: #3d3560; }
-#linker-faq-page .linker-library-thumb.is-type.is-document { background: var(--ll-mist); color: #3e524c; }
-/* Every row has the tile slot (the fragments print `has-tile` on all of them):
- * a row without a thumbnail keeps the same 52x72 column with its type icon in
- * it, so the rows do not shift between one and two grid columns. */
-#linker-faq-page .linker-library-doc.has-tile { grid-template-columns: 52px minmax(0, 1fr) auto; grid-template-areas: "thumb lead dl" "thumb meta dl"; align-items: start; }
-#linker-faq-page .linker-library-doc.has-tile .linker-library-thumb { margin-top: 1px; }
-
 /* ---- the search's flat result list ---- */
 #linker-faq-page .linker-library-results { margin-top: 16px; }
 #linker-faq-page .linker-library-hit { border-bottom: 1px solid var(--ll-line); }
@@ -263,7 +203,7 @@
 
 /* ---- pager, empty states ---- */
 #linker-faq-page .linker-library-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; padding: 10px 14px 14px; }
-#linker-faq-page .linker-library-pager button { min-width: 32px; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: inherit; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+#linker-faq-page .linker-library-pager button { min-width: 44px; min-height: 44px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: inherit; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 #linker-faq-page .linker-library-pager button:hover { background: rgba(21, 53, 47, 0.05); }
 #linker-faq-page .linker-library-pager button:active { background: rgba(21, 53, 47, 0.09); }
 #linker-faq-page .linker-library-pager button[aria-current="page"] { background: rgba(255, 255, 255, 0.9); border-color: var(--ll-line); box-shadow: var(--ll-shadow); }
@@ -300,7 +240,7 @@
 	#linker-faq-page .linker-library-chips { --ll-chip-fade: 24px; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--ll-chip-fade), #000 calc(100% - var(--ll-chip-fade)), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 var(--ll-chip-fade), #000 calc(100% - var(--ll-chip-fade)), transparent 100%); }
 	#linker-faq-page .linker-library-chips-scroll { display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; padding: 10px var(--ll-pad); scroll-snap-type: x mandatory; scroll-padding-inline: var(--ll-pad); }
 	#linker-faq-page .linker-library-chips-scroll::-webkit-scrollbar { display: none; }
-	#linker-faq-page .linker-library-chips .linker-library-chip { height: 34px; padding: 0 12px; flex: none; border-color: var(--ll-line); background: #fff; color: var(--ll-ink); scroll-snap-align: start; }
+	#linker-faq-page .linker-library-chips .linker-library-chip { min-height: 44px; padding: 0 14px; flex: none; border-color: var(--ll-line); background: #fff; color: var(--ll-ink); scroll-snap-align: start; }
 	#linker-faq-page .linker-library-chips .linker-library-chip.is-active { background: #fff; color: var(--ll-ink); border-color: var(--ll-line); box-shadow: var(--ll-shadow); }
 	#linker-faq-page .linker-library-chips .linker-library-chip.is-active .linker-library-n { color: var(--ll-muted); }
 	#linker-faq-page .linker-library-chip-gap { width: 1px; background: var(--ll-line); flex: none; align-self: stretch; margin: 6px 2px; }
@@ -324,7 +264,7 @@
 	/* Keep the localized count out of the input row. Its existing 28px line
 	 * has the existing 8px gap above and below (28 + 8 + 8 = 44px).
 	 * The suggestion box still starts below the unchanged 52px search row. */
-	#linker-faq-page.is-enhanced .linker-library-searchbox { margin-bottom: 44px; }
+
 	/* The filtered search is the containing block: include its 1px bottom
 	 * border so the visible outer-edge gap is the intended 8px. */
 	/* Use the existing ink on the exposed gradient; the muted token has
@@ -346,4 +286,88 @@
 @media (prefers-reduced-motion: reduce) {
 	#linker-faq-page * { transition: none !important; animation: none !important; }
 	#linker-faq-page .linker-library-thumb img { opacity: 1; }
+}
+
+/* Technical document centre */
+#linker-faq-page { background: var(--ll-canvas); font-variant-numeric: tabular-nums; }
+#linker-faq-page .linker-library-hero { padding: clamp(26px,4vw,54px) 0 0; text-align: left; }
+#linker-faq-page .linker-library-hero::before { display: none; }
+#linker-faq-page .linker-library-title { margin-inline: 0; max-width: none; font-size: clamp(31px,3.2vw,48px); line-height: 1.1; letter-spacing: -.045em; }
+#linker-faq-page .linker-library-sub { margin: 12px 0 0; max-width: 72ch; }
+#linker-faq-page .linker-library-searchbox { margin: 22px 0 0; max-width: 700px; }
+#linker-faq-page .lk-toolkit-band { display: grid; grid-template-columns: minmax(0,1fr) minmax(0, min(32%, 43ch)); grid-template-areas: "heading note" "cards cards"; align-items: end; gap: 22px 28px; padding-block: clamp(30px,4vw,50px); }
+#linker-faq-page .lk-toolkit-intro { grid-area: heading; }
+#linker-faq-page .lk-toolkit-eyebrow { margin-bottom: 6px; color: var(--ll-accent-dark); font-size: 12px; font-weight: 700; letter-spacing: .085em; text-transform: uppercase; }
+#linker-faq-page .lk-toolkit-intro h2 { font-size: clamp(22px,2.1vw,32px); line-height: 1.2; letter-spacing: -.035em; text-wrap: balance; }
+#linker-faq-page .lk-toolkit-note { grid-area: note; max-width: 43ch; font-size: 13px; line-height: 1.55; color: var(--ll-muted); }
+#linker-faq-page .lk-toolkit-grid { grid-area: cards; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
+#linker-faq-page .lk-toolkit-card { display: flex; flex-direction: column; align-items: stretch; gap: 12px; min-width: 0; padding: 24px; background: #fff; border: 1px solid #d7dde4; border-radius: 22px; box-shadow: var(--ll-shadow); }
+#linker-faq-page .lk-toolkit-card h3 { font-size: clamp(18px,1.5vw,22px); line-height: 1.2; letter-spacing: -.03em; overflow-wrap: anywhere; }
+#linker-faq-page .lk-toolkit-card > p { color: var(--ll-muted); font-size: 13px; line-height: 1.55; letter-spacing: -.012em; hyphens: auto; }
+#linker-faq-page .lk-file-meta,#linker-faq-page .lk-file-revision,#linker-faq-page .lk-file-links { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+#linker-faq-page .lk-file-meta,#linker-faq-page .lk-file-revision { font: 500 11px/1.45 ui-monospace,monospace; font-variant-numeric: tabular-nums; color: var(--ll-accent-dark); }
+#linker-faq-page .lk-file-meta { justify-content: space-between; }
+#linker-faq-page .lk-file-meta > span:last-child { background: #f1f9f8; border-radius: 4px; padding: 3px 7px; }
+#linker-faq-page .lk-file-revision { margin-top: auto; padding-top: 10px; color: var(--ll-muted); justify-content: space-between; }
+#linker-faq-page .lk-file-symbol { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: #f1f9f8; color: var(--ll-accent); }
+#linker-faq-page .lk-file-symbol::before { content: ""; display: block; width: 24px; height: 28px; border: 1.5px solid currentColor; border-radius: 3px; background: repeating-linear-gradient(0deg,transparent 0 5px,currentColor 5px 6px) center/14px 17px no-repeat; }
+#linker-faq-page .lk-file-symbol[data-suite="compatibility"]::before { background: repeating-linear-gradient(90deg,transparent 0 4px,currentColor 4px 5px) center/16px 16px no-repeat; }
+#linker-faq-page .lk-file-symbol[data-suite="comparison"]::before { background: linear-gradient(90deg,currentColor 0 18%,transparent 18% 35%,currentColor 35% 65%,transparent 65% 82%,currentColor 82%) center/13px 12px no-repeat; }
+#linker-faq-page .lk-file-symbol[data-suite="load-profile"]::before { background: repeating-linear-gradient(90deg,transparent 0 5px,currentColor 5px 6px) center/16px 15px no-repeat,repeating-linear-gradient(0deg,transparent 0 5px,currentColor 5px 6px) center/16px 15px no-repeat; }
+#linker-faq-page .lk-file-links { justify-content: space-between; border-top: 1px solid var(--ll-line); padding-top: 12px; }
+#linker-faq-page .lk-file-links a { display: inline-flex; min-height: 44px; align-items: center; color: var(--ll-accent-dark); font-size: 13px; font-weight: 600; }
+#linker-faq-page .lk-file-links .lk-toolkit-cta { height: 48px; border-radius: 8px; padding: 0 14px; background: #15352f; color: white; text-decoration: none; }
+#linker-faq-page .lk-file-links .lk-toolkit-cta:hover { background: #0c7f73; }
+#linker-faq-page .linker-library-panel + .linker-library-panel { margin-top: 42px; }
+#linker-faq-page .linker-library-filters { display: grid; gap: 12px; overflow: visible; margin: 0 0 22px; }
+#linker-faq-page .linker-library-filters fieldset { display: flex; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0; }
+#linker-faq-page .linker-library-filters legend { margin: 0 0 5px; padding: 0; color: var(--ll-muted); font-size: 13px; font-weight: 600; }
+#linker-faq-page .linker-library-filters button { min-height: 44px; border-color: var(--ll-line); border-radius: 9px; padding: 0 14px; background: white; }
+#linker-faq-page .linker-library-filters button[aria-pressed="true"] { background: #15352f; color: white; }
+#linker-faq-page .linker-library-filters button[aria-pressed="true"] span { color: inherit; }
+#linker-faq-page .linker-library-card { border-radius: 18px; background: white; border-color: var(--ll-line); }
+#linker-faq-page li[data-t] { display: grid; grid-template-columns: minmax(0,1.7fr) minmax(85px,.6fr) minmax(0,1fr); align-items: center; gap: 6px 18px; padding: 8px 18px; border-bottom: 1px solid var(--ll-mist); overflow-wrap: anywhere; }
+#linker-faq-page li[data-t] > a:first-child { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--ll-ink); font-weight: 600; line-height: 1.4; text-decoration: none; }
+#linker-faq-page li[data-t] > a:first-child::after { content: "PDF ↗"; color: var(--ll-accent-dark); font: 600 10px/1.4 ui-monospace,monospace; white-space: nowrap; }
+#linker-faq-page li[data-t] > i { font-style: normal; font-size: 12px; color: var(--ll-muted); }
+#linker-faq-page li[data-t] > p { font-size: 13px; color: var(--ll-muted); }
+#linker-faq-page li[data-t] > p > a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ll-accent-dark); text-underline-offset: 3px; }
+#linker-faq-page .lk-library-help .linker-library-help { margin: 0 0 4px; }
+#linker-faq-page .linker-library-help a,#linker-faq-page .linker-library-toc a,#linker-faq-page .linker-library-rail-label a { display: inline-flex; align-items: center; min-height: 44px; }
+@media (min-width:1200px) {
+	#linker-faq-page { --ll-container: 1512px; --ll-pad: clamp(20px,2vw,40px); }
+	#linker-faq-page .lk-toolkit-grid { gap: 12px; }
+}
+@media (max-width:1199px) { #linker-faq-page .lk-toolkit-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width:719px) {
+	#linker-faq-page .lk-toolkit-grid { grid-template-columns: minmax(0,1fr); }
+	#linker-faq-page .lk-toolkit-band { grid-template-columns: minmax(0,1fr); grid-template-areas: "heading" "cards" "note"; gap: 16px; }
+	#linker-faq-page .linker-library-searchbox { margin-bottom: 32px; }
+	#linker-faq-page .lk-toolkit-card { padding: 24px; }
+	#linker-faq-page li[data-t] { grid-template-columns: minmax(0,1fr) auto; column-gap: 4px; padding: 10px 14px; }
+	#linker-faq-page li[data-t] > a:first-child { grid-column: 1/-1; }
+	#linker-faq-page li[data-t] > i { grid-column: 2; grid-row: 2; }
+	#linker-faq-page li[data-t] > p { grid-column: 1; grid-row: 2; }
+}
+
+#linker-faq-page .linker-library-layout { display: block; }
+#linker-faq-page .linker-library-qa-head { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2px 10px; }
+#linker-faq-page .linker-library-qa-head > .linker-library-qa-product,#linker-faq-page .linker-library-qa-head > .linker-library-qa-q { grid-column: 1; }
+#linker-faq-page .linker-library-qa-head::after { grid-column: 2; grid-row: 1/-1; }
+
+#linker-faq-page .lk-library-help { margin-top: 6px; }
+#linker-faq-page .lk-library-help > summary { display: flex; align-items: center; gap: 8px; min-height: 44px; width: fit-content; list-style: none; cursor: pointer; color: var(--ll-accent-dark); font-size: 14px; font-weight: 600; }
+#linker-faq-page .lk-library-help > summary::-webkit-details-marker { display: none; }
+#linker-faq-page .lk-library-help > summary::after { content: ""; width: 7px; height: 7px; border-right: 1.5px solid; border-bottom: 1.5px solid; transform: rotate(45deg); }
+#linker-faq-page .lk-library-help[open] > summary::after { transform: rotate(225deg); }
+#linker-faq-page .lk-library-help .linker-genie-chip { margin: 8px 6px 0 0; }
+@media (min-width:1000px) {
+	#linker-faq-page .linker-library-hero-inner { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr); gap: 0 clamp(28px,4vw,72px); }
+	#linker-faq-page .linker-library-hero-inner > :not(.lk-library-help) { grid-column: 1; }
+	#linker-faq-page .lk-library-help { grid-column: 2; grid-row: 1 / span 3; align-self: start; min-height: 170px; padding-left: 24px; border-left: 1px solid var(--ll-line); margin: 0; }
+}
+@media (max-width:719px) {
+	#linker-faq-page .linker-library-hero .linker-library-searchbox { margin-bottom: 0; }
+	#linker-faq-page .lk-library-help { padding-top: 0; }
+	#linker-faq-page .lk-toolkit-band { padding-top: 24px; }
 }

@@ -23,7 +23,8 @@ docs/acceptance/**/548/**/*.diff -whitespace
 docs/acceptance/2026-10-22/548/geographic-probes/e1380d49-spec/test_independent_spec.py -whitespace
 docs/acceptance/2026-10-22/548/handover-probes/probe-legacy-edges.original.php -whitespace
 
-# Preserve the browser's exact CSV download bytes, including CRLF.
+# Preserve exact CSV download bytes, including CRLF.
+plugins/linker-commerce/data/engineering-toolkit/*.csv -text -whitespace
 docs/acceptance/2026-10-25/548/trace-ui/de-intervals-1-100.csv -text -whitespace
 docs/acceptance/2026-10-25/548/unified-materials-report-*.csv -text -whitespace
 docs/acceptance/2026-10-25/548/installation-report-*.csv -text -whitespace

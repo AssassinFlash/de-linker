@@ -159,14 +159,16 @@ msgstr "Schließen"
 msgid "Review account"
 msgstr "Konto prüfen"
 
+#. translators: %s: public team email address.
 #: build/protection.js:1
+#, javascript-format
 msgid ""
 "Verification could not be completed. No request has been sent in this "
-"attempt. Please try again or email sales@de-linker.com."
+"attempt. Please try again or email %s."
 msgstr ""
 "Die Prüfung konnte nicht abgeschlossen werden. Bei diesem Versuch wurde noch "
 "keine Anfrage gesendet. Bitte versuchen Sie es erneut oder schreiben Sie an "
-"sales@de-linker.com."
+"%s."
 
 #: build/protection.js:1
 msgid "Verifying, please wait…"
@@ -5209,7 +5211,7 @@ msgstr ""
 "wurde noch keine Anfrage gesendet. Ihre Angaben bleiben erhalten. Sie können "
 "es erneut versuchen oder uns unter %s schreiben."
 
-#: includes/Protection/Business.php:183
+#: build/protection.js:1 includes/Protection/Business.php:183
 msgid ""
 "Verification could not be completed. No request has been sent in this "
 "attempt. Your entries are still here. Please try again."
@@ -7268,6 +7270,65 @@ msgid ""
 msgstr ""
 "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. "
 "Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
+
+#: includes/Presentation/LibraryPage.php:379
+msgid "Filter by brand"
+msgstr "Nach Marke filtern"
+
+#: includes/Presentation/LibraryPage.php:380
+msgid "All brands"
+msgstr "Alle Marken"
+
+#: includes/Presentation/LibraryPage.php:389
+msgid "Grid Certificate (VDE · ZEREZ)"
+msgstr "Netzzertifikat (VDE · ZEREZ)"
+
+#: includes/Presentation/LibraryPage.php:406
+msgid "Manufacturer Certifications & Technical Document Library"
+msgstr "Herstellerzertifikate & Technische Dokumentenbibliothek"
+
+#: includes/Presentation/LibraryPage.php:446
+msgid "The full index could not be loaded. Please try again."
+msgstr "Das vollständige Verzeichnis konnte nicht geladen werden. Bitte versuchen Sie es erneut."
+
+#: includes/Presentation/LibraryPage.php:529
+msgid "Linker Engineering Toolkit"
+msgstr "Linker Planungs- & Auslegungspaket"
+
+#: includes/Presentation/LibraryPage.php:530
+msgid "Direct engineering references — no form required"
+msgstr "Praxisnahe Planungsunterlagen — direkt ohne Formular"
+
+#: includes/Presentation/LibraryPage.php:531
+msgid "Technical parameters verified as of 2026-11. Net project pricing, availability, and delivery terms apply per formal written quotation."
+msgstr "Technische Kennwerte geprüft zum Stand 2026-11. Netto-Projektpreise, Verfügbarkeit und Lieferkonditionen gelten gemäß schriftlichem Projektangebot."
+
+#: includes/Presentation/LibraryPage.php:537
+#, php-format
+msgid "%d pages"
+msgstr "%d Seiten"
+
+#: includes/Presentation/LibraryPage.php:538
+#, php-format
+msgid "%d intervals"
+msgstr "%d Intervalle"
+
+#: includes/Presentation/LibraryPage.php:542
+msgid "Download CSV"
+msgstr "CSV herunterladen"
+
+#: includes/Presentation/LibraryPage.php:681
+#, php-format
+msgid "%d manufacturer documents"
+msgstr "%d Herstellerdokumente"
+
+#: includes/Presentation/LibraryPage.php:691
+msgid "Linker Technical Document & Engineering Toolkit Library"
+msgstr "Linker Technische Dokumentenbibliothek & Planungspaket"
+
+#: includes/Presentation/LibraryPage.php:692
+msgid "Datasheets, VDE grid certificates, compatibility references, and project planning templates for installers and EPCs."
+msgstr "Datenblätter, VDE-Netzanschlusszertifikate, Freigabelisten und Planungsvorlagen für Installationsbetriebe und EPCs."
 
 #~ msgid "Other models in this series"
 #~ msgstr "Weitere Modelle dieser Serie"

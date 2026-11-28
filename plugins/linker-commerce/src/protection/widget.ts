@@ -1,12 +1,22 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { FormAction, TurnstileApi, WidgetConfig, Widgets } from './types';
 
 const scriptUrl =
 	'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
-function failureMessage(): string {
+function failureMessage( supportEmail: string ): string {
+	if ( supportEmail ) {
+		return sprintf(
+			/* translators: %s: public team email address. */
+			__(
+				'Verification could not be completed. No request has been sent in this attempt. Please try again or email %s.',
+				'linker-commerce'
+			),
+			supportEmail
+		);
+	}
 	return __(
-		'Verification could not be completed. No request has been sent in this attempt. Please try again or email sales@de-linker.com.',
+		'Verification could not be completed. No request has been sent in this attempt. Your entries are still here. Please try again.',
 		'linker-commerce'
 	);
 }
@@ -69,7 +79,7 @@ export function createWidgets( config: WidgetConfig ): Widgets {
 		}
 		function failed() {
 			onToken?.( '' );
-			feedback( failureMessage() );
+			feedback( failureMessage( config.supportEmail ) );
 			retry.hidden = false;
 			return true;
 		}

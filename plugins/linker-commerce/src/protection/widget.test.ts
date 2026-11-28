@@ -11,7 +11,11 @@ it( 'leaves an ordinary product or draft page untouched', () => {
 	document.body.innerHTML = '<a href="/product/battery/">Battery</a>';
 	const api = { render: vi.fn(), remove: vi.fn(), reset: vi.fn() };
 	window.turnstile = api;
-	const widgets = createWidgets( { siteKey: 'public-key', language: 'en' } );
+	const widgets = createWidgets( {
+		siteKey: 'public-key',
+		supportEmail: 'sales@de-linker.com',
+		language: 'en',
+	} );
 	connectForms( document, widgets );
 	expect( api.render ).not.toHaveBeenCalled();
 	expect( document.querySelector( 'script[src*="cloudflare"]' ) ).toBeNull();
@@ -30,7 +34,11 @@ it( 'uses a fresh native response after expiry and keeps typed form fields', asy
 		remove: vi.fn(),
 	};
 	window.turnstile = api;
-	const widgets = createWidgets( { siteKey: 'public-key', language: 'de' } );
+	const widgets = createWidgets( {
+		siteKey: 'public-key',
+		supportEmail: 'sales@de-linker.com',
+		language: 'de',
+	} );
 	connectForms( document, widgets );
 	await vi.waitFor( () => expect( api.render ).toHaveBeenCalledOnce() );
 	expect( options!.action ).toBe( 'contact' );
@@ -62,7 +70,11 @@ it( 'keeps an incomplete protected form on screen and allows native submission o
 	};
 	connectForms(
 		document,
-		createWidgets( { siteKey: 'public-key', language: 'de' } )
+		createWidgets( {
+			siteKey: 'public-key',
+			supportEmail: 'sales@de-linker.com',
+			language: 'de',
+		} )
 	);
 	const form = document.forms[ 0 ];
 	const submit = () =>
@@ -93,7 +105,11 @@ it( 'loads on a Genie transfer, not chat, and can retry a failed script in place
 	const container = document.createElement( 'div' );
 	document.body.append( container );
 	const response = vi.fn();
-	const widgets = createWidgets( { siteKey: 'public-key', language: 'en' } );
+	const widgets = createWidgets( {
+		siteKey: 'public-key',
+		supportEmail: 'sales@de-linker.com',
+		language: 'en',
+	} );
 	expect( document.head.querySelector( 'script' ) ).toBeNull();
 	const close = widgets.mount( container, 'genie_inquiry', response );
 	const retry = container.querySelector< HTMLButtonElement >(
@@ -154,7 +170,11 @@ it( 'mounts the registration widget once the final pane has a width', async () =
 		window.turnstile = { render, reset: vi.fn(), remove: vi.fn() };
 		connectForms(
 			document,
-			createWidgets( { siteKey: 'public-key', language: 'de' } )
+			createWidgets( {
+				siteKey: 'public-key',
+				supportEmail: 'sales@de-linker.com',
+				language: 'de',
+			} )
 		);
 		width = 360;
 		resized!();

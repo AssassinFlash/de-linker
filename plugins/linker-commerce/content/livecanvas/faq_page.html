@@ -1,13 +1,10 @@
 <div id="linker-faq-page" class="linker-library">
 	<header class="linker-library-hero">
 		<div class="linker-library-wrap linker-library-hero-inner">
-			<p class="linker-library-spark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M12 1.5l1.7 7.1L21 10.2l-7.3 1.6L12 19l-1.7-7.2L3 10.2l7.3-1.6L12 1.5z"/><path d="M18.5 15.2l.7 2.4 2.4.7-2.4.7-.7 2.4-.7-2.4-2.4-.7 2.4-.7.7-2.4z" opacity=".55"/></svg></p>
-			<h1 class="linker-library-title">Answers and documents.</h1>
-			<p class="linker-library-sub">Product documents and practical answers for your solar and storage projects.</p>
-			<p class="linker-library-help">Can&rsquo;t find what you&rsquo;re looking for? [linker_contact_link class="linker-library-contact" label="Contact the Linker team"] · [linker_compatibility_matrix_link class="linker-library-contact"]</p>
-			[linker_genie_chips page_type="faq"]
+			<h1 class="linker-library-title">Technical Documents &amp; Engineering Answers.</h1>
+			<p class="linker-library-sub">Datasheets, VDE grid certificates, compatibility references, and project planning templates for installers and EPCs.</p>
 			<div class="linker-library-searchbox">
-				<div class="linker-library-search" role="search" hidden>
+				<div class="linker-library-search" role="search">
 					<svg class="linker-library-icon linker-library-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2" stroke-linecap="round"/></svg>
 					<label class="linker-library-sr" for="linker-library-q">Search</label>
 					<input id="linker-library-q" class="linker-library-q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="linker-library-suggest" aria-haspopup="listbox" placeholder="Search questions and documents" autocomplete="off" spellcheck="false">
@@ -16,22 +13,25 @@
 				</div>
 				<div id="linker-library-suggest" class="linker-library-suggest" role="listbox" aria-label="Search" hidden></div>
 			</div>
+			<details class="lk-library-help"><summary>Project support</summary>
+				<p class="linker-library-help">[linker_contact_link class="linker-library-contact" label="Contact the Linker team"] · [linker_compatibility_matrix_link class="linker-library-contact"]</p>
+				[linker_genie_chips page_type="faq"]
+			</details>
 		</div>
 	</header>
+	[linker_library_toolkit]
 	<div class="linker-library-tabbar">
 		<div class="linker-library-wrap">
 			<div class="linker-library-tablist" role="tablist" aria-label="FAQ &amp; documents">
-				<a class="linker-library-tab" id="linker-library-tab-faq" role="tab" href="#linker-library-panel-faq" data-library-tab="faq" aria-selected="true" aria-controls="linker-library-panel-faq">FAQ <span class="linker-library-n">[linker_library_count of="faq"]</span></a>
-				<a class="linker-library-tab" id="linker-library-tab-documents" role="tab" href="#linker-library-panel-documents" data-library-tab="documents" aria-selected="false" aria-controls="linker-library-panel-documents">Documents <span class="linker-library-n">[linker_library_count of="documents"]</span></a>
+				<a class="linker-library-tab" id="linker-library-tab-documents" role="tab" href="#linker-library-panel-documents" data-library-tab="documents" aria-selected="true" aria-controls="linker-library-panel-documents">Documents <span class="linker-library-n">[linker_library_count of="documents"]</span></a>
+				<a class="linker-library-tab" id="linker-library-tab-faq" role="tab" href="#linker-library-panel-faq" data-library-tab="faq" aria-selected="false" aria-controls="linker-library-panel-faq">FAQ <span class="linker-library-n">[linker_library_count of="faq"]</span></a>
 			</div>
 		</div>
 	</div>
 	<div class="linker-library-wrap linker-library-layout">
-		<aside class="linker-library-rail" aria-label="On this page">[linker_library_rail]</aside>
 		<div class="linker-library-main">
-			<nav class="linker-library-chips" aria-label="On this page">[linker_library_chips]</nav>
-			<div class="linker-library-panel" id="linker-library-panel-faq" role="tabpanel" aria-labelledby="linker-library-tab-faq" data-library-panel="faq">[linker_library_faq]</div>
 			<div class="linker-library-panel" id="linker-library-panel-documents" role="tabpanel" aria-labelledby="linker-library-tab-documents" data-library-panel="documents">[linker_library_documents]</div>
+			<div class="linker-library-panel" id="linker-library-panel-faq" role="tabpanel" aria-labelledby="linker-library-tab-faq" data-library-panel="faq">[linker_library_faq]</div>
 		</div>
 	</div>
 	[linker_library_config]

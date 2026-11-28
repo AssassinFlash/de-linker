@@ -89,11 +89,15 @@ final class DocumentLibrary {
 	 * the brands of the register read in that order.
 	 *
 	 * @param array<string,mixed> $manifest Current authority for this assembly.
+	 * @param string              $lang     Product language.
 	 * @return list<int>
 	 */
-	private function products( array $manifest ): array {
+	private function products( array $manifest, string $lang ): array {
 		$allowed = array();
 		foreach ( $manifest['products'] as $product ) {
+			if ( EngineeringReference::is_reference( $product['product_id'] ) ) {
+				continue;
+			}
 			foreach ( $product['published_locale_ids'] as $id ) {
 				$allowed[ $id ] = true;
 			}
@@ -104,13 +108,15 @@ final class DocumentLibrary {
 					'intval',
 					get_posts(
 						array(
-							'post_type'      => 'product',
-							'post_status'    => 'publish',
-							'posts_per_page' => -1,
-							'fields'         => 'ids',
-							'orderby'        => 'title',
-							'order'          => 'ASC',
-							'cache_results'  => false,
+							'post_type'        => 'product',
+							'post_status'      => 'publish',
+							'posts_per_page'   => -1,
+							'fields'           => 'ids',
+							'lang'             => $lang,
+							'suppress_filters' => false,
+							'orderby'          => 'title',
+							'order'            => 'ASC',
+							'cache_results'    => false,
 						)
 					)
 				),
@@ -124,11 +130,11 @@ final class DocumentLibrary {
 	 * the products that state it.
 	 *
 	 * @param 'en'|'de' $lang Page language.
-	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>
+	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, product_links:list<array{title:string,url:string}>, skus: array<string,string>}>
 	 */
 	public function documents( string $lang = 'en' ): array {
 		$manifest = $this->current();
-		return $this->documents_in( $manifest, $this->products( $manifest ), $lang );
+		return $this->documents_in( $manifest, $this->products( $manifest, $lang ), $lang );
 	}
 
 	/**
@@ -138,11 +144,11 @@ final class DocumentLibrary {
 	 * cited bytes again. Independent answers()/documents() callers stay fresh too.
 	 *
 	 * @param 'en'|'de' $lang Language of the answer rows.
-	 * @return array{answers: list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>, documents: list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>}
+	 * @return array{answers: list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>, documents: list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, product_links:list<array{title:string,url:string}>, skus: array<string,string>}>}
 	 */
 	public function entries( string $lang = 'en' ): array {
 		$manifest = $this->current();
-		$products = $this->products( $manifest );
+		$products = $this->products( $manifest, $lang );
 
 		return array(
 			'answers'   => $this->answers_in( $lang, $manifest, $products ),
@@ -156,7 +162,7 @@ final class DocumentLibrary {
 	 * @param array<string,mixed> $manifest Current authority for this assembly.
 	 * @param int[]               $products Native locale product IDs.
 	 * @param string              $lang     Page language.
-	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, skus: array<string,string>}>
+	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>, product_links:list<array{title:string,url:string}>, skus: array<string,string>}>
 	 */
 	private function documents_in( array $manifest, array $products, string $lang ): array {
 		$files    = array();
@@ -165,6 +171,7 @@ final class DocumentLibrary {
 			$source = self::source( $id );
 			$title  = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
 			$brand  = self::brand( $source );
+			$link   = (string) get_permalink( $id );
 			$sku    = (string) get_post_meta( $source, '_sku', true );
 			foreach ( $this->view->downloads( $source, $manifest ) as $document ) {
 				if ( '' === $document['url'] ) {
@@ -175,13 +182,20 @@ final class DocumentLibrary {
 					$edition          = Materials::document_edition( $key );
 					$previous[ $key ] = true === ( $edition['previous'] ?? false );
 					$files[ $key ]    = array(
-						'title'    => Materials::localized_document_title( '' !== trim( $document['title'] ) ? $document['title'] : __( 'Document', 'linker-commerce' ), null, $document['url'] ),
-						'url'      => (string) $document['url'],
-						'type'     => self::type( (string) $document['type'], (string) $document['role'] ),
-						'language' => self::language( (string) ( $edition['locale'] ?? $document['language'] ) ),
-						'brand'    => $brand,
-						'covers'   => array(),
-						'skus'     => array(),
+						'title'         => Materials::localized_document_title( '' !== trim( $document['title'] ) ? $document['title'] : __( 'Document', 'linker-commerce' ), null, $document['url'] ),
+						'url'           => (string) $document['url'],
+						'type'          => self::type( (string) $document['type'], (string) $document['role'] ),
+						'language'      => self::language( (string) ( $edition['locale'] ?? $document['language'] ) ),
+						'brand'         => $brand,
+						'covers'        => array(),
+						'product_links' => array(),
+						'skus'          => array(),
+					);
+				}
+				if ( '' !== $link ) {
+					$files[ $key ]['product_links'][ $link ] = array(
+						'title' => $title,
+						'url'   => $link,
 					);
 				}
 				if ( '' !== $sku ) {
@@ -193,6 +207,10 @@ final class DocumentLibrary {
 			}
 		}
 		$documents = array_values( $files );
+		foreach ( $documents as &$document ) {
+			$document['product_links'] = array_values( $document['product_links'] );
+		}
+		unset( $document );
 		usort(
 			$documents,
 			static function ( array $a, array $b ) use ( $previous, $lang ): int {
@@ -250,7 +268,7 @@ final class DocumentLibrary {
 	 */
 	public function answers( string $lang = 'en' ): array {
 		$manifest = $this->current();
-		return $this->answers_in( $lang, $manifest, $this->products( $manifest ) );
+		return $this->answers_in( $lang, $manifest, $this->products( $manifest, $lang ) );
 	}
 
 	/**

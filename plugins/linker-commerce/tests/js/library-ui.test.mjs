@@ -47,15 +47,15 @@ test('a page slice clamps out-of-range pages and keeps 20 rows a page', () => {
  assert.equal(library.PAGE_SIZE, 20);
 });
 
-test('the tab round-trips through the URL, documents named and faq the default', () => {
- assert.equal(library.tabFromSearch(''), 'faq');
+test('the document register is the default and explicit section links round-trip', () => {
+ assert.equal(library.tabFromSearch(''), 'documents');
  assert.equal(library.tabFromSearch('?tab=faq'), 'faq');
  assert.equal(library.tabFromSearch('?tab=documents'), 'documents');
  assert.equal(library.tabFromSearch('?lang=de&tab=documents&page=2'), 'documents');
- assert.equal(library.tabFromSearch('?tabs=documents'), 'faq');
+ assert.equal(library.tabFromSearch('?tabs=documents'), 'documents');
  assert.equal(library.tabUrl('/faq-download/', '', '', 'documents'), '/faq-download/?tab=documents');
- assert.equal(library.tabUrl('/faq-download/', '?tab=documents', '', 'faq'), '/faq-download/');
- assert.equal(library.tabUrl('/faq-download/', '?kind=2', '#x', 'faq'), '/faq-download/?kind=2#x');
+ assert.equal(library.tabUrl('/faq-download/', '?tab=documents', '', 'faq'), '/faq-download/?tab=faq');
+ assert.equal(library.tabUrl('/faq-download/', '?kind=2', '#x', 'faq'), '/faq-download/?kind=2&tab=faq#x');
  assert.equal(library.tabUrl('/de/faq-download/', '?tab=documents', '#linker-library-zone-documents', 'documents'), '/de/faq-download/?tab=documents#linker-library-zone-documents');
 });
 
@@ -96,7 +96,7 @@ function page(rows) {
       </article></div></section>
     </div>
     <div class="linker-library-panel" id="linker-library-panel-documents" data-library-panel="documents" hidden>
-     <div class="linker-library-filters" data-library-filters hidden><button type="button" data-library-type="all" aria-pressed="true">All <span class="linker-library-n">25</span></button><button type="button" data-library-type="datasheet" aria-pressed="false">Datasheet <span class="linker-library-n">13</span></button><button type="button" data-library-type="manual" aria-pressed="false">Manual <span class="linker-library-n">12</span></button></div>
+     <div class="linker-library-filters" data-library-filters><button type="button" data-library-brand="all">All brands <span class="linker-library-n"></span></button><button type="button" data-library-brand="chint">Chint <span class="linker-library-n"></span></button><button type="button" data-library-type="all" aria-pressed="true">All <span class="linker-library-n">25</span></button><button type="button" data-library-type="datasheet" aria-pressed="false">Datasheet <span class="linker-library-n">13</span></button><button type="button" data-library-type="manual" aria-pressed="false">Manual <span class="linker-library-n">12</span></button></div>
      <section class="linker-library-zone" id="linker-library-zone-documents" data-library-spy data-library-zone="linker-library-zone-documents">
       <h2 class="linker-library-zone-title">Brands</h2><div class="linker-library-stack">
       <article class="linker-library-card" id="linker-library-docs-chint" data-library-card data-library-kind="document" data-library-spy data-library-zone="linker-library-zone-documents">
@@ -106,12 +106,12 @@ function page(rows) {
     </div>
    </div>
   </div>
-  <script type="application/json" id="linker-library-config">{"pageSize":20,"genieUrl":"/genie/","i18n":{"resultsOne":"%d result","resultsOther":"%d results","onFile":"%d on file","empty":"Nothing on file matches that search.","emptySoft":"No documents of this type.","askGenie":"Ask Genie","previous":"Previous","next":"Next","pages":"Pages","questions":"Questions","documents":"Documents","trade":"Trade rule","answer":"Answer","document":"Document","inAnswer":"In the answer","clear":"Clear search"}}</script>
+  <script type="application/json" id="linker-library-config">{"pageSize":20,"faqPageSize":1,"indexUrl":"/wp-json/linker/v1/library-index?lang=en","genieUrl":"/genie/","i18n":{"resultsOne":"%d result","resultsOther":"%d results","onFile":"%d on file","empty":"Nothing on file matches that search.","emptySoft":"No documents of this type.","askGenie":"Ask Genie","previous":"Previous","next":"Next","pages":"Pages","questions":"Questions","documents":"Documents","trade":"Trade rule","answer":"Answer","document":"Document","inAnswer":"In the answer","clear":"Clear search"}}</script>
  </div></body></html>`;
 }
 
 const QA = (question, answer) => `<details class="linker-library-qa" data-library-item><summary class="linker-library-qa-head"><span class="linker-library-qa-text"><span class="linker-library-qa-q">${question}</span></span></summary><div class="linker-library-qa-a"><p>${answer}</p></div></details>`;
-const DOC = (title, type) => `<li class="linker-library-doc has-tile" data-library-item data-library-type="${type}"><span class="linker-library-thumb is-type"></span><span class="linker-library-doc-lead"><span class="linker-library-badge is-${type}">${type}</span><span class="linker-library-doc-title">${title}</span></span><p class="linker-library-doc-meta"><span class="linker-library-doc-covers">covers 2 products</span><span class="linker-library-lang">EN</span></p><a class="linker-library-dl" href="https://de-linker.test/a.pdf">Download</a></li>`;
+const DOC = (title, type) => `<li data-t="${type}"><a href="https://de-linker.test/a.pdf">${title}</a><small>${type} · EN</small><span><a href="/product/chint/">Chint</a></span></li>`;
 
 /** The page with rows: 25 documents so the pager has two pages. */
 function fixture() {
@@ -127,6 +127,7 @@ function boot(dom) {
  // jsdom has no layout or scroll implementation; real reader geometry is
  // asserted by library-visual-details.spec.ts, never by synthetic boxes here.
  dom.window.scrollTo = () => {};
+ dom.window.fetch ??= async () => ({ok: true, json: async () => ({skus: {}, extraFaqs: {}})});
  dom.window.eval(source);
  return dom.window.document;
 }
@@ -159,7 +160,7 @@ test('language links retain library query, tab and type on the native translated
  translated.window.history.replaceState(null, '', '?q=Chint&type=datasheet');
  translated.window.dispatchEvent(new translated.window.PopStateEvent('popstate'));
  assert.equal(next.querySelector('.linker-library-q').value, 'Chint');
- assert.equal(next.querySelector('#linker-library-tab-faq').getAttribute('aria-selected'), 'true');
+ assert.equal(next.querySelector('#linker-library-tab-documents').getAttribute('aria-selected'), 'true');
  assert.equal(next.querySelector('[data-library-filters] [data-library-type="datasheet"]').getAttribute('aria-pressed'), 'true');
  doc.querySelector('[data-library-clear]').click();
  assert.equal(new URL(language.href).searchParams.has('q'), false);
@@ -174,7 +175,7 @@ test('invalid library discriminators reset without changing unrelated or externa
  const doc = dom.window.document;
  doc.body.insertAdjacentHTML('beforeend', '<a hreflang="de" href="/other/">Other translation</a><a data-linker-language-choice="de" hreflang="de" href="https://external.test/de/">External</a>');
  boot(dom);
- assert.equal(doc.querySelector('#linker-library-tab-faq').getAttribute('aria-selected'), 'true');
+ assert.equal(doc.querySelector('#linker-library-tab-documents').getAttribute('aria-selected'), 'true');
  assert.equal(doc.querySelector('[data-library-filters] [data-library-type="all"]').getAttribute('aria-pressed'), 'true');
  const input = doc.querySelector('.linker-library-q');
  input.value = 'chint';
@@ -213,7 +214,7 @@ test('a native documents anchor clicked before the script loads keeps its select
  boot(dom);
  assert.equal(doc.querySelector('#linker-library-tab-documents').getAttribute('aria-selected'), 'true');
  assert.equal(doc.querySelector('[data-library-panel="documents"]').hidden, false);
- assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, true);
+ assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, false);
  assert.equal(dom.window.location.hash, '#linker-library-panel-documents');
  dom.window.close();
 });
@@ -223,7 +224,7 @@ for (const [url, selected] of [
  ['?tab=documents#linker-library-answers-chint', 'faq'],
  ['?tab=documents#unrecognized-anchor', 'documents'],
  ['?tab=documents#outside-library', 'documents'],
- ['#%E0%A4%A', 'faq']
+ ['#%E0%A4%A', 'documents']
 ]) {
  test(`initial native anchor and query select ${selected}: ${url}`, () => {
   const dom = fixture();
@@ -271,7 +272,7 @@ test('native hash and back/forward reconcile panels without clearing the query o
 
 test('the spy never measures a hidden panel target', () => {
  const dom = fixture();
- dom.window.document.querySelectorAll('[data-library-panel="documents"] [data-library-spy]').forEach(node => {
+ dom.window.document.querySelectorAll('[data-library-panel="faq"] [data-library-spy]').forEach(node => {
   node.getBoundingClientRect = () => { throw new Error('hidden document target must not win the FAQ spy'); };
  });
  assert.doesNotThrow(() => boot(dom));
@@ -309,16 +310,16 @@ test('search removes stale active markers while all source panels are hidden', (
  dom.window.close();
 });
 
-test('the script reveals the search field and the filters, and hides the inactive tab', () => {
+test('the search field and filters face both visible document and FAQ sections', () => {
  const dom = fixture();
  const doc = boot(dom);
  assert.equal(doc.querySelector('#linker-faq-page').classList.contains('is-enhanced'), true);
  assert.equal(doc.querySelector('.linker-library-search').hidden, false);
  assert.equal(doc.querySelector('[data-library-filters]').hidden, false);
  assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, false);
- assert.equal(doc.querySelector('[data-library-panel="documents"]').hidden, true);
- assert.equal(doc.querySelector('[data-library-nav="faq"]').hidden, false);
- assert.equal(doc.querySelector('[data-library-nav="documents"]').hidden, true);
+ assert.equal(doc.querySelector('[data-library-panel="documents"]').hidden, false);
+ assert.equal(doc.querySelector('[data-library-nav="faq"]').hidden, true);
+ assert.equal(doc.querySelector('[data-library-nav="documents"]').hidden, false);
  assert.equal(doc.querySelector('#linker-library-docs-chint [data-library-card-count]').textContent, '25');
  assert.equal(doc.querySelector('#linker-library-result-count').textContent, '28 on file');
 });
@@ -329,7 +330,7 @@ test('the documents tab is named in the URL and the panels follow it', () => {
  const tab = doc.querySelector('#linker-library-tab-documents');
  tab.dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
  assert.equal(doc.querySelector('[data-library-panel="documents"]').hidden, false);
- assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, true);
+ assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, false);
  assert.equal(doc.querySelector('#linker-library-tab-documents').getAttribute('aria-selected'), 'true');
  assert.equal(doc.querySelector('#linker-library-tab-faq').getAttribute('aria-selected'), 'false');
  assert.match(dom.window.location.search, /tab=documents/);
@@ -382,119 +383,48 @@ test('a type chip filters the rows, the card count and the rail link together', 
  assert.ok(empty && empty.hidden, 'the soft empty stays hidden while rows match');
 });
 
-test('a document row keeps its tile slot in the flat result list, thumbnail or not', () => {
+test('the first search loads the shared SKU index once and combines brand, type and model', async () => {
  const dom = fixture();
+ let calls = 0;
+ dom.window.fetch = async url => {
+  calls++;
+  assert.match(url, /library-index/);
+  return {ok: true, json: async () => ({skus: {'https://de-linker.test/a.pdf': ['DLK-SAJ-XYZ', 'Secondary model']}, extraFaqs: {}})};
+ };
  const doc = boot(dom);
+ assert.equal(calls, 0);
  const input = doc.querySelector('.linker-library-q');
- input.value = 'dtsu666';
- input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
- // The documents are the documents tab's half of the hits.
- doc.querySelector('#linker-library-tab-documents').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
- const rows = [...doc.querySelectorAll('[data-library-results] .linker-library-doc')];
- assert.ok(rows.length > 0, 'the search lists document rows');
- rows.forEach((row) => assert.equal(row.classList.contains('has-tile'), true, 'every cloned row carries the slot'));
- assert.ok(rows.some((row) => row.querySelector('.linker-library-thumb.is-type')), 'a row without a page image keeps its type tile');
-});
-
-test('a shared document is searchable by a covered model and explains that match', () => {
- const dom = fixture();
- const sourceRow = dom.window.document.querySelector('.linker-library-doc');
- sourceRow.querySelector('.linker-library-doc-title').textContent = 'GoodWe ESA Series manual';
- sourceRow.setAttribute('data-library-products', JSON.stringify(['GoodWe GW8K-EHA-G20', 'GoodWe GW10K-EHA-G20']));
- const config = dom.window.document.querySelector('#linker-library-config');
- config.textContent = config.textContent.replace('"i18n":{', '"i18n":{"coversProduct":"für %s",');
- const doc = boot(dom);
- const input = doc.querySelector('.linker-library-q');
- input.value = 'GW10K-EHA-G20 manual';
+ input.focus();
+ input.value = 'dlksajxyz';
  input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
- assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '1');
- doc.querySelector('#linker-library-tab-documents').click();
- const result = doc.querySelector('[data-library-results] .linker-library-doc');
- assert.ok(result);
- assert.equal(result.querySelector('.linker-library-doc-covers').textContent, 'für GoodWe GW10K-EHA-G20');
- assert.ok(result.querySelector('.linker-library-doc-covers mark'));
- assert.equal(result.querySelector('.linker-library-dl').href, 'https://de-linker.test/a.pdf');
- assert.equal(sourceRow.querySelector('.linker-library-doc-covers').textContent, 'covers 2 products');
- input.value = 'unrelated-model';
- input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
- assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '0');
- input.value = '';
- input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
- assert.equal(sourceRow.querySelector('.linker-library-doc-covers').textContent, 'covers 2 products');
+ await new Promise(resolve => setTimeout(resolve, 0));
+ doc.querySelector('[data-library-brand="chint"]').click();
+ doc.querySelector('[data-library-type="manual"]').click();
+ assert.equal(calls, 1);
+ assert.equal(new URL(dom.window.location.href).searchParams.get('brand'),'chint');
+ assert.equal(doc.querySelectorAll('[data-library-results] li').length,12);
+ assert.ok([...doc.querySelectorAll('[data-library-results] li')].every(row=>row.dataset.t==='manual' && row.querySelector('a').href.endsWith('.pdf')));
  dom.window.close();
 });
 
-test('the Woo SKU and differently separated model find the same associated PDF', () => {
+test('the first FAQ pager click loads the remaining cited answers and opens page two', async () => {
  const dom = fixture();
- const row = dom.window.document.querySelector('.linker-library-doc');
- row.setAttribute('data-library-skus', JSON.stringify({'DLK-GOODWE-GW8KEHAG20': 'GoodWe ESA GW8K-EHA-G20'}));
+ let calls = 0;
+ const card = dom.window.document.querySelector('#linker-library-answers-chint');
+ card.dataset.libraryTotal = '2';
+ dom.window.fetch = async () => {
+  calls++;
+  return {ok:true, json:async()=>({skus:{},extraFaqs:{'linker-library-answers-chint':[{product:'Chint',question:'Second?',answer:'Second answer',url:'/product/chint/',source:'Manual',source_url:'/manual.pdf'}]}})};
+ };
  const doc = boot(dom);
- doc.querySelector('#linker-library-tab-documents').click();
- const input = doc.querySelector('.linker-library-q');
- for (const query of ['DLK-GOODWE-GW8KEHAG20', 'GW8K-EHA-G20', 'GW8K EHA G20', 'dlk-goodwe-gw8kehag20 datasheet', 'ESA GW8K']) {
-  input.value = query;
-  input.dispatchEvent(new dom.window.Event('input',{bubbles:true}));
-  const hits = doc.querySelectorAll('[data-library-results] .linker-library-doc');
-  assert.equal(hits.length,1,query);
-  assert.equal(hits[0].querySelector('.linker-library-dl').href,'https://de-linker.test/a.pdf');
-  assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent,'1');
- }
+ assert.equal(calls,0);
+ card.querySelector('[data-library-page="next"]').click();
+ await new Promise(resolve=>setTimeout(resolve,0));
+ assert.equal(calls,1);
+ assert.equal(card.querySelector('details:not([hidden]) .linker-library-qa-q').textContent,'Second?');
+ assert.equal(card.querySelector('details:not([hidden]) .linker-library-qa-source a:last-child').getAttribute('href'),'/manual.pdf');
  dom.window.close();
 });
-
-test('invalid association metadata cannot break ordinary document search', () => {
- const dom = fixture();
- const rows = dom.window.document.querySelectorAll('.linker-library-doc');
- rows[0].setAttribute('data-library-products', '{broken');
- rows[1].setAttribute('data-library-products', '{"product":"not a list"}');
- rows[2].setAttribute('data-library-products', '[null,12,"",{},"GW10K-EHA-G20"]');
- const doc = boot(dom);
- const input = doc.querySelector('.linker-library-q');
- input.value = 'GW10K-EHA-G20';
- input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
- assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '1');
- input.value = 'DTSU666';
- input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
- assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '25');
- dom.window.close();
-});
-
-for (const outcome of ['load', 'error', 'cached-load', 'cached-error']) {
- test(`a search clone reconciles its own thumbnail: ${outcome}`, () => {
-  const dom = fixture();
-  let completed = outcome.startsWith('cached');
-  let width = outcome === 'cached-load' ? 160 : 0;
-  Object.defineProperties(dom.window.HTMLImageElement.prototype, {
-   complete: {configurable: true, get: () => completed},
-   naturalWidth: {configurable: true, get: () => width}
-  });
-  const tile = dom.window.document.querySelector('.linker-library-thumb');
-  tile.className = 'linker-library-thumb has-src';
-  tile.innerHTML = '<img src="/thumb.webp" alt="">';
-  const doc = boot(dom);
-  const input = doc.querySelector('.linker-library-q');
-  input.value = 'document 1';
-  input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
-  doc.querySelector('#linker-library-tab-documents').click();
-  const clone = doc.querySelector('[data-library-results] .linker-library-thumb');
-  const image = clone.querySelector('img');
-  assert.ok(image, 'the actual result cloned the source thumbnail');
-  if (!completed) {
-   completed = true;
-   width = outcome === 'load' ? 160 : 0;
-   image.dispatchEvent(new dom.window.Event(outcome));
-  }
-  if (width) {
-   assert.equal(clone.classList.contains('has-img'), true);
-   assert.equal(image.hidden, false);
-  } else {
-   assert.equal(clone.classList.contains('has-src'), false);
-   assert.equal(clone.classList.contains('is-type'), true);
-   assert.equal(image.hidden, true);
-  }
-  dom.window.close();
- });
-}
 
 test('keyboard suggestion selection transfers focus to the actual answer', async () => {
  const dom = fixture();
@@ -541,6 +471,7 @@ test('the rail keeps the explicit zone identities printed by the fragments', () 
 test('the search lists the active tab\'s hits, marked and paginated, and splits the counts', () => {
  const dom = fixture();
  const doc = boot(dom);
+ doc.querySelector('#linker-library-tab-faq').click();
  const input = doc.querySelector('.linker-library-q');
  input.value = 'dtsu666';
  input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
@@ -669,6 +600,7 @@ test('a type-filtered empty search can recover by changing the type', () => {
 test('a question searched in the answer shows where it matched', () => {
  const dom = fixture();
  const doc = boot(dom);
+ doc.querySelector('#linker-library-tab-faq').click();
  const input = doc.querySelector('.linker-library-q');
  input.value = 'modules';
  input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
@@ -682,6 +614,7 @@ test('a question searched in the answer shows where it matched', () => {
 test('a tab switch re-halves the search results, not just the counts', () => {
  const dom = fixture();
  const doc = boot(dom);
+ doc.querySelector('#linker-library-tab-faq').click();
  const input = doc.querySelector('.linker-library-q');
  const docs = () => [...doc.querySelectorAll('[data-library-results] .linker-library-doc')];
  const questions = () => [...doc.querySelectorAll('[data-library-results] .linker-library-qa')];
@@ -741,9 +674,10 @@ test('Genie recognizes installer questions in both languages and leaves models s
  }
 });
 
-test('a matching question offers Genie alongside the result and Enter hands over the original text', () => {
+test('a matching question offers Genie alongside the result and Enter hands over the original text', async () => {
  const dom = fixture();
  const doc = boot(dom);
+ doc.querySelector('#linker-library-tab-faq').click();
  const input = doc.querySelector('.linker-library-q');
  const received = [];
  dom.window.addEventListener('linker-genie-ask', (event) => received.push(event.detail));
@@ -755,6 +689,7 @@ test('a matching question offers Genie alongside the result and Enter hands over
    assert.equal(doc.querySelector('.linker-library-ask-bar .linker-library-genie').dataset.askMessage, query);
   }
   input.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true}));
+  await new Promise(resolve=>setTimeout(resolve,0));
  }
  assert.deepEqual(received.map(({message}) => message), ['How are quotations processed?', 'VDE-4110-Prüfbericht-XYZ']);
  assert.ok(received.every(({opener}) => opener === input));
