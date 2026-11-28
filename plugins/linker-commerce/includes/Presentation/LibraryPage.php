@@ -549,7 +549,7 @@ final class LibraryPage {
 		$pdf      = self::local_href( $document['url'] );
 		$out      = '<li data-t=' . esc_attr( $document['type'] ) . '><a href="' . esc_url( $pdf ) . '" target=_blank>' . esc_html( $document['title'] ) . '</a>';
 		$out     .= '<i>' . esc_html( $document['type_label'] ) . ' · ' . esc_html( $document['language'] ) . '</i>';
-		$out     .= '<a href="' . esc_url( self::local_href( $first['url'] ) ) . '">' . esc_html( $first['title'] ) . '</a>';
+		$out     .= '<p><a href="' . esc_url( self::local_href( $first['url'] ) ) . '">' . esc_html( $first['title'] ) . '</a>';
 		return $out . ( count( $products ) > 1 ? ' (+' . ( count( $products ) - 1 ) . ')' : '' );
 	}
 
