@@ -67,8 +67,8 @@ test.describe('site chrome', () => {
 
 	test('the retired addresses redirect to the configurator', async () => {
 		const cases: Array<[string, string]> = [
-			['/design-canvas/', '/solution-configurator/?step=roof'],
-			['/de/design-canvas/', '/de/loesungskonfigurator/?step=roof'],
+			['/design-canvas/', '/solution-configurator/'],
+			['/de/design-canvas/', '/de/loesungskonfigurator/'],
 			['/quote-configurator/', '/solution-configurator/'],
 			['/de/angebots-konfigurator/', '/de/loesungskonfigurator/'],
 		];

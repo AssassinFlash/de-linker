@@ -291,4 +291,59 @@ final class SeoTest extends TestCase {
 		$this->assertArrayNotHasKey( 'pa_brand', $taxonomies );
 		$this->assertArrayNotHasKey( 'pa_model', $taxonomies );
 	}
+
+	/**
+	 * Language follows Polylang on public pages and the URL on early routes.
+	 *
+	 * @dataProvider header_routes
+	 * @param string $uri Requested URI.
+	 * @param string $language Resolved language or an empty result.
+	 * @param string $expected Language header, empty for an excluded response.
+	 */
+	public function test_content_language( string $uri, string $language, string $expected ): void {
+		$before_uri = $_SERVER['REQUEST_URI'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Preserve the original request fixture.
+		$params     = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Restore request fixture.
+		try {
+			$_SERVER['REQUEST_URI'] = $uri;
+			parse_str( explode( '?', $uri, 2 )[1] ?? '', $query );
+			$_GET = $query;
+			WP_Mock::userFunction( 'is_admin' )->andReturn( '/wp-admin/' === $uri );
+			foreach ( array( 'wp_doing_ajax', 'wp_doing_cron', 'is_robots', 'is_trackback', 'is_favicon' ) as $fn ) {
+				WP_Mock::userFunction( $fn )->andReturn( false );
+			}
+			WP_Mock::userFunction( 'get_query_var' )->andReturn( '' );
+			WP_Mock::passthruFunction( 'wp_unslash' );
+			WP_Mock::userFunction( 'pll_current_language' )->with( 'slug' )->andReturn( $language );
+			$headers = ( new Seo() )->content_language( array( 'Vary' => 'Accept' ) );
+			$this->assertSame( 'Accept', $headers['Vary'] );
+			$this->assertSame( $expected, $headers['Content-Language'] ?? '' );
+		} finally {
+			$_GET = $params;
+			if ( null === $before_uri ) {
+				unset( $_SERVER['REQUEST_URI'] );
+			} else {
+				$_SERVER['REQUEST_URI'] = $before_uri;
+			}
+		}
+	}
+
+	/**
+	 * Content, machine-readable resources and document endpoints.
+	 *
+	 * @return list<array{string,string,string}>
+	 */
+	public static function header_routes(): array {
+		return array(
+			array( '/blog/', 'en', 'en' ),
+			array( '/de/?format=md', 'de', 'de-DE' ),
+			array( '/de/blog/seite/2/', '', 'de-DE' ),
+			array( '/de', '', 'de-DE' ),
+			array( '/?linker_public_document=1', 'en', '' ),
+			array( '/wp-content/uploads/technical.pdf', 'de', '' ),
+			array( '/page-sitemap1.xml', 'en', '' ),
+			array( '/wp-login.php', 'en', '' ),
+			array( '/wp-admin/', 'de', '' ),
+			array( '/wp-json/wp/v2/pages', 'de', '' ),
+		);
+	}
 }

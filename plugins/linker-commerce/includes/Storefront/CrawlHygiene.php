@@ -10,15 +10,26 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Storefront;
 
 use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Products\Publication;
 
 /** Keep editorial feeds readable and point media pages at their published owner. */
 final class CrawlHygiene {
+	/**
+	 * Whether SEOPress has prepared an empty IndexNow batch in this request.
+	 *
+	 * @var bool
+	 */
+	private bool $skip_next_indexnow = false;
+
 	/** Resolve after the site's retired aliases and before core attachment handling. */
 	public function register(): void {
 		add_filter( 'the_content', array( $this, 'content_links' ), 8 );
 		add_filter( 'robots_txt', array( $this, 'robots_txt' ), 99, 2 );
 		add_filter( 'wp_headers', array( $this, 'headers' ) );
 		add_action( 'template_redirect', array( $this, 'respond' ), 2 );
+		add_action( 'init', array( $this, 'register_instant_indexing' ), 20 );
+		add_filter( 'seopress_instant_indexing_post_request_args', array( $this, 'indexnow_args' ) );
+		add_filter( 'pre_http_request', array( $this, 'skip_empty_indexnow' ), 10, 3 );
 	}
 
 	/**
@@ -38,7 +49,7 @@ final class CrawlHygiene {
 				continue;
 			}
 			$path = str_starts_with( $href, $root ) ? '/' . substr( $href, strlen( $root ) ) : $href;
-			if ( ! preg_match( '~^/(?:my-account|de/mein-konto|cart|de/loesungsentwurf|(?:de/)?genie)(?:/|$)|^/(?:contact|de/kontakt)/\?(?:[^#]*&)?(?:intent|linker_contact_selection)=~', $path ) ) {
+			if ( ! self::nofollow_path( $path ) ) {
 				continue;
 			}
 			$rel = (string) $html->get_attribute( 'rel' );
@@ -47,6 +58,15 @@ final class CrawlHygiene {
 			}
 		}
 		return $html->get_updated_html();
+	}
+
+	/**
+	 * Private account, inquiry and configurator state links.
+	 *
+	 * @param string $path Root-relative href or unmodified external URL.
+	 */
+	public static function nofollow_path( string $path ): bool {
+		return (bool) preg_match( '~^/(?:my-account|de/mein-konto|cart|de/loesungsentwurf|(?:de/)?genie)(?:/|$)|^/(?:contact|de/kontakt)/\?(?:[^#]*&)?(?:intent|linker_contact_selection)=|^/(?:solution-configurator|de/loesungskonfigurator)/\?(?:[^#]*&)?(?:step|scope|compare|projects|view)=~', $path );
 	}
 
 	/**
@@ -96,7 +116,7 @@ final class CrawlHygiene {
 	public function headers( array $headers ): array {
 		// WP::send_headers() can end a conditional feed request with 304 before template_redirect.
 		$trap = $this->retired_query();
-		if ( $trap || $this->retired_feed() ) {
+		if ( $trap || $this->retired_product_id() || $this->retired_feed() ) {
 			status_header( 410 );
 			header( $trap ? 'X-Robots-Tag: noindex' : 'X-Robots-Tag: noindex, follow' );
 			header( 'Content-Type: text/plain; charset=utf-8' );
@@ -138,6 +158,109 @@ final class CrawlHygiene {
 		}
 		// phpcs:enable
 		return false;
+	}
+
+	/** Public shortlinks for missing or unpublished Woo products. */
+	private function retired_product_id(): bool {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Classify a read-only permalink query.
+		if ( 'product' !== ( $_GET['post_type'] ?? null ) || ! array_key_exists( 'p', $_GET ) || ! in_array( $_SERVER['REQUEST_METHOD'] ?? 'GET', array( 'GET', 'HEAD' ), true )
+			|| is_admin() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers edit_products for its product post type.
+		if ( is_user_logged_in() && ( isset( $_GET['preview'] ) || current_user_can( 'edit_products' ) ) ) {
+			return false;
+		}
+		$id = is_scalar( $_GET['p'] ) && ctype_digit( (string) $_GET['p'] ) ? (int) $_GET['p'] : 0;
+		// phpcs:enable
+		$post = $id > 0 ? get_post( $id ) : null;
+		return ! $post instanceof \WP_Post || 'product' !== $post->post_type || 'publish' !== $post->post_status || '' !== $post->post_password || ! self::listed_product( $post->ID );
+	}
+
+	/**
+	 * Publication covers both translations; the Woo visibility term controls catalog inclusion.
+	 *
+	 * @param int $id Product ID.
+	 */
+	private static function listed_product( int $id ): bool {
+		return (bool) Publication::published_ids( array( $id ), true ) && ! has_term( 'exclude-from-catalog', 'product_visibility', $id );
+	}
+
+	/** Preserve SEOPress's publishing callback for eligible pages. */
+	public function register_instant_indexing(): void {
+		if ( remove_action( 'transition_post_status', 'seopress_instant_indexing_on_post_publish', 10 ) ) {
+			add_action( 'transition_post_status', array( $this, 'guard_instant_indexing' ), 10, 3 );
+		}
+	}
+
+	/**
+	 * Forward only public, indexable posts with a pretty permalink.
+	 *
+	 * @param string   $new_status New status.
+	 * @param string   $old_status Previous status.
+	 * @param \WP_Post $post Changed post.
+	 */
+	public function guard_instant_indexing( string $new_status, string $old_status, \WP_Post $post ): void {
+		if ( 'publish' !== $new_status || '' !== $post->post_password || 'yes' === get_post_meta( $post->ID, '_seopress_robots_index', true )
+			|| ( 'product' === $post->post_type && ! self::listed_product( $post->ID ) ) ) {
+			return;
+		}
+		$url = get_permalink( $post );
+		if ( $url && ! str_contains( $url, '?' ) && ! self::retired_submission( $url ) && function_exists( 'seopress_instant_indexing_on_post_publish' ) ) {
+			seopress_instant_indexing_on_post_publish( $new_status, $old_status, $post );
+		}
+	}
+
+	/**
+	 * Query shortlinks and trash permalinks must never enter an IndexNow batch.
+	 *
+	 * @param string $url URL from SEOPress.
+	 */
+	private static function retired_submission( string $url ): bool {
+		return (bool) preg_match( '~[?&](?:post_type|p|page_id)=|__trashed~i', $url );
+	}
+
+	/**
+	 * Remove retired URLs from SEOPress's final JSON, including manual submissions.
+	 *
+	 * @param array<string,mixed> $args Arguments for the IndexNow POST.
+	 * @return array<string,mixed>
+	 */
+	public function indexnow_args( array $args ): array {
+		$payload                  = json_decode( $args['body'], true );
+		$valid                    = array_values( array_filter( $payload['urlList'], static fn( string $url ): bool => ! self::retired_submission( $url ) ) );
+		$this->skip_next_indexnow = ! $valid;
+		if ( $payload['urlList'] !== $valid ) {
+			$payload['urlList'] = $valid;
+			$args['body']       = wp_json_encode( $payload );
+		}
+		return $args;
+	}
+
+	/**
+	 * Complete an empty SEOPress batch without opening an HTTP connection.
+	 *
+	 * @param mixed               $response Existing WordPress HTTP preemption.
+	 * @param array<string,mixed> $args HTTP arguments.
+	 * @param string              $url Destination.
+	 * @return mixed
+	 * @phpstan-impure Consumes the pending SEOPress batch.
+	 */
+	public function skip_empty_indexnow( mixed $response, array $args, string $url ): mixed {
+		if ( ! $this->skip_next_indexnow || 'https://api.indexnow.org/indexnow/' !== $url || 'POST' !== $args['method'] ) {
+			return $response;
+		}
+		$this->skip_next_indexnow = false;
+		return false !== $response ? $response : array(
+			'headers'  => array(),
+			'body'     => '',
+			'response' => array(
+				'code'    => 200,
+				'message' => 'OK',
+			),
+			'cookies'  => array(),
+			'filename' => null,
+		);
 	}
 
 	/** Whether this request is for a retired commerce or comments feed. */

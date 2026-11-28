@@ -146,4 +146,23 @@ final class GermanTitlesTest extends TestCase {
 			$this->assertStringContainsString( 'property="' . $key . '" content="Wechselrichter, Speicher und Systeme | Linker"', $titles->shop_social_title( '<meta property="' . $key . '" content="Products | Linker">' ) );
 		}
 	}
+
+	/** Both SEO title filters run on the German journal's posts page. */
+	public function test_paged_journal_title_is_idempotent(): void {
+		require_once dirname( __DIR__, 4 ) . '/linker-commerce/tests/php/Doubles/wordpress.php';
+		WP_Mock::userFunction( 'get_option' )->andReturn( true );
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( 'de' );
+		WP_Mock::userFunction( 'pll_get_post_language' )->andReturn( 'de' );
+		WP_Mock::userFunction( 'get_query_var' )->andReturnUsing( static fn( $key ) => 'paged' === $key ? 2 : 0 );
+		foreach ( array( 'is_404', 'is_wc_endpoint_url', 'is_account_page', 'is_shop', 'is_tax', 'is_category', 'is_search' ) as $fn ) {
+			WP_Mock::userFunction( $fn )->andReturn( false );
+		}
+		WP_Mock::userFunction( 'get_queried_object_id' )->andReturn( 75 );
+		WP_Mock::userFunction( 'get_post' )->andReturn( new \WP_Post( (object) array( 'ID' => 75 ) ) );
+		WP_Mock::userFunction( 'get_bloginfo' )->andReturn( 'Linker' );
+		WP_Mock::userFunction( '__' )->with( 'Page %d', 'linker-i18n' )->andReturn( 'Seite %d' );
+		WP_Mock::passthruFunction( 'wp_strip_all_tags' );
+		$titles = new GermanTitles();
+		$this->assertSame( 'Journal: Auslegung, Kombination und Inbetriebnahme – Seite 2 | Linker', $titles->title( $titles->title( 'Journal: Auslegung, Kombination und Inbetriebnahme | Linker' ) ) );
+	}
 }

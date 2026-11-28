@@ -187,6 +187,9 @@ final class SitemapSync {
 	 * @return array<string,mixed>|null
 	 */
 	public function post_entry( ?array $entry, \WP_Post $post ): ?array {
+		if ( str_contains( (string) ( $entry['loc'] ?? '' ), '?' ) ) {
+			return null;
+		}
 		if ( empty( $entry['loc'] ) || isset( $entry['linker_alternates'] ) ) {
 			return $entry;
 		}

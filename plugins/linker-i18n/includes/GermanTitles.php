@@ -86,7 +86,10 @@ final class GermanTitles {
 		}
 		if ( $page > 1 ) {
 			/* translators: %d: page number. */
-			$label .= ' – ' . sprintf( __( 'Page %d', 'linker-i18n' ), $page );
+			$page_label = sprintf( __( 'Page %d', 'linker-i18n' ), $page );
+			if ( ! preg_match( '/\s*[–-]\s*' . preg_quote( $page_label, '/' ) . '$/u', $label ) ) {
+				$label .= ' – ' . $page_label;
+			}
 		}
 		return wp_strip_all_tags( $label ) . ' | ' . get_bloginfo( 'name' );
 	}

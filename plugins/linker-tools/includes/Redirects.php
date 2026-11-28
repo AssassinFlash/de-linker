@@ -138,29 +138,14 @@ final class Redirects {
 	/**
 	 * A page or tool target with the request's query string carried onto it.
 	 *
-	 * The site before this one answered `/de/solution-configurator/?step=roof`
-	 * by the address alone; a redirect that drops the query lands the visitor
-	 * on the configurator's first step instead of the roof step they asked
-	 * for (measured in the 2026-10-16 deployment window). The maps' own
-	 * targets settle where they settle: an entry that names a query of its own
-	 * (the retired tool addresses carry `?step=roof`) keeps it, and the
-	 * request's query does not replace the map's decision.
-	 *
 	 * @param string $target Root-relative page or tool target.
 	 */
 	private function carrying_query( string $target ): string {
-		$roof = str_ends_with( $target, '?step=roof' );
-		if ( str_contains( $target, '?' ) && ! $roof ) {
+		if ( str_contains( $target, '?' ) ) {
 			return $target;
 		}
 		$query = $this->request_query();
-		if ( $roof ) {
-			// The retired roof path owns its step. Keep other input bytes and
-			// duplicates intact so the application's intake can validate them.
-			$query = implode( '&', array_filter( explode( '&', $query ), static fn( string $part ): bool => 'step' !== urldecode( explode( '=', $part, 2 )[0] ) ) );
-		}
-
-		return '' === $query ? $target : $target . ( $roof ? '&' : '?' ) . $query;
+		return '' === $query ? $target : $target . '?' . $query;
 	}
 
 	/**

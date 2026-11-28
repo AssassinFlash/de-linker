@@ -148,6 +148,7 @@ final class Plugin {
 		add_filter( 'old_slug_redirect_post_id', array( $german_urls, 'old_post' ) );
 		add_filter( 'old_slug_redirect_url', array( $german_urls, 'old_url' ) );
 		add_filter( 'linker_tools_retired_url', array( $german_urls, 'retired_url' ), 10, 2 );
+		add_filter( 'wp_headers', array( $seo, 'content_language' ), 20 );
 		add_filter( 'pll_rel_hreflang_attributes', array( $seo, 'hreflangs' ), 99 );
 		add_filter( 'do_redirect_guess_404_permalink', array( $seo, 'guess_404' ) );
 		add_filter( 'seopress_titles_title', array( $seo, 'not_found_title' ) );

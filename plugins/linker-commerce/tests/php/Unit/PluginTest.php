@@ -142,6 +142,9 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'robots_txt', array( $crawl, 'robots_txt' ), 99, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_headers', array( $crawl, 'headers' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'template_redirect', array( $crawl, 'respond' ), 2 ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'init', array( $crawl, 'register_instant_indexing' ), 20 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'seopress_instant_indexing_post_request_args', array( $crawl, 'indexnow_args' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'pre_http_request', array( $crawl, 'skip_empty_indexnow' ), 10, 3 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'wp_headers', array( new AnyInstance( PageIndexing::class ), 'headers' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'pll_rel_hreflang_attributes', array( new AnyInstance( PageIndexing::class ), 'alternates' ), 50 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'seopress_titles_canonical_on_noindex', array( new AnyInstance( PageIndexing::class ), 'canonical' ), 50 ); // @phpstan-ignore argument.type

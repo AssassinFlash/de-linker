@@ -343,7 +343,7 @@ final class RedirectsTest extends TestCase {
 		$this->assertNotNull( $maps );
 		$this->assertCount( 309, $maps['products'] );
 		$this->assertCount( 33, $maps['categories'] );
-		$this->assertCount( 29, $maps['retired_tools'] );
+		$this->assertCount( 31, $maps['retired_tools'] );
 		$this->assertSame( array( 'checkout', 'kasse' ), $maps['checkout']['slugs'] );
 		$this->assertSame( '/proforma-request/', $maps['checkout']['target'] );
 	}
@@ -776,21 +776,16 @@ final class RedirectsTest extends TestCase {
 		}
 	}
 
-	/**
-	 * The query a retired tool address finally carries: the map's own where it
-	 * has one (the design canvas's roof step survives a request's query), the
-	 * request's where it does not (a plain tool address moves the request's
-	 * query onto the configurator).
-	 */
+	/** Retired configurator aliases preserve the original query string. */
 	public function test_a_retired_tool_address_carries_the_right_query(): void {
 		$this->wordpress();
 
 		$this->assertSame(
-			self::HOME . '/solution-configurator/?step=roof',
+			self::HOME . '/solution-configurator/',
 			( new Redirects() )->target( '/design-canvas/' )
 		);
 		$this->assertSame(
-			self::HOME . '/de/loesungskonfigurator/?step=roof',
+			self::HOME . '/de/loesungskonfigurator/',
 			( new Redirects() )->target( '/de/entwurfsflache/' )
 		);
 		$this->assertSame(
@@ -800,20 +795,17 @@ final class RedirectsTest extends TestCase {
 
 		try {
 			$_SERVER['QUERY_STRING'] = 'utm_source=newsletter';
-			// The map's own query settles the target; the request's does not
-			// replace it.
 			$this->assertSame(
-				self::HOME . '/de/loesungskonfigurator/?step=roof&utm_source=newsletter',
+				self::HOME . '/de/loesungskonfigurator/?utm_source=newsletter',
 				( new Redirects() )->target( '/de/design-canvas/' )
 			);
-			// A target without a query of its own carries the request's.
 			$this->assertSame(
 				self::HOME . '/de/loesungskonfigurator/?utm_source=newsletter',
 				( new Redirects() )->target( '/de/angebots-konfigurator/' )
 			);
 			$_SERVER['QUERY_STRING'] = 'step=other&%73tep=roof&pv_kwp=10&pv_kwp=20&annual_kwh=4500';
 			$this->assertSame(
-				self::HOME . '/solution-configurator/?step=roof&pv_kwp=10&pv_kwp=20&annual_kwh=4500',
+				self::HOME . '/solution-configurator/?step=other&%73tep=roof&pv_kwp=10&pv_kwp=20&annual_kwh=4500',
 				( new Redirects() )->target( '/design-canvas/' )
 			);
 		} finally {
@@ -997,18 +989,18 @@ final class RedirectsTest extends TestCase {
 		);
 	}
 
-	/**
-	 * Every retired tool address of this site goes to the configurator page of
-	 * its own language, with the roof step (#12 item 2; /de/design-canvas/
-	 * is the old plugin's English-slug-under-/de/ alias, /de/entwurfsflache/
-	 * the German page slug).
-	 */
-	public function test_retired_tool_addresses_go_to_the_configurators_roof_step(): void {
+	/** Retired canvas and unprefixed guide links go to the published pages. */
+	public function test_retired_canvas_and_guides(): void {
 		$this->wordpress();
 
-		$this->assertSame( self::HOME . '/solution-configurator/?step=roof', ( new Redirects() )->target( '/design-canvas/' ) );
-		$this->assertSame( self::HOME . '/de/loesungskonfigurator/?step=roof', ( new Redirects() )->target( '/de/design-canvas/' ) );
-		$this->assertSame( self::HOME . '/de/loesungskonfigurator/?step=roof', ( new Redirects() )->target( '/de/entwurfsflache/' ) );
+		$this->assertSame( self::HOME . '/solution-configurator/', ( new Redirects() )->target( '/design-canvas/' ) );
+		$this->assertSame( self::HOME . '/de/loesungskonfigurator/', ( new Redirects() )->target( '/de/design-canvas/' ) );
+		$this->assertSame( self::HOME . '/de/loesungskonfigurator/', ( new Redirects() )->target( '/de/entwurfsflache/' ) );
+		foreach ( array( 'installateur-uebergabe-dokumentation-checkliste', 'solar-speicher-inbetriebnahme-checkliste' ) as $slug ) {
+			foreach ( array( '/' . $slug, '/' . $slug . '/' ) as $path ) {
+				$this->assertSame( self::HOME . '/de/' . $slug . '/', ( new Redirects() )->target( $path ) );
+			}
+		}
 	}
 
 	/** The former solution draft address leads directly to the live draft. */

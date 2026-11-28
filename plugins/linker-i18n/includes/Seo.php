@@ -16,6 +16,36 @@ namespace Linker\I18n;
  * and gives the 404 title the request's own language.
  */
 final class Seo {
+	/**
+	 * Language of the public HTML or negotiated Markdown representation.
+	 *
+	 * @param array<string,string|false> $headers Native response headers.
+	 * @return array<string,string|false>
+	 */
+	public function content_language( array $headers ): array {
+		if ( is_admin() || wp_doing_ajax() || wp_doing_cron() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || ( defined( 'WP_CLI' ) && WP_CLI )
+			|| in_array( $GLOBALS['pagenow'] ?? '', array( 'wp-login.php', 'wp-register.php' ), true )
+			|| in_array( http_response_code(), array( 403, 405, 410 ), true ) || is_robots() || is_trackback() || is_favicon() ) {
+			return $headers;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- The presence of a document or API query selects the representation.
+		if ( isset( $_GET['linker_public_document'] ) || isset( $_GET['rest_route'] ) ) {
+			return $headers;
+		}
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Match the public request path without rendering it.
+		$path = explode( '?', wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), 2 )[0];
+		if ( preg_match( '~^/(?:wp-json|wp-admin|\.well-known)(?:/|$)|^/wp-(?:login|register)\.php(?:/|$)|\.(?:xml|xsl|pdf|ico|txt|json)$~i', $path )
+			|| get_query_var( 'seopress_sitemap' ) || get_query_var( 'seopress_cpt' ) || get_query_var( 'seopress_sitemap_xsl' ) ) {
+			return $headers;
+		}
+		$lang = function_exists( 'pll_current_language' ) ? pll_current_language( 'slug' ) : false;
+		if ( ! $lang ) {
+			$lang = '/de' === $path || str_starts_with( $path, '/de/' ) ? 'de' : 'en';
+		}
+		$headers['Content-Language'] = 'de' === $lang ? 'de-DE' : 'en';
+		return $headers;
+	}
+
 
 	/**
 	 * Polylang's hreflang links (filter `pll_rel_hreflang_attributes`): with

@@ -14,6 +14,12 @@ for (const [lang, base] of [
 		const dom = new JSDOM(readFileSync(source, 'utf8'), { url: 'https://de-linker.com/', runScripts: 'outside-only' });
 		const { document, KeyboardEvent } = dom.window;
 		const root = document.getElementById('configurator-showcase');
+		for (const link of root.querySelectorAll('a[href]')) {
+			const url = new URL(link.href);
+			if (url.pathname === base) {
+				assert.equal(link.relList.contains('nofollow'), Boolean(url.search), url.href);
+			}
+		}
 		dom.window.eval(readFileSync(script, 'utf8'));
 		const tabs = [...root.querySelectorAll('[role=tab]')];
 		const tablist = root.querySelector('[role=tablist]');

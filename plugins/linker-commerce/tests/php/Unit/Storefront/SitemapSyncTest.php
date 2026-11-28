@@ -47,6 +47,20 @@ final class SitemapSyncTest extends TestCase {
 		}
 	}
 
+	/** A plain query shortlink is excluded even during nested alternate resolution. */
+	public function test_plain_post_url_stays_out_of_sitemap(): void {
+		$post = new \WP_Post( (object) array( 'ID' => 42 ) );
+		foreach ( array(
+			array( 'loc' => 'https://example.test/?p=42' ),
+			array(
+				'loc'               => 'https://example.test/?p=42',
+				'linker_alternates' => array(),
+			),
+		) as $entry ) {
+			self::assertNull( ( new SitemapSync() )->post_entry( $entry, $post ) );
+		}
+	}
+
 	/**
 	 * A shared term can have published equipment in either or both languages.
 	 *
