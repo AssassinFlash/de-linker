@@ -2,7 +2,7 @@
 /**
  * Install or restore the bilingual archive metadata, article links and edge routes.
  *
- * wp eval-file batch-t4-crawl-seal.php snapshot > before-t4.json
+ * Usage: wp eval-file batch-t4-crawl-seal.php snapshot > before-t4.json
  * wp eval-file batch-t4-crawl-seal.php apply|restore before-t4.json
  *
  * @package Linker\Migrate
@@ -74,14 +74,14 @@ RewriteRule ^de/mein-konto/projects/?$ {site}/de/mein-konto/ [R=301,L,QSD,NE]
 # END Linker edge crawl seal
 RULE;
 
-const OPTION = 'seopress_titles_option_name';
-const PAGED  = 'seopress_titles_archives_paged_noindex';
-const TITLES = array(
+const OPTION       = 'seopress_titles_option_name';
+const PAGED        = 'seopress_titles_archives_paged_noindex';
+const TITLES       = array(
 	'en' => 'Pylontech OPTIM US L260-OMNI 260 kWh C&I Storage | Linker',
 	'de' => 'Pylontech OPTIM US L260-OMNI – 260 kWh Speicher | Linker',
 );
 const DESCRIPTIONS = array(
-	'accessories' => array(
+	'accessories'                 => array(
 		'en' => 'Smart meters, current transformers, backup transfer switches and monitoring accessories for PV storage systems from GoodWe, SAJ and Chint at Linker.',
 		'de' => 'Smart Meter, Stromwandler, Notstrom-Umschalter und Kommunikationszubehör für PV-Speicher von GoodWe, SAJ und Chint – Datenblätter bei Linker.',
 	),
@@ -90,7 +90,7 @@ const DESCRIPTIONS = array(
 		'de' => 'Dreiphasige Energiezähler, Smart Meter und Klappstromwandler von GoodWe und Chint für PV-Eigenverbrauch, Einspeisemanagement und Gewerbeanlagen.',
 	),
 );
-const ARTICLES = array(
+const ARTICLES     = array(
 	'gateway-meter-cloud-monitoring-data-layer'  => array( 'res-accessories', 'accessories' ),
 	'remote-monitoring-after-installation'       => array( 'res-accessories', 'accessories' ),
 	'indoor-vs-outdoor-battery-storage-planning' => array( 'res-batteries', 'home-storage' ),
@@ -160,29 +160,62 @@ function pause_translation(): void {
 	}
 }
 
-/** Resolve the EN object and its reviewed DE translation from the installed catalog. */
+/**
+ * Resolve the EN object and its reviewed DE translation from the installed catalog.
+ *
+ * @param string $type Post type or product category taxonomy.
+ * @param string $slug English object slug.
+ * @return array{en:int,de:int}
+ * @throws RuntimeException When the catalog has no distinct translation.
+ */
 function pair( string $type, string $slug ): array {
 	if ( 'product_cat' === $type ) {
 		$term = get_term_by( 'slug', $slug, $type );
 		$en   = $term ? $term->term_id : 0;
 		$de   = $en ? pll_get_term( $en, 'de' ) : 0;
 	} else {
-		$ids = get_posts( array( 'name' => $slug, 'post_type' => $type, 'post_status' => 'publish', 'lang' => 'en', 'fields' => 'ids', 'numberposts' => 1, 'suppress_filters' => false ) );
+		$ids = get_posts(
+			array(
+				'name'             => $slug,
+				'post_type'        => $type,
+				'post_status'      => 'publish',
+				'lang'             => 'en',
+				'fields'           => 'ids',
+				'numberposts'      => 1,
+				'suppress_filters' => false,
+			)
+		);
 		$en  = $ids[0] ?? 0;
 		$de  = $en ? pll_get_post( $en, 'de' ) : 0;
 	}
 	if ( ! $en || ! $de || (int) $de === (int) $en ) {
-		throw new RuntimeException( 'Missing translation pair: ' . $slug );
+		throw new RuntimeException( 'Missing translation pair: ' . esc_html( $slug ) );
 	}
-	return array( 'en' => (int) $en, 'de' => (int) $de );
+	return array(
+		'en' => (int) $en,
+		'de' => (int) $de,
+	);
 }
 
-/** Capture a single-valued metadata field, including absence. */
+/**
+ * Capture a single-valued metadata field, including absence.
+ *
+ * @param string $kind Metadata object type.
+ * @param int    $id   Object ID.
+ * @param string $key  Metadata key.
+ */
 function meta( string $kind, int $id, string $key ): mixed {
 	return metadata_exists( $kind, $id, $key ) ? get_metadata( $kind, $id, $key, true ) : null;
 }
 
-/** Record each field touched by the editorial change and its translation baseline. */
+/**
+ * Record each field touched by the editorial change and its translation baseline.
+ *
+ * @param string $type  Post type or product category taxonomy.
+ * @param string $slug  English object slug.
+ * @param string $field Post content or SEO metadata key.
+ * @return array<string,mixed>
+ */
 function entry( string $type, string $slug, string $field ): array {
 	$ids  = pair( $type, $slug );
 	$kind = 'product_cat' === $type ? State::TERM : State::POST;
@@ -196,6 +229,11 @@ function entry( string $type, string $slug, string $field ): array {
 	return $row;
 }
 
+/**
+ * Capture the rewrite file, pagination option, editorial fields and translation state.
+ *
+ * @return array<string,mixed>
+ */
 function snapshot(): array {
 	$file = ABSPATH . '.htaccess';
 	$rows = array( 'l260' => entry( 'product', 'pylontech-optim-us-l260-omni', '_seopress_titles_title' ) );
@@ -206,11 +244,20 @@ function snapshot(): array {
 		$rows[ $slug ] = entry( 'post', $slug, 'post_content' );
 	}
 	return array(
-		'home' => get_option( 'home' ), 'htaccess' => bytes( $file ), 'mode' => fileperms( $file ) & 0777,
-		'paged' => get_option( OPTION )[ PAGED ] ?? null, 'entries' => $rows,
+		'home'     => get_option( 'home' ),
+		'htaccess' => bytes( $file ),
+		'mode'     => fileperms( $file ) & 0777,
+		'paged'    => get_option( OPTION )[ PAGED ] ?? null,
+		'entries'  => $rows,
 	);
 }
 
+/**
+ * Insert the crawl rules between the canonical host and compression blocks.
+ *
+ * @param array<string,mixed> $before Original snapshot.
+ * @throws RuntimeException If the snapshot has an unexpected block order.
+ */
 function edge( array $before ): string {
 	$original = $before['htaccess'];
 	$anchor   = '# BEGIN Linker edge compression and headers';
@@ -224,6 +271,15 @@ function edge( array $before ): string {
 	return substr_replace( $original, $block . $nl . $nl, $pos, 0 );
 }
 
+/**
+ * Set or remove a metadata field and read back its stored value.
+ *
+ * @param string $kind  Metadata object type.
+ * @param int    $id    Object ID.
+ * @param string $key   Metadata key.
+ * @param mixed  $value Snapshot or published value.
+ * @throws RuntimeException When the stored value differs.
+ */
 function write_meta( string $kind, int $id, string $key, mixed $value ): void {
 	if ( null === $value ) {
 		delete_metadata( $kind, $id, $key );
@@ -231,10 +287,17 @@ function write_meta( string $kind, int $id, string $key, mixed $value ): void {
 		update_metadata( $kind, $id, $key, wp_slash( $value ) );
 	}
 	if ( meta( $kind, $id, $key ) !== $value ) {
-		throw new RuntimeException( 'Metadata write failed for ' . $key );
+		throw new RuntimeException( 'Metadata write failed for ' . esc_html( $key ) );
 	}
 }
 
+/**
+ * Resolve the bilingual SEO copy or replace each legacy link in the original article.
+ *
+ * @param string              $slug Editorial entry name.
+ * @param array<string,mixed> $row  Original entry.
+ * @return array{en:string,de:string}
+ */
 function values( string $slug, array $row ): array {
 	if ( 'l260' === $slug ) {
 		return TITLES;
@@ -243,19 +306,29 @@ function values( string $slug, array $row ): array {
 		return DESCRIPTIONS[ $slug ];
 	}
 	list( $from, $to ) = ARTICLES[ $slug ];
-	$old = "/product-category/residential-storage/$from/";
-	$de  = 'accessories' === $to ? '/de/produkt-kategorie/zubehoer/' : '/de/produkt-kategorie/heimspeicher/';
+	$old               = "/product-category/residential-storage/$from/";
+	$de                = 'accessories' === $to ? '/de/produkt-kategorie/zubehoer/' : '/de/produkt-kategorie/heimspeicher/';
 	return array(
 		'en' => str_replace( $old, "/product-category/$to/", $row['original']['en'] ),
 		'de' => str_replace( $old, $de, $row['original']['de'] ),
 	);
 }
 
+/**
+ * Publish or restore one bilingual editorial entry and its translation baseline.
+ *
+ * @param string              $slug       Editorial entry name.
+ * @param array<string,mixed> $row        Original entry.
+ * @param array<string,mixed> $current    Current entry and translation state.
+ * @param bool                $apply      Whether to publish the new values.
+ * @param Translator          $translator Installed translator.
+ * @throws RuntimeException If a pair or field changed, or writing the entry failed.
+ */
 function change_entry( string $slug, array $row, array $current, bool $apply, Translator $translator ): void {
 	$desired = values( $slug, $row );
 	$target  = $apply ? $desired : $row['original'];
 	if ( $row['ids'] !== $current['ids'] ) {
-		throw new RuntimeException( 'Translation pairing changed: ' . $slug );
+		throw new RuntimeException( 'Translation pairing changed: ' . esc_html( $slug ) );
 	}
 	foreach ( $target as $lang => $value ) {
 		$old = $current['original'][ $lang ];
@@ -263,15 +336,23 @@ function change_entry( string $slug, array $row, array $current, bool $apply, Tr
 			continue;
 		}
 		if ( $old !== $row['original'][ $lang ] && $old !== $desired[ $lang ] ) {
-			throw new RuntimeException( 'Editorial field changed since snapshot: ' . $slug );
+			throw new RuntimeException( 'Editorial field changed since snapshot: ' . esc_html( $slug ) );
 		}
 		$id = $row['ids'][ $lang ];
 		if ( 'post_content' !== $row['field'] ) {
 			write_meta( $row['kind'], $id, $row['field'], $value );
 		} else {
-			$result = wp_update_post( wp_slash( array( 'ID' => $id, 'post_content' => $value ) ), true );
+			$result = wp_update_post(
+				wp_slash(
+					array(
+						'ID'           => $id,
+						'post_content' => $value,
+					)
+				),
+				true
+			);
 			if ( is_wp_error( $result ) || get_post_field( 'post_content', $id, 'raw' ) !== $value ) {
-				throw new RuntimeException( 'Cannot update article ' . $slug );
+				throw new RuntimeException( 'Cannot update article ' . esc_html( $slug ) );
 			}
 		}
 	}
@@ -279,7 +360,7 @@ function change_entry( string $slug, array $row, array $current, bool $apply, Tr
 	if ( $apply ) {
 		if ( $target !== $current['original'] || ! $translator->current( $row['kind'], $en ) ) {
 			if ( State::SYNCED !== $translator->adopt_current( $row['kind'], $en ) ) {
-				throw new RuntimeException( 'Incomplete German translation: ' . $slug );
+				throw new RuntimeException( 'Incomplete German translation: ' . esc_html( $slug ) );
 			}
 		}
 	} else {
@@ -293,6 +374,13 @@ function change_entry( string $slug, array $row, array $current, bool $apply, Tr
 	}
 }
 
+/**
+ * Publish or restore the catalog metadata, article links, pagination option and crawl rules.
+ *
+ * @param array<string,mixed> $before Original site snapshot.
+ * @param bool                $apply  Whether to apply the migration.
+ * @throws RuntimeException If the snapshot no longer matches the site or legacy links remain.
+ */
 function migrate( array $before, bool $apply ): void {
 	global $wpdb;
 	// A failed database transaction can leave its post and metadata reads in Redis.
@@ -312,44 +400,47 @@ function migrate( array $before, bool $apply ): void {
 	}
 	pause_translation();
 	$translator = translator();
-	NativeTransaction::run( static function () use ( $before, $current, $apply, $translator, $wpdb ): void {
-		foreach ( $before['entries'] as $slug => $row ) {
-			change_entry( $slug, $row, $current['entries'][ $slug ], $apply, $translator );
-		}
-		if ( $apply ) {
-			$remaining = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type='post' AND post_status='publish' AND (post_content LIKE '%/product-category/residential-storage/%' OR post_content LIKE '%/product-category/ci-storage/%')" );
-			if ( $remaining || $wpdb->last_error ) {
-				throw new RuntimeException( 'Published posts with legacy category links: ' . implode( ',', $remaining ) . ' ' . $wpdb->last_error );
+	NativeTransaction::run(
+		static function () use ( $before, $current, $apply, $translator, $wpdb ): void {
+			foreach ( $before['entries'] as $slug => $row ) {
+				change_entry( $slug, $row, $current['entries'][ $slug ], $apply, $translator );
 			}
+			if ( $apply ) {
+				$remaining = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type='post' AND post_status='publish' AND (post_content LIKE '%/product-category/residential-storage/%' OR post_content LIKE '%/product-category/ci-storage/%')" );
+				if ( $remaining || $wpdb->last_error ) {
+					throw new RuntimeException( 'Published posts with legacy category links: ' . esc_html( implode( ',', $remaining ) . ' ' . $wpdb->last_error ) );
+				}
+			}
+			$options = get_option( OPTION );
+			$next    = $apply ? '' : $before['paged'];
+			if ( null === $next ) {
+				unset( $options[ PAGED ] );
+			} else {
+				$options[ PAGED ] = $next;
+			}
+			update_option( OPTION, $options );
 		}
-		$options = get_option( OPTION );
-		$next    = $apply ? '' : $before['paged'];
-		if ( null === $next ) {
-			unset( $options[ PAGED ] );
-		} else {
-			$options[ PAGED ] = $next;
-		}
-		update_option( OPTION, $options );
-	} );
+	);
 	install_file( ABSPATH . '.htaccess', $apply ? $rules : $before['htaccess'], $before['mode'] );
 	flush_rewrite_rules( false );
 	foreach ( array( 'post', 'page', 'product', 'category', 'product_cat', 'product_brand' ) as $type ) {
+		// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- SEOPress keys the index transient by its filtered page size.
 		foreach ( array_unique( array( 1000, (int) apply_filters( 'seopress_sitemaps_max_posts_per_sitemap', 1000 ) ) ) as $size ) {
 			delete_transient( 'seopress_sitemap_lastmod_all_' . $type . '_' . $size );
 		}
 	}
 }
 
-$operation = $args[0] ?? '';
-if ( 'snapshot' === $operation ) {
-	WP_CLI::line( wp_json_encode( snapshot(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ) );
-} elseif ( in_array( $operation, array( 'apply', 'restore' ), true ) && isset( $args[1] ) ) {
+$linker_commerce_t4_operation = $args[0] ?? '';
+if ( 'snapshot' === $linker_commerce_t4_operation ) {
+	echo wp_json_encode( snapshot(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR ) . "\n";
+} elseif ( in_array( $linker_commerce_t4_operation, array( 'apply', 'restore' ), true ) && isset( $args[1] ) ) {
 	try {
-		migrate( json_decode( bytes( $args[1] ), true, 512, JSON_THROW_ON_ERROR ), 'apply' === $operation );
+		migrate( json_decode( bytes( $args[1] ), true, 512, JSON_THROW_ON_ERROR ), 'apply' === $linker_commerce_t4_operation );
 	} catch ( \Throwable $failure ) {
 		WP_CLI::error( $failure->getMessage() );
 	}
-	WP_CLI::success( 'Crawl seal: ' . $operation );
+	WP_CLI::success( 'Crawl seal: ' . $linker_commerce_t4_operation );
 } else {
 	WP_CLI::error( 'Usage: snapshot | apply <snapshot> | restore <snapshot>' );
 }

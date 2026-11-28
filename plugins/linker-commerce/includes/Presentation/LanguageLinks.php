@@ -250,6 +250,14 @@ final class LanguageLinks {
 			return \is_string( $link ) ? $link : '';
 		}
 		if ( $queried instanceof \WP_Term ) {
+			if ( 'product_brand' === $queried->taxonomy && function_exists( 'PLL' ) ) {
+				// The two brand archives share one term, even when both are empty.
+				$link   = get_term_link( $queried );
+				$target = PLL()->model->get_language( $lang );
+				if ( is_string( $link ) && $target instanceof \PLL_Language ) {
+					return PLL()->links_model->switch_language_in_link( $link, $target );
+				}
+			}
 			if ( ! \function_exists( 'pll_get_term' ) ) {
 				return '';
 			}

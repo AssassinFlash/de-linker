@@ -731,7 +731,7 @@ final class ProductShortcodes {
 			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span><svg class="compare-selected-mark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></button>';
 		$html .= '<a class="sf-card-atc tv-woo-card-action tv-woo-card-action--primary" rel="nofollow" data-card-atc' . ( '' === $card['cta_url'] ? ' hidden' : ' href="' . esc_url( $card['cta_url'] ) . '"' ) . '>' . esc_html__( 'Add to solution draft', 'linker-commerce' ) . '</a>';
 		if ( '' !== $card['price']['url'] ) {
-			$html .= '<a class="tv-woo-card-action tv-woo-card-action--secondary" data-card-gate href="' . esc_url( $card['price']['url'] ) . '">' . esc_html__( 'Log in for pricing', 'linker-commerce' ) . '</a>' . AccountLinks::create();
+			$html .= '<a class="tv-woo-card-action tv-woo-card-action--secondary" data-card-gate rel="nofollow" href="' . esc_url( $card['price']['url'] ) . '">' . esc_html__( 'Log in for pricing', 'linker-commerce' ) . '</a>' . AccountLinks::create();
 		}
 		$html .= '</div></article>';
 		return $html;
