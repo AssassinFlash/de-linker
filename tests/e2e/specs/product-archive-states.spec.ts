@@ -630,7 +630,7 @@ for (const [locale, width] of [
 			wp([
 				'eval',
 				`$en = get_page_by_path( '${slug}', OBJECT, 'product' );` +
-					`echo $en ? $en->ID : 0;`,
+					`echo $en ? pll_get_post( $en->ID, 'en' ) : 0;`,
 			]).trim()
 		);
 		expect(id, `${PRODUCT[locale]} resolves to a product`).toBeGreaterThan(
@@ -738,17 +738,13 @@ for (const [locale, width] of [
 			);
 			expect(draftRows, 'the draft stays empty').toBe(0);
 		} finally {
-			// Leave the instance as it was found. A page render can leave the
-			// persistent object cache holding the flipped status after the
-			// write, so a mismatch is corrected once from a flushed cache
-			// rather than left behind for the next suite.
+			wp([
+				'eval',
+				`$ids = pll_get_post_translations( ${id} );` +
+					`$cache = wc_get_container()->get( \\Automattic\\WooCommerce\\Internal\\Caches\\ProductCache::class );` +
+					`foreach ( $ids as $model ) { wp_cache_delete( $model, 'post_meta' ); $cache->remove( $model ); }`,
+			]);
 			flip(before);
-			if (status() !== before) {
-				wp([
-					'eval',
-					`wp_cache_flush(); $p = wc_get_product( ${id} ); $p->set_stock_status( '${before}' ); $p->save();`,
-				]);
-			}
 			expect(status(), 'the stock state is restored').toBe(before);
 		}
 	});
