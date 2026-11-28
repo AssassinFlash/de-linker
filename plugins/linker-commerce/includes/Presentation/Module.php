@@ -62,25 +62,49 @@ final class Module {
 		( new CompatibilityMatrixPage() )->register();
 		$this->account->register();
 		$this->blog->register();
-		add_filter( 'lc_modify_header_content', array( $this, 'home_header_menu' ) );
+		add_filter( 'lc_modify_header_content', array( $this, 'header_menu' ) );
 		add_filter( 'wp_preload_resources', array( $this, 'preload_resources' ) );
+		add_filter( 'script_loader_src', array( $this, 'version_fingerprinted_scripts' ), 20, 2 );
+		add_action( 'after_setup_theme', array( $this, 'disable_woo_product_gallery' ), 99 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'trim_woo_assets' ), 31 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_account_scripts' ) );
 	}
 
 	/**
-	 * Size the Home navigation as its markup arrives, before the hero is painted.
+	 * Measure navigation as the header markup arrives.
 	 *
 	 * @param string $header Rendered LiveCanvas header.
 	 */
-	public function home_header_menu( string $header ): string {
-		if ( ! is_front_page() || ! did_action( 'wp_head' ) ) {
+	public function header_menu( string $header ): string {
+		if ( ! did_action( 'wp_head' ) ) {
 			return $header;
 		}
 		ob_start();
 		wp_scripts()->do_items( array( 'linker-header-menu' ), 1 );
 		return $header . (string) ob_get_clean();
+	}
+
+	/**
+	 * Expose Site Kit's existing file version to the static cache.
+	 *
+	 * @param string $src    Registered script URL.
+	 * @param string $handle WordPress script handle.
+	 */
+	public function version_fingerprinted_scripts( string $src, string $handle ): string {
+		if ( ! in_array( $handle, array( 'googlesitekit-consent-mode', 'googlesitekit-events-provider-content-events', 'googlesitekit-events-provider-woocommerce' ), true ) || str_contains( $src, 'ver=' ) ) {
+			return $src;
+		}
+		$directory = 'google-site-kit/dist/assets/js/';
+		if ( ! str_starts_with( $src, plugins_url( $directory ) ) ) {
+			return $src;
+		}
+		$filename = basename( (string) wp_parse_url( $src, PHP_URL_PATH ) );
+		if ( preg_match( '/-([a-f0-9]{12,32})\.js$/i', $filename, $match ) ) {
+			return add_query_arg( 'ver', $match[1], $src );
+		}
+		$file = WP_PLUGIN_DIR . '/' . $directory . $filename;
+		return is_file( $file ) && is_readable( $file ) ? add_query_arg( 'ver', (string) filemtime( $file ), $src ) : $src;
 	}
 
 	/**
@@ -90,9 +114,8 @@ final class Module {
 	 * @return array<int,array<string,string>>
 	 */
 	public function preload_resources( array $resources ): array {
-		$base    = plugins_url( 'assets/fonts/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
-		$weights = is_front_page() ? array( 400, 500, 600, 700 ) : array( 400, 600 );
-		foreach ( $weights as $weight ) {
+		$base = plugins_url( 'assets/fonts/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
+		foreach ( array( 400, 500, 600, 700 ) as $weight ) {
 			$resources[] = array(
 				'href'        => $base . 'plus-jakarta-sans-' . $weight . '.woff2',
 				'as'          => 'font',
@@ -104,11 +127,17 @@ final class Module {
 			$uploads = wp_get_upload_dir();
 			$hero    = '/2026/09/linker-linking-value-serving-you.webp';
 			if ( is_file( $uploads['basedir'] . $hero ) ) {
-				$resources[] = array(
+				$image = array(
 					'href'          => $uploads['baseurl'] . $hero,
 					'as'            => 'image',
 					'fetchpriority' => 'high',
 				);
+				$small = '/2026/09/linker-linking-value-serving-you-768x576.webp';
+				if ( is_file( $uploads['basedir'] . $small ) ) {
+					$image['imagesrcset'] = $uploads['baseurl'] . $small . ' 768w, ' . $image['href'] . ' 1024w';
+					$image['imagesizes']  = '(max-width: 600px) 1024px, 100vw';
+				}
+				$resources[] = $image;
 			}
 		}
 		if ( function_exists( 'is_product' ) && is_product() ) {
@@ -142,14 +171,34 @@ final class Module {
 		return $resources;
 	}
 
+	/** The product template supplies its own gallery, zoom and image viewer. */
+	public function disable_woo_product_gallery(): void {
+		remove_theme_support( 'wc-product-gallery-zoom' );
+		remove_theme_support( 'wc-product-gallery-lightbox' );
+		remove_theme_support( 'wc-product-gallery-slider' );
+	}
+
 	/** Marketing and editorial pages have no Woo cart UI. Registered dependencies remain available to widgets. */
 	public function trim_woo_assets(): void {
-		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() || is_product() || ComparePage::is_comparison_page() ) && ! did_action( 'woocommerce_add_to_cart' ) ) {
-			// WindPress supplies the catalog, comparison and product detail styles.
+		if ( did_action( 'woocommerce_add_to_cart' ) ) {
+			return;
+		}
+		if ( function_exists( 'is_product' ) && is_product() ) {
+			foreach ( array( 'woocommerce-general', 'woocommerce-layout', 'woocommerce-smallscreen', 'brands-styles', 'photoswipe', 'photoswipe-default-skin' ) as $handle ) {
+				wp_dequeue_style( $handle );
+			}
+			foreach ( array( 'wc-photoswipe', 'photoswipe', 'wc-photoswipe-ui-default', 'photoswipe-ui-default', 'wc-flexslider', 'flexslider', 'wc-zoom', 'zoom', 'wc-single-product' ) as $handle ) {
+				wp_dequeue_script( $handle );
+			}
+			remove_action( 'wp_footer', 'woocommerce_photoswipe' );
+			return;
+		}
+		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() || ComparePage::is_comparison_page() ) ) {
+			// WindPress supplies the catalog and comparison styles.
 			wp_dequeue_style( 'woocommerce-general' );
 			return;
 		}
-		if ( ! function_exists( 'is_woocommerce' ) || is_woocommerce() || is_cart() || is_checkout() || is_account_page() || ComparePage::is_comparison_page() || did_action( 'woocommerce_add_to_cart' ) ) {
+		if ( ! function_exists( 'is_woocommerce' ) || is_woocommerce() || is_cart() || is_checkout() || is_account_page() || ComparePage::is_comparison_page() ) {
 			return;
 		}
 		$post = get_queried_object();

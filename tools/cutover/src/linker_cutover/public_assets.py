@@ -36,11 +36,14 @@ _BROWSER_SUFFIXES = (
 )
 _PUBLIC_TREES = ("assets", "build")
 # WordPress names JS translations after the MD5 of the public script path.
-_PLANNER_CATALOG = re.compile(
-    r"linker-tools-[a-zA-Z0-9_]+-"
-    + hashlib.md5(b"build/planner/assets/planner.js", usedforsecurity=False).hexdigest()
-    + r"\.json"
+_CATALOG_HASHES = "|".join(
+    hashlib.md5(path.encode(), usedforsecurity=False).hexdigest()
+    for path in ("build/planner/assets/planner.js", "build/genie.js", "build/hero.js")
 )
+_PUBLIC_CATALOGS = re.compile(
+    rf"linker-tools-[a-zA-Z0-9_]+-(?:{_CATALOG_HASHES})\.json"
+)
+
 
 # Executed on the candidate's host, not on the source/private staging. The same
 # read-only check is also prepended to the final SSH before the rename trap.
@@ -131,7 +134,7 @@ def _command(
             tools
             and len(parts) == 5
             and parts[3] == "languages"
-            and _PLANNER_CATALOG.fullmatch(parts[4])
+            and _PUBLIC_CATALOGS.fullmatch(parts[4])
         )
         if tree or file or (not directory and catalog):
             candidate = str(path.with_name(f".{path.name}.next"))
@@ -140,7 +143,7 @@ def _command(
                     "path": target.path_of(candidate),
                     "directory": directory,
                     "theme": theme,
-                    "catalog": _PLANNER_CATALOG.pattern if tools and tree else "",
+                    "catalog": _PUBLIC_CATALOGS.pattern if tools and tree else "",
                 }
             )
     if not plans:

@@ -125,6 +125,27 @@ final class FormTest extends TestCase {
 		}
 	}
 
+	/** A shared form prints its protections with visitor fields deferred. */
+	public function test_guest_shell_does_not_issue_a_cookie_nonce_or_request_id(): void {
+		$this->plain_text();
+		$this->form_environment( 'en_US', false );
+		$this->english_site();
+		unset( $_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] );
+		WP_Mock::userFunction( 'rest_url' )->with( 'linker/v1/contact-session' )->andReturn( 'http://site/wp-json/linker/v1/contact-session' );
+		WP_Mock::userFunction( 'WC' )->andReturn( (object) array( 'session' => null ) );
+		WP_Mock::expectAction( 'linker_commerce_public_protection_assets' );
+
+		$html = ( new Form() )->render();
+		$this->assertStringContainsString( 'data-linker-contact-shell="1"', $html );
+		$this->assertStringContainsString( 'data-linker-contact-session-url="http://site/wp-json/linker/v1/contact-session"', $html );
+		$this->assertStringContainsString( 'name="linker_contact_nonce" value=""', $html );
+		$this->assertStringContainsString( 'name="linker_request_id" value=""', $html );
+		$this->assertStringContainsString( 'data-linker-turnstile="contact"', $html );
+		$this->assertStringContainsString( '<wc-order-attribution-inputs>', $html );
+		$this->assertStringContainsString( 'name="website"', $html );
+		$this->assertArrayNotHasKey( \Linker\Commerce\Protection\Identity::COOKIE, $_COOKIE );
+	}
+
 	/**
 	 * The topic select offers the live card's topics, the general one selected
 	 * when the request brought none.
@@ -443,12 +464,13 @@ final class FormTest extends TestCase {
 	 * WP_Mock answers with the first matching registration.
 	 *
 	 * @param string $locale The locale the page is rendered in.
+	 * @param bool   $signed_in Whether the form belongs to an account.
 	 */
-	private function form_environment( string $locale = 'en_US' ): void {
+	private function form_environment( string $locale = 'en_US', bool $signed_in = true ): void {
 		WP_Mock::userFunction( 'wp_is_uuid' )->andReturnUsing( static fn ( string $id ): bool => '' !== $id );
 		WP_Mock::userFunction( 'wp_generate_uuid4' )->andReturn( '01234567-0123-4123-8123-0123456789ab' );
-		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( true );
-		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
+		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( $signed_in );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => $signed_in ? 5 : 0 ) );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( mixed $value ): string => (string) json_encode( $value ) ) );
 		WP_Mock::userFunction( 'wp_get_session_token', array( 'return' => 'test-session' ) );
 		WP_Mock::userFunction( 'wp_hash', array( 'return' => static fn ( string $value ): string => hash( 'sha256', $value ) ) );

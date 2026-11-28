@@ -1,4 +1,4 @@
-/** Execute the actual inline bootstrap while its external app is unavailable. */
+/** Execute the actual bootstrap while its external app is unavailable. */
 import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -61,13 +61,15 @@ async function scenario( width, workspace ) {
 		);
 	}
 	if ( doc.readyState === 'loading' ) {
-		assert.equal( scripts.length, workspace ? 1 : 0 );
+		assert.equal( scripts.length, 0 );
 		await new Promise( ( resolve ) =>
 			doc.addEventListener( 'DOMContentLoaded', resolve, { once: true } )
 		);
 	}
+	await new Promise( ( resolve ) => setImmediate( resolve ) );
 	scripts.at( -1 ).dispatchEvent( new win.Event( 'error' ) );
-	await new Promise( ( resolve ) => setTimeout( resolve, 20 ) );
+	await new Promise( ( resolve ) => setImmediate( resolve ) );
+	await new Promise( ( resolve ) => win.requestAnimationFrame( resolve ) );
 	const failure = doc.querySelector( '[data-linker-genie-load-error]' );
 	assert( failure );
 	assert.equal(
@@ -113,8 +115,12 @@ async function scenario( width, workspace ) {
 		retry.click();
 		assert.equal( panel.getAttribute( 'role' ), 'region' );
 		assert.equal( doc.body.style.overflow, 'clip' );
+		await new Promise( ( resolve ) => setImmediate( resolve ) );
 		scripts.at( -1 ).dispatchEvent( new win.Event( 'error' ) );
-		await new Promise( ( resolve ) => setTimeout( resolve, 20 ) );
+		await new Promise( ( resolve ) => setImmediate( resolve ) );
+		await new Promise( ( resolve ) =>
+			win.requestAnimationFrame( resolve )
+		);
 		doc.dispatchEvent(
 			new win.KeyboardEvent( 'keydown', {
 				key: 'Escape',

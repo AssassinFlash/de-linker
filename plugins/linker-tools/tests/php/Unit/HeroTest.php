@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Tests\Unit;
 
-use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Hero;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -28,33 +27,55 @@ final class HeroTest extends TestCase {
 	public function test_assets_load_on_the_front_page(): void {
 		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
 		WP_Mock::userFunction( 'is_front_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'plugins_url', array( 'return' => '/assets/hero-loader.js' ) );
 		WP_Mock::userFunction(
 			'wp_enqueue_script',
 			array(
 				'times' => 1,
-				'args'  => array( Hero::HANDLE ),
+				'args'  => array(
+					'linker-tools-hero-loader',
+					'/assets/hero-loader.js',
+					array( 'linker-tools-genie-loader' ),
+					substr( (string) md5_file( dirname( __DIR__, 3 ) . '/assets/hero-loader.js' ), 0, 12 ),
+					array(
+						'in_footer' => true,
+						'strategy'  => 'defer',
+					),
+				),
 			)
 		);
-		// The hero reuses the dock's component styles (GenieCard, Reply,
-		// AttachmentCard); enqueueing them here makes the dependency explicit.
-		WP_Mock::userFunction(
-			'wp_enqueue_style',
-			array(
-				'times' => 1,
-				'args'  => array( Entries::HANDLE ),
-			)
-		);
-		WP_Mock::userFunction(
-			'wp_enqueue_style',
-			array(
-				'times' => 1,
-				'args'  => array( Hero::HANDLE ),
-			)
-		);
+		WP_Mock::userFunction( 'wp_enqueue_style', array( 'times' => 0 ) );
 
 		( new Hero() )->assets();
 
 		$this->assertConditionsMet();
+	}
+
+	/** German hero configuration references its public catalog and styles. */
+	public function test_config_links_the_german_hero_catalog(): void {
+		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_front_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'de_DE_formal' ) );
+		WP_Mock::userFunction( 'plugins_url', array( 'return' => static fn( string $path ): string => '/' . $path ) );
+		WP_Mock::userFunction( 'wp_scripts', array( 'return' => new FakeScripts() ) );
+		WP_Mock::userFunction( 'wp_styles', array( 'return' => new FakeScripts() ) );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WordPress encoder test double.
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( $config, int $flags ): string => (string) json_encode( $config, $flags ) ) );
+		$payload = array();
+		WP_Mock::userFunction(
+			'wp_print_inline_script_tag',
+			array(
+				'return' => static function ( string $json, array $attrs ) use ( &$payload ): void {
+					self::assertSame( 'application/json', $attrs['type'] );
+					self::assertArrayHasKey( 'data-linker-hero-loader', $attrs );
+					$payload = json_decode( $json, true );
+				},
+			)
+		);
+		( new Hero() )->config();
+		$this->assertMatchesRegularExpression( '/6796211aef57736d0923df38ef696ad2\.json\?ver=[a-f0-9]{12}$/', $payload['translationUrls'][0] );
+		$this->assertArrayNotHasKey( 'translations', $payload );
+		$this->assertStringContainsString( '/hero.js?ver=', $payload['src'] );
 	}
 
 	/**
@@ -94,6 +115,7 @@ final class HeroTest extends TestCase {
 			array( $hero, 'assets' )
 		);
 
+		WP_Mock::expectActionAdded( 'wp_footer', array( $hero, 'config' ) );
 		$hero->register();
 
 		$this->assertConditionsMet();

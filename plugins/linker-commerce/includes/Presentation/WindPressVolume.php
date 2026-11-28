@@ -73,7 +73,32 @@ final class WindPressVolume {
 				$imports[] = './' . $name;
 			}
 		}
+		$bundle = $this->home_bundle();
+		$asset  = $public . '/home-bundle.css';
+		if ( ! is_file( $asset ) || md5_file( $asset ) !== md5( $bundle ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.rename_rename -- Publish the complete bundle on the same filesystem.
+			if ( strlen( $bundle ) !== file_put_contents( $asset . '.next', $bundle ) || ! rename( $asset . '.next', $asset ) ) {
+				throw new \RuntimeException( 'Could not publish home-bundle.css' );
+			}
+		}
 		$this->import_from_entry( $data_dir . '/' . self::ENTRY, $imports );
+	}
+
+	/** Exact homepage sources in cascade order.
+	 *
+	 * @throws \RuntimeException When a bundle source cannot be read.
+	 */
+	private function home_bundle(): string {
+		$parts = array();
+		foreach ( WindPressPageStyles::HOME_BUNDLE as $name ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local published source.
+			$css = file_get_contents( self::path() . '/' . $name );
+			if ( false === $css ) {
+				throw new \RuntimeException( 'Missing homepage stylesheet ' . $name ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Operator diagnostic.
+			}
+			$parts[] = $css;
+		}
+		return implode( "\n", $parts );
 	}
 
 	/**
@@ -202,6 +227,14 @@ final class WindPressVolume {
 					'detail'  => 'the volume copy does not hash the same as the export',
 				);
 			}
+		}
+		$bundle = dirname( $dir ) . '/cache/linker/home-bundle.css';
+		if ( ! is_file( $bundle ) || md5_file( $bundle ) !== md5( $this->home_bundle() ) ) {
+			$rows[] = array(
+				'surface' => 'windpress volume',
+				'target'  => 'home-bundle.css',
+				'detail'  => 'the public homepage bundle differs from the export',
+			);
 		}
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local volume file on disk, not a remote URL.
 		$entry = is_readable( $dir . '/' . self::ENTRY ) ? (string) file_get_contents( $dir . '/' . self::ENTRY ) : '';

@@ -204,6 +204,7 @@ for (const locale of ['en', 'de'] as const) {
 				if (await reject.isVisible()) await reject.click();
 				async function currentApp() {
 					if (surface === 'hero') {
+						await page.locator('.hero-prompt').focus();
 						await expect(
 							page.locator(
 								'.hero-cinematic[data-linker-genie-hero="ready"]'

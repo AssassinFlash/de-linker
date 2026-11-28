@@ -1820,6 +1820,9 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'alt="GoodWe GW60K-STS-G10 — alternate product view"', $pair );
 		$this->assertMatchesRegularExpression( '/class="pdp-gallery-secondary"[^>]*data-src="http:\/\/linker\.test\/uploads\/image-6504\.png"[^>]*>\s*<img[^>]*loading="lazy"/', $pair );
 		$this->assertSame( 3, substr_count( $thumb, 'data-pdp-thumb' ) );
+		foreach ( array( 1, 2, 3 ) as $number ) {
+			$this->assertStringContainsString( 'alt="GoodWe GW60K-STS-G10 — view ' . $number . '"', $thumb );
+		}
 		$this->assertSame( 3, substr_count( $thumb, 'loading="lazy"' ) );
 		$this->assertStringContainsString( 'data-src="http://linker.test/uploads/image-6504.png"', $thumb );
 		$this->assertStringContainsString( 'data-src="http://linker.test/uploads/image-6505.png"', $thumb );
@@ -1827,6 +1830,15 @@ final class ProductShortcodesTest extends TestCase {
 		$this->pdp_gallery = '';
 		$this->assertStringNotContainsString( 'pdp-gallery-secondary', $pdp->pdp_gallery_pair() );
 		$this->assertSame( '', $pdp->pdp_gallery_thumbs() );
+	}
+
+	/** Each project scenario presents all three panels together. */
+	public function test_project_scenarios_show_the_panels_without_a_tablist(): void {
+		$html = $this->pdp( true, array( 'application_scenarios' => array( array( 'scenario_title' => 'Commercial installation' ) ) ) )->pdp_scenes();
+		$this->assertStringContainsString( 'Commercial installation', $html );
+		$this->assertSame( 3, substr_count( $html, 'class="pdp-info-panel"' ) );
+		$this->assertStringNotContainsString( 'role="tab', $html );
+		$this->assertStringNotContainsString( 'aria-labelledby', $html );
 	}
 
 	/** Only an explicit product image note accompanies gallery images. */

@@ -15,9 +15,10 @@ import domReady from '@wordpress/dom-ready';
  */
 import { readConfig } from '../genie/config';
 import { startHero } from './controller';
+import { pageDraftContext } from '../genie/shared/draftContext';
 import './hero.css';
 
-domReady( () => {
+domReady( async () => {
 	const hero = document.querySelector< HTMLElement >( '.hero-cinematic' );
 	// The dock's mount carries the routes, nonce, language and page context;
 	// the hero is one more entry on the same conversation (config.ts).
@@ -25,6 +26,11 @@ domReady( () => {
 		'[data-linker-app="genie"]'
 	);
 	if ( hero && mount ) {
-		startHero( hero, { config: readConfig( mount ) } );
+		const config = readConfig( mount );
+		// Keep the native textarea editable while the first owner lookup is in flight.
+		const context = pageDraftContext( config );
+		await context.initialized().catch( () => undefined );
+		startHero( hero, { config } );
+		window.dispatchEvent( new CustomEvent( 'linker-genie-hero-ready' ) );
 	}
 } );

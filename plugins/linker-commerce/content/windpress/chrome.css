@@ -19,6 +19,8 @@
 #tv-header-v2 .tv-tools-fill,#tv-header-v2 .tv-tools-vtx,#tv-header-v2 .tv-tools-readout{opacity:1!important}
 #tv-header-v2 .tv-tools-panels rect{opacity:1!important}
 :root{--lk-header-h:80px}
+/* Establish the page scrollbar while the header is the only parsed section. */
+body:has(#lc-header):not(:has(#lc-footer)){min-height:calc(100vh + 1px)}
 @media (min-width:1280px){:root{--lk-header-h:88px}}
 :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 24px)}
 body.admin-bar :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 56px)}

@@ -170,6 +170,13 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 
 if ( ! class_exists( 'WP_REST_Request' ) ) {
 	class WP_REST_Request {
+		private $headers = array();
+		public function set_header( $key, $value ) {
+			$this->headers[ strtolower( $key ) ] = $value;
+		}
+		public function get_header( $key ) {
+			return $this->headers[ strtolower( $key ) ] ?? null;
+		}
 		private $route;
 		private $params = array();
 		public function __construct( $method = '', $route = '' ) {

@@ -318,7 +318,7 @@ final class SelectionContext {
 	 *
 	 * @param string $url Proposed public source.
 	 */
-	private static function same_origin( string $url ): bool {
+	public static function same_origin( string $url ): bool {
 		$parts = wp_parse_url( $url );
 		$home  = wp_parse_url( home_url() );
 		return is_array( $parts ) && is_array( $home ) && ! isset( $parts['user'] ) && ! isset( $parts['pass'] )

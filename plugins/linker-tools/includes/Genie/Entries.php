@@ -103,7 +103,7 @@ class Entries {
 		if ( ! $post instanceof \WP_Post || ! PageIndexing::is_workspace_post( $post ) ) {
 			return;
 		}
-		$src = $this->script_src();
+		$src = EntryAssets::url( self::HANDLE );
 		if ( '' === $src ) {
 			return;
 		}
@@ -125,6 +125,7 @@ class Entries {
 			return;
 		}
 		wp_enqueue_style( self::HANDLE );
+		EntryAssets::enqueue_loader( 'genie' );
 	}
 
 	/** Loads the binder only on LC pages carrying the affected editor markup. */
@@ -256,15 +257,7 @@ class Entries {
 			$this->print_loader( true );
 			return;
 		}
-		$mount   = 'linker-genie-mount';
-		$payload = array(
-			'src'                => $this->script_src(),
-			'deps'               => $this->script_deps(),
-			'nativeDependencies' => $this->native_dependencies(),
-			'translations'       => $this->script_translations(),
-			'error'              => __( 'Genie could not load.', 'linker-tools' ),
-			'retry'              => __( 'Try again', 'linker-tools' ),
-		);
+		$mount = 'linker-genie-mount';
 		echo '<div class="linker-genie">';
 		$page = $this->page_context();
 		if ( null === $this->preview->card_page( $page ) ) {
@@ -286,9 +279,7 @@ class Entries {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- mount_markup() escapes every attribute.
 		echo $this->mount_markup( 'helper' );
 		echo '</div>';
-		if ( '' !== $payload['src'] ) {
-			$this->print_loader( false );
-		}
+		$this->print_loader( false );
 		echo '</div>';
 	}
 
@@ -300,434 +291,22 @@ class Entries {
 	 * @param bool $open Whether to boot now and open as soon as the app is ready.
 	 */
 	private function print_loader( bool $open ): void {
-		$payload = array(
-			'src'                => $this->script_src(),
-			'deps'               => $this->script_deps(),
-			'nativeDependencies' => $this->native_dependencies(),
-			'translations'       => $this->script_translations(),
-			'error'              => __( 'Genie could not load.', 'linker-tools' ),
-			'retry'              => __( 'Try again', 'linker-tools' ),
-			'title'              => __( "Genie – Linker's AI assistant", 'linker-tools' ),
-			'waiting'            => __( 'Genie is thinking…', 'linker-tools' ),
-			'close'              => __( 'Close', 'linker-tools' ),
-			'open'               => $open,
+		$payload = EntryAssets::config( 'genie' ) + array(
+			'error'   => __( 'Genie could not load.', 'linker-tools' ),
+			'retry'   => __( 'Try again', 'linker-tools' ),
+			'title'   => __( "Genie – Linker's AI assistant", 'linker-tools' ),
+			'waiting' => __( 'Genie is thinking…', 'linker-tools' ),
+			'close'   => __( 'Close', 'linker-tools' ),
+			'open'    => $open,
 		);
 		if ( '' === $payload['src'] ) {
 			return;
 		}
-		// The loader owns entry delivery: an open click, an ask, or a
-		// workspace page (payload.open) boots once, waits for the App's
-		// ready event, then opens it with the first ask. The App reports
-		// Hide/Open back so the shell and mobile card agree.
-		// The payload rides in a data
-		// attribute: attribute values are entity-decoded by the HTML
-		// parser, so getAttribute() yields the clean JSON (script text
-		// would keep the esc_html entities).
 		wp_print_inline_script_tag(
-			<<<'JS'
-(function () {
-	var payload = null;
-	try {
-		payload = JSON.parse(
-			document
-				.querySelector('[data-linker-genie-loader]')
-				.getAttribute('data-linker-genie-boot-payload')
-		);
-	} catch (error) {
-		return;
-	}
-	var loaded = false;
-	var ready = false;
-		var pendingOpen = false;
-		var pendingAsk = '';
-		var pendingEntries = Object.create(null);
-		var pendingOpener = null;
-		// Opened to send a nameplate photo (#236): the app offers the picker.
-		var pendingAttach = false;
-		// Opened for a parts list (#251): the picker expects the list's file.
-		var pendingList = false;
-		// The saved solution the design report's "Ask Genie" opened with (#496).
-		var pendingSolution = 0;
-		// Opening from the home hero (#232): re-read the thread the hero
-		// wrote, and mark it as asked from the homepage.
-		var pendingRefresh = false;
-		var pendingFromHome = false;
-		var failure = null;
-        var dismissed = false;
-        var failureBoundary = null;
-        function available(node) {
-            return node instanceof HTMLElement && node.isConnected && !node.matches(':disabled,[hidden],[tabindex="-1"]') && !node.closest('[hidden],[inert]') && node.getClientRects().length > 0;
-        }
-        // The existing helper mount, including its LC account row, owns focus while the app is unavailable.
-        function bindFailureBoundary(panel, initial) {
-            var mobile = window.innerWidth <= 860; // The current helper sheet breakpoint.
-            var saved = ['role','aria-modal','aria-label'].map(function(name) { return [name,panel.getAttribute(name)]; });
-            var overflow = document.body.style.overflow;
-            var background = [];
-            panel.setAttribute('role','dialog');
-            panel.setAttribute('aria-label',payload.title);
-            if (mobile) {
-                panel.setAttribute('aria-modal','true');
-                document.body.style.overflow = 'hidden';
-                var branch = panel;
-                while (branch.parentElement) {
-                    Array.from(branch.parentElement.children).forEach(function(sibling) {
-                        if (sibling !== branch && sibling instanceof HTMLElement) { background.push([sibling,Boolean(sibling.inert)]); sibling.inert = true; }
-                    });
-                    branch = branch.parentElement;
-                }
-            } else { panel.removeAttribute('aria-modal'); }
-            var frame = requestAnimationFrame(function() { if (available(initial)) { initial.focus({preventScroll:true}); } });
-            function key(event) {
-                if (event.defaultPrevented) { return; }
-                if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeFailure(); return; }
-                if (!mobile || event.key !== 'Tab') { return; }
-                var controls = Array.from(panel.querySelectorAll('button,a[href],input,textarea,summary,[tabindex]')).filter(available);
-                var first = controls[0], last = controls[controls.length-1], active = document.activeElement;
-                if (!first) { event.preventDefault(); return; }
-                if (event.shiftKey && (active === first || !panel.contains(active))) { event.preventDefault(); last.focus(); }
-                else if (!event.shiftKey && (active === last || !panel.contains(active))) { event.preventDefault(); first.focus(); }
-            }
-            function resize() {
-                if (failureBoundary) { failureBoundary(false); }
-                if (failure && !panel.hidden) { failureBoundary = bindFailureBoundary(panel,initial); }
-            }
-            document.addEventListener('keydown',key);
-            window.addEventListener('resize',resize);
-            return function(returnFocus) {
-                cancelAnimationFrame(frame);
-                document.removeEventListener('keydown',key);
-                window.removeEventListener('resize',resize);
-                background.forEach(function(item) { if (item[0].inert) { item[0].inert = item[1]; } });
-                if (mobile && document.body.style.overflow === 'hidden') { document.body.style.overflow = overflow; }
-                saved.forEach(function(item) { if (item[1] === null) { panel.removeAttribute(item[0]); } else { panel.setAttribute(item[0],item[1]); } });
-                var active = document.activeElement;
-                if (returnFocus && (!active || active === document.body || panel.contains(active)) && available(pendingOpener)) { pendingOpener.focus({preventScroll:true}); }
-            };
-        }
-        function closeFailure() {
-            dismissed = true;
-            pendingOpen = false;
-            // Cancel this delivery intent. The source and its persisted entry remain recoverable without auto-send.
-            pendingAsk = ''; pendingAttach = false; pendingList = false; pendingRefresh = false; pendingFromHome = false; pendingSolution = 0;
-            pendingEntries = Object.create(null);
-            shell(false);
-            clearFailure(true);
-        }
-		function clearFailure(returnFocus) {
-            if (failureBoundary) { failureBoundary(!!returnFocus); failureBoundary = null; }
-			if (failure) {
-				failure.remove();
-				failure = null;
-			}
-		}
-			function showFailure() {
-				removePreview();
-                if (dismissed && !payload.open) { return; }
-				clearFailure();
-				var panel = document.querySelector('[data-linker-genie-mount]');
-				if (!panel) {
-					return;
-				}
-				failure = document.createElement('section');
-				failure.className = 'linker-genie-app';
-				failure.setAttribute('data-linker-genie-load-error', '');
-				var header = document.createElement('header');
-                header.className = 'linker-genie-load-error__header';
-                var title = document.createElement('h2');
-                title.textContent = payload.title;
-                header.appendChild(title);
-                if (!payload.open) {
-                    var close = document.createElement('button');
-                    close.type = 'button'; close.className = 'linker-genie-app__prompt'; close.textContent = payload.close;
-                    close.addEventListener('click',closeFailure);
-                    header.appendChild(close);
-                }
-                failure.appendChild(header);
-                var message = document.createElement('p');
-				message.className = 'linker-genie-app__error';
-				message.setAttribute('role', 'alert');
-				message.textContent = payload.error;
-				var retry = document.createElement('button');
-				retry.type = 'button';
-				retry.className = 'linker-genie-app__prompt';
-				retry.setAttribute('data-linker-genie-open', '');
-				retry.textContent = payload.retry;
-				failure.appendChild(message);
-				var actions = document.createElement('div');
-                actions.className = 'linker-genie-load-error__actions';
-                actions.appendChild(retry);
-                failure.appendChild(actions);
-				panel.appendChild(failure);
-				shell(true);
-                if (!payload.open) { failureBoundary = bindFailureBoundary(panel,retry); } else { retry.focus(); }
-			}
-		function shell(open) {
-		var panel = document.querySelector('[data-linker-genie-mount]');
-		if (panel) {
-			panel.hidden = !open;
-		}
-		document.querySelectorAll('[data-linker-genie-open]').forEach(function (button) {
-			button.setAttribute('aria-expanded', String(open));
-		});
-	}
-	function deliver() {
-		if (!ready || dismissed || (!pendingOpen && Object.keys(pendingEntries).length === 0)) {
-			return;
-		}
-		shell(true);
-		Object.keys(pendingEntries).forEach(function (id) {
-			window.dispatchEvent(new CustomEvent('linker-genie-open', { detail: { entry: pendingEntries[id], opener: pendingOpener } }));
-		});
-		var message = pendingAsk;
-		var attach = pendingAttach;
-		var list = pendingList;
-		var refresh = pendingRefresh;
-		var fromHome = pendingFromHome;
-		var solution = pendingSolution;
-		pendingOpen = false;
-		pendingAsk = '';
-		pendingAttach = false;
-		pendingList = false;
-		pendingRefresh = false;
-		pendingFromHome = false;
-		pendingSolution = 0;
-		window.dispatchEvent(new CustomEvent('linker-genie-open', {
-			detail: {
-				message: message,
-				attach: attach,
-				list: list,
-				refresh: refresh,
-				fromHome: fromHome,
-				solution: solution,
-				opener: pendingOpener
-			}
-		}));
-	}
-	var preview = null;
-	function showPendingQuestion(message) {
-		if (!message || ready || preview) return;
-		var panel = document.querySelector('[data-linker-genie-mount]');
-		if (!panel) return;
-		preview = document.createElement('div');
-		preview.className = 'linker-genie-loading-preview';
-		var title = document.createElement('strong');
-		title.textContent = payload.title;
-		var bubble = document.createElement('p');
-		bubble.className = 'linker-genie-app__message linker-genie-app__message--user';
-		bubble.textContent = message;
-		var status = document.createElement('p');
-		status.setAttribute('role', 'status');
-		status.textContent = payload.waiting;
-		preview.append(title, bubble, status);
-		panel.appendChild(preview);
-		shell(true);
-	}
-	function removePreview() {
-		if (preview) { preview.remove(); preview = null; }
-	}
-	var warmed = false;
-	function warmBundle() {
-		if (warmed || ready || loaded) return;
-		warmed = true;
-		var link = document.createElement('link');
-		link.rel = 'preload';
-		link.as = 'script';
-		link.href = payload.src;
-		document.head.appendChild(link);
-	}
-	document.addEventListener('pointerover', function(event) {
-		if (event.target.closest && event.target.closest('[data-linker-genie-open]')) warmBundle();
-	}, { passive: true });
-	if (window.requestIdleCallback) window.requestIdleCallback(warmBundle);
-	else window.addEventListener('load', warmBundle, { once: true });
-	function open(message, refresh, fromHome, solution) {
-        dismissed = false;
-		pendingOpen = true;
-		// A plain reopen during loading must not erase the first question.
-		if (message && !pendingAsk) {
-			pendingAsk = message;
-		}
-		if (refresh) {
-			pendingRefresh = true;
-		}
-		if (fromHome) {
-			pendingFromHome = true;
-		}
-		// A saved solution reference (#496): the report's "Ask Genie" saves the
-		// solution first and hands its id to the app, which sends it with the
-		// page context of every later turn.
-		if (typeof solution === 'number' && solution > 0) {
-			pendingSolution = solution;
-		}
-		boot();
-		showPendingQuestion(pendingAsk);
-		deliver();
-	}
-				window.addEventListener('linker-genie-ready', function () {
-					ready = true;
-					removePreview();
-					clearFailure();
-					if (payload.open) {
-						pendingOpen = true;
-					}
-					deliver();
-				});
-		window.addEventListener('linker-genie-state', function (event) {
-		shell(event.detail.open);
-	});
-	window.addEventListener('linker-genie-entry-state', function (event) {
-		if (event.detail && event.detail.phase === 'accepted') { delete pendingEntries[event.detail.id]; }
-	});
-	window.addEventListener('linker-genie-hero-view', function () {
-		if (document.querySelector('[data-genie-hero-history]')) boot();
-	});
-	window.addEventListener('linker-genie-ask', function (event) {
-		var detail = event.detail;
-		pendingOpener = detail && detail.opener instanceof HTMLElement ? detail.opener : document.activeElement;
-		if (detail && detail.entry && typeof detail.entry.id === 'string') {
-			pendingEntries[detail.entry.id] = detail.entry;
-			open('');
-			return;
-		}
-		var refresh = !!detail && true === detail.refresh;
-		var fromHome = !!detail && true === detail.fromHome;
-		// The saved solution the design report's "Ask Genie" saved (#496).
-		var solution = detail && typeof detail.solution === 'number' ? detail.solution : 0;
-		if (detail && typeof detail.message === 'string' && detail.message.trim()) {
-			open(detail.message, refresh, fromHome, solution);
-		} else if (detail && true === detail.attach) {
-			pendingAttach = true;
-			pendingList = true === detail.list;
-			open('', refresh, fromHome, solution);
-		} else if (refresh) {
-			// The home hero hands its conversation to the dock without a
-			// new question (#232).
-			open('', true, fromHome, solution);
-		}
-	});
-			function missingDependency(url) {
-			var path = (payload.nativeDependencies || {})[url];
-			if (!Array.isArray(path) || path.length === 0) {
-				return true;
-			}
-			var value = window;
-			for (var i = 0; i < path.length; i += 1) {
-				if (value === undefined || value === null) {
-					return true;
-				}
-				value = value[path[i]];
-			}
-			return !value || (typeof value !== 'object' && typeof value !== 'function');
-		}
-	function boot() {
-                // Native enqueued dependencies finish before DOMContentLoaded.
-                // Re-executing them would reset the planner's translations.
-                if (document.readyState === 'loading' && (!payload.open || payload.deps.some(missingDependency))) {
-                    document.addEventListener('DOMContentLoaded', boot, { once: true });
-                    return;
-                }
-				if (loaded || ready) {
-					return;
-				}
-				loaded = true;
-				clearFailure();
-				// The workspace has no bubble to reopen a hidden page. Keep it
-				// visible while the app loads; ready then delivers open.
-				// A helper stays closed until the visitor's click is delivered.
-				shell(!!payload.open || !!preview);
-		var failed = false;
-		var inserted = [];
-		function fail() {
-			if (failed) {
-				return;
-			}
-			failed = true;
-			loaded = false;
-			inserted.forEach(function (script) { script.remove(); });
-			// Keep pendingOpen/pendingAsk: retry delivers the original ask.
-			showFailure();
-			Object.keys(pendingEntries).forEach(function (id) { window.dispatchEvent(new CustomEvent('linker-genie-entry-state', { detail: { id: id, phase: 'failed' } })); });
-		}
-		function append(script) {
-			inserted.push(script);
-			document.body.appendChild(script);
-		}
-		function finish() {
-			if (failed) {
-				return;
-			}
-			(payload.translations || []).forEach(function (js) {
-				var data = document.createElement('script');
-				data.text = js;
-				append(data);
-			});
-			var app = document.createElement('script');
-			app.src = payload.src;
-			app.async = false;
-			app.addEventListener('error', fail);
-			append(app);
-		}
-		// WordPress's done list records printed tags, not successful downloads.
-		// Reuse a native dependency only when its exported runtime is present;
-		// retain the original URL/error/retry path for a failed native request.
-		var deps = payload.deps.filter(missingDependency);
-		// Wait for every dependency, not merely the last one: any failed
-		// dependency aborts this batch before the app can execute broken.
-		var remaining = deps.length;
-		if (remaining === 0) {
-			finish();
-			return;
-		}
-		deps.forEach(function (url) {
-			var dep = document.createElement('script');
-			dep.src = url;
-			dep.async = false;
-			dep.addEventListener('error', fail);
-			dep.addEventListener('load', function () {
-				remaining -= 1;
-				if (remaining === 0) {
-					finish();
-				}
-			});
-				append(dep);
-			});
-		}
-		// A workspace page has no bubble. Setting pendingOpen and waiting
-		// for a click leaves the mount empty: nothing ever calls boot().
-		// Boot before any script is inserted; ready then delivers open.
-		if (payload.open) {
-			pendingOpen = true;
-			boot();
-		}
-			document.addEventListener(
-				'click',
-				function (event) {
-					var trigger = event.target.closest?.(
-						'[data-linker-genie-open]'
-					);
-					if (!trigger) {
-						return;
-					}
-					// An anchor opener (the empty Proforma request's Genie
-					// pill) keeps its href as the no-JavaScript fallback.
-					// With the dock present the click opens the panel here,
-					// so the navigation must not fire on top of it.
-					if (trigger.tagName === 'A') {
-						event.preventDefault();
-					}
-					// A page chip carries its label as the first question. A plain
-					// opener (the bubble, a retry) has no payload and must not ask.
-					if (!failure || !failure.contains(trigger)) { pendingOpener = trigger; }
-					open(trigger.getAttribute('data-ask-message') || '');
-				},
-				true
-			);
-})();
-JS,
+			(string) wp_json_encode( $payload, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ),
 			array(
-				'data-linker-genie-loader'       => true,
-				'data-linker-genie-boot-payload' => (string) wp_json_encode( $payload ),
+				'type'                     => 'application/json',
+				'data-linker-genie-loader' => true,
 			)
 		);
 	}
@@ -739,10 +318,11 @@ JS,
 	 * @param string $surface `helper` on every page, `workspace` on the advisor page.
 	 */
 	private function mount_markup( string $surface ): string {
-		$locale = $this->locale();
-		$page   = $this->page_context();
+		$signed_in = is_user_logged_in();
+		$locale    = $this->locale();
+		$page      = $this->page_context();
 		return sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-contact-url="%18$s" data-inquiry-url="%19$s" data-request-page-url="%20$s" data-configurator-en-url="%21$s" data-configurator-de-url="%22$s" data-register-url="%23$s" data-genie-nonce-url="%24$s" data-whatsapp-url="%25$s"></div>',
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-contact-url="%18$s" data-inquiry-url="%19$s" data-request-page-url="%20$s" data-configurator-en-url="%21$s" data-configurator-de-url="%22$s" data-register-url="%23$s" %24$s data-whatsapp-url="%25$s"></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -752,14 +332,14 @@ JS,
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::CONVERSATIONS_ROUTE ) ) ),
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . Proxy::ROUTE ) ) ),
 			esc_attr( esc_url_raw( rest_url() ) ),
-			esc_attr( wp_create_nonce( 'wp_rest' ) ),
+			$signed_in ? esc_attr( wp_create_nonce( 'wp_rest' ) ) : '',
 			esc_attr( $this->disclosure( $locale ) ),
 			esc_attr( esc_url_raw( self::page_url_for( 'my-account', $locale ) ) ),
 			esc_attr( esc_url_raw( $this->workspace_url() ) ),
 			esc_attr( (string) wp_json_encode( $this->prompts( $page ) ) ),
 			// The whole page context, sent back with every turn (#234).
 			esc_attr( (string) wp_json_encode( $page ) ),
-			is_user_logged_in() ? '1' : '0',
+			$signed_in ? '1' : '0',
 			esc_attr( (string) Retention::RETENTION_DAYS ),
 			// The contact card's route, "Let Linker contact me" (#243).
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . ContactRequest::ROUTE ) ) ),
@@ -768,8 +348,8 @@ JS,
 			esc_attr( esc_url_raw( (string) apply_filters( 'linker_genie_inquiry_page', '', $locale ) ) ), // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Existing native inquiry-page seam owned by InquiryRequest.
 			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'en' ) : '' ) ),
 			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'de' ) : '' ) ),
-			esc_attr( esc_url_raw( ! is_user_logged_in() && class_exists( AuthTemplates::class ) && 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ? AuthTemplates::register_url() : '' ) ),
-			esc_attr( esc_url_raw( admin_url( 'admin-ajax.php?action=rest-nonce' ) ) ),
+			esc_attr( esc_url_raw( ! $signed_in && class_exists( AuthTemplates::class ) && 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ? AuthTemplates::register_url() : '' ) ),
+			$signed_in ? 'data-genie-nonce-url="' . esc_url( admin_url( 'admin-ajax.php?action=rest-nonce' ) ) . '"' : '',
 			esc_attr( esc_url_raw( class_exists( ContactChannels::class ) ? ContactChannels::url() : '' ) )
 		);
 	}
@@ -1070,115 +650,5 @@ JS,
 		}
 		$path = ( 'en' === $lang ? '/' : '/' . $lang . '/' ) . $slug . '/';
 		return (string) home_url( $path );
-	}
-
-	/**
-	 * URL of the built Genie script, empty when Assets has not registered it.
-	 */
-	private function script_src(): string {
-		$script = wp_scripts()->query( self::HANDLE );
-		if ( ! $script || ! is_string( $script->src ) ) {
-			return '';
-		}
-		// The loader inserts the script itself, so WordPress never appends the
-		// registered version the way wp_enqueue_script would: the bare URL is
-		// cached for 7 days by the host, and a returning visitor kept the old
-		// bundle after a deploy (the #250 card did not appear, 2026-10-18).
-		$version = is_scalar( $script->ver ?? null ) ? (string) $script->ver : '';
-		if ( '' === $version ) {
-			return $script->src;
-		}
-		$separator = str_contains( $script->src, '?' ) ? '&' : '?';
-		return $script->src . $separator . 'ver=' . rawurlencode( $version );
-	}
-
-	/**
-	 * URLs of the entry's WordPress dependencies, in registration order.
-	 *
-	 * @return list<string>
-	 */
-	private function script_deps(): array {
-		$urls = array();
-		$walk = function ( string $handle ) use ( &$urls, &$walk ): void {
-			$script = wp_scripts()->query( $handle );
-			if ( ! $script || ! is_string( $script->src ) ) {
-				return;
-			}
-			foreach ( $script->deps as $dep ) {
-				$walk( (string) $dep );
-			}
-			// The entry itself is not one of its dependencies: the loader
-			// appends the entry after these URLs, and a self-reference would
-			// execute the app twice (a second mount with an already-read
-			// config).
-			if ( self::HANDLE === $handle ) {
-				return;
-			}
-			$url = (string) $script->src;
-			if ( '' !== $url && ! in_array( $url, $urls, true ) ) {
-				$urls[] = $url;
-			}
-		};
-		$walk( self::HANDLE );
-		return $urls;
-	}
-
-	/**
-	 * Exports of dependencies in Genie's current WordPress build graph.
-	 *
-	 * Names follow the dependency-extraction plugin's request globals. A
-	 * printed tag is not proof that its browser download succeeded, so the
-	 * loader checks the runtime before deciding to reuse or request the URL.
-	 *
-	 * @return array<string,list<string>> Script URL to native global path.
-	 */
-	private function native_dependencies(): array {
-		$exports = array(
-			'react'             => array( 'React' ),
-			'react-dom'         => array( 'ReactDOM' ),
-			'react-jsx-runtime' => array( 'ReactJSXRuntime' ),
-			'wp-dom-ready'      => array( 'wp', 'domReady' ),
-			'wp-element'        => array( 'wp', 'element' ),
-			'wp-escape-html'    => array( 'wp', 'escapeHtml' ),
-			'wp-hooks'          => array( 'wp', 'hooks' ),
-			'wp-i18n'           => array( 'wp', 'i18n' ),
-		);
-		$native  = array();
-		foreach ( $exports as $handle => $path ) {
-			$script = wp_scripts()->query( $handle );
-			if ( $script && is_string( $script->src ) && '' !== $script->src ) {
-				$native[ $script->src ] = $path;
-			}
-		}
-		return $native;
-	}
-
-	/**
-	 * Translation data of the entry and its dependencies, in dependency
-	 * order — what a regular enqueue would print with
-	 * WP_Scripts::print_translations() before each script. A normal enqueue
-	 * never runs here (the boot loader appends the tags itself), so the
-	 * content rides in the boot payload and the loader inserts it after the
-	 * dependencies, before the app.
-	 *
-	 * @return list<string>
-	 */
-	private function script_translations(): array {
-		$scripts = array();
-		$walk    = function ( string $handle ) use ( &$scripts, &$walk ): void {
-			$script = wp_scripts()->query( $handle );
-			if ( ! $script || ! is_string( $script->src ) ) {
-				return;
-			}
-			foreach ( $script->deps as $dep ) {
-				$walk( (string) $dep );
-			}
-			$js = wp_scripts()->print_translations( $handle, false );
-			if ( is_string( $js ) && '' !== $js ) {
-				$scripts[] = $js;
-			}
-		};
-		$walk( self::HANDLE );
-		return $scripts;
 	}
 }

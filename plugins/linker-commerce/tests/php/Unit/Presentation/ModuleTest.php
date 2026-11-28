@@ -35,15 +35,35 @@ use WP_Mock\Matcher\AnyInstance;
  */
 final class ModuleTest extends TestCase {
 
-	/** Home draws the hero title and button in additional font weights on its first paint. */
-	public function test_home_preloads_the_first_paint_font_weights(): void {
+	/** Header controls and hero headings use all four weights on first paint. */
+	public function test_preloads_the_first_paint_font_weights(): void {
 		WP_Mock::userFunction( 'plugins_url' )->andReturn( '/fonts/' );
-		WP_Mock::userFunction( 'is_front_page' )->andReturn( true );
+		WP_Mock::userFunction( 'is_front_page' )->andReturn( false );
 		WP_Mock::userFunction( 'is_product' )->andReturn( false );
-		WP_Mock::userFunction( 'wp_get_upload_dir' )->andReturn( array( 'basedir' => __DIR__ ) );
 		$resources = ( new Module( new Shortcodes(), new LoginGate(), new WindPress() ) )->preload_resources( array() );
 		$fonts     = array_map( 'basename', array_column( $resources, 'href' ) );
 		$this->assertSame( array( 'plus-jakarta-sans-400.woff2', 'plus-jakarta-sans-500.woff2', 'plus-jakarta-sans-600.woff2', 'plus-jakarta-sans-700.woff2' ), $fonts );
+	}
+
+	/** Local Site Kit entry points carry their bundled fingerprint in the cache key. */
+	public function test_site_kit_script_versions(): void {
+		$directory = 'https://linker.test/wp-content/plugins/google-site-kit/dist/assets/js/';
+		WP_Mock::userFunction( 'plugins_url' )->with( 'google-site-kit/dist/assets/js/' )->andReturn( $directory );
+		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing( 'parse_url' );
+		WP_Mock::userFunction( 'add_query_arg' )->andReturnUsing( static fn ( string $key, string $value, string $url ): string => $url . '?' . $key . '=' . $value );
+		$module = new Module( new Shortcodes(), new LoginGate(), new WindPress() );
+		foreach ( array(
+			'googlesitekit-consent-mode'                   => '755f1678e260138d789e',
+			'googlesitekit-events-provider-content-events' => '6b04077d00f0d606ba42',
+			'googlesitekit-events-provider-woocommerce'    => '86c5a3ff303665006998',
+		) as $handle => $hash ) {
+			$src = $directory . $handle . '-' . $hash . '.js';
+			$this->assertSame( $src . '?ver=' . $hash, $module->version_fingerprinted_scripts( $src, $handle ) );
+			$versioned = $src . '?ver=existing';
+			$this->assertSame( $versioned, $module->version_fingerprinted_scripts( $versioned, $handle ) );
+			$third_party = str_replace( 'linker.test', 'example.org', $src );
+			$this->assertSame( $third_party, $module->version_fingerprinted_scripts( $third_party, $handle ) );
+		}
 	}
 
 	/**
@@ -190,8 +210,10 @@ final class ModuleTest extends TestCase {
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $blog, 'enqueue_author_dialog' ) );
-		WP_Mock::expectFilterAdded( 'lc_modify_header_content', array( $module, 'home_header_menu' ) );
+		WP_Mock::expectFilterAdded( 'lc_modify_header_content', array( $module, 'header_menu' ) );
 		WP_Mock::expectFilterAdded( 'wp_preload_resources', array( $module, 'preload_resources' ) );
+		WP_Mock::expectFilterAdded( 'script_loader_src', array( $module, 'version_fingerprinted_scripts' ), 20, 2 );
+		WP_Mock::expectActionAdded( 'after_setup_theme', array( $module, 'disable_woo_product_gallery' ), 99 );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'trim_woo_assets' ), 31 );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.before', WindPressPageStyles::class, 'before_cache' );
 		$this->expect_action_on_any( 'a!windpress/core/runtime:enqueue_css_cache.after', WindPressPageStyles::class, 'after_cache' );

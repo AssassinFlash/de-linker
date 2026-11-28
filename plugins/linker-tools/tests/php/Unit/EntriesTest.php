@@ -35,9 +35,19 @@ final class EntriesTest extends TestCase {
 		);
 		$html = ( new Entries( '/plugin/linker-tools.php' ) )->workspace_shortcode();
 		$this->assertStringContainsString( 'data-register-url="https://de-linker.test/de/mein-konto/register/"', $html );
-		$this->assertStringContainsString( 'data-genie-nonce-url="https://de-linker.test/wp-admin/admin-ajax.php?action=rest-nonce"', $html );
+		$this->assertStringNotContainsString( 'data-genie-nonce-url=', $html );
+		$this->assertStringContainsString( 'data-rest-nonce=""', $html );
 		$this->assertStringContainsString( 'data-account-url=', $html );
 		$this->assertStringNotContainsString( 'linker-guest-account-links', $html );
+	}
+
+	/** Signed-in requests retain the nonce and its renewal URL. */
+	public function test_signed_in_mount_prints_rest_credentials(): void {
+		$this->frontend( 'en', array( 'type' => 'account' ), signed_in: true );
+		WP_Mock::passthruFunction( 'esc_url' );
+		$html = ( new Entries( '/plugin/linker-tools.php' ) )->workspace_shortcode();
+		$this->assertStringContainsString( 'data-rest-nonce="nonce-wp_rest"', $html );
+		$this->assertStringContainsString( 'data-genie-nonce-url="https://de-linker.test/wp-admin/admin-ajax.php?action=rest-nonce"', $html );
 	}
 
 	/**
@@ -91,8 +101,8 @@ final class EntriesTest extends TestCase {
 		$this->assertStringContainsString( 'data-retention-days="90"', $html );
 		$inline = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
 		$this->assertArrayHasKey( 'data-linker-genie-loader', $inline );
-		$this->assertStringContainsString( 'genie.js?ver=abc123', (string) $inline['data-linker-genie-boot-payload'], 'the loader busts the host cache with the registered version' );
-		$payload = json_decode( (string) $inline['data-linker-genie-boot-payload'], true );
+		$this->assertStringContainsString( 'genie.js?ver=abc123', (string) $GLOBALS['linker_tools_test_inline_scripts'][0][0], 'the loader busts the host cache with the registered version' );
+		$payload = json_decode( (string) $GLOBALS['linker_tools_test_inline_scripts'][0][0], true );
 		$this->assertSame( 'Genie could not load.', $payload['error'] );
 		$this->assertSame( 'Try again', $payload['retry'] );
 		$this->assertContains( '/wp-includes/js/dist/i18n.min.js', $payload['deps'] );
@@ -149,14 +159,8 @@ final class EntriesTest extends TestCase {
 		$this->assertStringContainsString( 'data-linker-genie-mount', $shortcode );
 		$this->assertStringContainsString( 'data-surface="workspace"', $shortcode );
 		$this->assertStringNotContainsString( 'data-linker-genie-open', $html );
-		$inline  = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
-		$payload = json_decode( (string) ( $inline['data-linker-genie-boot-payload'] ?? '' ), true );
+		$payload = json_decode( (string) $GLOBALS['linker_tools_test_inline_scripts'][0][0], true );
 		$this->assertTrue( $payload['open'] );
-		$script = (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' );
-			$this->assertStringContainsString( 'if (!panel)', $script );
-			$this->assertStringContainsString( 'shell(!!payload.open || !!preview)', $script );
-				$this->assertStringContainsString( 'if (payload.open)', $script );
-			$this->assertMatchesRegularExpression( '/if \(payload\.open\) \{\s*pendingOpen = true;\s*boot\(\);/', $script );
 		$this->assertConditionsMet();
 	}
 
@@ -181,8 +185,7 @@ final class EntriesTest extends TestCase {
 
 		$this->assertSame( 1, substr_count( $shortcode . $html, 'data-linker-app="genie"' ) );
 		$this->assertStringNotContainsString( 'data-linker-genie-open', $html );
-		$inline  = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
-		$payload = json_decode( (string) ( $inline['data-linker-genie-boot-payload'] ?? '' ), true );
+		$payload = json_decode( (string) $GLOBALS['linker_tools_test_inline_scripts'][0][0], true );
 		$this->assertTrue( $payload['open'] );
 		$this->assertConditionsMet();
 	}
@@ -340,21 +343,20 @@ final class EntriesTest extends TestCase {
 	 * enqueue would print), so the app speaks German on the first click even
 	 * though it is never enqueued.
 	 */
-	public function test_dock_boot_payload_carries_the_translations(): void {
+	public function test_dock_boot_payload_links_the_german_catalog(): void {
 		$GLOBALS['linker_tools_test_inline_scripts'] = array();
 		$this->frontend( 'de_DE_formal', array( 'type' => 'other' ) );
 		WP_Mock::userFunction(
 			'wp_scripts',
 			array(
-				'return' => static fn() => new FakeScripts( true, true ),
+				'return' => static fn() => new FakeScripts(),
 			)
 		);
 
 		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
-		$inline  = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
 		$payload = json_decode(
-			(string) ( $inline['data-linker-genie-boot-payload'] ?? '' ),
+			(string) $GLOBALS['linker_tools_test_inline_scripts'][0][0],
 			true
 		);
 		$this->assertIsArray( $payload );
@@ -362,15 +364,8 @@ final class EntriesTest extends TestCase {
 		// strings here; the German wordings live in the hand-written .po.
 		$this->assertSame( 'Genie could not load.', $payload['error'] );
 		$this->assertSame( 'Try again', $payload['retry'] );
-		$this->assertCount( 1, $payload['translations'] );
-		$this->assertStringContainsString(
-			'setLocaleData',
-			(string) $payload['translations'][0]
-		);
-		$this->assertStringContainsString(
-			'Ausblenden',
-			(string) $payload['translations'][0]
-		);
+		$this->assertMatchesRegularExpression( '/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138\.json\?ver=[a-f0-9]{12}$/', $payload['translationUrls'][0] );
+		$this->assertArrayNotHasKey( 'translations', $payload );
 		$this->assertConditionsMet();
 	}
 
@@ -461,7 +456,7 @@ final class EntriesTest extends TestCase {
 
 		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
-		$script = (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' );
+		$script = (string) file_get_contents( dirname( __DIR__, 3 ) . '/assets/genie-loader.js' );
 		$node   = trim( (string) shell_exec( 'command -v node' ) );
 		$this->assertNotSame( '', $node, 'node is required to run the loader fixture' );
 		$fixture = tempnam( sys_get_temp_dir(), 'genie-loader-' );
@@ -496,6 +491,7 @@ global.document = {
 	body: { appendChild() {} },
 	addEventListener(type, fn, capture) { window.addEventListener(type, fn, capture); },
 };
+loader.ownerDocument = global.document;
 JS . $script . <<<'JS'
 
 var asks = [];
@@ -645,8 +641,10 @@ JS
 	 * @param string               $slug     Current page slug, empty off a page.
 	 * @param string               $language Language layer's answer; empty when it has none.
 	 * @param bool                 $registration Whether WooCommerce enables account registration.
+	 * @param bool                 $signed_in Whether the visitor is signed in.
 	 */
-	private function frontend( string $locale, array $page, string $slug = '', string $language = '', bool $registration = false ): void {
+	private function frontend( string $locale, array $page, string $slug = '', string $language = '', bool $registration = false, bool $signed_in = false ): void {
+		WP_Mock::userFunction( 'plugins_url', array( 'return' => static fn( string $path ): string => '/wp-content/plugins/linker-tools/' . $path ) );
 		WP_Mock::userFunction( 'wp_script_is', array( 'return' => static fn( string $handle, string $state ): bool => 'wp-i18n' === $handle && 'enqueued' === $state ) );
 		WP_Mock::userFunction(
 			'get_option',
@@ -700,7 +698,7 @@ JS
 				'return' => static fn( string $action ): string => 'nonce-' . $action,
 			)
 		);
-		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $signed_in ) );
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction(
 			'wp_print_inline_script_tag',
@@ -782,15 +780,9 @@ JS
      * phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open
 	 */
 	public function test_failed_boot_keeps_a_recoverable_source_and_owns_its_keyboard_boundary(): void {
-		$GLOBALS['linker_tools_test_inline_scripts'] = array();
-		$this->frontend( 'en', array( 'type' => 'category' ) );
-		WP_Mock::userFunction( 'wp_scripts', array( 'return' => static fn() => new FakeScripts() ) );
-		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
-		$fixture = tempnam( sys_get_temp_dir(), 'genie-failed-boot-' );
-		$this->assertIsString( $fixture );
-		file_put_contents( $fixture, (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' ) );
-		$script = dirname( __DIR__, 2 ) . '/js/genie-loader-failure.mjs';
-		$run    = proc_open(
+		$fixture = dirname( __DIR__, 3 ) . '/assets/genie-loader.js';
+		$script  = dirname( __DIR__, 2 ) . '/js/genie-loader-failure.mjs';
+		$run     = proc_open(
 			array( 'node', $script, $fixture ),
 			array(
 				1 => array( 'pipe', 'w' ),
@@ -804,7 +796,6 @@ JS
 		fclose( $pipes[1] );
 		fclose( $pipes[2] );
 		$code = proc_close( $run );
-		unlink( $fixture );
 		$this->assertSame( 0, $code, (string) $err );
 		$this->assertCount( 4, (array) json_decode( (string) $out, true ) );
 		$this->assertConditionsMet();
@@ -812,15 +803,9 @@ JS
 
 	/** Native tags may fail; their absent runtime still uses the retryable loader. */
 	public function test_printed_native_dependency_is_reused_only_when_its_runtime_exists(): void {
-		$GLOBALS['linker_tools_test_inline_scripts'] = array();
-		$this->frontend( 'en', array( 'type' => 'category' ) );
-		WP_Mock::userFunction( 'wp_scripts', array( 'return' => static fn() => new FakeScripts() ) );
-		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
-		$fixture = tempnam( sys_get_temp_dir(), 'genie-native-dependency-' );
-		$this->assertIsString( $fixture );
-		file_put_contents( $fixture, (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' ) );
-		$script = dirname( __DIR__, 2 ) . '/js/genie-loader-native-dependencies.mjs';
-		$run    = proc_open(
+		$fixture = dirname( __DIR__, 3 ) . '/assets/genie-loader.js';
+		$script  = dirname( __DIR__, 2 ) . '/js/genie-loader-native-dependencies.mjs';
+		$run     = proc_open(
 			array( 'node', $script, $fixture ),
 			array(
 				1 => array( 'pipe', 'w' ),
@@ -834,9 +819,8 @@ JS
 		fclose( $pipes[1] );
 		fclose( $pipes[2] );
 		$code = proc_close( $run );
-		unlink( $fixture );
 		$this->assertSame( 0, $code, (string) $err );
-		$this->assertCount( 3, (array) json_decode( (string) $out, true ) );
+		$this->assertCount( 4, (array) json_decode( (string) $out, true ) );
 		$this->assertConditionsMet();
 	}
     // phpcs:enable

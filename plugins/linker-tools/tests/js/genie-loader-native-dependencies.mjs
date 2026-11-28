@@ -5,7 +5,12 @@ import { readFileSync } from 'node:fs';
 
 const code = readFileSync( process.argv[ 2 ], 'utf8' );
 const results = [];
-for ( const initial of [ 'present', 'missing', 'failed-fallback' ] ) {
+for ( const initial of [
+	'present',
+	'missing',
+	'failed-fallback',
+	'failed-catalog',
+] ) {
 	const dom = new JSDOM(
 		'<body><div data-linker-genie-mount></div><script id="wp-i18n-js" src="/native-i18n.js"></script><script data-linker-genie-loader></script></body>',
 		{
@@ -34,17 +39,26 @@ for ( const initial of [ 'present', 'missing', 'failed-fallback' ] ) {
 		nativeDependencies: {
 			'https://fixture.test/fallback-i18n.js': [ 'wp', 'i18n' ],
 		},
-		translations: [ 'window.wp.i18n.setLocaleData({});' ],
+		translationUrls: [ '/german.json' ],
 		error: 'Genie could not load.',
 		retry: 'Try again',
 		title: "Genie - Linker's AI assistant",
 		close: 'Close',
 		open: true,
 	};
-	doc.querySelector( '[data-linker-genie-loader]' ).setAttribute(
-		'data-linker-genie-boot-payload',
-		JSON.stringify( payload )
-	);
+	doc.querySelector( '[data-linker-genie-loader]' ).textContent =
+		JSON.stringify( payload );
+	let failCatalog = initial === 'failed-catalog';
+	win.fetch = async ( url, options ) => {
+		assert.equal( url, '/german.json' );
+		assert.equal( options.credentials, 'omit' );
+		return {
+			ok: ! failCatalog,
+			json: async () => ( {
+				locale_data: { messages: { Send: [ 'Senden' ] } },
+			} ),
+		};
+	};
 	const requested = [];
 	let ready = 0;
 	let failFallback = initial === 'failed-fallback';
@@ -81,7 +95,7 @@ for ( const initial of [ 'present', 'missing', 'failed-fallback' ] ) {
 	};
 	win.eval( code );
 	await new Promise( ( resolve ) => setImmediate( resolve ) );
-	if ( initial === 'failed-fallback' ) {
+	if ( failFallback || failCatalog ) {
 		assert.equal( ready, 0 );
 		const retry = doc.querySelector(
 			'[data-linker-genie-load-error] .linker-genie-load-error__actions button'
@@ -91,6 +105,7 @@ for ( const initial of [ 'present', 'missing', 'failed-fallback' ] ) {
 			'a failed native fallback retains the original retry UI'
 		);
 		failFallback = false;
+		failCatalog = false;
 		retry.click();
 		await new Promise( ( resolve ) => setImmediate( resolve ) );
 	}
@@ -100,6 +115,7 @@ for ( const initial of [ 'present', 'missing', 'failed-fallback' ] ) {
 		present: 0,
 		missing: 1,
 		'failed-fallback': 2,
+		'failed-catalog': 1,
 	};
 	assert.equal(
 		requested.filter( ( url ) => url.endsWith( '/fallback-i18n.js' ) )

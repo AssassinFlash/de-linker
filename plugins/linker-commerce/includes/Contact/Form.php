@@ -109,6 +109,20 @@ final class Form {
 	 * @param string $back Embedded view URL, or an empty string on the Contact page.
 	 */
 	private function card( string $back ): string {
+		if ( Module::is_cacheable_shell( $back ) ) {
+			$root = dirname( __DIR__, 2 );
+			wp_enqueue_script(
+				'linker-contact-shell',
+				plugins_url( 'assets/contact-shell.js', $root . '/linker-commerce.php' ),
+				array(),
+				substr( (string) md5_file( $root . '/assets/contact-shell.js' ), 0, 12 ),
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+			return '<div class="linker-contact-card">' . $this->form( '', '', true ) . $this->rail() . '</div>';
+		}
 		\Linker\Commerce\Cache\DynamicHtml::forbid( 'contact form' );
 		$state = $this->state_message( $back );
 		$rail  = '' === $back ? $this->rail() : '';
@@ -126,10 +140,11 @@ final class Form {
 	 *
 	 * @param string $state The state message to show above the fields, '' on a fresh visit.
 	 * @param string $back  Embedded view URL, or an empty string on the Contact page.
+	 * @param bool   $shell Defer the nonce and request ID until the guest interacts.
 	 */
-	private function form( string $state, string $back ): string {
+	private function form( string $state, string $back, bool $shell = false ): string {
 		$embedded = '' !== $back;
-		$previous = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
+		$previous = $shell ? array() : \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
 		$field    = 'linker-form-input';
 		$label    = 'lk-field linker-form-label';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
@@ -141,12 +156,17 @@ final class Form {
 		// link still carries the current public URL context, not a private old JSON value.
 		$draft_context = ! $included && array() === $context ? SelectionContext::query( $query ) : $context;
 
-		$html  = '<form class="linker-contact-form"' . ( $embedded ? '' : LanguageDraft::attributes( array() !== $previous, $draft_context ) ) . ' method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
-		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
-		$html .= '<input type="hidden" name="lang" value="' . esc_attr( $this->locale() ) . '" />';
-		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $embedded ? $back : $this->current_url() ) . '" />';
+		$shell_attrs = $shell
+			? ' data-linker-contact-shell="1" data-linker-contact-session-url="' . esc_url( rest_url( SessionEndpoint::NAMESPACE . SessionEndpoint::ROUTE ) ) . '"'
+			: '';
+		$html        = '<form class="linker-contact-form"' . $shell_attrs . ( $embedded ? '' : LanguageDraft::attributes( array() !== $previous, $draft_context ) ) . ' method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		$html       .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
+		$html       .= '<input type="hidden" name="lang" value="' . esc_attr( $this->locale() ) . '" />';
+		$html       .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $embedded ? $back : $this->current_url() ) . '" />';
 		// Selection transport is submitted only by the inclusion checkbox.
-		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
+		$html .= $shell
+			? '<input type="hidden" id="' . esc_attr( self::NONCE_FIELD ) . '" name="' . esc_attr( self::NONCE_FIELD ) . '" value="" />'
+			: wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
 		$html .= '<wc-order-attribution-inputs></wc-order-attribution-inputs>';
 		$html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_url( $this->posted_referer() ) . '" />';
 		$html .= \Linker\Commerce\Inquiry\PublicGuard::fields();
@@ -188,7 +208,10 @@ final class Form {
 			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '"' . ( $embedded ? ' target="_blank" rel="noopener"' : '' ) . '>' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</span></label>';
-		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '' );
+		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $shell ? null : ( $previous['linker_request_id'] ?? '' ) );
+		if ( $shell ) {
+			$html .= '<p data-contact-session-error hidden role="alert">' . esc_html( \Linker\Commerce\Protection\Business::verification_message( 'failed' ) ) . '</p>';
+		}
 		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
 			. '</div>';
 		$html .= '</div>';

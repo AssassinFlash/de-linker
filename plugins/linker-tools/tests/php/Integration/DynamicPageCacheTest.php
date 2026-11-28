@@ -68,31 +68,46 @@ final class DynamicPageCacheTest extends TestCase {
 		$planner = $this->page( 'cache-probe-configurator', '[linker_planner]' );
 		flush_rewrite_rules( false );
 
-		$this->assert_uncacheable( (string) get_permalink( $contact ) );
+		$contact_url = (string) get_permalink( $contact );
+		$shell       = $this->document( $contact_url );
+		$this->assertStringNotContainsString( 'no-cache', $shell['header'] );
+		$this->assertStringNotContainsString( 'no-store', $shell['header'] );
+		$this->assertStringNotContainsString( 'linker_public_browser=', $shell['cookies'] );
+		$this->assertStringContainsString( 'data-linker-contact-shell="1"', $shell['body'] );
+		$this->assertStringContainsString( 'name="linker_contact_nonce" value=""', $shell['body'] );
+		$this->assertStringContainsString( 'name="linker_request_id" value=""', $shell['body'] );
+		foreach ( array(
+			'intent'          => 'project',
+			'contact'         => 'invalid',
+			'article_contact' => '1',
+		) as $key => $value ) {
+			$this->assert_uncacheable( add_query_arg( $key, $value, $contact_url ) );
+		}
 		$this->assert_uncacheable( (string) get_permalink( $genie ) );
 		$this->assert_uncacheable( (string) get_permalink( $planner ) );
 		$this->assert_uncacheable( add_query_arg( 'foo', 'cacheprobe', $home ) );
 		$this->assert_uncacheable( add_query_arg( 'q', 'saj', (string) get_permalink( $this->product ) ) );
-		$this->assert_anonymous_dock_secret_can_be_shared( $home, (string) get_permalink( $this->product ) );
+		$this->assert_anonymous_dock_has_no_nonce( $home, (string) get_permalink( $this->product ) );
 	}
 
 	/**
-	 * Two anonymous reads share a wp_rest nonce that is not a per-visitor secret.
+	 * Cached pages omit signed-in REST credentials for anonymous visitors.
 	 *
 	 * @param string $home    Clean homepage URL.
 	 * @param string $product Clean product URL.
 	 */
-	private function assert_anonymous_dock_secret_can_be_shared( string $home, string $product ): void {
+	private function assert_anonymous_dock_has_no_nonce( string $home, string $product ): void {
 		$first        = $this->document( $home, 'pll_language=en' );
 		$second       = $this->document( $home, 'pll_language=de' );
 		$product_page = $this->document( $product, 'wp_woocommerce_session_probe=1' );
 		$this->assertStringNotContainsString( 'no-cache', $first['header'], $home );
 		$this->assertStringNotContainsString( 'no-store', $first['header'], $home );
 		$this->assertStringNotContainsString( 'no-cache', $product_page['header'], $product );
-		$home_nonce = $this->attr( $first['body'], 'data-rest-nonce' );
-		$this->assertNotSame( '', $home_nonce );
-		$this->assertSame( $home_nonce, $this->attr( $second['body'], 'data-rest-nonce' ) );
-		$this->assertSame( $home_nonce, $this->attr( $product_page['body'], 'data-rest-nonce' ) );
+		foreach ( array( $first, $second, $product_page ) as $document ) {
+			$this->assertSame( '', $this->attr( $document['body'], 'data-rest-nonce' ) );
+			$this->assertStringNotContainsString( 'data-genie-nonce-url=', $document['body'] );
+			$this->assertStringNotContainsString( 'admin-ajax.php?action=rest-nonce', $document['body'] );
+		}
 
 		$this->assertStringNotContainsString( 'data-mail-started', $first['body'] );
 	}
@@ -153,7 +168,7 @@ final class DynamicPageCacheTest extends TestCase {
 	 *
 	 * @param string $url    Front-end URL.
 	 * @param string $cookie Cookie header for an independent anonymous jar.
-	 * @return array{header: string, body: string}
+	 * @return array{header: string, body: string, cookies: string}
 	 */
 	private function document( string $url, string $cookie = '' ): array {
 		$args = array(
@@ -166,10 +181,12 @@ final class DynamicPageCacheTest extends TestCase {
 		$response = wp_remote_get( $url, $args );
 		$this->assertFalse( is_wp_error( $response ), is_wp_error( $response ) ? $response->get_error_message() : $url );
 		$this->assertSame( 200, (int) wp_remote_retrieve_response_code( $response ), $url );
-		$header = wp_remote_retrieve_header( $response, 'cache-control' );
+		$header  = wp_remote_retrieve_header( $response, 'cache-control' );
+		$cookies = wp_remote_retrieve_header( $response, 'set-cookie' );
 		return array(
-			'header' => is_array( $header ) ? implode( ', ', $header ) : (string) $header,
-			'body'   => (string) wp_remote_retrieve_body( $response ),
+			'cookies' => is_array( $cookies ) ? implode( ', ', $cookies ) : (string) $cookies,
+			'header'  => is_array( $header ) ? implode( ', ', $header ) : (string) $header,
+			'body'    => (string) wp_remote_retrieve_body( $response ),
 		);
 	}
 

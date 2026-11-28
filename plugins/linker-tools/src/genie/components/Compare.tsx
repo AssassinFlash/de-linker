@@ -137,7 +137,7 @@ function PublishedComparison( {
 				const response = await genieFetch( url, {
 					credentials: 'same-origin',
 					cache: 'no-store',
-					headers: { 'X-WP-Nonce': nonce },
+					headers: nonce ? { 'X-WP-Nonce': nonce } : undefined,
 					signal: controller.signal,
 				} );
 				if ( ! response.ok ) {

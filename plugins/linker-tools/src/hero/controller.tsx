@@ -198,7 +198,7 @@ export function startHero(
 			}
 		}
 	} );
-	prompt.disabled = true;
+	prompt.disabled = context.phase !== 'ready';
 	const releaseContext = mountPageDraftContext( context );
 	let promptVersion = 0;
 	const onPromptInput = () => {

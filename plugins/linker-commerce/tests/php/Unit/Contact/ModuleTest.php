@@ -13,6 +13,7 @@ use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Contact\Handler;
 use Linker\Commerce\Contact\Module;
 use Linker\Commerce\Contact\SelectionView;
+use Linker\Commerce\Contact\SessionEndpoint;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
@@ -49,6 +50,7 @@ final class ModuleTest extends TestCase {
 	public function test_registers_the_request_enqueue_hook(): void {
 		$module = $this->module();
 		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 1 ) );
+		$this->expect_action_on_any( 'rest_api_init', SessionEndpoint::class, 'register_routes' );
 		$this->expect_action_on_any( 'admin_post_nopriv_linker_contact', Handler::class, 'handle' );
 		$this->expect_action_on_any( 'admin_post_linker_contact', Handler::class, 'handle' );
 		$this->expect_action_on_any( 'woocommerce_admin_order_data_after_order_details', SelectionView::class, 'admin' );
@@ -62,6 +64,36 @@ final class ModuleTest extends TestCase {
 
 		$module->register();
 		$this->assertConditionsMet();
+	}
+
+	/** A clean guest read can share HTML until a session, query or embedded form owns it. */
+	public function test_shell_eligibility(): void {
+		$method = $_SERVER['REQUEST_METHOD'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Restore the PHPUnit process environment.
+		try {
+			foreach ( array( 'GET', 'HEAD' ) as $verb ) {
+				$_SERVER['REQUEST_METHOD'] = $verb;
+				$this->assertTrue( Module::is_cacheable_shell() );
+			}
+			$this->assertFalse( Module::is_cacheable_shell( '/contact/?article_contact=1' ) );
+			foreach ( array( 'wp_woocommerce_session_example', 'woocommerce_items_in_cart' ) as $cookie ) {
+				$_COOKIE[ $cookie ] = '1';
+				$this->assertFalse( Module::is_cacheable_shell() );
+				unset( $_COOKIE[ $cookie ] );
+			}
+			$_GET['intent'] = 'project';
+			$this->assertFalse( Module::is_cacheable_shell() );
+			unset( $_GET['intent'] );
+			$_SERVER['REQUEST_METHOD'] = 'POST';
+			$this->assertFalse( Module::is_cacheable_shell() );
+			$_SERVER['REQUEST_METHOD'] = 'GET';
+			WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( true );
+			$this->assertFalse( Module::is_cacheable_shell() );
+		} finally {
+			unset( $_GET['intent'], $_COOKIE['wp_woocommerce_session_example'], $_COOKIE['woocommerce_items_in_cart'], $_SERVER['REQUEST_METHOD'] );
+			if ( null !== $method ) {
+				$_SERVER['REQUEST_METHOD'] = $method;
+			}
+		}
 	}
 
 	/** The request identity is available before the page's loop or shortcode. */

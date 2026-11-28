@@ -94,7 +94,9 @@ async function lookup(
 				cache: 'no-store',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-Nonce': config.restNonce,
+					...( config.restNonce
+						? { 'X-WP-Nonce': config.restNonce }
+						: {} ),
 				},
 				body: JSON.stringify( { tab: identity.tab } ),
 				signal: controller.signal,

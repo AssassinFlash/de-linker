@@ -263,6 +263,7 @@ async function answer(
 	if (await reject.isVisible()) await reject.click();
 	await expect(page.locator('.cky-consent-container')).not.toBeVisible();
 	if (surface === 'hero') {
+		await page.locator('.hero-prompt').focus();
 		await expect(
 			page.locator('.hero-cinematic[data-linker-genie-hero="ready"]')
 		).toHaveCount(1);
