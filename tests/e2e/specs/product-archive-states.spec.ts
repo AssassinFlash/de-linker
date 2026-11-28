@@ -683,9 +683,10 @@ for (const [locale, width] of [
 			const add = page.locator(
 				'#tv-storefront-pdp .pdp-btn-dark[href*="add-to-cart"]'
 			);
-			await expect(add).toBeVisible();
+			const visibleAdd = add.filter({ visible: true }).first();
+			await expect(visibleAdd).toBeVisible();
 			const inStockDraftUrl = new URL(
-				(await add.getAttribute('href'))!,
+				(await visibleAdd.getAttribute('href'))!,
 				page.url()
 			);
 			expect(inStockDraftUrl.origin).toBe(instance().url);

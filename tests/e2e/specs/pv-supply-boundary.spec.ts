@@ -150,15 +150,29 @@ for (const locale of ['en', 'de'] as const) {
 					await expect(input).toBeEnabled();
 					await input.fill(question);
 					const response = page.waitForResponse(
-						(r) =>
-							r.request().method() === 'POST' &&
-							r.url().includes('/genie/turn'),
+						async (reply) => {
+							const url = new URL(reply.url());
+							const path =
+								url.searchParams.get('rest_route') ??
+								url.pathname;
+							if (
+								reply.request().method() !== 'GET' ||
+								!/\/genie\/turn\/[a-f0-9-]{36}$/.test(path)
+							)
+								return false;
+							return (
+								!reply.ok() ||
+								(await reply.json()).status !== 'running'
+							);
+						},
 						{ timeout: 100_000 }
 					);
 					await input.press('Enter');
 					const received = await response;
 					expect(received.ok()).toBeTruthy();
-					const { stream } = await received.json();
+					const body = await received.json();
+					expect(body.status).toBe('completed');
+					const { stream } = body;
 					const meta = /^event: meta\r?\ndata: ([^\n]+)/m.exec(
 						stream
 					);
