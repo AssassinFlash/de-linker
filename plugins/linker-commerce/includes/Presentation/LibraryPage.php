@@ -566,10 +566,10 @@ final class LibraryPage {
 		$products = $document['product_links'];
 		$first    = $products[0];
 		$pdf      = self::local_href( $document['url'] );
-		$out      = '<li data-t="' . esc_attr( $document['type'] ) . '"><a href="' . esc_url( $pdf ) . '" target=_blank>' . esc_html( $document['title'] ) . '</a>';
-		$out     .= '<small>' . esc_html( $document['type_label'] ) . ' · ' . esc_html( $document['language'] ) . '</small>';
+		$out      = '<li data-t=' . esc_attr( $document['type'] ) . '><a href="' . esc_url( $pdf ) . '" target=_blank>' . esc_html( $document['title'] ) . '</a>';
+		$out     .= '<i>' . esc_html( $document['type_label'] ) . ' · ' . esc_html( $document['language'] ) . '</i>';
 		$out     .= '<a href="' . esc_url( self::local_href( $first['url'] ) ) . '">' . esc_html( $first['title'] ) . '</a>';
-		return $out . ( count( $products ) > 1 ? ' (+' . ( count( $products ) - 1 ) . ')' : '' ) . '</li>';
+		return $out . ( count( $products ) > 1 ? ' (+' . ( count( $products ) - 1 ) . ')' : '' );
 	}
 
 	/**

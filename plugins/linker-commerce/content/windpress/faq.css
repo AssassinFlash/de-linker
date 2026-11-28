@@ -329,7 +329,7 @@
 #linker-faq-page li[data-t] { display: grid; grid-template-columns: minmax(0,1.7fr) minmax(85px,.6fr) minmax(0,1fr); align-items: center; gap: 6px 18px; padding: 8px 18px; border-bottom: 1px solid var(--ll-mist); overflow-wrap: anywhere; }
 #linker-faq-page li[data-t] > a:first-child { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--ll-ink); font-weight: 600; line-height: 1.4; text-decoration: none; }
 #linker-faq-page li[data-t] > a:first-child::after { content: "PDF ↗"; color: var(--ll-accent-dark); font: 600 10px/1.4 ui-monospace,monospace; white-space: nowrap; }
-#linker-faq-page li[data-t] > small { font-size: 12px; color: var(--ll-muted); }
+#linker-faq-page li[data-t] > i { font-style: normal; font-size: 12px; color: var(--ll-muted); }
 #linker-faq-page li[data-t] > a:nth-child(3) { font-size: 13px; color: var(--ll-muted); }
 #linker-faq-page li[data-t] > a:nth-child(3) { display: inline-flex; align-items: center; min-height: 44px; color: var(--ll-accent-dark); text-underline-offset: 3px; }
 #linker-faq-page .linker-library-help { margin-top: 16px; }
@@ -341,7 +341,7 @@
 	#linker-faq-page .lk-toolkit-card { padding: 24px; }
 	#linker-faq-page li[data-t] { grid-template-columns: minmax(0,1fr) auto; column-gap: 4px; padding: 10px 14px; }
 	#linker-faq-page li[data-t] > a:first-child { grid-column: 1/-1; }
-	#linker-faq-page li[data-t] > small { grid-column: 2; grid-row: 2; }
+	#linker-faq-page li[data-t] > i { grid-column: 2; grid-row: 2; }
 	#linker-faq-page li[data-t] > a:nth-child(3) { grid-column: 1; grid-row: 2; }
 }
 
