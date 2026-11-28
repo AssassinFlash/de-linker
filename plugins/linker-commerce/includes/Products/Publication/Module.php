@@ -38,6 +38,7 @@ final class Module {
 		}
 		add_action( 'template_redirect', array( $access, 'serve' ), 0 );
 		add_filter( 'mod_rewrite_rules', array( $access, 'rewrite_rules' ) );
+		add_filter( 'mod_rewrite_rules', array( DocumentCache::class, 'request_rules' ), 20 );
 		add_filter( 'attachment_fields_to_edit', array( $this, 'attachment_fields' ), 10, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_attachment' ), 10, 2 );
 	}

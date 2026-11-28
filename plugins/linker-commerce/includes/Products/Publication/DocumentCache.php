@@ -15,6 +15,22 @@ final class DocumentCache {
 	public const PRIVATE_CONTROL = 'no-store, private, max-age=0';
 
 	/**
+	 * Bypass cached GET representations for document metadata and byte-range requests.
+	 *
+	 * @param string $rules Native WordPress rewrite block including the OEM document gate.
+	 */
+	public static function request_rules( string $rules ): string {
+		$bypass = <<<'RULES'
+<IfModule LiteSpeed>
+RewriteCond %{REQUEST_METHOD} ^HEAD$ [OR]
+RewriteCond %{HTTP:Range} !^$
+RewriteRule ^(?:wp-content/uploads/.+\.pdf|downloads/engineering-toolkit/[^/]+\.(?:pdf|csv))$ - [E=Cache-Control:no-cache,NC]
+</IfModule>
+RULES;
+		return str_replace( 'RewriteEngine On', "RewriteEngine On\n" . $bypass, $rules );
+	}
+
+	/**
 	 * Tag an authorized response before the web server stores it.
 	 *
 	 * @param string[] $tags Publication dependencies.

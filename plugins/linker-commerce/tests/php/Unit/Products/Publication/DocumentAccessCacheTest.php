@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Products\Publication;
 
 use Linker\Commerce\Products\EngineeringData;
 use Linker\Commerce\Products\Publication\DocumentAccess;
+use Linker\Commerce\Products\Publication\DocumentCache;
 use Linker\Commerce\Products\Publication\DocumentFiles;
 use Linker\Commerce\Tests\Support\CurrentFaqProduct;
 use WP_Mock;
@@ -28,6 +29,23 @@ final class DocumentAccessCacheTest extends TestCase {
 	public function tearDown(): void {
 		$this->remove_managed_documents();
 		parent::tearDown();
+	}
+
+	/** Only document HEAD and Range requests bypass the cached full GET. */
+	public function test_method_block_precedes_cache_lookup_and_preserves_other_rules(): void {
+		$original = "RewriteEngine On\nRewriteRule ^wp-content/uploads/(.+\\.pdf)$ index.php?linker_public_document=\$1 [END,NC,QSA]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule . /index.php [L]\n";
+		$updated  = DocumentCache::request_rules( $original );
+		self::assertLessThan( strpos( $updated, 'linker_public_document=' ), strpos( $updated, 'Cache-Control:no-cache' ) );
+		self::assertSame( $original, preg_replace( '~<IfModule LiteSpeed>.*?</IfModule>\n~s', '', $updated ) );
+		self::assertStringContainsString( "RewriteCond %{REQUEST_METHOD} ^HEAD$ [OR]\nRewriteCond %{HTTP:Range} !^$", $updated );
+		self::assertMatchesRegularExpression( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache,NC\]$/m', $updated );
+		preg_match( '/^RewriteRule (.+) - \[E=Cache-Control:no-cache,NC\]$/m', $updated, $rule );
+		foreach ( array( 'wp-content/uploads/2026/manual.pdf', 'downloads/engineering-toolkit/workbook.csv', 'downloads/engineering-toolkit/guide.pdf' ) as $path ) {
+			self::assertMatchesRegularExpression( '~' . $rule[1] . '~i', $path );
+		}
+		foreach ( array( 'wp-content/uploads/2026/photo.webp', 'downloads/engineering-toolkit/', 'wp-content/report/test.pdf', 'faq-download/' ) as $path ) {
+			self::assertDoesNotMatchRegularExpression( '~' . $rule[1] . '~i', $path );
+		}
 	}
 
 	/** Published metadata and validators describe the bytes behind this URL. */
@@ -48,6 +66,9 @@ final class DocumentAccessCacheTest extends TestCase {
 		self::assertSame( '"' . substr( $file['blob_sha256'], 0, 16 ) . '"', $full['headers']['ETag'] );
 		self::assertSame( gmdate( 'D, d M Y H:i:s', (int) filemtime( $file['path'] ) ) . ' GMT', $full['headers']['Last-Modified'] );
 		self::assertSame( 'public, max-age=86400, stale-while-revalidate=3600', $full['headers']['Cache-Control'] );
+		$head = $access->response( $file, 'HEAD' );
+		self::assertFalse( $head['cacheable'] );
+		self::assertSame( $full['headers'], $head['headers'] );
 		foreach ( array( $access->response( $file, 'GET', '', $file['blob_sha256'] ), $access->response( $file, 'GET', '', '', false ) ) as $pinned ) {
 			self::assertSame( 200, $pinned['status'] );
 			self::assertFalse( $pinned['cacheable'] );
