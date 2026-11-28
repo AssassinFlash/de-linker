@@ -197,23 +197,51 @@ def check(base: str, path: str, name: str) -> tuple[bool, str]:
     problems: list[str] = []
     if "offers" in node:
         problems.append("quotation-only product has an offer")
-    if re.search(r'"(?:price|priceCurrency|lowPrice|highPrice|priceSpecification)"\s*:', json.dumps(node), re.I):
+    if re.search(
+        r'"(?:price|priceCurrency|lowPrice|highPrice|priceSpecification)"\s*:',
+        json.dumps(node),
+        re.I,
+    ):
         problems.append("price data in the public Product node")
     blocks = [json.loads(block) for block in LD_JSON.findall(html)]
-    groups = [block for block in blocks if isinstance(block, dict) and block.get("@type") == "ProductGroup"]
+    groups = [
+        block
+        for block in blocks
+        if isinstance(block, dict) and block.get("@type") == "ProductGroup"
+    ]
     if len(groups) != 1:
         problems.append(f"{len(groups)} sibling ProductGroup blocks, expected 1")
     else:
         group = groups[0]
         group_id = node.get("inProductGroupWithID")
-        if not group_id or group.get("@id") != group_id or group.get("productGroupID") != group_id or node.get("isVariantOf") != {"@id": group_id}:
+        if (
+            not group_id
+            or group.get("@id") != group_id
+            or group.get("productGroupID") != group_id
+            or node.get("isVariantOf") != {"@id": group_id}
+        ):
             problems.append("ProductGroup identity mismatch")
-        if "url" in group or re.search(r'"(?:offers|price|priceCurrency|availability)"\\s*:', json.dumps([node, group])):
+        if "url" in group or re.search(
+            r'"(?:offers|price|priceCurrency|availability)"\s*:',
+            json.dumps([node, group]),
+        ):
             problems.append("ProductGroup URL or commercial data")
         members = group.get("hasVariant")
-        if not isinstance(members, list) or not members or any(not isinstance(row, dict) or set(row) != {"@id", "name", "sku", "url"} or not all(row.values()) or row["@id"] != str(row["url"]) + "#product" for row in members):
+        if (
+            not isinstance(members, list)
+            or not members
+            or any(
+                not isinstance(row, dict)
+                or set(row) != {"@id", "name", "sku", "url"}
+                or not all(row.values())
+                or row["@id"] != str(row["url"]) + "#product"
+                for row in members
+            )
+        ):
             problems.append("invalid variant references")
-        elif not any(row["sku"] == sku and row["@id"] == node.get("@id") for row in members):
+        elif not any(
+            row["sku"] == sku and row["@id"] == node.get("@id") for row in members
+        ):
             problems.append("current model missing from hasVariant")
         elif (len(members) > 1) != bool(group.get("variesBy")):
             problems.append("variesBy does not match the series size")

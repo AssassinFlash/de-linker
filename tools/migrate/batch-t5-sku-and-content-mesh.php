@@ -73,7 +73,7 @@ function pair( string $type, string $slug ): array {
 		$de  = $en ? pll_get_post( $en, 'de' ) : 0;
 	}
 	if ( ! $en || ! $de || (int) $de === (int) $en ) {
-		throw new RuntimeException( 'Missing translation pair: ' . esc_html( $slug ) );
+		throw new RuntimeException( esc_html( 'Missing translation pair: ' . esc_html( $slug ) ) );
 	}
 	return array(
 		'en' => (int) $en,
@@ -108,11 +108,17 @@ function write_meta( string $kind, int $id, string $key, mixed $value ): void {
 		update_metadata( $kind, $id, $key, wp_slash( $value ) );
 	}
 	if ( meta( $kind, $id, $key ) !== $value ) {
-		throw new RuntimeException( 'Metadata write failed for ' . esc_html( $key ) );
+		throw new RuntimeException( esc_html( 'Metadata write failed for ' . esc_html( $key ) ) );
 	}
 }
 
-/** Capture the affected native fields and the translation baseline for one pair. */
+/**
+ * Capture the native fields and translation baseline of one pair.
+ *
+ * @param string $type Post type or taxonomy.
+ * @param string $slug English source slug.
+ * @param array  $fields Metadata keys and post fields by language.
+ */
 function entry( string $type, string $slug, array $fields ): array {
 	$ids  = pair( $type, $slug );
 	$kind = 'product_cat' === $type ? State::TERM : State::POST;
@@ -129,10 +135,16 @@ function entry( string $type, string $slug, array $fields ): array {
 	return $row;
 }
 
+/** Reviewed SEOPress field values by source slug and language. */
 function search_copy(): array {
-	return json_decode( file_get_contents( __DIR__ . '/batch-t5-search-copy.json' ), true, 512, JSON_THROW_ON_ERROR );
+	return json_decode( file_get_contents( __DIR__ . '/batch-t5-search-copy.json' ), true, 512, JSON_THROW_ON_ERROR ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local migration input.
 }
 
+/**
+ * Collect the bilingual fields and their evidence bindings before publication.
+ *
+ * @throws RuntimeException When the required source product is absent.
+ */
 function snapshot(): array {
 	$entries = array();
 	foreach ( search_copy() as $type => $slugs ) {
@@ -149,16 +161,26 @@ function snapshot(): array {
 	}
 	$keys           = array( '_tv_legacy_acf_json', '_linker_de_acf_json', '_tv_b2b_figures', 'post_content', 'post_excerpt' );
 	$entries['etr'] = entry( 'product', get_post_field( 'post_name', pll_get_post( $id, 'en' ), 'raw' ), array_fill_keys( array( 'en', 'de' ), $keys ) );
-	return array( 'site' => get_option( 'home' ), 'entries' => $entries, 'figure_bindings' => meta( 'post', $entries['etr']['ids']['en'], EvidenceBindings::META_KEY ) );
+	return array(
+		'site'            => get_option( 'home' ),
+		'entries'         => $entries,
+		'figure_bindings' => meta( 'post', $entries['etr']['ids']['en'], EvidenceBindings::META_KEY ),
+	);
 }
 
-/** Fill intrinsic sizes without reserializing the page's inline scripts and styles. */
+/**
+ * Set intrinsic dimensions on the original capability and contact images.
+ *
+ * @param string $html Stored page content.
+ * @param string $slug English page slug.
+ * @throws RuntimeException When the expected image set is incomplete.
+ */
 function image_sizes( string $html, string $slug ): string {
 	$sizes = array(
 		'lk-about-capability-linker-team-in-barleben.webp' => array( 1920, 1080 ),
 		'linker-warehouse-logistics-engineer-inventory-management-desk.webp' => array( 1492, 1054 ),
 		'lk-commissioning-engineers-at-outdoor-cabinet.webp' => array( 443, 590 ),
-		'linker-unit-certificate-vde-ar-n-4110.webp' => array( 1920, 1080 ),
+		'linker-unit-certificate-vde-ar-n-4110.webp'       => array( 1920, 1080 ),
 		'solar-equipment-freight-truck-loading-forklift-warehouse.webp' => array( 810, 1080 ),
 		'lk-about-capability-customer-with-linker-at-a-utility-bess-project.webp' => array( 2400, 1350 ),
 		'lk-about-capability-customer-and-linker-working-through-a-project-at-the.webp' => array( 2400, 1350 ),
@@ -183,11 +205,19 @@ function image_sizes( string $html, string $slug ): string {
 		$found[] = $file;
 	}
 	if ( count( array_unique( $found ) ) !== ( 'contact' === $slug ? 2 : 7 ) ) {
-		throw new RuntimeException( 'Expected page images missing from ' . $slug );
+		throw new RuntimeException( esc_html( 'Expected page images missing from ' . $slug ) );
 	}
 	return $tags->get_updated_html();
 }
 
+/**
+ * Insert the capability link into its reviewed section and update image sizes.
+ *
+ * @param string $html Stored page content.
+ * @param string $slug English page slug.
+ * @param string $lang Page language.
+ * @throws RuntimeException When the placement or translation no longer resolves.
+ */
 function page_copy( string $html, string $slug, string $lang ): string {
 	if ( 'about' !== $slug ) {
 		$html = image_sizes( $html, $slug );
@@ -197,16 +227,16 @@ function page_copy( string $html, string $slug, string $lang ): string {
 	}
 	$url = \Linker\Commerce\Presentation\PageUrls::translated( 'about/capability', $lang );
 	if ( '' === $url ) {
-		throw new RuntimeException( 'Missing Capability page for ' . $lang );
+		throw new RuntimeException( esc_html( 'Missing Capability page for ' . $lang ) );
 	}
 	$href = esc_url( wp_make_link_relative( $url ) );
 	if ( 'about' === $slug ) {
-		$text = 'de' === $lang ? 'Mehr zu Systemprüfung, Netzzertifikaten und Logistik ab Barleben →' : 'Explore our engineering checks, grid certificates, and Barleben logistics →';
-		$link = '<p class="lk-inline-link"><a href="' . $href . '">' . esc_html( $text ) . '</a></p>';
+		$text    = 'de' === $lang ? 'Mehr zu Systemprüfung, Netzzertifikaten und Logistik ab Barleben →' : 'Explore our engineering checks, grid certificates, and Barleben logistics →';
+		$link    = '<p class="lk-inline-link"><a href="' . $href . '">' . esc_html( $text ) . '</a></p>';
 		$pattern = '~(id="pillars">\s*<div class="wrap">\s*<div class="section-head">.*?</p>)~s';
 	} else {
-		$text = 'de' === $lang ? 'Leistungsfähigkeit & Logistik ab Barleben ↗' : 'Engineering capability & Barleben logistics ↗';
-		$link = '<div><a href="' . $href . '">' . esc_html( $text ) . '</a></div>';
+		$text    = 'de' === $lang ? 'Leistungsfähigkeit & Logistik ab Barleben ↗' : 'Engineering capability & Barleben logistics ↗';
+		$link    = '<div><a href="' . $href . '">' . esc_html( $text ) . '</a></div>';
 		$pattern = '~(id="cp-afterword-title">[^<]*</h2>\s*<p>[^<]*</p>\s*<div><a href="mailto:sales@de-linker\.com">[^<]*</a></div>)~';
 	}
 	if ( str_contains( $html, $link ) ) {
@@ -214,11 +244,18 @@ function page_copy( string $html, string $slug, string $lang ): string {
 	}
 	$html = preg_replace( $pattern, '$1' . $link, $html, -1, $count );
 	if ( 1 !== $count ) {
-		throw new RuntimeException( 'Missing or repeated Capability link placement on ' . $slug . '/' . $lang );
+		throw new RuntimeException( esc_html( 'Missing or repeated Capability link placement on ' . $slug . '/' . $lang ) );
 	}
 	return $html;
 }
 
+/**
+ * Apply the reviewed fields or restore the snapshot in one native transaction.
+ *
+ * @param array $before Original snapshot for this site.
+ * @param bool  $apply Whether to apply or restore the values.
+ * @throws RuntimeException When a field or its owner changed, or a write failed.
+ */
 function migrate( array $before, bool $apply ): void {
 	$current = snapshot();
 	if ( $before['site'] !== $current['site'] || array_keys( $before['entries'] ) !== array_keys( $current['entries'] ) ) {
@@ -232,7 +269,7 @@ function migrate( array $before, bool $apply ): void {
 			foreach ( $before['entries'] as $slug => $row ) {
 				$live = $current['entries'][ $slug ];
 				if ( $row['ids'] !== $live['ids'] ) {
-					throw new RuntimeException( 'Translated object identity changed: ' . $slug );
+					throw new RuntimeException( esc_html( 'Translated object identity changed: ' . $slug ) );
 				}
 				$desired = $row['values'];
 				if ( isset( $copy[ $slug ] ) ) {
@@ -255,12 +292,20 @@ function migrate( array $before, bool $apply ): void {
 							continue;
 						}
 						if ( $stored !== $original && $stored !== $updated ) {
-							throw new RuntimeException( "Field changed since snapshot: $slug/$lang/$key" );
+							throw new RuntimeException( esc_html( "Field changed since snapshot: $slug/$lang/$key" ) );
 						}
 						if ( in_array( $key, array( 'post_content', 'post_excerpt' ), true ) ) {
-							$result = wp_update_post( wp_slash( array( 'ID' => $id, $key => $target ) ), true );
+							$result = wp_update_post(
+								wp_slash(
+									array(
+										'ID' => $id,
+										$key => $target,
+									)
+								),
+								true
+							);
 							if ( is_wp_error( $result ) || get_post_field( $key, $id, 'raw' ) !== $target ) {
-								throw new RuntimeException( "Could not write $slug/$lang/$key" );
+								throw new RuntimeException( esc_html( "Could not write $slug/$lang/$key" ) );
 							}
 						} else {
 							write_meta( $row['kind'], $id, $key, $target );
@@ -288,12 +333,12 @@ function migrate( array $before, bool $apply ): void {
 	);
 }
 
-$operation = $args[0] ?? '';
-if ( 'snapshot' === $operation ) {
+$linker_commerce_t5_operation = $args[0] ?? '';
+if ( 'snapshot' === $linker_commerce_t5_operation ) {
 	echo wp_json_encode( snapshot(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR ) . "\n";
-} elseif ( isset( $args[1] ) && in_array( $operation, array( 'apply', 'restore' ), true ) ) {
-	migrate( json_decode( file_get_contents( $args[1] ), true, 512, JSON_THROW_ON_ERROR ), 'apply' === $operation );
-	WP_CLI::success( 'Editorial migration: ' . $operation );
+} elseif ( isset( $args[1] ) && in_array( $linker_commerce_t5_operation, array( 'apply', 'restore' ), true ) ) {
+	migrate( json_decode( file_get_contents( $args[1] ), true, 512, JSON_THROW_ON_ERROR ), 'apply' === $linker_commerce_t5_operation ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local migration input.
+	WP_CLI::success( 'Editorial migration: ' . $linker_commerce_t5_operation );
 } else {
 	WP_CLI::error( 'Usage: snapshot | apply <snapshot> | restore <snapshot>' );
 }

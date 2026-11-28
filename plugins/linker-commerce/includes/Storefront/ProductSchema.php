@@ -309,7 +309,7 @@ final class ProductSchema {
 		} else {
 			return $existing;
 		}
-		$tag   = new \WP_HTML_Tag_Processor( $existing );
+		$tag = new \WP_HTML_Tag_Processor( $existing );
 		$tag->next_tag( array( 'tag_name' => 'META' ) );
 		$tag->set_attribute( 'content', html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
 		return $tag->get_updated_html();
