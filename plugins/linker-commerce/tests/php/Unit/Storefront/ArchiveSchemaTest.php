@@ -47,6 +47,7 @@ final class ArchiveSchemaTest extends TestCase {
 			array( 'return' => self::SHOP )
 		);
 		WP_Mock::userFunction( 'is_tax' )->with( 'product_brand' )->andReturn( false )->byDefault();
+		WP_Mock::userFunction( 'is_tax' )->with( array( 'product_cat', 'product_brand' ) )->andReturn( false )->byDefault();
 		WP_Mock::userFunction( 'get_option' )->with( 'home' )->andReturn( 'https://de-linker.com/' );
 		WP_Mock::userFunction( 'trailingslashit' )->andReturnArg( 0 );
 		WP_Mock::userFunction( 'wp_strip_all_tags' )->andReturnUsing( 'strip_tags' );

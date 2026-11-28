@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
-use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Products\CompatibilityIndex;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
@@ -32,6 +31,9 @@ final class ProductSchema {
 		add_action( 'wp_head', array( $this, 'print_block' ) );
 		add_filter( 'seopress_titles_title', array( $this, 'title' ), 45 );
 		add_filter( 'seopress_titles_desc', array( $this, 'description' ), 45 );
+		foreach ( array( 'seopress_social_og_title', 'seopress_social_twitter_card_title', 'seopress_social_og_desc', 'seopress_social_twitter_card_desc' ) as $filter ) {
+			add_filter( $filter, array( $this, 'social' ), 45 );
+		}
 	}
 
 	/**
@@ -49,6 +51,11 @@ final class ProductSchema {
 		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Linked equipment and documents share the native product purge tag.
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payload is JSON, and encoded() is where its one dangerous character is handled.
 		echo '<script type="application/ld+json">' . $json . "</script>\n";
+		$group = ProductGroupIndex::current( $this->manifest )->schema( $product->get_id() );
+		if ( $group ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON_HEX_TAG escapes script delimiters.
+			echo '<script type="application/ld+json">' . wp_json_encode( $group, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "</script>\n";
+		}
 	}
 
 	/**
@@ -96,7 +103,7 @@ final class ProductSchema {
 			'inLanguage'       => Materials::locale(),
 			'name'             => $this->text( $product->get_name() ),
 			'url'              => $url,
-			'description'      => $this->summary( $product, $brand, $model, $facts ),
+			'description'      => $this->summary( $product ),
 		);
 
 		$sku = $this->text( $product->get_sku() );
@@ -125,22 +132,10 @@ final class ProductSchema {
 			$data['image'] = $image;
 		}
 
-		$series = $this->term_name( $source, 'pa_series' );
-		if ( '' === $series ) {
-			$series = trim( (string) ( Materials::english_acf( $source )['product_series'] ?? '' ) );
-		}
-		$source_brand = $records[ $source ]['brand'];
-		if ( 0 === strcasecmp( $source_brand, $series ) ) {
-			$series = '';
-		}
-		if ( '' === $series ) {
-			$members = ProductFamilies::published_members( $source );
-			if ( count( $members ) > 1 ) {
-				$series = $records[ min( $members ) ]['model'] ?? '';
-			}
-		}
-		if ( '' !== $series ) {
-			$data['inProductGroupWithID'] = PageUrls::root() . '#product-group-' . sanitize_title( str_starts_with( strtolower( $series ), strtolower( $source_brand . ' ' ) ) ? $series : $source_brand . '-' . $series );
+		$group = ProductGroupIndex::current( $manifest )->identity( $id );
+		if ( '' !== $group ) {
+			$data['inProductGroupWithID'] = $group;
+			$data['isVariantOf']          = array( '@id' => $group );
 		}
 		$material = Materials::material_for_product( $source );
 		$mpn      = $this->text( (string) ( $material['identity']['manufacturer_part_number'] ?? '' ) );
@@ -254,7 +249,7 @@ final class ProductSchema {
 		if ( ! $product || '' !== trim( (string) get_post_meta( $product->get_id(), '_seopress_titles_desc', true ) ) ) {
 			return $existing;
 		}
-		return $this->summary( $product, $this->term_name( $product->get_id(), 'pa_brand' ), $this->term_name( $product->get_id(), 'pa_model' ) );
+		return $this->summary( $product );
 	}
 
 	/**
@@ -267,74 +262,74 @@ final class ProductSchema {
 		if ( ! $product || '' !== trim( (string) get_post_meta( $product->get_id(), '_seopress_titles_title', true ) ) ) {
 			return $existing;
 		}
-		$name    = $this->text( $product->get_name() );
-		$details = $this->model_details( $product, $name, $this->term_name( $product->get_id(), 'pa_brand' ), $this->term_name( $product->get_id(), 'pa_model' ) );
-		while ( $details ) {
-			$title = $name . ' – ' . implode( ', ', $details ) . ' | Linker';
+		$id    = $product->get_id();
+		$model = $this->term_name( $id, 'pa_model' );
+		$brand = $this->term_name( $id, 'pa_brand' );
+		$full  = str_starts_with( strtolower( $model ), strtolower( $brand ) ) ? $model : trim( $brand . ' ' . $model );
+		if ( '' === $model || ( mb_strlen( trim( $existing ) ) <= 65 && ! in_array( $this->text( $product->get_name() ), array( $model, $full ), true ) ) ) {
+			return $existing;
+		}
+		$rating = ProductGroupIndex::current( $this->manifest )->rating( $id );
+		if ( ! $rating ) {
+			return $existing;
+		}
+		list( $long, $short ) = ModelProfile::roles( $rating );
+		foreach ( array( $full . ' – ' . $long, $full . ' – ' . $short, $model . ' – ' . $short ) as $candidate ) {
+			$title = $candidate . ' | Linker';
 			if ( mb_strlen( $title ) <= 65 ) {
 				return $title;
 			}
-			array_pop( $details );
 		}
 		return $existing;
 	}
 
 	/**
-	 * Ratings and translated category of a model whose name has no description.
+	 * SEOPress filters both the source field and the completed HTML tag.
 	 *
-	 * @param \WC_Product           $product Localized product.
-	 * @param string                $name Published product name.
-	 * @param string                $brand Brand term.
-	 * @param string                $model Model term.
-	 * @param SelectionFactSet|null $facts Authorized figures for the current graph.
-	 * @return list<string>
+	 * @param string $existing Field or HTML tag.
 	 */
-	private function model_details( \WC_Product $product, string $name, string $brand, string $model, ?SelectionFactSet $facts = null ): array {
-		if ( '' === $model || ( trim( $brand . ' ' . $model ) !== $name && $name !== $model ) ) {
-			return array();
+	public function social( string $existing ): string {
+		if ( ! str_starts_with( ltrim( $existing ), '<meta' ) ) {
+			return $existing;
 		}
-		$facts  ??= SelectionFacts::for_product( $product->get_id() );
-		$category = $this->term_name( $product->get_id(), 'product_cat' );
-		$details  = '' !== $category ? array( $category ) : array();
-		if ( is_float( $facts->ac_power_kw ) ) {
-			$details[] = wc_format_localized_decimal( (string) $facts->ac_power_kw ) . ' kW';
-		} elseif ( is_float( $facts->nominal_kwh ) ) {
-			$details[] = wc_format_localized_decimal( (string) $facts->nominal_kwh ) . ' kWh';
+		$product = $this->product();
+		if ( ! $product ) {
+			return $existing;
 		}
-		if ( is_int( $facts->phase ) ) {
-			$details[] = 1 === $facts->phase ? __( 'single-phase', 'linker-commerce' ) : __( 'three-phase', 'linker-commerce' );
+		$filter = (string) current_filter();
+		$field  = str_ends_with( $filter, 'title' ) ? 'title' : 'desc';
+		$key    = '_seopress_social_' . ( str_contains( $filter, 'twitter' ) ? 'twitter_' : 'fb_' ) . $field;
+		if ( '' !== trim( (string) get_post_meta( $product->get_id(), $key, true ) ) ) {
+			return $existing;
 		}
-		return $details;
+		if ( 'title' === $field && function_exists( 'seopress_titles_the_title' ) ) {
+			$value = seopress_titles_the_title();
+		} elseif ( 'desc' === $field && function_exists( 'seopress_titles_the_description_content' ) ) {
+			$value = seopress_titles_the_description_content();
+		} else {
+			return $existing;
+		}
+		$tag   = new \WP_HTML_Tag_Processor( $existing );
+		$tag->next_tag( array( 'tag_name' => 'META' ) );
+		$tag->set_attribute( 'content', html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+		return $tag->get_updated_html();
 	}
 
 	/**
-	 * Add the category and published rating when the Woo title is only a model.
+	 * Build the model summary for the document head and social previews.
 	 *
-	 * @param \WC_Product           $product Localized product.
-	 * @param string                $brand   Manufacturer name.
-	 * @param string                $model   Model designation.
-	 * @param SelectionFactSet|null $facts Authorized figures for a structured description.
+	 * @param \WC_Product $product Displayed product.
 	 */
-	private function summary( \WC_Product $product, string $brand, string $model, ?SelectionFactSet $facts = null ): string {
-		$name    = $this->text( $product->get_name() );
-		$details = $this->model_details( $product, $name, $brand, $model, $facts );
-		if ( $details ) {
-			$name .= ' – ' . implode( ', ', $details );
+	private function summary( \WC_Product $product ): string {
+		$id       = $product->get_id();
+		$manifest = $this->manifest ?? CompatibilityIndex::manifest();
+		$index    = ProductGroupIndex::current( $manifest );
+		$rating   = $index->rating( $id );
+		if ( ! $rating ) {
+			return $this->text( $product->get_short_description() );
 		}
-		$endings = array(
-			__( 'Use the manufacturer’s documents to check the technical details, then request a quotation from Linker for your installation.', 'linker-commerce' ),
-			__( 'Check the technical details in the manufacturer’s documents and request a quotation from Linker for your project.', 'linker-commerce' ),
-			__( 'Check the manufacturer’s documents and ask Linker for a quotation for your installation.', 'linker-commerce' ),
-			__( 'See the manufacturer’s documents and request a project quotation from Linker.', 'linker-commerce' ),
-			__( 'Check the manufacturer’s documents and request a quotation.', 'linker-commerce' ),
-		);
-		foreach ( $endings as $ending ) {
-			$description = $name . '. ' . $ending;
-			if ( mb_strlen( $description ) <= 155 ) {
-				return $description;
-			}
-		}
-		return $name . '. ' . end( $endings );
+		$position = (int) array_search( $id, $index->members_for( $id ), true );
+		return ModelProfile::summary( $product, $rating, $position, $manifest );
 	}
 
 	/**

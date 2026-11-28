@@ -21,7 +21,6 @@ use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Storefront\GridThresholdPairs;
 use Linker\Commerce\Storefront\ProductImageAlt;
-use Linker\Commerce\Storefront\ProductFamilies;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\SolutionProducts;
 use Linker\Commerce\Storefront\ProductView;
@@ -115,6 +114,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_products_contact', array( $this, 'products_contact' ) );
 		add_shortcode( 'linker_pdp_brand_class', array( $this, 'pdp_brand_class' ) );
 		add_shortcode( 'linker_pdp_brand', array( $this, 'pdp_brand' ) );
+		add_shortcode( 'linker_archive_series_matrix', array( SeriesMatrix::class, 'archive' ) );
 		add_shortcode( 'linker_pdp_family', array( $this, 'pdp_family' ) );
 		add_shortcode( 'linker_solution_products', array( $this, 'solution_products' ) );
 		add_shortcode( 'linker_pdp_model', array( $this, 'pdp_model' ) );
@@ -801,12 +801,7 @@ final class ProductShortcodes {
 	/** Published sibling links on the current product page. */
 	public function pdp_family(): string {
 		do_action( 'litespeed_tag_add', 'PT.product' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- A published sibling or its translation can change this page.
-		$id   = get_queried_object_id();
-		$rows = SolutionProducts::links( ProductFamilies::published_members( $id ) );
-		if ( count( $rows ) < 2 ) {
-			return '';
-		}
-		return '<section class="pdp-block sf-container pdp-family-links"><h2 class="pdp-section-title">' . esc_html__( 'Other models in this series', 'linker-commerce' ) . '</h2>' . self::model_links( $rows, $id ) . '</section>';
+		return SeriesMatrix::product( get_queried_object_id() );
 	}
 
 	/**
@@ -1306,10 +1301,10 @@ final class ProductShortcodes {
 			return '';
 		}
 		if ( '' !== (string) $view['intro'] ) {
-			return wp_kses_post( wpautop( (string) $view['intro'] ) );
+			return wp_kses_post( wpautop( (string) $view['intro'] ) ) . SeriesMatrix::intro( get_queried_object_id() );
 		}
 		if ( '' !== (string) $view['body'] ) {
-			return wp_kses_post( wpautop( (string) $view['body'] ) );
+			return wp_kses_post( wpautop( (string) $view['body'] ) ) . SeriesMatrix::intro( get_queried_object_id() );
 		}
 		return '<p class="tv-empty-state">' . esc_html__( 'Introduction in preparation. The specification below carries the values from the datasheet on file.', 'linker-commerce' ) . '</p>';
 	}

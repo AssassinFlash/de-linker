@@ -42,3 +42,10 @@
 .lk-guide-mesh ul { display: grid; gap: .6rem; margin: 1rem 0; padding-inline-start: 1.2rem; }
 .lk-guide-mesh a, .lk-guide-matrix { color: #174d63; text-decoration: underline; text-underline-offset: .18em; }
 .lk-blog-equipment .lk-model-links a { flex-wrap: wrap; overflow-wrap: anywhere; }
+
+.lk-series-matrix { min-width: 0; max-width: 100%; }
+.lk-series-matrix-scroll { overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
+.lk-series-matrix-table { width: 100%; border-collapse: collapse; font-size: .925rem; text-align: start; }
+.lk-series-matrix-table :is(th, td) { padding: .75rem 1rem; border-bottom: 1px solid var(--shop-line, #dbe4e8); vertical-align: top; text-align: start; }
+.lk-series-matrix-table thead, .lk-series-matrix-table .is-current { background: var(--shop-mist, #edf5f4); }
+.lk-series-matrix-table a { text-decoration: underline; text-underline-offset: .16em; }

@@ -2063,3 +2063,7 @@ html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
 }
 .lk-grid-threshold-table thead small { display: block; font-weight: normal; }
 .lk-grid-threshold-link { display: inline-block; margin-top: 1rem; text-decoration: underline; }
+.pdp-intro-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr)); gap: .65rem; margin: 1rem 0; }
+.pdp-intro-fact { padding: .75rem; border-inline-start: 2px solid var(--shop-teal, #147568); background: var(--shop-mist, #edf5f4); overflow-wrap: anywhere; }
+.pdp-intro-fact dt { font-size: .82rem; }
+.pdp-intro-fact dd { font-weight: 650; margin: .2rem 0 0; }
