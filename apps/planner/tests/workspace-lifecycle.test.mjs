@@ -34,8 +34,7 @@ const session = {
 };
 
 const siteInput = () => document.querySelector('input[name="location_label"]');
-const editor = () =>
-	document.querySelector(".sc-project-heading")?.parentElement;
+const editor = () => document.querySelector(".sc-project-workbench");
 const button = (label, area = document) =>
 	[...area.querySelectorAll("button")].find(
 		(node) =>
@@ -106,6 +105,8 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
 	const { Workspace } = await import("../src/components/Workspace.tsx");
+	// Resolve the lazy workbench module before timing DOM readiness.
+	await import("../src/components/configurator/ProjectWorkbench.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const { ApiError } = await import("../src/data/protocol.ts");
 	const brief = emptyBrief();
@@ -683,14 +684,12 @@ test("creation authentication failure rechecks once and explicitly retries the e
 			),
 		),
 	);
-	await until(() =>
-		[...document.querySelectorAll("button")].some(
-			(button) =>
-				button.textContent.includes("New project") && !button.disabled,
-		),
-	);
-	await act(async () => document.querySelector("button").click());
-	await enter(document.querySelector("input"), "Synthetic new project");
+	const projectName = () =>
+		document.querySelector('input[name="project_title"]');
+	await until(() => button("New project") && !button("New project").disabled);
+	await act(async () => button("New project").click());
+	await until(projectName);
+	await enter(projectName(), "Synthetic new project");
 	const before = bootstraps;
 	const submit = () =>
 		act(async () =>
@@ -708,7 +707,7 @@ test("creation authentication failure rechecks once and explicitly retries the e
 			!document.querySelector("form").parentElement.hidden,
 	);
 	assert.equal(creates, 1); // No automatic mutation replay after reauthentication.
-	assert.equal(document.querySelector("input").value, "Synthetic new project");
+	assert.equal(projectName().value, "Synthetic new project");
 	await submit();
 	await until(() => created !== null);
 	assert.equal(creates, 2);
